@@ -1,4 +1,4 @@
-package kj.graph;
+package kj.set;
 
 import java.util.HashSet;
 

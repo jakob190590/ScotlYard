@@ -1,7 +1,12 @@
 package kj.graph;
 
-public class Vertex {
+import java.util.Collection;
+
+import kj.set.ObjectSet;
+
+public interface Vertex<E extends Edge<?>> {
 	
-	private ObjectSet<Edge> edges;
-	
+	ObjectSet<E> getEdges();
+	Collection<Vertex<?>> getNeighbors();
+		
 }
