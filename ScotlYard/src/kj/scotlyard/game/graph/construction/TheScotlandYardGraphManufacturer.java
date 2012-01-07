@@ -1,4 +1,4 @@
-package kj.scotlyard.graph.construction;
+package kj.scotlyard.game.graph.construction;
 
 public class TheScotlandYardGraphManufacturer implements
 		ScotlandYardGraphManufacturer {

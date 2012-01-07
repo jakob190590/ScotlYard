@@ -1,23 +1,26 @@
-package kj.scotlyard.player;
+package kj.scotlyard.game.player;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import kj.scotlyard.game.Move;
-import kj.scotlyard.game.ticket.Ticket;
+import kj.scotlyard.game.card.Card;
+import kj.scotlyard.game.card.CardOwner;
+import kj.scotlyard.game.card.TicketCard;
 import kj.set.ObjectSet;
 
 
-public abstract class Player {
+public abstract class Player implements CardOwner {
 
 	private String name;
 	
-	private Set<Ticket> tickets;
+	private Set<Card> cards;
 	
 	private Move move;
 	
 	protected Player(String name) { // protected oder public? bei protected waere die Klasse auch ohne abstract nicht instanziierbar. 
 		this.name = name;
-		this.tickets = new ObjectSet<>();
+		this.cards = new ObjectSet<>();
 	}
 	
 	public String getName() {
@@ -27,12 +30,25 @@ public abstract class Player {
 	public void setName(String name) {
 		this.name = name;
 	}
+		
+	public Set<Card> getCards() {
+		return cards;
+	}
 	
 	/**
-	 * Menge der Tickets dieses Spielers.
-	 * @return
+	 * Liefert die Tickets (Teilmenge der Karten)
+	 * des Spielers. Aenderungen im Ergebnis haben
+	 * keine Auswirkung auf den Kartenbestand des
+	 * Spielers! Benutzen Sie <tt>ticket.changeOwner</tt>.
+	 * @return Menge der Tickets; Aenderungen hierin
+	 * haben keine Auswirkung auf den Kartenbestand!
 	 */
-	public Set<Ticket> getTickets() {
+	public Set<TicketCard> getTickets() {
+		Set<TicketCard> tickets = new HashSet<>();
+		for (Card c : cards) {
+			if (c instanceof TicketCard)
+				tickets.add((TicketCard) c);
+		}
 		return tickets;
 	}
 

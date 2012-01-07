@@ -1,4 +1,4 @@
-package kj.scotlyard.player;
+package kj.scotlyard.game.player;
 
 public class DetectivePlayer extends Player {
 

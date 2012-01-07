@@ -1,6 +1,6 @@
-package kj.scotlyard.graph.optization;
+package kj.scotlyard.game.graph.optization;
 
-import kj.scotlyard.graph.ConnectionEdge;
+import kj.scotlyard.game.graph.ConnectionEdge;
 
 /**
  * Fuer Berechnungen der AI optimierte Version von ConnectionEdge.

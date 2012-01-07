@@ -1,7 +1,7 @@
 package kj.scotlyard.game;
 
-import kj.scotlyard.game.ticket.Ticket;
-import kj.scotlyard.graph.StationVertex;
+import kj.scotlyard.game.card.TicketCard;
+import kj.scotlyard.game.graph.StationVertex;
 
 /**
  * Kapselt einen Spielzug eines Players.
@@ -17,17 +17,17 @@ import kj.scotlyard.graph.StationVertex;
 public class Move {
 	
 	private StationVertex nextStation;
-	private Ticket ticket;
+	private TicketCard ticket;
 	
 	private Move nextMove;
 
-	public Move(StationVertex nextStation, Ticket ticket, Move nextMove) {		
+	public Move(StationVertex nextStation, TicketCard ticket, Move nextMove) {		
 		this.nextStation = nextStation;
 		this.ticket = ticket;
 		this.nextMove = nextMove;
 	}
 	
-	public Move(StationVertex nextStation, Ticket ticket) {
+	public Move(StationVertex nextStation, TicketCard ticket) {
 		this(nextStation, ticket, null);
 	}
 	
@@ -43,11 +43,11 @@ public class Move {
 		this.nextStation = nextStation;
 	}
 
-	public Ticket getTicket() {
+	public TicketCard getTicket() {
 		return ticket;
 	}
 
-	public void setTicket(Ticket ticket) {
+	public void setTicket(TicketCard ticket) {
 		this.ticket = ticket;
 	}
 

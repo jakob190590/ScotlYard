@@ -1,4 +1,4 @@
-package kj.scotlyard.graph;
+package kj.scotlyard.game.graph;
 
 public class BusConnection extends ConnectionEdge {
 

@@ -1,6 +1,6 @@
-package kj.scotlyard.graph.optization;
+package kj.scotlyard.game.graph.optization;
 
-import kj.scotlyard.graph.StationVertex;
+import kj.scotlyard.game.graph.StationVertex;
 
 /**
  * Fuer Berechnungen der AI optimierte Version von StationVertex.
