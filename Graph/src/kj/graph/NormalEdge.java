@@ -1,17 +1,15 @@
 package kj.graph;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Set;
 
 import kj.set.SealedCopyOnWriteArrayObjectSet;
 
-public class NormalEdge implements Edge {
+public class NormalEdge<V extends NormalGraphVertex<?, ?>> implements Edge<V> {
 	
-	protected Vertex a;
-	protected Vertex b;
+	protected V a;
+	protected V b;
 	
-	public Vertex getOther(Vertex v) throws IllegalArgumentException {
+	public V getOther(V v) throws IllegalArgumentException {
 		if (v == a)
 			return b;
 		
@@ -22,9 +20,9 @@ public class NormalEdge implements Edge {
 	}
 
 	@Override
-	public Set<Vertex> getVertices() {
+	public Set<V> getVertices() {
 		
-		SealedCopyOnWriteArrayObjectSet<Vertex> vertices = new SealedCopyOnWriteArrayObjectSet<>();
+		SealedCopyOnWriteArrayObjectSet<V> vertices = new SealedCopyOnWriteArrayObjectSet<>();
 		vertices.add(a);
 		vertices.add(b);
 		vertices.seal();
@@ -32,7 +30,7 @@ public class NormalEdge implements Edge {
 		return vertices;
 	}
 
-	public boolean addVertex(Vertex v) {
+	public boolean addVertex(V v) {
 		if (v == null)
 			throw new NullPointerException("Argument must not be null.");
 		
@@ -46,7 +44,7 @@ public class NormalEdge implements Edge {
 		return true;
 	}
 
-	public boolean removeVertex(Vertex v) {
+	public boolean removeVertex(V v) {
 		if (v != null) {
 			
 			if (v == a)

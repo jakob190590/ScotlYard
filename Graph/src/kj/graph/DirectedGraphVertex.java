@@ -2,14 +2,14 @@ package kj.graph;
 
 import java.util.Set;
 
-public class DirectedGraphVertex extends NormalGraphVertex {
+public class DirectedGraphVertex<V extends DirectedGraphVertex<?, ?>, E extends DirectedEdge<?>> extends NormalGraphVertex<V, E> {
 	
-	public Set<Vertex> getSuccessors() {
+	public Set<V> getSuccessors() {
 		// TODO
 		return null;
 	}
 	
-	public Set<Vertex> getPredecessors() {
+	public Set<V> getPredecessors() {
 		// TODO
 		return null;
 	}

@@ -2,7 +2,16 @@ package kj.graph;
 
 import java.util.Set;
 
-public interface Edge {
+/**
+ * This class represents one edge of a graph.
+ * It is a general interface configurable with
+ * the special class of Vertex for method 
+ * return values.
+ * @author jakob190590
+ *
+ * @param <V> special class of Vertex
+ */
+public interface Edge<V extends Vertex<?, ?>> {
 	
 	/**
 	 * Returns a collection of the vertices from this edge.
@@ -13,6 +22,6 @@ public interface Edge {
 	 * 
 	 * @return the vertices
 	 */
-	Set<Vertex> getVertices();		
+	Set<V> getVertices();		
 	
 }
