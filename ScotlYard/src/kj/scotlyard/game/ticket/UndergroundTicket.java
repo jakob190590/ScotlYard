@@ -7,7 +7,7 @@ public class UndergroundTicket extends Ticket {
 
 	@Override
 	public boolean isValidFor(ConnectionEdge connection) {
-		return (connection instanceof UndergroundConnection);
+		return (isValid() && (connection instanceof UndergroundConnection));
 	}
 
 }

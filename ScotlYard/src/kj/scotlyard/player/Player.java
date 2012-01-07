@@ -1,5 +1,7 @@
 package kj.scotlyard.player;
 
+import java.util.Set;
+
 import kj.scotlyard.game.Move;
 import kj.scotlyard.game.ticket.Ticket;
 import kj.set.ObjectSet;
@@ -9,7 +11,7 @@ public abstract class Player {
 
 	private String name;
 	
-	private ObjectSet<Ticket> tickets;
+	private Set<Ticket> tickets;
 	
 	private Move move;
 	
@@ -30,7 +32,7 @@ public abstract class Player {
 	 * Menge der Tickets dieses Spielers.
 	 * @return
 	 */
-	public ObjectSet<Ticket> getTickets() {
+	public Set<Ticket> getTickets() {
 		return tickets;
 	}
 

@@ -7,7 +7,7 @@ public class TaxiTicket extends Ticket {
 
 	@Override
 	public boolean isValidFor(ConnectionEdge connection) {
-		return (connection instanceof TaxiConnection);
+		return (isValid() && (connection instanceof TaxiConnection));
 	}
 
 }

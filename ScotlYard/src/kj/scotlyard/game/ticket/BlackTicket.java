@@ -6,7 +6,7 @@ public class BlackTicket extends Ticket {
 
 	@Override
 	public boolean isValidFor(ConnectionEdge connection) {
-		return true;
+		return isValid();
 	}
 
 }
