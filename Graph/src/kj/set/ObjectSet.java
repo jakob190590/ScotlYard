@@ -4,12 +4,8 @@ import java.util.HashSet;
 
 /**
  * ObjectSet repraesentiert eine Menge von Objekten. Das impliziert,
- * dass die Menge keine gleichen Elemente und keine null-Elemente
+ * dass die Menge keine gleichen Elemente und keine <tt>null</tt>-Elemente
  * enthalten darf.
- * 
- * Da ObjectSet HashSet erweitert, wird immer per equals die Gleichheit
- * geprueft. Fuer die richtige Funktionsweise sollte equals einfach nur
- * <tt>this == o</tt> testen (so wie in Object definiert).
  * 
  * @author jakob190590
  *

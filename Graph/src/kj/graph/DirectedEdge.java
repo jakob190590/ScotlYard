@@ -1,20 +1,20 @@
 package kj.graph;
 
-public class DirectedEdge<V extends Vertex<?>> extends NormalEdge<V> {
+public class DirectedEdge extends NormalEdge {
 
-	public V getTail() {
+	public Vertex getTail() {
 		return a;
 	}
 	
-	public V getHead() {
+	public Vertex getHead() {
 		return b;
 	}
 	
-	public boolean isTail(V v) {
+	public boolean isTail(Vertex v) {
 		return (a == v);
 	}
 	
-	public boolean isHead(V v) {
+	public boolean isHead(Vertex v) {
 		return (b == v);
 	}
 	

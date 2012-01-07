@@ -1,12 +1,21 @@
 package kj.graph;
 
-import java.util.Collection;
+import java.util.Set;
 
-import kj.set.ObjectSet;
-
-public interface Vertex<E extends Edge<?>> {
+public interface Vertex {
 	
-	ObjectSet<E> getEdges();
-	Collection<Vertex<?>> getNeighbors();
+	/**
+	 * Returns a collection of the edges from this vertex.
+	 * Changes in the result will change the graph!
+	 * @return the edges
+	 */
+	Set<Edge> getEdges();
+	
+	/**
+	 * Computes the direct neighbors of the vertex.
+	 * Changes in the result have no effect on the graph.
+	 * @return the direct neighbors
+	 */
+	Set<Vertex> getNeighbors();
 		
 }

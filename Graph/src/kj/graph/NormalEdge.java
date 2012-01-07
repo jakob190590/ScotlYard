@@ -1,13 +1,17 @@
 package kj.graph;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
-public class NormalEdge<V extends Vertex<?>> implements Edge<V> {
+import kj.set.SealedCopyOnWriteArrayObjectSet;
+
+public class NormalEdge implements Edge {
 	
-	protected V a;
-	protected V b;
+	protected Vertex a;
+	protected Vertex b;
 	
-	public V getOther(V v) throws IllegalArgumentException {
+	public Vertex getOther(Vertex v) throws IllegalArgumentException {
 		if (v == a)
 			return b;
 		
@@ -18,13 +22,17 @@ public class NormalEdge<V extends Vertex<?>> implements Edge<V> {
 	}
 
 	@Override
-	public Collection<V> getVertices() {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<Vertex> getVertices() {
+		
+		SealedCopyOnWriteArrayObjectSet<Vertex> vertices = new SealedCopyOnWriteArrayObjectSet<>();
+		vertices.add(a);
+		vertices.add(b);
+		vertices.seal();
+		
+		return vertices;
 	}
 
-	@Override
-	public boolean addVertex(V v) throws UnsupportedOperationException {
+	public boolean addVertex(Vertex v) {
 		if (v == null)
 			throw new NullPointerException("Argument must not be null.");
 		
@@ -33,13 +41,12 @@ public class NormalEdge<V extends Vertex<?>> implements Edge<V> {
 		else if (b == null)
 			b = v;
 		else
-			throw new UnsupportedOperationException("Edge can link only two vertices.");
+			throw new UnsupportedOperationException("A normal edge can link only two vertices.");
 		
 		return true;
 	}
 
-	@Override
-	public boolean removeVertex(V v) {
+	public boolean removeVertex(Vertex v) {
 		if (v != null) {
 			
 			if (v == a)
@@ -52,7 +59,89 @@ public class NormalEdge<V extends Vertex<?>> implements Edge<V> {
 		else
 			return false;
 	}
-
-
-
+	
 }
+/*
+class NormalEdgeVertexSet<E> implements Set<E> {
+
+	private static final int SIZE = 2;
+	private E[] els = new E[SIZE];
+	private int size = 0;
+	
+	@Override
+	public int size() {
+		return size;
+	}
+
+	@Override
+	public boolean isEmpty() {		
+		return (size == 0);
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		return (els[0].equals(o) || els[1].equals(o));
+	}
+
+	@Override
+	public Iterator iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object[] toArray() {
+		return els.clone();
+	}
+
+	@Override
+	public Object[] toArray(Object[] a) {
+	}
+
+	@Override
+	public boolean add(E e) {
+		if (size < SIZE) {
+			els[size] = e;
+			size++;
+		}
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean containsAll(Collection c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addAll(Collection c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean retainAll(Collection c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeAll(Collection c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void clear() {
+		size = 0;
+	}
+	
+}
+*/
