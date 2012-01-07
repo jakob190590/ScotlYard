@@ -21,4 +21,10 @@ public class NormalGraphVertex<V extends NormalGraphVertex<?, ?>, E extends Norm
 		return neighbors;
 	}
 
+	@Override
+	public Set<E> getEdgesBetweenThisAnd(V vertex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

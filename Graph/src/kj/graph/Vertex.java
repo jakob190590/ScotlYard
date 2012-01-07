@@ -27,5 +27,15 @@ public interface Vertex<V extends Vertex<?, ?>, E extends Edge<?>> {
 	 * @return the direct neighbors
 	 */
 	Set<V> getNeighbors();
+	
+	/**
+	 * Computes a collection of all edges between this vertex
+	 * and the given vertex. The given vertex must be a direct
+	 * neighbor of this vertex!
+	 * @param vertex wich is connected to this vertex via the
+	 * computed edges 
+	 * @return the edges between the vertices
+	 */
+	Set<E> getEdgesBetweenThisAnd(V vertex);
 		
 }
