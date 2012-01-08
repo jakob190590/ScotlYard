@@ -20,7 +20,7 @@ public class MrXPlayer extends Player {
 	 * @return Menge der Doppelzugkarten; Aenderungen hierin
 	 * haben keine Auswirkung auf den Kartenbestand!
 	 */
-	public Set<DoubleMoveCard> getDoubleMoveCards() {
+	/*public Set<DoubleMoveCard> getDoubleMoveCards() {
 		Set<DoubleMoveCard> tickets = new HashSet<>();
 		for (Card c : getCards()) {
 			if (c instanceof DoubleMoveCard)
@@ -28,4 +28,5 @@ public class MrXPlayer extends Player {
 		}
 		return tickets;
 	}
+	*/
 }

@@ -1,6 +1,5 @@
 package kj.scotlyard.game.card;
 
-
-public class DoubleMoveCard extends Card {
+public final class DoubleMoveCard extends Card {
 
 }

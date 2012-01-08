@@ -16,7 +16,7 @@ public class NormalGraphVertex<V extends NormalGraphVertex<?, ?>, E extends Norm
 	public Set<V> getNeighbors() {
 		Set<V> neighbors = new HashSet<>();
 		for (E e : edges) {
-			neighbors.add(e.getOther(this));
+			neighbors.add(e.getOther((NormalGraphVertex<?, ?>) this));
 		}
 		return neighbors;
 	}

@@ -1,5 +1,10 @@
 package kj.scotlyard.game.card;
 
+/**
+ * Repraesentiert eine Karte im Spiel.
+ * @author jakob190590
+ *
+ */
 public abstract class Card {
 	
 	/**

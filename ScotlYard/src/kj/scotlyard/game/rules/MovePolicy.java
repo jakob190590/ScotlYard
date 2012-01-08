@@ -14,6 +14,6 @@ public interface MovePolicy {
 	 * Klasse zu uebergeben.
 	 * @param move der zu validierende Zug
 	 */
-	void checkValidness(Move move); // TODO throws declaration
-
+	void checkValidness(Move move) throws IllegalMoveException; // TODO throws declaration
+	
 }

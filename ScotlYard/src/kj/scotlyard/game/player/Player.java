@@ -35,6 +35,7 @@ public abstract class Player implements CardOwner {
 		return cards;
 	}
 	
+	
 	/**
 	 * Liefert die Tickets (Teilmenge der Karten)
 	 * des Spielers. Aenderungen im Ergebnis haben
@@ -43,7 +44,7 @@ public abstract class Player implements CardOwner {
 	 * @return Menge der Tickets; Aenderungen hierin
 	 * haben keine Auswirkung auf den Kartenbestand!
 	 */
-	public Set<TicketCard> getTickets() {
+	/*public Set<TicketCard> getTickets() {
 		Set<TicketCard> tickets = new HashSet<>();
 		for (Card c : cards) {
 			if (c instanceof TicketCard)
@@ -51,6 +52,7 @@ public abstract class Player implements CardOwner {
 		}
 		return tickets;
 	}
+	*/
 
 	/**
 	 * Entscheidet, welchen Zug der Player machen wird.

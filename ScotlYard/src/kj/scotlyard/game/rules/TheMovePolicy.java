@@ -128,7 +128,7 @@ public class TheMovePolicy implements MovePolicy {
 	}
 	
 	public String toString() {
-		return "The official Scotland Yard rules MovePolicy implementation!";
+		return "The official Scotland Yard rules MovePolicy implementation";
 	}
 
 }

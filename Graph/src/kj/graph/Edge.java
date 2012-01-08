@@ -22,6 +22,6 @@ public interface Edge<V extends Vertex<?, ?>> {
 	 * 
 	 * @return the vertices
 	 */
-	Set<V> getVertices();		
+	Set<V> getVertices();	
 	
 }
