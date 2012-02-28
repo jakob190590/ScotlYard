@@ -5,69 +5,37 @@ import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.player.Player;
 
 /**
- * Kapselt einen Spielzug eines Players.
- * 
- * Ein Zug referenziert die naechste Station und das
- * eingesetzte Ticket. Ein Zug kann sich ausserdem
- * aus mehreren Zuegen zusammensetzen (einfach verkettete
- * Liste).
+ * Schnittstelle des Spielzuges eines Spielers.
  * 
  * @author jakob190590
  *
  */
-public class Move {
+public interface Move implements Sealable {
 	
-	private Player player;
-	private StationVertex nextStation;
-	private TicketCard ticket;
-		
-	private Move nextMove;
+	Player getPlayer();
 
-	public Move(Player player, StationVertex nextStation, TicketCard ticket, Move nextMove) {
-		this.player = player;
-		this.nextStation = nextStation;
-		this.ticket = ticket;
-		this.nextMove = nextMove;
-	}
+	void setPlayer(Player player);
+
+	int getRound();
+
+	void setRound(int round);
+/*
+	int getMoveNumber();
 	
-	public Move(Player player, StationVertex nextStation, TicketCard ticket) {
-		this(player, nextStation, ticket, null);
-	}
+	void setMoveNumber(int moveNumber);
 	
-	public Move() {
-		this(null, null, null);
-	}
+	int getMoveIndex();
 	
-	public Player getPlayer() {
-		return player;
-	}
+	void setMoveIndex(int moveIndex);
+*/	
 
-	public void setPlayer(Player player) {
-		this.player = player;
-	}
+	StationVertex getStation();
 
-	public StationVertex getNextStation() {
-		return nextStation;
-	}
+	void setStation(StationVertex station);
 
-	public void setNextStation(StationVertex nextStation) {
-		this.nextStation = nextStation;
-	}
 
-	public TicketCard getTicket() {
-		return ticket;
-	}
-
-	public void setTicket(TicketCard ticket) {
-		this.ticket = ticket;
-	}
-
-	public Move getNextMove() {
-		return nextMove;
-	}
-
-	public void setNextMove(Move nextMove) {
-		this.nextMove = nextMove;
-	}	
+	Set<Item> getItems();
+	
+	List<Move> getMoves();
 
 }
