@@ -13,7 +13,13 @@ import kj.scotlyard.game.player.Player;
  * @author jakob190590
  *
  */
-public interface Game {
+public interface Game extends GameState {
+	
+	void setMrX(MrXPlayer player);
+	
+	void setCurrentPlayer(Player player);
+	
+	void setCurrentRound(int round);
 	
 	MrXPlayer getMrX();
 	List<DetectivePlayer> getDetectives();
@@ -26,8 +32,6 @@ public interface Game {
 	 * @return der Spieler, der gerade dran ist
 	 */
 	Player getCurrentPlayer();
-	
-	void setCurrentPlayer(Player player); // TODO will ich das?
 	
 	List<Move> getMoves();
 
