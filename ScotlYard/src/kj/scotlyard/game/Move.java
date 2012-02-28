@@ -19,7 +19,7 @@ public interface Move implements Sealable {
 	int getRound();
 
 	void setRound(int round);
-/*
+
 	int getMoveNumber();
 	
 	void setMoveNumber(int moveNumber);
@@ -27,7 +27,7 @@ public interface Move implements Sealable {
 	int getMoveIndex();
 	
 	void setMoveIndex(int moveIndex);
-*/	
+	
 
 	StationVertex getStation();
 
