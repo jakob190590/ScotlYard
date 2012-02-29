@@ -1,7 +1,6 @@
 package kj.scotlyard.game;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.attributes.Sealable;
 
@@ -33,7 +32,7 @@ public interface Move extends Sealable {
 	void setStation(StationVertex station);
 
 
-	Set<Item> getItems();
+	List<Item> getItems();
 	
 	List<Move> getMoves();
 
