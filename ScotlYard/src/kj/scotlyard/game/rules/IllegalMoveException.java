@@ -19,7 +19,5 @@ public class IllegalMoveException extends IllegalArgumentException {
 	public IllegalMoveException(Throwable cause) {
 		super(cause);
 	}
-	
-	
 
 }

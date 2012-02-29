@@ -1,4 +1,4 @@
-package kj.scotlyard.game.card;
+package kj.scotlyard.game.items;
 
 import kj.scotlyard.game.Move;
 

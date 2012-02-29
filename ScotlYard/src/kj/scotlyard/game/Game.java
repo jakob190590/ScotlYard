@@ -1,16 +1,14 @@
 package kj.scotlyard.game;
 
-import kj.scotlyard.game.player.MrXPlayer;
-import kj.scotlyard.game.player.Player;
+import kj.scotlyard.game.player.MrXPiece;
+import kj.scotlyard.game.player.PlayingPiece;
 
-public abstract class Game implements GameState {
-		
-	void setMrX(MrXPlayer mrX) {
-		
-	}
+public interface Game extends GameState {
 	
-	void setCurrentPlayer(Player player) {
-		
-	}
+	void setMrX(MrXPiece piece);
+	
+	void setCurrentPlayer(PlayingPiece piece);
+	
+	void setCurrentRound(int round);
 	
 }

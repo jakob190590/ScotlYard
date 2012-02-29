@@ -1,4 +1,4 @@
-package kj.scotlyard.game.graph.optization;
+package kj.scotlyard.game.graph.optimization;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 

@@ -1,7 +1,7 @@
-package kj.scotlyard.game.card;
+package kj.scotlyard.game.items;
 
 import kj.scotlyard.game.Move;
-import kj.scotlyard.game.player.MrXPlayer;
+import kj.scotlyard.game.player.MrXPiece;
 
 /**
  * Doppelzug-Karte, gilt nur fuer MrX.
@@ -12,9 +12,7 @@ public class DoubleMoveCard extends MultiMoveCard {
 
 	@Override
 	public boolean isValidFor(Move move) {
-		return ((move.getPlayer() instanceof MrXPlayer)
-				&& (move.getNextMove() != null)
-				&& (move.getNextMove().getNextMove() == null));
+		return (move.getMoves().size() == 2);
 	}
 
 }

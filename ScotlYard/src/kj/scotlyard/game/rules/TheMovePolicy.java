@@ -4,12 +4,12 @@ import java.util.Collection;
 
 import kj.scotlyard.game.Game;
 import kj.scotlyard.game.Move;
-import kj.scotlyard.game.card.Card;
-import kj.scotlyard.game.card.DoubleMoveCard;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.player.MrXPlayer;
-import kj.scotlyard.game.player.Player;
+import kj.scotlyard.game.items.Card;
+import kj.scotlyard.game.items.DoubleMoveCard;
+import kj.scotlyard.game.player.MrXPiece;
+import kj.scotlyard.game.player.PlayingPiece;
 
 /**
  * The official Scotland Yard rules are implemented by
@@ -31,12 +31,12 @@ public class TheMovePolicy implements MovePolicy {
 	// TODO Test fuer TheMovePolicy schreiben!
 	
 	@Override
-	public void checkValidness(Move move) {
+	public void checkMove(Move move) {
 		if (move == null)
 			throw new NullPointerException("Move cannot be null.");
 		
 		// Player merken, weil der bei Mehrfachzuegen nicht abweichen darf
-		Player player = move.getPlayer();
+		PlayingPiece player = move.getPlayer();
 		
 		// Spieler muss zumindest im ersten Move der Kette angegeben sein
 		if (player == null) 
@@ -53,7 +53,7 @@ public class TheMovePolicy implements MovePolicy {
 		if (move.getNextMove() != null) {
 			
 			// das kann hoechstens MrX
-			if (!(player instanceof MrXPlayer))
+			if (!(player instanceof MrXPiece))
 				throw new IllegalArgumentException("Only Mr. X can do a multimove with two moves.");
 			
 			// mehr als 2 moves gehn gar nicht
@@ -108,7 +108,7 @@ public class TheMovePolicy implements MovePolicy {
 				throw new IllegalArgumentException("The given ticket is not valid for this connection.");
 			
 			// alle anderen spieler ...
-			for (Player p : game.getPlayers()) {
+			for (PlayingPiece p : game.getPlayers()) {
 				if (p != player) {
 					if (game.getPositionOf(p) == move.getNextStation())
 						throw new IllegalArgumentException("Next station is already occupied.");

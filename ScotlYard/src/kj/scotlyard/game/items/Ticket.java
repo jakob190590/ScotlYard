@@ -1,4 +1,4 @@
-package kj.scotlyard.game.card;
+package kj.scotlyard.game.items;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 
@@ -12,7 +12,7 @@ import kj.scotlyard.game.graph.ConnectionEdge;
  * @author jakob190590
  *
  */
-public abstract class TicketCard extends Card {
+public abstract class Ticket extends Item {
 	
 	/**
 	 * Prueft, ob dieses Ticket fuer die angegebene Verbindung

@@ -2,25 +2,30 @@ package kj.scotlyard.game;
 
 import java.util.List;
 
-import kj.scotlyard.game.player.DetectivePlayer;
-import kj.scotlyard.game.player.MrXPlayer;
-import kj.scotlyard.game.player.Player;
+import kj.scotlyard.game.player.DetectivePiece;
+import kj.scotlyard.game.player.MrXPiece;
+import kj.scotlyard.game.player.PlayingPiece;
 
 public interface GameState {
 	
+	public enum MoveAccessMode {
+        ROUND,
+        MOVENUMBER
+    }
+	
 	int INITIAL_ROUND = 0;
 	
-	MrXPlayer getMrX();
+	MrXPiece getMrX();
 	
-	List<DetectivePlayer> getDetectives();
+	List<DetectivePiece> getDetectives();
 	
-	List<Player> getPlayers();
+	List<PlayingPiece> getPlayers();
 	
 	List<Move> getMoves();
 	
 	int getCurrentRound();
 	
-	Player getCurrentPlayer();
+	PlayingPiece getCurrentPlayer();
 	
 	// Convenient methods
 	
@@ -28,9 +33,9 @@ public interface GameState {
 	
 	List<Move> getMovesOfCurrentRound();
 	
-	Move getMove(Player player, int round);
+	Move getMove(PlayingPiece player, int round);
 	
-	Move getLastMove(Player player);
+	Move getLastMove(PlayingPiece player);
 	
 	// To add and remove Listeners
 
