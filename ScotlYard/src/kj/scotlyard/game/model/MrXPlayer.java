@@ -1,5 +1,5 @@
 package kj.scotlyard.game.model;
 
-public abstract class PlayingPiece {
+public class MrXPlayer extends Player {
 
 }

@@ -9,9 +9,9 @@ import kj.scotlyard.game.graph.StationVertex;
 
 public interface Move extends Sealable {
 	
-	PlayingPiece getPlayer();
+	Player getPlayer();
 
-	void setPlayer(PlayingPiece player);
+	void setPlayer(Player player);
 
 	int getRound();
 
