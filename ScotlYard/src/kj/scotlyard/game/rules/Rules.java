@@ -1,9 +1,15 @@
 package kj.scotlyard.game.rules;
 
 public interface Rules {
+	
+	GameStateAccessPolicy getGameStateAccessPolicy();
 
+	GameInitPolicy getGameInitPolicy();
+	
 	MovePolicy getMovePolicy();
 	
-	// TODO Add getter for each Policiy!
+	TurnPolicy getTurnPolicy();
+	
+	GameWinPolicy getGameWinPolicy();
 	
 }
