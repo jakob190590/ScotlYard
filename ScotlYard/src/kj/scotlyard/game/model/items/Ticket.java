@@ -1,17 +1,16 @@
 package kj.scotlyard.game.model.items;
 
-import kj.scotlyard.game.graph.ConnectionType;
 
-public class Ticket implements Item {
+public class Ticket extends Item {
 	
-	private ConnectionType connectionType;
+	private TicketType ticketType;
 	
-	public ConnectionType getConnectionType() {
-		return connectionType;
+	public TicketType getTicketType() {
+		return ticketType;
 	}
 
-	public Ticket(ConnectionType connectionType) {
-		this.connectionType = connectionType;
+	public Ticket(TicketType ticketType) {
+		this.ticketType = ticketType;
 	}
 
 }
