@@ -1,4 +1,4 @@
-package kj.scotlyard.game.items;
+package kj.scotlyard.game.model.items;
 
 public abstract class MultiMoveCard extends Item {
 
