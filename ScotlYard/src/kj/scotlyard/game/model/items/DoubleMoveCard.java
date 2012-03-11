@@ -1,5 +1,5 @@
 package kj.scotlyard.game.model.items;
 
-public class DoubleMoveCard extends MultiMoveCard {
+public class DoubleMoveCard extends Item {
 
 }
