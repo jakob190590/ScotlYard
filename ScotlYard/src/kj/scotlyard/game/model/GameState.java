@@ -16,6 +16,8 @@ public interface GameState {
 	
 	int INITIAL_ROUND_NUMBER = 0;
 	
+	int INITIAL_MOVE_NUMBER = 0;
+	
 	MrXPlayer getMrX();
 	
 	List<DetectivePlayer> getDetectives();
