@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.attributes.Sealable;
 
 import kj.scotlyard.game.model.items.Item;
+import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
 
 public interface Move extends Sealable {
@@ -29,6 +30,10 @@ public interface Move extends Sealable {
 	StationVertex getStation();
 
 	void setStation(StationVertex station);
+	
+	ConnectionEdge getConnection();
+	
+	void setConnection(ConnectionEdge connection);
 
 
 	//List<Item> getItems();
