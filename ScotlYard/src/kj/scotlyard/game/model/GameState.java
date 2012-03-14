@@ -2,8 +2,9 @@ package kj.scotlyard.game.model;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
-import kj.scotlyard.game.items.Item;
+import kj.scotlyard.game.model.items.Item;
 
 
 public interface GameState {
@@ -19,19 +20,21 @@ public interface GameState {
 	
 	List<DetectivePlayer> getDetectives();
 	
-	List<Player> getPlayingPieces();
+	List<Player> getPlayers();
 	
-	Set<Item> getItems(Player piece);
+	Set<Item> getItems(Player player);
 	
 	
-	List<Move> getMoves();
+	Stack<Move> getMoves();
 	
-	Move getMove(Player piece, int number, MoveAccessMode accessMode);
+	Move getMove(Player player, int number, MoveAccessMode accessMode);
+	
+	Move getLastMove(Player player);
 	
 	
 	int getCurrentRoundNumber();
 	
-	Player getCurrentPlayingPiece();
+	Player getCurrentPlayer();
 	
 	
 	// To add and remove Listeners

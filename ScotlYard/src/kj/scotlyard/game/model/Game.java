@@ -2,17 +2,17 @@ package kj.scotlyard.game.model;
 
 import java.util.Set;
 
-import kj.scotlyard.game.items.Item;
+import kj.scotlyard.game.model.items.Item;
 
 public interface Game extends GameState {
 	
-	void setMrX(MrXPlayer piece);
+	void setMrX(MrXPlayer player);
 	
-	void setItems(Player piece, Set<Item> items);
+	void setItems(Player player, Set<Item> items);
 	
 	
 	void setCurrentRoundNumber(int roundNumber);
 	
-	void setCurrentPlayingPiece(Player piece);
+	void setCurrentPlayer(Player player);
 	
 }

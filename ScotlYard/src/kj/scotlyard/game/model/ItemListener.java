@@ -1,6 +1,6 @@
 package kj.scotlyard.game.model;
 
-import kj.scotlyard.game.items.Item;
+import kj.scotlyard.game.model.items.Item;
 
 public interface ItemListener {
 

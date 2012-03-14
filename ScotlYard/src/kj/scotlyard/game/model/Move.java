@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.attributes.Sealable;
 
-import kj.scotlyard.game.items.Item;
+import kj.scotlyard.game.model.items.Item;
 import kj.scotlyard.game.graph.StationVertex;
 
 public interface Move extends Sealable {
@@ -13,9 +13,9 @@ public interface Move extends Sealable {
 
 	void setPlayer(Player player);
 
-	int getRound();
+	int getRoundNumber();
 
-	void setRound(int round);
+	void setRoundNumber(int roundNumber);
 
 	int getMoveNumber();
 	
@@ -31,7 +31,9 @@ public interface Move extends Sealable {
 	void setStation(StationVertex station);
 
 
-	List<Item> getItems();
+	//List<Item> getItems();
+	// oder
+	Item getItem();
 	
 	List<Move> getMoves();
 
