@@ -1,5 +1,7 @@
 package kj.scotlyard.game.model;
 
+import java.util.Set;
+
 import kj.scotlyard.game.model.items.Item;
 
 public interface ItemListener {
@@ -8,6 +10,6 @@ public interface ItemListener {
 	
 	void itemRemoved(GameState gameState, Player player, Item item);
 	
-	void itemSetChanged(GameState gameState, Player player);
+	void itemSetChanged(GameState gameState, Player player, Set<Item> oldItems, Set<Item> newItems);
 	
 }
