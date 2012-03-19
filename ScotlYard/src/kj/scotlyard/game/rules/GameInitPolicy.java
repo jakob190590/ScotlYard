@@ -8,8 +8,8 @@ import kj.scotlyard.game.model.items.Item;
 
 public interface GameInitPolicy {
 	
-	Set<Item> createItemSet(Player piece); // keine factory method! gibts was anderes fuer create? make? (selbes probl. wie bei game state access policy)
+	Set<Item> createItemSet(Player player);
 	
-	StationVertex suggestInitialStation(Player piece); // Station klingt ned soo gut... hm?
+	StationVertex suggestInitialStation(Player player);
 
 }
