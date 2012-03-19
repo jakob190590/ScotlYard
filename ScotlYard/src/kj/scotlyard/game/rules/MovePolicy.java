@@ -11,4 +11,6 @@ public interface MovePolicy {
 	
 	Player getNextItemOwner(GameState gameState, Move move);
 	
+	boolean isTicketValidForConnection(Ticket ticket, ConnectionEdge connection);
+	
 }
