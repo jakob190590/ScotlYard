@@ -5,7 +5,7 @@ import kj.scotlyard.game.model.Player;
 
 public interface TurnPolicy {
 
-	Player getNextPiece(GameState gameState);
+	Player getNextPlayer(GameState gameState);
 	
 	int getNextRoundNumber(GameState gameState);
 	

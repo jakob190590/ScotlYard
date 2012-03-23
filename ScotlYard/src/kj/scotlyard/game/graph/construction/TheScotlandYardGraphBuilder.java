@@ -1,11 +1,11 @@
 package kj.scotlyard.game.graph.construction;
 
-import kj.scotlyard.game.graph.BusConnection;
 import kj.scotlyard.game.graph.ConnectionEdge;
-import kj.scotlyard.game.graph.FerryConnection;
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.graph.TaxiConnection;
-import kj.scotlyard.game.graph.UndergroundConnection;
+import kj.scotlyard.game.graph.connection.BusConnection;
+import kj.scotlyard.game.graph.connection.FerryConnection;
+import kj.scotlyard.game.graph.connection.TaxiConnection;
+import kj.scotlyard.game.graph.connection.UndergroundConnection;
 
 public class TheScotlandYardGraphBuilder implements ScotlandYardGraphBuilder {
 	
