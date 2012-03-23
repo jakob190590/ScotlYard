@@ -7,4 +7,6 @@ public interface TurnPolicy {
 
 	Player getNextPiece(GameState gameState);
 	
+	int getNextRoundNumber(GameState gameState);
+	
 }
