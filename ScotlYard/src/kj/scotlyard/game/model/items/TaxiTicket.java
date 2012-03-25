@@ -1,5 +1,5 @@
 package kj.scotlyard.game.model.items;
 
-public class Ticket extends Item {
-	
+public class TaxiTicket extends Ticket {
+
 }
