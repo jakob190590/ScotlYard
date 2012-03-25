@@ -1,19 +1,16 @@
 package kj.scotlyard.game.rules;
 
-import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.model.GameState;
-
 public class TheRules implements Rules {
 	
-	GameStateAccessPolicy gsaP = new TheGameStateAccessPolicy();
+	private GameStateAccessPolicy gsaP = new TheGameStateAccessPolicy();
 	
-	GameInitPolicy giP = new TheGameInitPolicy();
+	private GameInitPolicy giP = new TheGameInitPolicy();
 	
-	MovePolicy mP = new TheMovePolicy();
+	private MovePolicy mP = new TheMovePolicy();
 	
-	TurnPolicy tP = new TheTurnPolicy();
+	private TurnPolicy tP = new TheTurnPolicy();
 	
-	GameWinPolicy gwP = new TheGameWinPolicy();
+	private GameWinPolicy gwP = new TheGameWinPolicy();
 
 	@Override
 	public GameStateAccessPolicy getGameStateAccessPolicy() {
