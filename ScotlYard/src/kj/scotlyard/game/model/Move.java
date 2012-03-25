@@ -36,9 +36,11 @@ public interface Move extends Sealable {
 	void setConnection(ConnectionEdge connection);
 
 
-	//List<Item> getItems();
+	// List/Set<Item> getItems();
 	// oder
 	Item getItem();
+	
+	void setItem(Item item);
 	
 	List<Move> getMoves();
 
