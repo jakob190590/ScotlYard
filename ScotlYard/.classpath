@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="tests"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Graph"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/Libraries/lib/commons-attributes/commons-attributes-api-2.2.jar"/>
-	<classpathentry kind="lib" path="/Libraries/lib/commons-attributes/commons-attributes-compiler-2.2.jar"/>
-	<classpathentry kind="lib" path="/Libraries/lib/commons-attributes/commons-attributes-plugin-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/apache-commons-attributes/commons-attributes-api-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/jgrapht/jgrapht-jdk1.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
