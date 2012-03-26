@@ -2,7 +2,6 @@ package kj.scotlyard.game.model;
 
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 import kj.scotlyard.game.model.items.Item;
 
@@ -18,6 +17,13 @@ public interface GameState {
 	
 	int INITIAL_MOVE_NUMBER = 0;
 	
+	int LAST_ROUND_NUMBER = -1;
+	
+	int LAST_MOVE_NUMBER = -1;
+	
+	/** Speziell fuer <tt>getMoves().remove(LAST_MOVE)</tt>. */
+	int LAST_MOVE = -1;
+	
 	MrXPlayer getMrX();
 	
 	List<DetectivePlayer> getDetectives();
@@ -27,11 +33,13 @@ public interface GameState {
 	Set<Item> getItems(Player player);
 	
 	
-	Stack<Move> getMoves();
+	List<Move> getMoves();
 	
 	Move getMove(Player player, int number, MoveAccessMode accessMode);
 	
 	Move getLastMove(Player player);
+	
+	Move getLastMove();
 	
 	
 	int getCurrentRoundNumber();
@@ -39,8 +47,22 @@ public interface GameState {
 	Player getCurrentPlayer();
 	
 	
-	// To add and remove Listeners
+	// To add and remove Listeners ...
 
+	void addStateListener(StateListener listener);
 	
+	void removeStateListener(StateListener listener);
+	
+	void addPlayerListener(PlayerListener listener);
+	
+	void removePlayerListener(PlayerListener listener);
+	
+	void addItemListener(ItemListener listener);
+	
+	void removeItemListener(ItemListener listener);
+	
+	void addMoveListener(MoveListener listener);
+	
+	void removeMoveListener(MoveListener listener);
 	
 }
