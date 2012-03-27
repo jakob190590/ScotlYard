@@ -6,4 +6,6 @@ public interface MoveListener {
 	
 	void moveUndone(GameState gameState, Move move);
 	
+	void movesCleard(GameState gameState);
+	
 }
