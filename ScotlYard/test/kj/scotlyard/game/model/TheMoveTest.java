@@ -11,7 +11,7 @@ import kj.scotlyard.game.model.items.Item;
 
 import org.junit.Test;
 
-public class MoveTest {
+public class TheMoveTest {
 
 	@Test
 	public void testSeal() {
