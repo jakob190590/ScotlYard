@@ -10,7 +10,7 @@ import kj.scotlyard.game.graph.StationVertex;
 
 public interface Move extends Sealable {
 	
-	// ROUND_NUMBER gibts immer
+	// Round Number gibts immer
 	
 	int NO_MOVE_NUMBER = -1;
 	
