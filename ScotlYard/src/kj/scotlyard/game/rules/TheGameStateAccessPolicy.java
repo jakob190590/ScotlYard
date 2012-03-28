@@ -13,15 +13,10 @@ import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.AbstractGameState;
 import kj.scotlyard.game.model.DetectivePlayer;
-import kj.scotlyard.game.model.FullGameState;
 import kj.scotlyard.game.model.GameState;
-import kj.scotlyard.game.model.ItemListener;
 import kj.scotlyard.game.model.Move;
-import kj.scotlyard.game.model.MoveListener;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.PlayerListener;
-import kj.scotlyard.game.model.StateListener;
 import kj.scotlyard.game.model.items.Item;
 
 public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
@@ -44,7 +39,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		 * wiederum Proxies).
 		 */
 		public PartialMove(Move moveBehind, Move ...subMoves) {
-			move = moveBehind;	
+			move = moveBehind; // backing Move
 			moves = Arrays.asList(subMoves);
 			seal();
 		}
