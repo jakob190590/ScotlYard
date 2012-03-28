@@ -62,7 +62,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Tue Mar 27 00:03:27 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Mar 28 23:38:21 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -1333,6 +1333,19 @@ Wenn Rules iwie feststellen, dass GameState corrupted is...</UML:TaggedValue.dat
                   name = 'DETECTIVES_WIN' isSpecification = 'false'/>
               </UML:Enumeration.literal>
             </UML:Enumeration>
+            <UML:Class xmi.id = '-64--88--78-22-bb66366:1365acccf52:-8000:0000000000000C42'
+              name = 'IllegalAccessException' visibility = 'public' isSpecification = 'false'
+              isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
+              <UML:ModelElement.taggedValue>
+                <UML:TaggedValue xmi.id = '-64--88--78-22-bb66366:1365acccf52:-8000:0000000000000C43'
+                  isSpecification = 'false'>
+                  <UML:TaggedValue.dataValue>extends RuntimeException (wir brauchen hier eine unchecked exception)</UML:TaggedValue.dataValue>
+                  <UML:TaggedValue.type>
+                    <UML:TagDefinition xmi.idref = '-64--88--78-22--16c460d9:135bfa2bae8:-8000:0000000000000E63'/>
+                  </UML:TaggedValue.type>
+                </UML:TaggedValue>
+              </UML:ModelElement.taggedValue>
+            </UML:Class>
           </UML:Namespace.ownedElement>
         </UML:Package>
         <UML:Abstraction xmi.id = '-64--88--22-1-f61ec3b:134bd4433b3:-8000:0000000000000870'
@@ -2236,7 +2249,7 @@ implements Sealable</UML:TaggedValue.dataValue>
                 <UML:Operation xmi.id = '-64--88--78-22--60ee30d2:135c9d63415:-8000:0000000000001020'
                   name = 'getItems' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
                   isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
-                  isAbstract = 'false'>
+                  isAbstract = 'false' specification = 'result kann auch null sein!&#10;wenn player geaddet wird, wird NICHT automatisch ein Item Set fuer ihn erstellt.&#10;wenn player removed wird, wird sein Item Set NICHT geloescht, sondern bleibt erhalten.&#10;wenn der selbe player erneut geaddet wird, hat er den selben Item Set wie zuvor!'>
                   <UML:BehavioralFeature.parameter>
                     <UML:Parameter xmi.id = '-64--88--78-22--60ee30d2:135c9d63415:-8000:0000000000001021'
                       name = 'return' isSpecification = 'false' kind = 'return'>
@@ -2267,29 +2280,6 @@ implements Sealable</UML:TaggedValue.dataValue>
                       name = 'player' isSpecification = 'false' kind = 'in'>
                       <UML:Parameter.type>
                         <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000A7C'/>
-                      </UML:Parameter.type>
-                    </UML:Parameter>
-                  </UML:BehavioralFeature.parameter>
-                </UML:Operation>
-                <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C2E'
-                  name = 'getLastMove' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
-                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
-                  isAbstract = 'false'>
-                  <UML:ModelElement.taggedValue>
-                    <UML:TaggedValue xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C30'
-                      isSpecification = 'false'>
-                      <UML:TaggedValue.dataValue>Gibt den allerletzten Move zurueck.
-Wird benoetigt, um bei getMoves() einfacher den letzten Move zu loeschen (pop gibts ja nicht, und gs.getMoves().remove(gs.getMoves.size() - 1) is uncool).</UML:TaggedValue.dataValue>
-                      <UML:TaggedValue.type>
-                        <UML:TagDefinition xmi.idref = '-64--88--78-22--16c460d9:135bfa2bae8:-8000:0000000000000E63'/>
-                      </UML:TaggedValue.type>
-                    </UML:TaggedValue>
-                  </UML:ModelElement.taggedValue>
-                  <UML:BehavioralFeature.parameter>
-                    <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C2F'
-                      name = 'return' isSpecification = 'false' kind = 'return'>
-                      <UML:Parameter.type>
-                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000ACF'/>
                       </UML:Parameter.type>
                     </UML:Parameter>
                   </UML:BehavioralFeature.parameter>
@@ -2634,27 +2624,6 @@ Wird benoetigt, um bei getMoves() einfacher den letzten Move zu loeschen (pop gi
                     </UML:Parameter>
                   </UML:BehavioralFeature.parameter>
                 </UML:Operation>
-                <UML:Operation xmi.id = '-64--88--78-22--3708643c:136402718d1:-8000:0000000000000C05'
-                  name = 'itemsCleared' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
-                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
-                  isAbstract = 'false'>
-                  <UML:BehavioralFeature.parameter>
-                    <UML:Parameter xmi.id = '-64--88--78-22--3708643c:136402718d1:-8000:0000000000000C06'
-                      name = 'return' isSpecification = 'false' kind = 'return'/>
-                    <UML:Parameter xmi.id = '-64--88--78-22--3708643c:136402718d1:-8000:0000000000000C07'
-                      name = 'gameState' isSpecification = 'false' kind = 'in'>
-                      <UML:Parameter.type>
-                        <UML:Interface xmi.idref = '-64--88--22-1--1d5cccdd:134dc26a78a:-8000:0000000000000AC2'/>
-                      </UML:Parameter.type>
-                    </UML:Parameter>
-                    <UML:Parameter xmi.id = '-64--88--78-22--3708643c:136402718d1:-8000:0000000000000C08'
-                      name = 'player' isSpecification = 'false' kind = 'in'>
-                      <UML:Parameter.type>
-                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000A7C'/>
-                      </UML:Parameter.type>
-                    </UML:Parameter>
-                  </UML:BehavioralFeature.parameter>
-                </UML:Operation>
               </UML:Classifier.feature>
             </UML:Interface>
             <UML:Interface xmi.id = '-127--69-52--85--20670a08:135f859330d:-8000:0000000000000BAB'
@@ -2788,75 +2757,6 @@ Wird benoetigt, um bei getMoves() einfacher den letzten Move zu loeschen (pop gi
             </UML:Enumeration>
           </UML:Namespace.ownedElement>
         </UML:Package>
-        <UML:Class xmi.id = '-64--88--78-22-39a58c18:135d7c89dde:-8000:0000000000000B6A'
-          name = 'GameStateExtension' visibility = 'public' isSpecification = 'false'
-          isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
-          <UML:ModelElement.taggedValue>
-            <UML:TaggedValue xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C52'
-              isSpecification = 'false'>
-              <UML:TaggedValue.dataValue>Access Helper</UML:TaggedValue.dataValue>
-              <UML:TaggedValue.type>
-                <UML:TagDefinition xmi.idref = '-64--88--78-22--16c460d9:135bfa2bae8:-8000:0000000000000E63'/>
-              </UML:TaggedValue.type>
-            </UML:TaggedValue>
-          </UML:ModelElement.taggedValue>
-          <UML:Classifier.feature>
-            <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C32'
-              name = 'getMove' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
-              isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
-              isAbstract = 'false'>
-              <UML:BehavioralFeature.parameter>
-                <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C33'
-                  name = 'return' isSpecification = 'false' kind = 'return'>
-                  <UML:Parameter.type>
-                    <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000ACF'/>
-                  </UML:Parameter.type>
-                </UML:Parameter>
-                <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C34'
-                  name = 'player' isSpecification = 'false' kind = 'in'>
-                  <UML:Parameter.type>
-                    <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000A7C'/>
-                  </UML:Parameter.type>
-                </UML:Parameter>
-                <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C35'
-                  name = 'roundNumber' isSpecification = 'false' kind = 'in'>
-                  <UML:Parameter.type>
-                    <UML:DataType href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:000000000000087C'/>
-                  </UML:Parameter.type>
-                </UML:Parameter>
-                <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C36'
-                  name = 'moveIndex' isSpecification = 'false' kind = 'in'>
-                  <UML:Parameter.type>
-                    <UML:DataType href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:000000000000087C'/>
-                  </UML:Parameter.type>
-                </UML:Parameter>
-              </UML:BehavioralFeature.parameter>
-            </UML:Operation>
-            <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C37'
-              name = 'getAllMoves' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
-              isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
-              isAbstract = 'false'>
-              <UML:ModelElement.taggedValue>
-                <UML:TaggedValue xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C39'
-                  isSpecification = 'false'>
-                  <UML:TaggedValue.dataValue>expand Moves
-flat Move List</UML:TaggedValue.dataValue>
-                  <UML:TaggedValue.type>
-                    <UML:TagDefinition xmi.idref = '-64--88--78-22--16c460d9:135bfa2bae8:-8000:0000000000000E63'/>
-                  </UML:TaggedValue.type>
-                </UML:TaggedValue>
-              </UML:ModelElement.taggedValue>
-              <UML:BehavioralFeature.parameter>
-                <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C38'
-                  name = 'return' isSpecification = 'false' kind = 'return'>
-                  <UML:Parameter.type>
-                    <UML:Class xmi.idref = '-64--88--22-1--6fecd3e6:1354d07a098:-8000:0000000000000AFC'/>
-                  </UML:Parameter.type>
-                </UML:Parameter>
-              </UML:BehavioralFeature.parameter>
-            </UML:Operation>
-          </UML:Classifier.feature>
-        </UML:Class>
         <UML:Abstraction xmi.id = '-127--69-110-110-cf81d7:1361b98918e:-8000:0000000000000BF4'
           isSpecification = 'false'>
           <UML:ModelElement.stereotype>
@@ -2961,7 +2861,114 @@ flat Move List</UML:TaggedValue.dataValue>
           isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
         <UML:Package xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C53'
           name = 'kj.scotlyard.game.util' isSpecification = 'false' isRoot = 'false'
-          isLeaf = 'false' isAbstract = 'false'/>
+          isLeaf = 'false' isAbstract = 'false'>
+          <UML:Namespace.ownedElement>
+            <UML:Class xmi.id = '-64--88--78-22-39a58c18:135d7c89dde:-8000:0000000000000B6A'
+              name = 'GameStateExtension' visibility = 'public' isSpecification = 'false'
+              isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
+              <UML:ModelElement.taggedValue>
+                <UML:TaggedValue xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C52'
+                  isSpecification = 'false'>
+                  <UML:TaggedValue.dataValue>Access Helper</UML:TaggedValue.dataValue>
+                  <UML:TaggedValue.type>
+                    <UML:TagDefinition xmi.idref = '-64--88--78-22--16c460d9:135bfa2bae8:-8000:0000000000000E63'/>
+                  </UML:TaggedValue.type>
+                </UML:TaggedValue>
+              </UML:ModelElement.taggedValue>
+              <UML:Classifier.feature>
+                <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C32'
+                  name = 'getMove' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C33'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000ACF'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C34'
+                      name = 'player' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000A7C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C35'
+                      name = 'roundNumber' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:DataType href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:000000000000087C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C36'
+                      name = 'moveIndex' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:DataType href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:000000000000087C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+                <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C37'
+                  name = 'getAllMoves' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:ModelElement.taggedValue>
+                    <UML:TaggedValue xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C39'
+                      isSpecification = 'false'>
+                      <UML:TaggedValue.dataValue>expand Moves
+flat Move List</UML:TaggedValue.dataValue>
+                      <UML:TaggedValue.type>
+                        <UML:TagDefinition xmi.idref = '-64--88--78-22--16c460d9:135bfa2bae8:-8000:0000000000000E63'/>
+                      </UML:TaggedValue.type>
+                    </UML:TaggedValue>
+                  </UML:ModelElement.taggedValue>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C38'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1--6fecd3e6:1354d07a098:-8000:0000000000000AFC'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+                <UML:Operation xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C41'
+                  name = 'moveIterator' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C42'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C45'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C43'
+                      name = 'player' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000A7C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C46'
+                      name = 'roundNumber' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.defaultValue>
+                        <UML:Expression xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C48'
+                          language = 'UML 1.4' body = '0'/>
+                      </UML:Parameter.defaultValue>
+                      <UML:Parameter.type>
+                        <UML:DataType href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:000000000000087C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+              </UML:Classifier.feature>
+            </UML:Class>
+            <UML:Class xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C44'
+              name = 'Iterator&lt;Move&gt;' visibility = 'public' isSpecification = 'false'
+              isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+            <UML:Class xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C45'
+              name = 'ListIterator&lt;Move&gt;' visibility = 'public' isSpecification = 'false'
+              isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+          </UML:Namespace.ownedElement>
+        </UML:Package>
       </UML:Namespace.ownedElement>
     </UML:Model>
   </XMI.content>
@@ -4901,7 +4908,7 @@ has access to the &quot;real&quot; Game!</text>
     </group>
   </group>
   <group name="Fig14"
-       description="org.argouml.uml.diagram.static_structure.ui.FigClass[2184, 608, 411, 88]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[2184, 584, 416, 105]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
        href="-64--88--78-22-39a58c18:135d7c89dde:-8000:0000000000000B6A"
        fill="1"
        fillcolor="white"
@@ -4909,13 +4916,14 @@ has access to the &quot;real&quot; Game!</text>
        strokecolor="black"
   >
     <private>
+      enclosingFig="Fig0"
     </private>
     
     <rectangle name="Fig14.0"
       x="2184"
-      y="608"
-      width="411"
-      height="88"
+      y="584"
+      width="416"
+      height="105"
       fill="1"
       fillcolor="white"
       stroke="1"
@@ -4923,8 +4931,8 @@ has access to the &quot;real&quot; Game!</text>
     />
     <text name="Fig14.1"
       x="2185"
-      y="609"
-      width="409"
+      y="585"
+      width="414"
       height="23"
       fill="0"
       fillcolor="white"
@@ -4938,7 +4946,7 @@ has access to the &quot;real&quot; Game!</text>
       justification="Center"
     >GameStateExtension</text>
     <group name="Fig14.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2185, 609, 178, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2185, 585, 409, 0]"
          href="-64--88--78-22-39a58c18:135d7c89dde:-8000:0000000000000B6A"
          fill="0"
          fillcolor="white"
@@ -4951,8 +4959,8 @@ has access to the &quot;real&quot; Game!</text>
       
       <rectangle name="Fig14.2.0"
         x="2185"
-        y="609"
-        width="178"
+        y="585"
+        width="409"
         height="0"
         fill="0"
         fillcolor="white"
@@ -4962,8 +4970,8 @@ has access to the &quot;real&quot; Game!</text>
     </group>
     <rectangle name="Fig14.3"
       x="2184"
-      y="632"
-      width="411"
+      y="608"
+      width="416"
       height="1"
       fill="1"
       fillcolor="black"
@@ -4971,7 +4979,7 @@ has access to the &quot;real&quot; Game!</text>
       strokecolor="black"
     />
     <group name="Fig14.4"
-         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[2185, 633, 409, 21]"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[2185, 609, 414, 21]"
          href="-64--88--78-22-39a58c18:135d7c89dde:-8000:0000000000000B6A"
          fill="0"
          fillcolor="white"
@@ -4983,8 +4991,8 @@ has access to the &quot;real&quot; Game!</text>
       
       <rectangle name="Fig14.4.0"
         x="2185"
-        y="633"
-        width="409"
+        y="609"
+        width="414"
         height="21"
         fill="0"
         fillcolor="white"
@@ -4994,8 +5002,8 @@ has access to the &quot;real&quot; Game!</text>
     </group>
     <rectangle name="Fig14.5"
       x="2184"
-      y="653"
-      width="411"
+      y="629"
+      width="416"
       height="1"
       fill="1"
       fillcolor="black"
@@ -5003,7 +5011,7 @@ has access to the &quot;real&quot; Game!</text>
       strokecolor="black"
     />
     <group name="Fig14.6"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[2185, 654, 409, 42]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[2185, 630, 414, 59]"
          href="-64--88--78-22-39a58c18:135d7c89dde:-8000:0000000000000B6A"
          fill="0"
          fillcolor="white"
@@ -5015,9 +5023,9 @@ has access to the &quot;real&quot; Game!</text>
       
       <rectangle name="Fig14.6.0"
         x="2185"
-        y="654"
-        width="409"
-        height="42"
+        y="630"
+        width="414"
+        height="59"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -5025,8 +5033,8 @@ has access to the &quot;real&quot; Game!</text>
       />
       <text name="Fig14.6.1"
         x="2185"
-        y="654"
-        width="409"
+        y="630"
+        width="414"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5041,9 +5049,9 @@ has access to the &quot;real&quot; Game!</text>
       >getMove(player : Player,roundNumber : Integer,moveIndex : Integer) : Move</text>
       <text name="Fig14.6.2"
         x="2185"
-        y="671"
-        width="409"
-        height="23"
+        y="647"
+        width="414"
+        height="17"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -5055,6 +5063,22 @@ has access to the &quot;real&quot; Game!</text>
         textsize="12"
         justification="Left"
       >getAllMoves() : List&lt;Move&gt;</text>
+      <text name="Fig14.6.3"
+        x="2185"
+        y="664"
+        width="414"
+        height="23"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Dialog"
+        italic="false"
+        bold="false"
+        textsize="12"
+        justification="Left"
+      >moveIterator(player : Player,roundNumber : Integer = 0) : ListIterator&lt;Move&gt;</text>
     </group>
   </group>
   <group name="Fig15"
@@ -6245,7 +6269,7 @@ has access to the &quot;real&quot; Game!</text>
     </group>
   </group>
   <group name="Fig25"
-       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[912, 1472, 549, 98]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
+       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[912, 1472, 557, 104]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
        href="-127--69-52--85--20670a08:135f859330d:-8000:0000000000000BB0"
        fill="1"
        fillcolor="white"
@@ -6259,8 +6283,8 @@ has access to the &quot;real&quot; Game!</text>
     <rectangle name="Fig25.0"
       x="912"
       y="1472"
-      width="549"
-      height="98"
+      width="557"
+      height="104"
       fill="1"
       fillcolor="white"
       stroke="1"
@@ -6269,7 +6293,7 @@ has access to the &quot;real&quot; Game!</text>
     <text name="Fig25.1"
       x="913"
       y="1473"
-      width="547"
+      width="555"
       height="43"
       fill="0"
       fillcolor="white"
@@ -6283,7 +6307,7 @@ has access to the &quot;real&quot; Game!</text>
       justification="Center"
     >ItemListener</text>
     <group name="Fig25.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[913, 1473, 547, 20]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[913, 1473, 555, 20]"
          href="-127--69-52--85--20670a08:135f859330d:-8000:0000000000000BB0"
          fill="0"
          fillcolor="white"
@@ -6296,7 +6320,7 @@ has access to the &quot;real&quot; Game!</text>
       <rectangle name="Fig25.2.0"
         x="913"
         y="1473"
-        width="547"
+        width="555"
         height="20"
         fill="0"
         fillcolor="white"
@@ -6306,7 +6330,7 @@ has access to the &quot;real&quot; Game!</text>
       <text name="Fig25.2.1"
         x="913"
         y="1473"
-        width="547"
+        width="555"
         height="18"
         fill="0"
         fillcolor="white"
@@ -6323,7 +6347,7 @@ has access to the &quot;real&quot; Game!</text>
     <rectangle name="Fig25.3"
       x="912"
       y="1516"
-      width="549"
+      width="557"
       height="1"
       fill="1"
       fillcolor="black"
@@ -6331,7 +6355,7 @@ has access to the &quot;real&quot; Game!</text>
       strokecolor="black"
     />
     <group name="Fig25.4"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[913, 1517, 547, 53]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[913, 1517, 555, 59]"
          href="-127--69-52--85--20670a08:135f859330d:-8000:0000000000000BB0"
          fill="0"
          fillcolor="white"
@@ -6344,8 +6368,8 @@ has access to the &quot;real&quot; Game!</text>
       <rectangle name="Fig25.4.0"
         x="913"
         y="1517"
-        width="547"
-        height="53"
+        width="555"
+        height="59"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -6354,7 +6378,7 @@ has access to the &quot;real&quot; Game!</text>
       <text name="Fig25.4.1"
         x="913"
         y="1517"
-        width="547"
+        width="555"
         height="17"
         fill="0"
         fillcolor="white"
@@ -6370,7 +6394,7 @@ has access to the &quot;real&quot; Game!</text>
       <text name="Fig25.4.2"
         x="913"
         y="1534"
-        width="547"
+        width="555"
         height="17"
         fill="0"
         fillcolor="white"
@@ -6386,8 +6410,8 @@ has access to the &quot;real&quot; Game!</text>
       <text name="Fig25.4.3"
         x="913"
         y="1551"
-        width="547"
-        height="17"
+        width="555"
+        height="23"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -7113,7 +7137,7 @@ has access to the &quot;real&quot; Game!</text>
     </path>
   </group>
   <group name="Fig32"
-       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[112, 1202, 480, 223]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
+       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[112, 1202, 480, 206]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
        href="-64--88--22-1--1d5cccdd:134dc26a78a:-8000:0000000000000AC2"
        fill="1"
        fillcolor="white"
@@ -7128,7 +7152,7 @@ has access to the &quot;real&quot; Game!</text>
       x="112"
       y="1202"
       width="480"
-      height="223"
+      height="206"
       fill="1"
       fillcolor="white"
       stroke="1"
@@ -7199,7 +7223,7 @@ has access to the &quot;real&quot; Game!</text>
       strokecolor="black"
     />
     <group name="Fig32.4"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[113, 1247, 478, 178]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[113, 1247, 478, 161]"
          href="-64--88--22-1--1d5cccdd:134dc26a78a:-8000:0000000000000AC2"
          fill="0"
          fillcolor="white"
@@ -7213,7 +7237,7 @@ has access to the &quot;real&quot; Game!</text>
         x="113"
         y="1247"
         width="478"
-        height="178"
+        height="161"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -7351,22 +7375,6 @@ has access to the &quot;real&quot; Game!</text>
         x="113"
         y="1383"
         width="478"
-        height="17"
-        fill="0"
-        fillcolor="white"
-        stroke="0"
-        strokecolor="black"
-        textcolor="black"
-        font="Dialog"
-        italic="false"
-        bold="false"
-        textsize="12"
-        justification="Left"
-      >getLastMove(player : Player) : Move</text>
-      <text name="Fig32.4.10"
-        x="113"
-        y="1400"
-        width="478"
         height="23"
         fill="0"
         fillcolor="white"
@@ -7378,7 +7386,7 @@ has access to the &quot;real&quot; Game!</text>
         bold="false"
         textsize="12"
         justification="Left"
-      >getLastMove() : Move</text>
+      >getLastMove(player : Player) : Move</text>
     </group>
   </group>
   <group name="Fig33"
@@ -7409,7 +7417,7 @@ has access to the &quot;real&quot; Game!</text>
       <moveto x="247"
               y="1658" />
       <lineto x="247"
-              y="1424" />
+              y="1407" />
     </path>
   </group>
   <group name="Fig34"
@@ -7440,7 +7448,7 @@ has access to the &quot;real&quot; Game!</text>
       <moveto x="504"
               y="1626" />
       <lineto x="504"
-              y="1424" />
+              y="1407" />
     </path>
   </group>
   <group name="Fig35"
@@ -10235,7 +10243,7 @@ control)!</text>
       justification="Center"
     >MrXTracker</text>
     <group name="Fig64.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2185, 713, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2185, 713, 246, 0]"
          href="-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3A"
          fill="0"
          fillcolor="white"
@@ -10249,7 +10257,7 @@ control)!</text>
       <rectangle name="Fig64.2.0"
         x="2185"
         y="713"
-        width="64"
+        width="246"
         height="0"
         fill="0"
         fillcolor="white"
@@ -10368,6 +10376,132 @@ control)!</text>
         textsize="12"
         justification="Left"
       >getTicketsSince() : List&lt;Ticket&gt;</text>
+    </group>
+  </group>
+  <group name="Fig65"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[1424, 776, 136, 68]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       href="-64--88--78-22-bb66366:1365acccf52:-8000:0000000000000C42"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+      enclosingFig="Fig2"
+    </private>
+    
+    <rectangle name="Fig65.0"
+      x="1424"
+      y="776"
+      width="136"
+      height="68"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    />
+    <text name="Fig65.1"
+      x="1425"
+      y="777"
+      width="134"
+      height="23"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      textcolor="black"
+      font="Dialog"
+      italic="false"
+      bold="false"
+      textsize="12"
+      justification="Center"
+    >IllegalAccessException</text>
+    <group name="Fig65.2"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1425, 777, 267, 0]"
+         href="-64--88--78-22-bb66366:1365acccf52:-8000:0000000000000C42"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+         visibility="0"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig65.2.0"
+        x="1425"
+        y="777"
+        width="267"
+        height="0"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig65.3"
+      x="1424"
+      y="800"
+      width="136"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig65.4"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[1425, 801, 134, 21]"
+         href="-64--88--78-22-bb66366:1365acccf52:-8000:0000000000000C42"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig65.4.0"
+        x="1425"
+        y="801"
+        width="134"
+        height="21"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig65.5"
+      x="1424"
+      y="821"
+      width="136"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig65.6"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1425, 822, 134, 21]"
+         href="-64--88--78-22-bb66366:1365acccf52:-8000:0000000000000C42"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig65.6.0"
+        x="1425"
+        y="822"
+        width="134"
+        height="21"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
     </group>
   </group>
 </pgml>
