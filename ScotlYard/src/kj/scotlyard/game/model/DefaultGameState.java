@@ -6,11 +6,11 @@ import java.util.Set;
 
 import kj.scotlyard.game.model.items.Item;
 
-public class FullGameState extends AbstractGameState {
+public class DefaultGameState extends AbstractGameState {
 	
 	private GameState gameState;
 
-	public FullGameState(GameState gameState) {		
+	public DefaultGameState(GameState gameState) {		
 		this.gameState = gameState;
 		
 		// This new listeners have to inform our own listeners
