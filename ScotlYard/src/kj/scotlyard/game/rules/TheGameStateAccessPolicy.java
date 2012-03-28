@@ -13,6 +13,7 @@ import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.AbstractGameState;
 import kj.scotlyard.game.model.DetectivePlayer;
+import kj.scotlyard.game.model.DefaultGameState;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
@@ -20,30 +21,41 @@ import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.items.Item;
 
 public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
-	
-	private class PartialMove extends DefaultSealable implements Move {
-		
+
+	/**
+	 * This class is a proxy for such Moves, where station and connection are
+	 * hidden (that means, the most moves of MrX). This two details are not
+	 * allowed to access. Each attempt ends in a <tt>RuntimeException</tt>.
+	 * 
+	 * @author jakob190590
+	 * 
+	 */
+	private class MaskedMove extends DefaultSealable implements Move {
+
 		private Move move;
-		
+
 		private List<Move> moves;
-		
+
 		/**
 		 * Erzeugt einen sealed Move Proxy, der den Zugriff auf den echten Move
-		 * einschraenkt. Auf Station und Connection kann dann nicht mehr Zugegriffen
-		 * werden (throws IllegalAccessException).
-		 * Die "Sub Moves", d.h. die Moves in der Move List werden aber nicht
-		 * durchgereicht, sondern muessen dem Konstruktor neu uebergeben werden!
-		 * @param moveBehind der echte Move, fuer den dieser PartialMove einen
-		 * Proxy darstellt.
-		 * @param subMoves die Moves aus der Move List des echten Moves (eventuell auch
-		 * wiederum Proxies).
+		 * einschraenkt. Auf Station und Connection kann dann nicht mehr
+		 * zugegriffen werden (throws IllegalAccessException). Die "Sub Moves",
+		 * d.h. die Moves in der Move List werden aber nicht durchgereicht,
+		 * sondern muessen dem Konstruktor neu uebergeben werden!
+		 * 
+		 * @param moveBehind
+		 *            der echte Move, fuer den dieser PartialMove einen Proxy
+		 *            darstellt.
+		 * @param subMoves
+		 *            die Moves aus der Move List des echten Moves (eventuell
+		 *            auch wiederum Proxies).
 		 */
-		public PartialMove(Move moveBehind, Move ...subMoves) {
-			move = moveBehind; // backing Move
+		public MaskedMove(Move moveBehind, Move... subMoves) {
+			move = moveBehind;
 			moves = Arrays.asList(subMoves);
 			seal();
 		}
-		
+
 		@Override
 		public void seal() {
 			super.seal();
@@ -68,7 +80,6 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		@Override
 		public void setRoundNumber(int roundNumber) {
 			checkSealed();
-			
 		}
 
 		@Override
@@ -125,17 +136,49 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		public List<Move> getMoves() {
 			return moves;
 		}
-		
+
 	}
-	
+
 	private class DetectivesGameState extends AbstractGameState {
 
 		private GameState gameState;
-		
+
 		public DetectivesGameState(GameState gameState) {
-			this.gameState = gameState;
+			this.gameState = new DefaultGameState(gameState);
+			// wer weiss, was gameState in Wirklichkeit ist... es koennte
+			// z.B. Schreibzugriff gewaehren :o
+			// Deswegen lieber read-only wrappen
 		}
-		
+
+		private Move maskMove(Move move) {
+
+			// Move mit dieser MoveNumber ist sichtbar
+			// => kein Multi Move (weil die haben keine MoveNumber)
+			// -> direkt zurueckgeben!
+			if (move.getPlayer() instanceof DetectivePlayer
+					|| getMrXUncoverMoveNumbers()
+							.contains(move.getMoveNumber())) {
+				return move;
+			}
+
+			// Sonst: Move ist kein Multi Move
+			if (move.getMoves().isEmpty()) {
+				return new MaskedMove(move);
+			}
+
+			Move[] arr = new Move[move.getMoves().size()];
+			int i = 0;
+			for (Move m : move.getMoves()) {
+				if (getMrXUncoverMoveNumbers().contains(m.getMoveNumber())) {
+					arr[i] = m;
+				} else {
+					arr[i] = new MaskedMove(m);
+				}
+				i++;
+			}
+			return new MaskedMove(move, arr);
+		}
+
 		@Override
 		public MrXPlayer getMrX() {
 			return gameState.getMrX();
@@ -158,24 +201,27 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 		@Override
 		public List<Move> getMoves() {
-			List<Move> list = new Vector<>();
+			// Wie die meisten der Referenzimplementierungen hier:
+			// Koennte effizienter gemacht werden.
+
+			@SuppressWarnings("serial")
+			List<Move> list = new Vector<Move>() {
+
+				@Override
+				public synchronized Move get(int index) {
+					return super.get((index >= 0) ? index : size() + index);
+				}
+				
+			};
 			for (Move m : gameState.getMoves()) {
 				list.add(maskMove(m));
 			}
-			return list;
+			return Collections.unmodifiableList(list);
 		}
 
 		@Override
 		public Move getMove(Player player, int number, MoveAccessMode accessMode) {
-			Move m = gameState.getMove(player, number, accessMode);
-			if (accessMode == MoveAccessMode.MOVE_NUMBER) {
-				if (getMrXUncoverMoveNumbers().contains(m.getMoveNumber())) {
-					return m;
-				}
-				return new PartialMove(m);
-			}
-			
-			// ... kann jetzt auch Multi Move sein!			
+			Move m = gameState.getMove(player, number, accessMode);			
 			return maskMove(m);
 		}
 
@@ -193,34 +239,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		public Player getCurrentPlayer() {
 			return gameState.getCurrentPlayer();
 		}
-		
-		private Move maskMove(Move move) {
-			
-			// Move mit dieser MoveNumber ist sichtbar
-			// => kein Multi Move (weil die haben keine MoveNumber)
-			// -> direkt zurueckgeben!
-			if (getMrXUncoverMoveNumbers().contains(move.getMoveNumber())) {
-				return move;
-			}
-			
-			// Sonst: Move ist kein Multi Move
-			if (move.getMoves().size() == 0) {
-				return new PartialMove(move);
-			}
-			
-			Move[] arr = new Move[move.getMoves().size()];
-			int i = 0;
-			for (Move m : move.getMoves()) {
-				if (getMrXUncoverMoveNumbers().contains(m.getMoveNumber())) {
-					arr[i] = m;
-				} else {
-					arr[i] = new PartialMove(m);
-				}
-				i++;
-			}
-			return new PartialMove(move, arr);
-		}
-		
+
 	}
 
 	private final List<Integer> uncoverMoveNumbers;
@@ -232,15 +251,14 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		list.add(18);
 		uncoverMoveNumbers = Collections.unmodifiableList(list);
 	}
-	
+
 	@Override
 	public GameState createGameStateForDetectives(GameState gameState) {
 		return new DetectivesGameState(gameState);
 	}
 
 	@Override
-	public List<Integer> getMrXUncoverMoveNumbers() {		
+	public List<Integer> getMrXUncoverMoveNumbers() {
 		return uncoverMoveNumbers;
 	}
-
 }

@@ -1,8 +1,7 @@
 package kj.scotlyard.game.rules;
 
+@SuppressWarnings("serial")
 public class IllegalMoveException extends IllegalArgumentException {
-
-	private static final long serialVersionUID = 1L;
 
 	public IllegalMoveException() {
 		super();
