@@ -314,7 +314,7 @@ public class TheGame extends AbstractGameState implements Game {
 		}
 		
 		if (result == null) {
-			throw new IllegalArgumentException("There is no Move for the specified number.");
+			throw new IllegalArgumentException("There is no Move for the specified number " + number + ".");
 		}
 		
 		return result;
