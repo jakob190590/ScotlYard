@@ -39,8 +39,6 @@ public interface GameState {
 	
 	Move getLastMove(Player player);
 	
-	Move getLastMove();
-	
 	
 	int getCurrentRoundNumber();
 	

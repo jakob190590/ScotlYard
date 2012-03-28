@@ -1,10 +1,8 @@
 package kj.scotlyard.game.model;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 import kj.scotlyard.game.model.items.Item;
 
@@ -66,11 +64,6 @@ public class FullGameState extends AbstractGameState {
 	@Override
 	public Player getCurrentPlayer() {
 		return gameState.getCurrentPlayer();
-	}
-
-	@Override
-	public Move getLastMove() {
-		return gameState.getLastMove();
 	}
 
 }
