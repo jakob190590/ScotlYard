@@ -225,6 +225,37 @@ public class TheGameTest {
 		ms[15].setMoveIndex(Move.NO_MOVE_INDEX);
 		
 		
+		
+		
+		int n = 0;
+		for (Move m : ms) {
+
+			if (m.getPlayer() == mrX) {
+				if (m.getMoveNumber() >= 0)
+					m.setMoveNumber(n++);
+				else
+					for (@SuppressWarnings("unused") Move o : m.getMoves()) {
+						n++;
+					}
+			}
+		}
+		
+		
+
+		
+		for (Move m : ms) {
+			if (m.getPlayer() == mrX) {
+				System.out.println("round number: " + m.getRoundNumber()
+						+ "    move number: " + m.getMoveNumber());
+				for (Move o : m.getMoves()) {
+					System.out.println("round number: " + o.getRoundNumber()
+							+ "    move number: " + o.getMoveNumber());
+				}
+			}
+		}
+		
+		
+		
 	}
 
 	@Test
@@ -348,6 +379,18 @@ public class TheGameTest {
 		for (int i = 0; i < 5; i++) {
 			g.getMoves().add(ms[i]);
 		}
+		
+		// zugriff von hinten
+		assertEquals(ms[4], g.getMoves().get(-1));
+		assertEquals(ms[3], g.getMoves().get(-2));
+		assertEquals(ms[1], g.getMoves().get(-4));
+		assertEquals(ms[0], g.getMoves().get(-5));
+		try {
+			g.getMoves().get(-6);
+			fail("no index out of bound exc??");
+		} catch (Exception e) { }
+		
+		
 		
 		try {
 			g.getMoves().set(3, ms[7]);
@@ -561,25 +604,6 @@ public class TheGameTest {
 		assertEquals(ms[3], g.getLastMove(d3));
 		
 		g.getMoves().clear();		
-	}
-
-	@Test
-	public final void testGetLastMove() {
-		assertEquals(null, g.getLastMove());
-		
-		for (int i = 0; i < 5; i++) {
-			g.getMoves().add(ms[i]);
-		}		
-		
-		g.getMoves().remove(GameState.LAST_MOVE);
-		g.getMoves().remove(GameState.LAST_MOVE);		
-		assertEquals(ms[2], g.getLastMove());
-		
-		g.getMoves().remove(GameState.LAST_MOVE);		
-		assertEquals(ms[1], g.getLastMove());
-		
-		g.getMoves().clear();		
-		assertEquals(null, g.getLastMove());
 	}
 
 	@Test

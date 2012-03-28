@@ -230,7 +230,7 @@ public class AbstractGameStateTest {
 		
 		
 		
-		gs = new FullGameState(g);
+		gs = new DefaultGameState(g);
 	}
 
 	@Test
