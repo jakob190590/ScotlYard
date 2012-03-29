@@ -274,6 +274,10 @@ public class TheGameTest {
 			fail("set works");
 		} catch (Exception e) { }
 		
+		try {
+			g.getDetectives().add(d3);
+			fail("duplicates are allowed");
+		} catch (Exception e) { }
 		
 		DetectivePlayer dx = new DetectivePlayer();
 		DetectivePlayer dy = new DetectivePlayer();
@@ -372,12 +376,26 @@ public class TheGameTest {
 		
 		s.clear();
 		assertEquals(0, s.size());
+		
+		// doppelt adden darf nicht moeglich sein
+		Item item = new DoubleMoveCard();
+		s = g.getItems(d1);
+		assertEquals(true, s.add(item));
+		assertEquals(false, s.add(item));
 	}
 
 	@Test
 	public final void testGetMoves() {
 		for (int i = 0; i < 5; i++) {
 			g.getMoves().add(ms[i]);
+		}
+		
+		// doppelt adden duerfte nicht gehen:
+		for (int i = 0; i < 5; i++) {
+			try {
+				g.getMoves().add(ms[i]);
+				fail("duplicates are allowed");
+			} catch (Exception e) { }
 		}
 		
 		// zugriff von hinten
