@@ -1,4 +1,4 @@
-package kj.scotlyard.game.ai.detectives;
+package kj.scotlyard.game.ai.detective;
 
 import java.util.List;
 
