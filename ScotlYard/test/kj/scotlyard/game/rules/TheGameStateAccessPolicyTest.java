@@ -97,29 +97,26 @@ public class TheGameStateAccessPolicyTest {
 				if (m.getMoveNumber() >= 0)
 					m.setMoveNumber(n++);
 				else
-					for (@SuppressWarnings("unused") Move o : m.getMoves()) {
+					for (@SuppressWarnings("unused")
+					Move o : m.getMoves()) {
 						n++;
 					}
 			}
 
 			g.getMoves().add(m);
 		}
-		
-		
 
-		/*
-		for (Move m : gs.getMoves()) {
-			if (m.getPlayer() == mrX) {
-				System.out.println("round number: " + m.getRoundNumber()
-						+ "    move number: " + m.getMoveNumber());
-				for (Move o : m.getMoves()) {
-					System.out.println("round number: " + o.getRoundNumber()
-							+ "    move number: " + o.getMoveNumber());
-				}
-			}
-		}
-		*/
-		
+//		for (Move m : g.getMoves()) {
+//			if (m.getPlayer() == mrX) {
+//				System.out.println("round number: " + m.getRoundNumber()
+//						+ "    move number: " + m.getMoveNumber());
+//				for (Move o : m.getMoves()) {
+//					System.out.println("round number: " + o.getRoundNumber()
+//							+ "    move number: " + o.getMoveNumber());
+//				}
+//			}
+//		}
+
 	}
 
 	@Test
@@ -127,12 +124,26 @@ public class TheGameStateAccessPolicyTest {
 		GameState gs = policy.createGameStateForDetectives(g);
 		// test results of move access methods of a Game
 
+		// equals von MaskedMove
+		assertEquals(gs.getMoves().get(0),
+				gs.getMove(mrX, 0, GameState.MoveAccessMode.ROUND_NUMBER));
+		assertEquals(gs.getMoves().get(0),
+				gs.getMove(mrX, 0, GameState.MoveAccessMode.MOVE_NUMBER));
+		assertEquals(gs.getMove(mrX, 0, GameState.MoveAccessMode.ROUND_NUMBER),
+				gs.getMove(mrX, 0, GameState.MoveAccessMode.MOVE_NUMBER));
+
+		assertEquals(gs.getMoves().get(-5),
+				gs.getMove(mrX, -1, GameState.MoveAccessMode.ROUND_NUMBER));
+		assertEquals(gs.getMoves().get(-5),
+				gs.getMove(mrX, -1, GameState.MoveAccessMode.MOVE_NUMBER));
+		assertEquals(
+				gs.getMove(mrX, -1, GameState.MoveAccessMode.ROUND_NUMBER),
+				gs.getMove(mrX, -1, GameState.MoveAccessMode.MOVE_NUMBER));
+
 		// getMoves()
 		// pos test
 		for (Move m : gs.getMoves()) {
-			if (m.getPlayer() instanceof DetectivePlayer
-					|| policy.getMrXUncoverMoveNumbers().contains(
-							m.getMoveNumber())) {
+			if (m.getPlayer() instanceof DetectivePlayer) {
 				try {
 					m.getConnection();
 					m.getStation();
@@ -143,16 +154,30 @@ public class TheGameStateAccessPolicyTest {
 
 				// fuer sub moves
 				for (Move n : m.getMoves()) {
-					if (n.getPlayer() instanceof DetectivePlayer
-							|| policy.getMrXUncoverMoveNumbers().contains(
-									n.getMoveNumber())) {
+					if (n.getPlayer() instanceof DetectivePlayer) {
 						try {
 							n.getConnection();
 							n.getStation();
 						} catch (IllegalAccessException e) {
 							fail("there should be no illegal access");
 						}
+					} else if (policy.getMrXUncoverMoveNumbers().contains(
+							n.getMoveNumber())) {
+						try {
+							n.getStation();
+						} catch (IllegalAccessException e) {
+							fail("there should be no illegal access");
+						}
 					}
+				}
+			} else if (policy.getMrXUncoverMoveNumbers().contains(
+					m.getMoveNumber())) {
+
+				try {
+					m.getStation();
+
+				} catch (IllegalAccessException e) {
+					fail("there should be no illegal access");
 				}
 			}
 		}
@@ -205,7 +230,6 @@ public class TheGameStateAccessPolicyTest {
 						|| policy.getMrXUncoverMoveNumbers().contains(
 								m.getMoveNumber())) {
 					try {
-						m.getConnection();
 						m.getStation();
 
 					} catch (IllegalAccessException e) {
@@ -218,7 +242,6 @@ public class TheGameStateAccessPolicyTest {
 								|| policy.getMrXUncoverMoveNumbers().contains(
 										n.getMoveNumber())) {
 							try {
-								n.getConnection();
 								n.getStation();
 							} catch (IllegalAccessException e) {
 								fail("there should be no illegal access");
@@ -275,8 +298,7 @@ public class TheGameStateAccessPolicyTest {
 				}
 			}
 		}
-		
-		
+
 		// by move number
 		for (int i = 0; i < 20; i++) {
 			Move m = gs.getMove(gs.getMrX(), i,
@@ -285,7 +307,6 @@ public class TheGameStateAccessPolicyTest {
 			// pos test
 			if (policy.getMrXUncoverMoveNumbers().contains(m.getMoveNumber())) {
 				try {
-					m.getConnection();
 					m.getStation();
 
 				} catch (IllegalAccessException e) {
@@ -338,12 +359,11 @@ public class TheGameStateAccessPolicyTest {
 			}
 		}
 
-		
 		// getLastMove(...)
 		while (!gs.getMoves().isEmpty()) {
-			
+
 			Move m = gs.getMoves().get(GameState.LAST_MOVE);
-			
+
 			if (m.getPlayer() instanceof DetectivePlayer) {
 				// pos test
 				try {
@@ -354,11 +374,11 @@ public class TheGameStateAccessPolicyTest {
 					fail("there should be no illegal access");
 				}
 			} else {
-				
+
 				// pos test
-				if (policy.getMrXUncoverMoveNumbers().contains(m.getMoveNumber())) {
+				if (policy.getMrXUncoverMoveNumbers().contains(
+						m.getMoveNumber())) {
 					try {
-						m.getConnection();
 						m.getStation();
 
 					} catch (IllegalAccessException e) {
@@ -380,7 +400,8 @@ public class TheGameStateAccessPolicyTest {
 				}
 
 				// neg test
-				if (!policy.getMrXUncoverMoveNumbers().contains(m.getMoveNumber())) {
+				if (!policy.getMrXUncoverMoveNumbers().contains(
+						m.getMoveNumber())) {
 					try {
 						m.getConnection();
 						fail("there should be an illegal access");
@@ -409,10 +430,183 @@ public class TheGameStateAccessPolicyTest {
 						}
 					}
 				}
-				
 			}
-			
+
 			g.getMoves().remove(GameState.LAST_MOVE);
+		}
+
+		
+		
+		
+		
+		// double moves testen
+		g.getMoves().clear();
+		
+		m1 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
+				new TaxiTicket());
+		m1.setMoveIndex(0);
+		m1.setMoveNumber(1);
+		m1.setRoundNumber(1);
+		m2 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
+				new TaxiTicket());
+		m2.setMoveIndex(1);
+		m2.setMoveNumber(2);
+		m2.setRoundNumber(1);
+		g.getMoves().add(new TheMove(mrX, new DoubleMoveCard(), m1, m2));
+
+		
+		m1 = gs.getMoves().get(0);		
+		try {
+			m1.getConnection();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		try {
+			m1.getStation();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		
+		m2 = m1.getMoves().get(0);
+		assertEquals(1, m2.getMoveNumber());
+		try {
+			m2.getConnection();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		try {
+			m2.getStation();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		
+		m2 = m1.getMoves().get(1);
+		assertEquals(2, m2.getMoveNumber());
+		try {
+			m2.getConnection();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		try {
+			m2.getStation();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		
+		
+		
+		
+		
+		
+		
+		m1 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
+				new TaxiTicket());
+		m1.setMoveIndex(0);
+		m1.setMoveNumber(3);
+		m1.setRoundNumber(3);
+		m2 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
+				new TaxiTicket());
+		m2.setMoveIndex(1);
+		m2.setMoveNumber(4);
+		m2.setRoundNumber(3);
+		g.getMoves().add(new TheMove(mrX, new DoubleMoveCard(), m1, m2));
+		
+		
+		m1 = gs.getMoves().get(1);		
+		try {
+			m1.getConnection();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		try {
+			m1.getStation();
+			fail("there should be no illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		
+		m2 = m1.getMoves().get(0);
+		assertEquals(3, m2.getMoveNumber());
+		assertEquals(3, m2.getRoundNumber());
+		try {
+			m2.getConnection();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		try {
+			m2.getStation();
+		} catch (IllegalAccessException e) {
+			fail("there should be an illegal access");
+		}
+		
+		m2 = m1.getMoves().get(1);
+		assertEquals(4, m2.getMoveNumber());
+		assertEquals(3, m2.getRoundNumber());
+		try {
+			m2.getConnection();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		try {
+			m2.getStation();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		
+		
+		
+		
+		
+		m1 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
+				new TaxiTicket());
+		m1.setMoveIndex(0);
+		m1.setMoveNumber(2);
+		m1.setRoundNumber(3);
+		m2 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
+				new TaxiTicket());
+		m2.setMoveIndex(1);
+		m2.setMoveNumber(3);
+		m2.setRoundNumber(3);
+		g.getMoves().add(new TheMove(mrX, new DoubleMoveCard(), m1, m2));
+		
+		
+		m1 = gs.getMoves().get(2);		
+		try {
+			m1.getConnection();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		try {
+			m1.getStation();
+		} catch (IllegalAccessException e) {
+			fail("there should be illegal access");
+		}
+		
+		m2 = m1.getMoves().get(0);
+		assertEquals(2, m2.getMoveNumber());
+		assertEquals(3, m2.getRoundNumber());
+		try {
+			m2.getConnection();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		try {
+			m2.getStation();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		
+		m2 = m1.getMoves().get(1);
+		assertEquals(3, m2.getMoveNumber());
+		assertEquals(3, m2.getRoundNumber());
+		try {
+			m2.getConnection();
+			fail("there should be an illegal access");
+		} catch (IllegalAccessException e) {
+		}
+		try {
+			m2.getStation();
+		} catch (IllegalAccessException e) {
+			fail("there should be illegal access");
 		}
 	}
 
