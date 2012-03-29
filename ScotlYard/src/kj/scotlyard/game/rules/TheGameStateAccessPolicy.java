@@ -30,30 +30,48 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 	 * @author jakob190590
 	 * 
 	 */
-	private class MaskedMove extends DefaultSealable implements Move {
+	private class MrXMove extends DefaultSealable implements Move {
 
+		private boolean uncovered;
+		
 		private Move move;
 
 		private List<Move> moves;
 
 		/**
 		 * Erzeugt einen sealed Move Proxy, der den Zugriff auf den echten Move
-		 * einschraenkt. Auf Station und Connection kann dann nicht mehr
-		 * zugegriffen werden (throws IllegalAccessException). Die "Sub Moves",
-		 * d.h. die Moves in der Move List werden aber nicht durchgereicht,
-		 * sondern muessen dem Konstruktor neu uebergeben werden!
+		 * einschraenkt. Auf Connection kann dann nicht mehr zugegriffen werden
+		 * (throws IllegalAccessException), auf Station nur bei uncovered Moves. 
+		 * Die "Sub Moves", d.h. die Moves in der Move List werden vom
+		 * Proxy nicht durchgereicht, sondern muessen dem Konstruktor neu
+		 * uebergeben werden!
 		 * 
-		 * @param moveBehind
+		 * @param backingMove
 		 *            der echte Move, fuer den dieser PartialMove einen Proxy
 		 *            darstellt.
+		 * @param uncovered
+		 *            gibt an, ob MrX in diesem Zug sichtbar ist. Wenn ja kann
+		 *            auf Station zugegriffen werden.
 		 * @param subMoves
 		 *            die Moves aus der Move List des echten Moves (eventuell
 		 *            auch wiederum Proxies).
 		 */
-		public MaskedMove(Move moveBehind, Move... subMoves) {
-			move = moveBehind;
+		public MrXMove(Move backingMove, boolean uncovered, Move... subMoves) {
+			this.uncovered = uncovered;
+			move = backingMove;
 			moves = Arrays.asList(subMoves);
 			seal();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof MrXMove) {
+				MrXMove m = (MrXMove) obj;
+				if (m.move == this.move && m.moves.equals(this.moves)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Override
@@ -104,6 +122,9 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 		@Override
 		public StationVertex getStation() {
+			if (uncovered) {
+				return move.getStation();
+			}
 			throw new IllegalAccessException("Move detail cannot be accessed.");
 		}
 
@@ -151,32 +172,29 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		}
 
 		private Move maskMove(Move move) {
-
-			// Move mit dieser MoveNumber ist sichtbar
-			// => kein Multi Move (weil die haben keine MoveNumber)
-			// -> direkt zurueckgeben!
-			if (move.getPlayer() instanceof DetectivePlayer
-					|| getMrXUncoverMoveNumbers()
-							.contains(move.getMoveNumber())) {
+			
+			if (move.getPlayer() instanceof DetectivePlayer) {
 				return move;
 			}
-
-			// Sonst: Move ist kein Multi Move
-			if (move.getMoves().isEmpty()) {
-				return new MaskedMove(move);
+			
+			// Sonst: MrX' Move
+			if (getMrXUncoverMoveNumbers().contains(move.getMoveNumber())) { // das impliziert, dass es keine sub moves gibt.
+				// MrX is uncovered				
+				return new MrXMove(move, true);
 			}
 
+			// "undercover" Move, enventually with sub moves
 			Move[] arr = new Move[move.getMoves().size()];
 			int i = 0;
+			boolean uncovered = false;
 			for (Move m : move.getMoves()) {
-				if (getMrXUncoverMoveNumbers().contains(m.getMoveNumber())) {
-					arr[i] = m;
-				} else {
-					arr[i] = new MaskedMove(m);
-				}
+				uncovered = getMrXUncoverMoveNumbers().contains(m.getMoveNumber());
+				arr[i] = new MrXMove(m, uncovered);
 				i++;
 			}
-			return new MaskedMove(move, arr);
+			
+			// uncovered je nachdem, ob letzter sub move uncovered war.
+			return new MrXMove(move, uncovered, arr);
 		}
 
 		@Override
@@ -211,7 +229,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 				public synchronized Move get(int index) {
 					return super.get((index >= 0) ? index : size() + index);
 				}
-				
+
 			};
 			for (Move m : gameState.getMoves()) {
 				list.add(maskMove(m));
@@ -221,7 +239,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 		@Override
 		public Move getMove(Player player, int number, MoveAccessMode accessMode) {
-			Move m = gameState.getMove(player, number, accessMode);			
+			Move m = gameState.getMove(player, number, accessMode);
 			return maskMove(m);
 		}
 
