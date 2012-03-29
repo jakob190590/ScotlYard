@@ -62,7 +62,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Mar 28 23:38:21 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Fri Mar 30 00:38:09 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -854,7 +854,7 @@ to AIs (DetectiveAI and MrXAI) or the GUI.</UML:TaggedValue.dataValue>
                 <UML:Operation xmi.id = '-64--88--78-22-2ad725d4:135c49abb0e:-8000:0000000000000C43'
                   name = 'getMrXUncoverMoveNumbers' visibility = 'public' isSpecification = 'false'
                   ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-                  isLeaf = 'false' isAbstract = 'false'>
+                  isLeaf = 'false' isAbstract = 'false' specification = 'Returns SORTIERTE liste (ASC)&#10;manche brauchen das.'>
                   <UML:BehavioralFeature.parameter>
                     <UML:Parameter xmi.id = '-64--88--78-22-2ad725d4:135c49abb0e:-8000:0000000000000C44'
                       name = 'return' isSpecification = 'false' kind = 'return'>
@@ -2805,51 +2805,6 @@ implements Sealable</UML:TaggedValue.dataValue>
             <UML:Interface xmi.idref = '-127--69-110-110-cf81d7:1361b98918e:-8000:0000000000000BEF'/>
           </UML:Dependency.supplier>
         </UML:Abstraction>
-        <UML:Class xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3A'
-          name = 'MrXTracker' visibility = 'public' isSpecification = 'false' isRoot = 'false'
-          isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
-          <UML:Classifier.feature>
-            <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3B'
-              name = 'getLastKnownPosition' visibility = 'public' isSpecification = 'false'
-              ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-              isLeaf = 'false' isAbstract = 'false'>
-              <UML:BehavioralFeature.parameter>
-                <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3C'
-                  name = 'return' isSpecification = 'false' kind = 'return'>
-                  <UML:Parameter.type>
-                    <UML:Class xmi.idref = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C4D'/>
-                  </UML:Parameter.type>
-                </UML:Parameter>
-              </UML:BehavioralFeature.parameter>
-            </UML:Operation>
-            <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3D'
-              name = 'getPossiblePositions' visibility = 'public' isSpecification = 'false'
-              ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-              isLeaf = 'false' isAbstract = 'false'>
-              <UML:BehavioralFeature.parameter>
-                <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3E'
-                  name = 'return' isSpecification = 'false' kind = 'return'>
-                  <UML:Parameter.type>
-                    <UML:Class xmi.idref = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C4C'/>
-                  </UML:Parameter.type>
-                </UML:Parameter>
-              </UML:BehavioralFeature.parameter>
-            </UML:Operation>
-            <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C49'
-              name = 'getTicketsSince' visibility = 'public' isSpecification = 'false'
-              ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-              isLeaf = 'false' isAbstract = 'false' specification = 'Tickets since LastKnownPosition'>
-              <UML:BehavioralFeature.parameter>
-                <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C4A'
-                  name = 'return' isSpecification = 'false' kind = 'return'>
-                  <UML:Parameter.type>
-                    <UML:Class xmi.idref = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C4B'/>
-                  </UML:Parameter.type>
-                </UML:Parameter>
-              </UML:BehavioralFeature.parameter>
-            </UML:Operation>
-          </UML:Classifier.feature>
-        </UML:Class>
         <UML:Class xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C4B'
           name = 'List&lt;Ticket&gt;' visibility = 'public' isSpecification = 'false'
           isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
@@ -2908,9 +2863,9 @@ implements Sealable</UML:TaggedValue.dataValue>
                   </UML:BehavioralFeature.parameter>
                 </UML:Operation>
                 <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C37'
-                  name = 'getAllMoves' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  name = 'getMovesFlat' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
                   isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
-                  isAbstract = 'false'>
+                  isAbstract = 'false' specification = 'Gibt die Moves als flache liste aus, d.h. keine (hierarchischen) Moves mit Sub Moves'>
                   <UML:ModelElement.taggedValue>
                     <UML:TaggedValue xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C39'
                       isSpecification = 'false'>
@@ -2948,13 +2903,92 @@ flat Move List</UML:TaggedValue.dataValue>
                       </UML:Parameter.type>
                     </UML:Parameter>
                     <UML:Parameter xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C46'
+                      name = 'flat' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.defaultValue>
+                        <UML:Expression xmi.id = '-64--88--78-22-cc58580:1366069b6ab:-8000:0000000000000C52'
+                          language = 'UML 1.4' body = ''/>
+                      </UML:Parameter.defaultValue>
+                      <UML:Parameter.type>
+                        <UML:Enumeration href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:0000000000000880'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22-cc58580:1366069b6ab:-8000:0000000000000C4E'
                       name = 'roundNumber' isSpecification = 'false' kind = 'in'>
                       <UML:Parameter.defaultValue>
-                        <UML:Expression xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C48'
+                        <UML:Expression xmi.id = '-64--88--78-22-cc58580:1366069b6ab:-8000:0000000000000C51'
                           language = 'UML 1.4' body = '0'/>
                       </UML:Parameter.defaultValue>
                       <UML:Parameter.type>
                         <UML:DataType href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:000000000000087C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+                <UML:Operation xmi.id = '-64--88--78-22-19c7fff9:1365e86fb1a:-8000:0000000000000C48'
+                  name = 'flattenMove' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22-19c7fff9:1365e86fb1a:-8000:0000000000000C49'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1--6fecd3e6:1354d07a098:-8000:0000000000000AFC'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22-19c7fff9:1365e86fb1a:-8000:0000000000000C4A'
+                      name = 'move' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000ACF'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22-cc58580:1366069b6ab:-8000:0000000000000C57'
+                      name = 'alsoAddRootMove' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:Enumeration href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:0000000000000880'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+                <UML:Operation xmi.id = '-64--88--78-22-19c7fff9:1365e86fb1a:-8000:0000000000000C4B'
+                  name = 'getMoves' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22-19c7fff9:1365e86fb1a:-8000:0000000000000C4C'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1--6fecd3e6:1354d07a098:-8000:0000000000000AFC'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22-19c7fff9:1365e86fb1a:-8000:0000000000000C4D'
+                      name = 'roundNumber' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:DataType href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:000000000000087C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22-cc58580:1366069b6ab:-8000:0000000000000C53'
+                      name = 'flat' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:Enumeration href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:0000000000000880'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+                <UML:Operation xmi.id = '-64--88--78-22-cc58580:1366069b6ab:-8000:0000000000000C54'
+                  name = 'getLastMoveFlat' visibility = 'public' isSpecification = 'false'
+                  ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22-cc58580:1366069b6ab:-8000:0000000000000C55'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000ACF'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-64--88--78-22-cc58580:1366069b6ab:-8000:0000000000000C56'
+                      name = 'player' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000A7C'/>
                       </UML:Parameter.type>
                     </UML:Parameter>
                   </UML:BehavioralFeature.parameter>
@@ -2967,6 +3001,51 @@ flat Move List</UML:TaggedValue.dataValue>
             <UML:Class xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C45'
               name = 'ListIterator&lt;Move&gt;' visibility = 'public' isSpecification = 'false'
               isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+            <UML:Class xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3A'
+              name = 'MrXTracker' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+              isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
+              <UML:Classifier.feature>
+                <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3B'
+                  name = 'getLastKnownMove' visibility = 'public' isSpecification = 'false'
+                  ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' specification = 'Returns null, if there is no last known Move yet!'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3C'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000ACF'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+                <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3D'
+                  name = 'getPossiblePositions' visibility = 'public' isSpecification = 'false'
+                  ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3E'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C4C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+                <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C49'
+                  name = 'getTicketsSince' visibility = 'public' isSpecification = 'false'
+                  ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false' specification = 'Tickets since LastKnownPosition'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C4A'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C4B'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+              </UML:Classifier.feature>
+            </UML:Class>
           </UML:Namespace.ownedElement>
         </UML:Package>
       </UML:Namespace.ownedElement>
@@ -4908,7 +4987,7 @@ has access to the &quot;real&quot; Game!</text>
     </group>
   </group>
   <group name="Fig14"
-       description="org.argouml.uml.diagram.static_structure.ui.FigClass[2184, 584, 416, 105]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[2080, 528, 510, 156]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
        href="-64--88--78-22-39a58c18:135d7c89dde:-8000:0000000000000B6A"
        fill="1"
        fillcolor="white"
@@ -4920,19 +4999,19 @@ has access to the &quot;real&quot; Game!</text>
     </private>
     
     <rectangle name="Fig14.0"
-      x="2184"
-      y="584"
-      width="416"
-      height="105"
+      x="2080"
+      y="528"
+      width="510"
+      height="156"
       fill="1"
       fillcolor="white"
       stroke="1"
       strokecolor="black"
     />
     <text name="Fig14.1"
-      x="2185"
-      y="585"
-      width="414"
+      x="2081"
+      y="529"
+      width="508"
       height="23"
       fill="0"
       fillcolor="white"
@@ -4946,7 +5025,7 @@ has access to the &quot;real&quot; Game!</text>
       justification="Center"
     >GameStateExtension</text>
     <group name="Fig14.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2185, 585, 409, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2081, 529, 414, 0]"
          href="-64--88--78-22-39a58c18:135d7c89dde:-8000:0000000000000B6A"
          fill="0"
          fillcolor="white"
@@ -4958,9 +5037,9 @@ has access to the &quot;real&quot; Game!</text>
       </private>
       
       <rectangle name="Fig14.2.0"
-        x="2185"
-        y="585"
-        width="409"
+        x="2081"
+        y="529"
+        width="414"
         height="0"
         fill="0"
         fillcolor="white"
@@ -4969,9 +5048,9 @@ has access to the &quot;real&quot; Game!</text>
       />
     </group>
     <rectangle name="Fig14.3"
-      x="2184"
-      y="608"
-      width="416"
+      x="2080"
+      y="552"
+      width="510"
       height="1"
       fill="1"
       fillcolor="black"
@@ -4979,7 +5058,7 @@ has access to the &quot;real&quot; Game!</text>
       strokecolor="black"
     />
     <group name="Fig14.4"
-         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[2185, 609, 414, 21]"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[2081, 553, 508, 21]"
          href="-64--88--78-22-39a58c18:135d7c89dde:-8000:0000000000000B6A"
          fill="0"
          fillcolor="white"
@@ -4990,9 +5069,9 @@ has access to the &quot;real&quot; Game!</text>
       </private>
       
       <rectangle name="Fig14.4.0"
-        x="2185"
-        y="609"
-        width="414"
+        x="2081"
+        y="553"
+        width="508"
         height="21"
         fill="0"
         fillcolor="white"
@@ -5001,9 +5080,9 @@ has access to the &quot;real&quot; Game!</text>
       />
     </group>
     <rectangle name="Fig14.5"
-      x="2184"
-      y="629"
-      width="416"
+      x="2080"
+      y="573"
+      width="510"
       height="1"
       fill="1"
       fillcolor="black"
@@ -5011,7 +5090,7 @@ has access to the &quot;real&quot; Game!</text>
       strokecolor="black"
     />
     <group name="Fig14.6"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[2185, 630, 414, 59]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[2081, 574, 508, 110]"
          href="-64--88--78-22-39a58c18:135d7c89dde:-8000:0000000000000B6A"
          fill="0"
          fillcolor="white"
@@ -5022,19 +5101,19 @@ has access to the &quot;real&quot; Game!</text>
       </private>
       
       <rectangle name="Fig14.6.0"
-        x="2185"
-        y="630"
-        width="414"
-        height="59"
+        x="2081"
+        y="574"
+        width="508"
+        height="110"
         fill="0"
         fillcolor="white"
         stroke="0"
         strokecolor="black"
       />
       <text name="Fig14.6.1"
-        x="2185"
-        y="630"
-        width="414"
+        x="2081"
+        y="574"
+        width="508"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5048,9 +5127,9 @@ has access to the &quot;real&quot; Game!</text>
         justification="Left"
       >getMove(player : Player,roundNumber : Integer,moveIndex : Integer) : Move</text>
       <text name="Fig14.6.2"
-        x="2185"
-        y="647"
-        width="414"
+        x="2081"
+        y="591"
+        width="508"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5062,11 +5141,59 @@ has access to the &quot;real&quot; Game!</text>
         bold="false"
         textsize="12"
         justification="Left"
-      >getAllMoves() : List&lt;Move&gt;</text>
+      >getMovesFlat() : List&lt;Move&gt;</text>
       <text name="Fig14.6.3"
-        x="2185"
-        y="664"
-        width="414"
+        x="2081"
+        y="608"
+        width="508"
+        height="17"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Dialog"
+        italic="false"
+        bold="false"
+        textsize="12"
+        justification="Left"
+      >moveIterator(player : Player,flat : Boolean,roundNumber : Integer = 0) : ListIterator&lt;Move&gt;</text>
+      <text name="Fig14.6.4"
+        x="2081"
+        y="625"
+        width="508"
+        height="17"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Dialog"
+        italic="false"
+        bold="false"
+        textsize="12"
+        justification="Left"
+      >flattenMove(move : Move,alsoAddRootMove : Boolean) : List&lt;Move&gt;</text>
+      <text name="Fig14.6.5"
+        x="2081"
+        y="642"
+        width="508"
+        height="17"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Dialog"
+        italic="false"
+        bold="false"
+        textsize="12"
+        justification="Left"
+      >getMoves(roundNumber : Integer,flat : Boolean) : List&lt;Move&gt;</text>
+      <text name="Fig14.6.6"
+        x="2081"
+        y="659"
+        width="508"
         height="23"
         fill="0"
         fillcolor="white"
@@ -5078,7 +5205,7 @@ has access to the &quot;real&quot; Game!</text>
         bold="false"
         textsize="12"
         justification="Left"
-      >moveIterator(player : Player,roundNumber : Integer = 0) : ListIterator&lt;Move&gt;</text>
+      >getLastMoveFlat(player : Player) : Move</text>
     </group>
   </group>
   <group name="Fig15"
@@ -10206,7 +10333,7 @@ control)!</text>
     </group>
   </group>
   <group name="Fig64"
-       description="org.argouml.uml.diagram.static_structure.ui.FigClass[2184, 712, 248, 105]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[2080, 744, 248, 105]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
        href="-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3A"
        fill="1"
        fillcolor="white"
@@ -10214,11 +10341,12 @@ control)!</text>
        strokecolor="black"
   >
     <private>
+      enclosingFig="Fig0"
     </private>
     
     <rectangle name="Fig64.0"
-      x="2184"
-      y="712"
+      x="2080"
+      y="744"
       width="248"
       height="105"
       fill="1"
@@ -10227,8 +10355,8 @@ control)!</text>
       strokecolor="black"
     />
     <text name="Fig64.1"
-      x="2185"
-      y="713"
+      x="2081"
+      y="745"
       width="246"
       height="23"
       fill="0"
@@ -10243,7 +10371,7 @@ control)!</text>
       justification="Center"
     >MrXTracker</text>
     <group name="Fig64.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2185, 713, 246, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2081, 745, 246, 0]"
          href="-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3A"
          fill="0"
          fillcolor="white"
@@ -10255,8 +10383,8 @@ control)!</text>
       </private>
       
       <rectangle name="Fig64.2.0"
-        x="2185"
-        y="713"
+        x="2081"
+        y="745"
         width="246"
         height="0"
         fill="0"
@@ -10266,8 +10394,8 @@ control)!</text>
       />
     </group>
     <rectangle name="Fig64.3"
-      x="2184"
-      y="736"
+      x="2080"
+      y="768"
       width="248"
       height="1"
       fill="1"
@@ -10276,7 +10404,7 @@ control)!</text>
       strokecolor="black"
     />
     <group name="Fig64.4"
-         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[2185, 737, 246, 21]"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[2081, 769, 246, 21]"
          href="-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3A"
          fill="0"
          fillcolor="white"
@@ -10287,8 +10415,8 @@ control)!</text>
       </private>
       
       <rectangle name="Fig64.4.0"
-        x="2185"
-        y="737"
+        x="2081"
+        y="769"
         width="246"
         height="21"
         fill="0"
@@ -10298,8 +10426,8 @@ control)!</text>
       />
     </group>
     <rectangle name="Fig64.5"
-      x="2184"
-      y="757"
+      x="2080"
+      y="789"
       width="248"
       height="1"
       fill="1"
@@ -10308,7 +10436,7 @@ control)!</text>
       strokecolor="black"
     />
     <group name="Fig64.6"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[2185, 758, 246, 59]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[2081, 790, 246, 59]"
          href="-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3A"
          fill="0"
          fillcolor="white"
@@ -10319,8 +10447,8 @@ control)!</text>
       </private>
       
       <rectangle name="Fig64.6.0"
-        x="2185"
-        y="758"
+        x="2081"
+        y="790"
         width="246"
         height="59"
         fill="0"
@@ -10329,8 +10457,8 @@ control)!</text>
         strokecolor="black"
       />
       <text name="Fig64.6.1"
-        x="2185"
-        y="758"
+        x="2081"
+        y="790"
         width="246"
         height="17"
         fill="0"
@@ -10343,10 +10471,10 @@ control)!</text>
         bold="false"
         textsize="12"
         justification="Left"
-      >getLastKnownPosition() : StationVertex</text>
+      >getLastKnownMove() : Move</text>
       <text name="Fig64.6.2"
-        x="2185"
-        y="775"
+        x="2081"
+        y="807"
         width="246"
         height="17"
         fill="0"
@@ -10361,8 +10489,8 @@ control)!</text>
         justification="Left"
       >getPossiblePositions() : Set&lt;StationVertex&gt;</text>
       <text name="Fig64.6.3"
-        x="2185"
-        y="792"
+        x="2081"
+        y="824"
         width="246"
         height="23"
         fill="0"
