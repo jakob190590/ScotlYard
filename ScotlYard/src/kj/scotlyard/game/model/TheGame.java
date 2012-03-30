@@ -330,6 +330,10 @@ public class TheGame extends AbstractGameState implements Game {
 				return m;
 			}
 		}
+		
+		// No exception, if there is no last move.
+		// Schliesslich ist es nicht verboten nach dem Move eines Players zu fragen,
+		// auch wenn dieser seinen initial move halt grade noch nicht gemacht hat. 
 		return null;
 	}
 	
