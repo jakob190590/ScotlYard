@@ -21,7 +21,7 @@ public interface GameState {
 	
 	int LAST_MOVE_NUMBER = -1;
 	
-	/** Speziell fuer <tt>getMoves().remove(LAST_MOVE)</tt>. */
+	/** Speziell fuer <tt>getMoves().remove/get(LAST_MOVE)</tt>. */
 	int LAST_MOVE = -1;
 	
 	MrXPlayer getMrX();
