@@ -1,8 +1,8 @@
 package kj.scotlyard.game.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.attributes.DefaultSealable;
@@ -11,7 +11,7 @@ import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.items.Item;
 
-public class TheMove extends DefaultSealable implements Move {
+public class DefaultMove extends DefaultSealable implements Move {
 	
 	private Player player;
 	
@@ -27,29 +27,28 @@ public class TheMove extends DefaultSealable implements Move {
 	
 	private Item item;
 	
-	private List<Move> moves = new ArrayList<Move>();
+	/** List of sub moves. */
+	private List<Move> moves = new LinkedList<Move>();
 	
-	public TheMove(Player player, StationVertex station) {
-		// Fuer Initial Move
+	public DefaultMove() { }
+
+	public DefaultMove(Player player, int roundNumber, int moveNumber,
+			int moveIndex, StationVertex station, ConnectionEdge connection,
+			Item item, Move... moves) {
+		
 		this.player = player;
+		this.roundNumber = roundNumber;
+		this.moveNumber = moveNumber;
+		this.moveIndex = moveIndex;
 		this.station = station;
-	}
-	
-	public TheMove(Player player, ConnectionEdge connection, StationVertex station, Item item) {
-		// Fuer normalen Move
-		this.player = player;
 		this.connection = connection;
-		this.station = station;
 		this.item = item;
-	}
-	
-	public TheMove(Player player, Item item, Move ...moves) {
-		// Fuer Multi Move
-		this.player = player;
-		this.item = item;
-		this.moves.addAll(Arrays.asList(moves));
+		if (moves.length > 0) {
+			this.moves = Arrays.asList(moves);
+		}
 	}
 
+	
 	@Override
 	public void seal() {
 		super.seal();
