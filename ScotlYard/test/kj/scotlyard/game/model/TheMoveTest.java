@@ -12,10 +12,12 @@ import kj.scotlyard.game.model.items.Item;
 import org.junit.Test;
 
 public class TheMoveTest {
-
+	
+	TheMoveProducer prod = TheMoveProducer.createInstance();
+	
 	@Test
 	public void testSeal() {
-		Move m = new TheMove(new DetectivePlayer(), new StationVertex());
+		Move m = new DefaultMove();
 		m.seal();
 		
 		try {
@@ -74,7 +76,9 @@ public class TheMoveTest {
 		Player p = new DetectivePlayer();
 		StationVertex s = new StationVertex();
 		
-		Move m = new TheMove(p, s);
+		Move m = new DefaultMove();
+		m.setPlayer(p);
+		m.setStation(s);
 		
 		assertEquals(p, m.getPlayer());
 		assertEquals(s, m.getStation());
@@ -87,7 +91,11 @@ public class TheMoveTest {
 		ConnectionEdge c = new FerryConnection();
 		Item i = new BlackTicket();
 		
-		Move m = new TheMove(p,c,s,i);
+		Move m = new DefaultMove();
+		m.setPlayer(p);
+		m.setStation(s);
+		m.setConnection(c);
+		m.setItem(i);
 		
 		assertEquals(p, m.getPlayer());
 		assertEquals(s, m.getStation());
@@ -98,15 +106,15 @@ public class TheMoveTest {
 	@Test
 	public void testTheMovePlayerItemMoveArray() {
 		
-		Move m1 = new TheMove(new DetectivePlayer(), new StationVertex());
+		Move m1 = new DefaultMove();
 
-		Move m2 = new TheMove(new DetectivePlayer(), new FerryConnection(), new StationVertex(), new BlackTicket());
+		Move m2 = new DefaultMove();
 		
 		
 		Player p = new DetectivePlayer();
 		Item i = new DoubleMoveCard();
 		
-		Move m = new TheMove(p, i, m1, m2);
+		Move m = new DefaultMove(p, 2, 5, 3, null, null, i, m1, m2);
 		assertEquals(i, m.getItem());
 		assertEquals(p, m.getPlayer());
 		assertEquals(2, m.getMoves().size());
@@ -116,7 +124,7 @@ public class TheMoveTest {
 	
 	@Test
 	public void testSetGet() {
-		Move m = new TheMove(new DetectivePlayer(), new StationVertex());
+		Move m = new DefaultMove();
 		
 		ConnectionEdge c = new BusConnection();
 		m.setConnection(c);

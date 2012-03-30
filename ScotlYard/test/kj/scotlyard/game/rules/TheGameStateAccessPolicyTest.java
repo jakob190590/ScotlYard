@@ -10,7 +10,7 @@ import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
-import kj.scotlyard.game.model.TheMove;
+import kj.scotlyard.game.model.TheMoveProducer;
 import kj.scotlyard.game.model.items.DoubleMoveCard;
 import kj.scotlyard.game.model.items.TaxiTicket;
 
@@ -27,6 +27,8 @@ public class TheGameStateAccessPolicyTest {
 	DetectivePlayer d1, d2, d3, d4;
 	Move[] ms = new Move[100];
 	Move m1, m2;
+	
+	TheMoveProducer producer = TheMoveProducer.createInstance();
 
 	@Before
 	public void setUp() throws Exception {
@@ -47,48 +49,30 @@ public class TheGameStateAccessPolicyTest {
 		g.getDetectives().add(d3);
 		g.getDetectives().add(d4);
 
-		for (int i = 0; i < 100; i++) {
-			int round = i % g.getPlayers().size();
-			ms[i] = new TheMove(g.getPlayers().get(round),
-					new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		}
-
-		m1 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
-				new TaxiTicket());
-		m1.setMoveIndex(0);
-		m1.setMoveNumber(1);
-		m1.setRoundNumber(1);
-		m2 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
-				new TaxiTicket());
-		m2.setMoveIndex(1);
-		m2.setMoveNumber(2);
-		m2.setRoundNumber(1);
-		ms[5] = new TheMove(mrX, new DoubleMoveCard(), m1, m2);
-
-		m1 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
-				new TaxiTicket());
-		m1.setMoveIndex(0);
-		m1.setMoveNumber(4);
-		m1.setRoundNumber(3);
-		m2 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
-				new TaxiTicket());
-		m2.setMoveIndex(1);
-		m2.setMoveNumber(5);
-		m2.setRoundNumber(3);
-		ms[15] = new TheMove(mrX, new DoubleMoveCard(), m1, m2);
-
+		int j = 0;
 		for (int i = 0; i < 20; i++) {
-			for (int j = 0; j < 5; j++) {
-				ms[i * 5 + j].setRoundNumber(i);
-				ms[i * 5 + j].setMoveNumber(i);
-				ms[i * 5 + j].setMoveIndex(Move.NO_MOVE_INDEX);
+			for (Player p : g.getPlayers()) {
+				ms[j] = producer.createSingleMove(p, i, i,
+						new StationVertex(), new TaxiConnection(), new TaxiTicket());
+				j++;
 			}
 		}
 
-		ms[5].setMoveNumber(Move.NO_MOVE_NUMBER);
-		ms[5].setMoveIndex(Move.NO_MOVE_INDEX);
-		ms[15].setMoveNumber(Move.NO_MOVE_NUMBER);
-		ms[15].setMoveIndex(Move.NO_MOVE_INDEX);
+		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+				new TaxiTicket());
+		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+				new TaxiTicket());
+		m2 = ms[5] = producer.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
+		m1 = m2.getMoves().get(0);
+		m2 = m2.getMoves().get(1);
+
+		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+				new TaxiTicket());
+		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+				new TaxiTicket());
+		m2 = ms[15] = producer.createMultiMove(mrX, 3, 4, new DoubleMoveCard());
+		m1 = m2.getMoves().get(0);
+		m2 = m2.getMoves().get(1);
 
 		int n = 0;
 		for (Move m : ms) {
@@ -97,10 +81,7 @@ public class TheGameStateAccessPolicyTest {
 				if (m.getMoveNumber() >= 0)
 					m.setMoveNumber(n++);
 				else
-					for (@SuppressWarnings("unused")
-					Move o : m.getMoves()) {
-						n++;
-					}
+					n += m.getMoves().size();
 			}
 
 			g.getMoves().add(m);
@@ -435,27 +416,19 @@ public class TheGameStateAccessPolicyTest {
 			g.getMoves().remove(GameState.LAST_MOVE);
 		}
 
-		
-		
-		
-		
 		// double moves testen
 		g.getMoves().clear();
-		
-		m1 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
-				new TaxiTicket());
-		m1.setMoveIndex(0);
-		m1.setMoveNumber(1);
-		m1.setRoundNumber(1);
-		m2 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
-				new TaxiTicket());
-		m2.setMoveIndex(1);
-		m2.setMoveNumber(2);
-		m2.setRoundNumber(1);
-		g.getMoves().add(new TheMove(mrX, new DoubleMoveCard(), m1, m2));
 
+		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+				new TaxiTicket());
+		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+				new TaxiTicket());
+		g.getMoves().add(
+				m2 = producer.createMultiMove(mrX, 1, 1, new DoubleMoveCard()));
+		m1 = m2.getMoves().get(0);
+		m2 = m2.getMoves().get(1);
 		
-		m1 = gs.getMoves().get(0);		
+		m1 = gs.getMoves().get(0);
 		try {
 			m1.getConnection();
 			fail("there should be an illegal access");
@@ -466,7 +439,7 @@ public class TheGameStateAccessPolicyTest {
 			fail("there should be an illegal access");
 		} catch (IllegalAccessException e) {
 		}
-		
+
 		m2 = m1.getMoves().get(0);
 		assertEquals(1, m2.getMoveNumber());
 		try {
@@ -479,7 +452,7 @@ public class TheGameStateAccessPolicyTest {
 			fail("there should be an illegal access");
 		} catch (IllegalAccessException e) {
 		}
-		
+
 		m2 = m1.getMoves().get(1);
 		assertEquals(2, m2.getMoveNumber());
 		try {
@@ -492,27 +465,16 @@ public class TheGameStateAccessPolicyTest {
 			fail("there should be an illegal access");
 		} catch (IllegalAccessException e) {
 		}
-		
-		
-		
-		
-		
-		
-		
-		m1 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
+
+		producer.addSubMove(new StationVertex(), new TaxiConnection(), 
 				new TaxiTicket());
-		m1.setMoveIndex(0);
-		m1.setMoveNumber(3);
-		m1.setRoundNumber(3);
-		m2 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
+		producer.addSubMove(new StationVertex(), new TaxiConnection(), 
 				new TaxiTicket());
-		m2.setMoveIndex(1);
-		m2.setMoveNumber(4);
-		m2.setRoundNumber(3);
-		g.getMoves().add(new TheMove(mrX, new DoubleMoveCard(), m1, m2));
-		
-		
-		m1 = gs.getMoves().get(1);		
+		g.getMoves().add(m2 = producer.createMultiMove(mrX, 3, 3, new DoubleMoveCard()));
+		m1 = m2.getMoves().get(0);
+		m2 = m2.getMoves().get(1);
+
+		m1 = gs.getMoves().get(1);
 		try {
 			m1.getConnection();
 			fail("there should be an illegal access");
@@ -523,7 +485,7 @@ public class TheGameStateAccessPolicyTest {
 			fail("there should be no illegal access");
 		} catch (IllegalAccessException e) {
 		}
-		
+
 		m2 = m1.getMoves().get(0);
 		assertEquals(3, m2.getMoveNumber());
 		assertEquals(3, m2.getRoundNumber());
@@ -537,7 +499,7 @@ public class TheGameStateAccessPolicyTest {
 		} catch (IllegalAccessException e) {
 			fail("there should be an illegal access");
 		}
-		
+
 		m2 = m1.getMoves().get(1);
 		assertEquals(4, m2.getMoveNumber());
 		assertEquals(3, m2.getRoundNumber());
@@ -551,25 +513,17 @@ public class TheGameStateAccessPolicyTest {
 			fail("there should be an illegal access");
 		} catch (IllegalAccessException e) {
 		}
+
 		
-		
-		
-		
-		
-		m1 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
+		producer.addSubMove(new StationVertex(), new TaxiConnection(), 
 				new TaxiTicket());
-		m1.setMoveIndex(0);
-		m1.setMoveNumber(2);
-		m1.setRoundNumber(3);
-		m2 = new TheMove(mrX, new TaxiConnection(), new StationVertex(),
+		producer.addSubMove(new StationVertex(), new TaxiConnection(), 
 				new TaxiTicket());
-		m2.setMoveIndex(1);
-		m2.setMoveNumber(3);
-		m2.setRoundNumber(3);
-		g.getMoves().add(new TheMove(mrX, new DoubleMoveCard(), m1, m2));
+		g.getMoves().add(m2 = producer.createMultiMove(mrX, 3, 2, new DoubleMoveCard()));
+		m1 = m2.getMoves().get(0);
+		m2 = m2.getMoves().get(1);
 		
-		
-		m1 = gs.getMoves().get(2);		
+		m1 = gs.getMoves().get(2);
 		try {
 			m1.getConnection();
 			fail("there should be an illegal access");
@@ -580,7 +534,7 @@ public class TheGameStateAccessPolicyTest {
 		} catch (IllegalAccessException e) {
 			fail("there should be illegal access");
 		}
-		
+
 		m2 = m1.getMoves().get(0);
 		assertEquals(2, m2.getMoveNumber());
 		assertEquals(3, m2.getRoundNumber());
@@ -594,7 +548,7 @@ public class TheGameStateAccessPolicyTest {
 			fail("there should be an illegal access");
 		} catch (IllegalAccessException e) {
 		}
-		
+
 		m2 = m1.getMoves().get(1);
 		assertEquals(3, m2.getMoveNumber());
 		assertEquals(3, m2.getRoundNumber());

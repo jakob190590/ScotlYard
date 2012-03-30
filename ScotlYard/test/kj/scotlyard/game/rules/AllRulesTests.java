@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ TheGameStateAccessPolicyTest.class })
+@SuiteClasses({ TheGameStateAccessPolicyTest.class, TheMovePolicyTest.class })
 public class AllRulesTests {
 
 }

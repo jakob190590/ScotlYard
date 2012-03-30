@@ -145,6 +145,7 @@ public class AbstractGameStateTest {
 
 	Game g;
 	GameState gs;
+	TheMoveProducer prod = TheMoveProducer.createInstance();
 	MrXPlayer mrX;
 	DetectivePlayer d1, d2, d3, d4;
 	Move[] ms = new Move[20];
@@ -166,64 +167,50 @@ public class AbstractGameStateTest {
 		g.getDetectives().add(d3);
 		g.getDetectives().add(d4);
 		
-		for (int i = 0; i < 20; i++) {
-			int round = i % g.getPlayers().size();
-			ms[i] = new TheMove(g.getPlayers().get(round), new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		}
-		/*
-		ms[0] = new TheMove(mrX, new StationVertex());
-		ms[1] = new TheMove(d1, new StationVertex());
-		ms[2] = new TheMove(d2, new StationVertex());
-		ms[3] = new TheMove(d3, new StationVertex());
-		ms[4] = new TheMove(d4, new StationVertex()); */
-		
-		m1 = new TheMove(mrX, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		m1.setMoveIndex(0);
-		m1.setMoveNumber(1);
-		m1.setRoundNumber(1);
-		m2 = new TheMove(mrX, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		m2.setMoveIndex(1);
-		m2.setMoveNumber(2);
-		m2.setRoundNumber(1);
-		ms[5] = new TheMove(mrX, new DoubleMoveCard(), m1, m2);	/*			
-		ms[6] = new TheMove(d1, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		ms[7] = new TheMove(d2, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		ms[8] = new TheMove(d3, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		ms[9] = new TheMove(d4, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		
-		ms[10] = new TheMove(mrX, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		ms[11] = new TheMove(d1, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		ms[12] = new TheMove(d2, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		ms[13] = new TheMove(d3, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		ms[14] = new TheMove(d4, new TaxiConnection(), new StationVertex(), new TaxiTicket()); */
-		
-		m1 = new TheMove(mrX, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		m1.setMoveIndex(0);
-		m1.setMoveNumber(4);
-		m1.setRoundNumber(3);
-		m2 = new TheMove(mrX, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		m2.setMoveIndex(1);
-		m2.setMoveNumber(5);
-		m2.setRoundNumber(3);
-		ms[15] = new TheMove(mrX, new DoubleMoveCard(), m1, m2); /*
-		ms[16] = new TheMove(d1, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		ms[17] = new TheMove(d2, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		ms[18] = new TheMove(d3, new TaxiConnection(), new StationVertex(), new TaxiTicket());
-		ms[19] = new TheMove(d4, new TaxiConnection(), new StationVertex(), new TaxiTicket()); */
-		
+		int j = 0;
 		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 5; j++) {
-				ms[i * 5 + j].setRoundNumber(i);
-				ms[i * 5 + j].setMoveNumber(i);
-				ms[i * 5 + j].setMoveIndex(Move.NO_MOVE_INDEX);
+			for (Player p : g.getPlayers()) {
+				ms[j] = prod.createSingleMove(p, i, i,
+						new StationVertex(), new TaxiConnection(), new TaxiTicket());
+				j++;
 			}
 		}
-		
-		ms[5].setMoveNumber(Move.NO_MOVE_NUMBER);
-		ms[5].setMoveIndex(Move.NO_MOVE_INDEX);
-		ms[15].setMoveNumber(Move.NO_MOVE_NUMBER);
-		ms[15].setMoveIndex(Move.NO_MOVE_INDEX);
-		
+
+		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+				new TaxiTicket());
+		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+				new TaxiTicket());
+		ms[5] = prod.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
+
+		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+				new TaxiTicket());
+		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+				new TaxiTicket());
+		ms[15] = prod.createMultiMove(mrX, 3, 4, new DoubleMoveCard());
+
+		int n = 0;
+		for (Move m : ms) {
+
+			if (m.getPlayer() == mrX) {
+				if (m.getMoveNumber() >= 0)
+					m.setMoveNumber(n++);
+				else
+					n += m.getMoves().size();
+			}
+
+			g.getMoves().add(m);
+		}
+
+//		for (Move m : g.getMoves()) {
+//			if (m.getPlayer() == mrX) {
+//				System.out.println("round number: " + m.getRoundNumber()
+//						+ "    move number: " + m.getMoveNumber());
+//				for (Move o : m.getMoves()) {
+//					System.out.println("round number: " + o.getRoundNumber()
+//							+ "    move number: " + o.getMoveNumber());
+//				}
+//			}
+//		}	
 		
 		
 		
@@ -336,7 +323,8 @@ public class AbstractGameStateTest {
 	
 	@Test
 	public final void testMoveListener() {
-		TestMoveListener l = new TestMoveListener();
+		g.getMoves().clear();
+		TestMoveListener l = new TestMoveListener();		
 		gs.addMoveListener(l);
 		
 		for (int i = 0; i < 7; i++) {
