@@ -3,9 +3,9 @@ package kj.scotlyard.game.rules;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.attributes.DefaultSealable;
 
@@ -223,7 +223,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 			// Koennte effizienter gemacht werden.
 
 			@SuppressWarnings("serial")
-			List<Move> list = new Vector<Move>() {
+			List<Move> list = new LinkedList<Move>() {
 
 				@Override
 				public synchronized Move get(int index) {
@@ -245,7 +245,11 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 		@Override
 		public Move getLastMove(Player player) {
-			return maskMove(gameState.getLastMove(player));
+			Move m = gameState.getLastMove(player);
+			if (m != null) {
+				m = maskMove(m);
+			}
+			return m;
 		}
 
 		@Override
