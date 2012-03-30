@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class TheGame extends AbstractGameState implements Game {
 	
 	private class DetectiveList extends AbstractList<DetectivePlayer> {
 		
-		List<DetectivePlayer> list = new Vector<>();
+		List<DetectivePlayer> list = new LinkedList<>();
 
 		@Override
 		public DetectivePlayer get(int index) {
@@ -260,7 +261,7 @@ public class TheGame extends AbstractGameState implements Game {
 
 	@Override
 	public List<Player> getPlayers() {
-		List<Player> list = new Vector<>();
+		List<Player> list = new LinkedList<>();
 		list.add(mrX);
 		list.addAll(detectives);		
 		return Collections.unmodifiableList(list);
@@ -314,7 +315,7 @@ public class TheGame extends AbstractGameState implements Game {
 		}
 		
 		if (result == null) {
-			throw new IllegalArgumentException("There is no Move for the specified number " + number + ".");
+			throw new IllegalArgumentException("There is no Move for the specified number: " + number);
 		}
 		
 		return result;
@@ -329,7 +330,7 @@ public class TheGame extends AbstractGameState implements Game {
 				return m;
 			}
 		}
-		throw new IllegalArgumentException("There are no Moves for the specified player.");
+		return null;
 	}
 	
 	@Override
