@@ -2,6 +2,7 @@ package kj.scotlyard.game.util;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.ListIterator;
 
 import kj.scotlyard.game.graph.GameGraph;
@@ -17,6 +18,7 @@ import kj.scotlyard.game.model.TheGame;
 import kj.scotlyard.game.model.TheMoveProducer;
 import kj.scotlyard.game.model.items.DoubleMoveCard;
 import kj.scotlyard.game.model.items.TaxiTicket;
+import kj.scotlyard.game.model.items.Ticket;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
 
@@ -164,12 +166,24 @@ public class MrXTrackerTest {
 				uncover = 3;
 			}
 			
+			List<Ticket> ts = tr.getTicketsSince();
+			
+			if (moveNumber >= 3) {
+				assertEquals(ext.getLastMoveFlat(mrX).getMoveNumber() - uncover, ts.size());
+			}
+			
 			if (moveNumber < 3 || m == ext.getLastMoveFlat(mrX)) {
 				// noch kein uncover move ODER genau auf uncover move
 				
-				assertTrue(tr.getTicketsSince().isEmpty());
+				assertTrue(ts.isEmpty());
 				
 			} else {
+				
+				// erstes ticket
+				assertEquals(g.getMove(mrX, uncover + 1, GameState.MoveAccessMode.MOVE_NUMBER).getItem(), ts.get(0));
+				
+				// letztes ticket
+				assertEquals(ext.getLastMoveFlat(mrX).getItem(), ts.get(ts.size() - 1));
 				
 				assertEquals(mrX, m.getPlayer());
 				assertEquals(uncover, m.getMoveNumber());
@@ -185,6 +199,7 @@ public class MrXTrackerTest {
 
 	@Test
 	public final void testGetPossiblePositions() {
+		// TODO implement test
 		fail("Not yet implemented");
 	}
 
