@@ -45,23 +45,6 @@ public class GameStateExtension {
 			
 			this(list, player);
 					
-//			while (it.hasNext()) {
-//				Move m = it.next();
-//				if (m.getPlayer() == player) {
-//					if ((flat && m.getMoveNumber() == moveRespRoundNumber) 
-//							|| !flat && m.getRoundNumber() == moveRespRoundNumber) {
-//						next = m;
-//						break;
-//					}
-//					previous = m;
-//				}
-//			}
-//			
-//			if (next == null) {
-//				throw new IllegalArgumentException("There is no move of the specified player with the " 
-//						+ ((flat) ? "move" : "round") + " number: " + moveRespRoundNumber);
-//			}
-			
 			boolean found = false;
 			while (this.hasNext()) {
 				Move m = this.next();
