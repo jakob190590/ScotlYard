@@ -18,11 +18,7 @@ public class TheScotlandYardGraphBuilder implements ScotlandYardGraphBuilder {
 	
 	private void link(StationVertex stationA, StationVertex stationB,
 			ConnectionEdge connection) {
-		connection.getVertices().add(stationA);
-		connection.getVertices().add(stationB);
-		
-		stationA.getEdges().add(connection);
-		stationB.getEdges().add(connection);		
+		// TODO implement		
 	}
 
 	@Override

@@ -9,9 +9,9 @@ public abstract class TheAbstractGameController extends GameController {
 	
 	private Rules rules;
 	
-	private Game game;
+	private final Game game;
 	
-	private GameGraph gameGraph;
+	private final GameGraph gameGraph;
 	
 	private GameWin win = GameWin.NO;
 	

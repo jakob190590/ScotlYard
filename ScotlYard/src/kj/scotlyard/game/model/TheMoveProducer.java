@@ -5,6 +5,7 @@ import java.util.List;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.model.items.DoubleMoveCard;
 import kj.scotlyard.game.model.items.Item;
 import kj.scotlyard.game.model.items.Ticket;
 
@@ -73,10 +74,10 @@ public class TheMoveProducer {
 	}
 	
 	public Move createMultiMove(Player player, int roundNumber, 
-			int firstMoveNumber, Item item) {
+			int firstMoveNumber, DoubleMoveCard card) {
 		
 		Move m = new DefaultMove(player, roundNumber, Move.NO_MOVE_NUMBER, 
-				Move.NO_MOVE_INDEX, null, null, item);
+				Move.NO_MOVE_INDEX, null, null, card);
 		
 		
 		int i = 0;

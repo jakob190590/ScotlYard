@@ -42,7 +42,7 @@ public class TheMovePolicyTest {
 	DetectivePlayer d1, d2;
 	
 	Ticket tt, ut, bt, blt;
-	Item dmc;
+	DoubleMoveCard dmc;
 	
 	StationVertex s1, s2, s3, s4;
 	ConnectionEdge tc1, uc1, bc1, fc1;
@@ -144,7 +144,7 @@ public class TheMovePolicyTest {
 		ms[1][0] = producer.createSingleMove(mrX, 1, 1, s1, bc1, (Ticket) getItem(mrX, BusTicket.class));
 		producer.addSubMove(s3, uc1, (Ticket) getItem(mrX, UndergroundTicket.class)); 
 		producer.addSubMove(s4, tc1, (Ticket) getItem(mrX, TaxiTicket.class));  
-		ms[2][0] = producer.createMultiMove(mrX, 2, 2, getItem(mrX, DoubleMoveCard.class));
+		ms[2][0] = producer.createMultiMove(mrX, 2, 2, (DoubleMoveCard) getItem(mrX, DoubleMoveCard.class));
 		ms[3][0] = producer.createSingleMove(mrX, 3, 4, s1, uc1, (Ticket) getItem(mrX, UndergroundTicket.class));
 		
 		
