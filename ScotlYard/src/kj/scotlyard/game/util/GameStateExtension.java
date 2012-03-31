@@ -22,6 +22,10 @@ public class GameStateExtension {
 		
 		private Move previous;
 		
+		private boolean wentForward;
+		
+		private boolean wentBackward;
+		
 		public MoveIterator(List<Move> list, Player player) {
 			
 			this.player = player;
@@ -40,7 +44,7 @@ public class GameStateExtension {
 		public MoveIterator(List<Move> list, Player player, boolean flat, int moveRespRoundNumber) {
 			
 			this(list, player);
-			
+						
 			boolean moveExists = false;
 			while (this.hasNext()) {
 				Move m = this.next();
@@ -73,6 +77,9 @@ public class GameStateExtension {
 			throw new UnsupportedOperationException("Modification not supported.");
 		}
 
+		// Algorithmus ist so, dass it immer eins vorraus ist. Immer beim
+		//  Wechsel next/prev muss folglich ein Element uebergangen werden.
+		
 		@Override
 		public boolean hasNext() {			
 			return (next != null);
@@ -84,7 +91,17 @@ public class GameStateExtension {
 				throw new NoSuchElementException("There is no next element.");
 			}
 			
-			Move result = next;
+			// Rueckgabewert steht schon fest!
+			Move result = next;			
+			
+			// bei richtungswechsel curser richtig positionieren
+			if (wentBackward) {
+				wentBackward = false;
+				while (it.hasNext() && it.next() != result);
+			}
+			
+			previous = result;
+			next = null; // falls kein nachfolger gefunden wird
 			
 			// Vorraus den naechsten Nachfolger suchen
 			while (it.hasNext()) {
@@ -94,6 +111,8 @@ public class GameStateExtension {
 					break;
 				}
 			}
+			
+			wentForward = true;
 			return result;
 		}
 
@@ -108,7 +127,17 @@ public class GameStateExtension {
 				throw new NoSuchElementException("There is no previous element.");
 			}
 			
+			// Rueckgabewert steht schon fest!
 			Move result = previous;
+			
+			// bei richtungswechsel curser richtig positionieren
+			if (wentForward) {
+				wentForward = false;
+				while (it.hasPrevious() && it.previous() != result);
+			}
+			
+			next = result;
+			previous = null; // falls kein vorgaenger gefunden wird
 			
 			// Vorraus den naechsten Vorgaenger suchen
 			while (it.hasPrevious()) {
@@ -118,6 +147,8 @@ public class GameStateExtension {
 					break;
 				}
 			}
+			
+			wentBackward = true;
 			return result;
 		}
 
@@ -161,7 +192,7 @@ public class GameStateExtension {
 		for (Move m : gameState.getMoves()) {
 			// auch das hier koennte man effizienter machen:
 			// if (m.getMoves().isEmpty()) result.add(m); else
-			result.addAll(flattenMove(m, false));
+			result.addAll(flattenMove(m, true));
 		}
 		return result;
 	}
@@ -213,14 +244,19 @@ public class GameStateExtension {
 		return m;
 	}
 	
-	public List<Move> flattenMove(Move move, boolean alsoReturnRootMove) {
+	public List<Move> flattenMove(Move move, boolean omitBaseMove) { // base move or root move ?
 		List<Move> result = new LinkedList<>();
-		if (alsoReturnRootMove) {
+		
+		// move selbst adden, wenn er keine sub moves hat 
+		// oder wenn er nicht weggelassen werden soll.
+		if (move.getMoves().isEmpty() || !omitBaseMove) {
 			result.add(move);
 		}
+		
 		for (Move m : move.getMoves()) {
-			result.addAll(flattenMove(m, alsoReturnRootMove));
+			result.addAll(flattenMove(m, omitBaseMove));
 		}
+		
 		return result;
 	}
 		
