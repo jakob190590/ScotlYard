@@ -53,10 +53,12 @@ public class MrXTracker {
 		// ... Since last known Move, was sonst ...
 		
 		List<Ticket> list = new LinkedList<>();
-		Move last = getLastKnownMove();
-		if (last != null) {
+		
+		Move lastUncovered = getLastKnownMove();
+		
+		if (lastUncovered != null) {
 			try {
-				ListIterator<Move> it = gameStateExtension.moveIterator(gameState.getMrX(), true, last.getRoundNumber() + 1);
+				ListIterator<Move> it = gameStateExtension.moveIterator(gameState.getMrX(), true, lastUncovered.getMoveNumber() + 1);
 				while (it.hasNext()) {
 					// hier koennts cast exception geben, bei corrupt game state
 					list.add((Ticket) it.next().getItem());
