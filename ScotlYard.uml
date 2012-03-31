@@ -26,7 +26,7 @@
       <fontname>Dialog</fontname>
       <fontsize>12</fontsize>
       <defaultstereotypeview>0</defaultstereotypeview>
-      <activediagram>Implementierung</activediagram>
+      <activediagram>Interfaces</activediagram>
     </settings>
     <searchpath href="PROJECT_DIR" />
     <members>
@@ -66,7 +66,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Sat Mar 31 17:57:50 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Sat Mar 31 20:23:24 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -2902,7 +2902,7 @@ flat Move List</UML:TaggedValue.dataValue>
                 <UML:Operation xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C41'
                   name = 'moveIterator' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
                   isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
-                  isAbstract = 'false' specification = 'Iteration ueber Moves des angegebenen Players.&#10;Wenn flat, Iteration ueber Single Moves -&gt; moveNumber.&#10;Sonst, Iteration ueber hierarchischen Move -&gt; roundNumber.&#10;moveRespRoundNumber gibt die Start number an. Wenn sie -1 ist, wird von ganz vorne angefangen.'>
+                  isAbstract = 'false' specification = 'Iteration ueber Moves des angegebenen Players.&#10;Wenn flat, Iteration ueber Single Moves -&gt; moveNumber.&#10;Sonst, Iteration ueber hierarchische Moves -&gt; roundNumber.&#10;&#10;moveRespRoundNumber gibt die Start number an.&#10;Wenn die nummer &lt; 0 ist wird ganz vorne angefangen,&#10;sonst wird die angegebene nummer gesucht.&#10;wenn sie gefunden wird ist der cursor vor dem gesuchten move.&#10;andernfalls ist der cursor hinter dem letzten move.'>
                   <UML:BehavioralFeature.parameter>
                     <UML:Parameter xmi.id = '-64--88--78-22--38d89591:1365b0b05bb:-8000:0000000000000C42'
                       name = 'return' isSpecification = 'false' kind = 'return'>

@@ -44,26 +44,40 @@ public class GameStateExtension {
 		public MoveIterator(List<Move> list, Player player, boolean flat, int moveRespRoundNumber) {
 			
 			this(list, player);
-						
-			boolean moveExists = false;
+					
+//			while (it.hasNext()) {
+//				Move m = it.next();
+//				if (m.getPlayer() == player) {
+//					if ((flat && m.getMoveNumber() == moveRespRoundNumber) 
+//							|| !flat && m.getRoundNumber() == moveRespRoundNumber) {
+//						next = m;
+//						break;
+//					}
+//					previous = m;
+//				}
+//			}
+//			
+//			if (next == null) {
+//				throw new IllegalArgumentException("There is no move of the specified player with the " 
+//						+ ((flat) ? "move" : "round") + " number: " + moveRespRoundNumber);
+//			}
+			
+			boolean found = false;
 			while (this.hasNext()) {
 				Move m = this.next();
 				if ((flat && m.getMoveNumber() == moveRespRoundNumber) 
 						|| !flat && m.getRoundNumber() == moveRespRoundNumber) {
 
-					moveExists = true;
+					found = true;
 					break;
 				}
 			}
 			
-			if (moveExists) {
+			if (found) {
 				// Wieder eins zurueck, weil wir diesen Move nicht uebergehen wollen
 				if (this.hasPrevious()) {
 					this.previous();
 				}
-			} else {
-				throw new IllegalArgumentException("There is no move of the specified player with the " 
-						+ ((flat) ? "move" : "round") + " number: " + moveRespRoundNumber);
 			}
 		}
 		
