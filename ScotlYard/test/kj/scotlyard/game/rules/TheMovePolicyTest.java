@@ -288,7 +288,7 @@ public class TheMovePolicyTest {
 	}
 	
 	@Test
-	public final void testSingleMove() {
+	public final void testSingleMoveCheck() {
 		g.setCurrentRoundNumber(0);
 		
 		for (Player pl : g.getPlayers()) {
@@ -405,7 +405,7 @@ public class TheMovePolicyTest {
 	}
 	
 	@Test
-	public final void testMultiMove() {
+	public final void testMultiMoveCheck() {
 		g.setCurrentRoundNumber(0);
 		
 		for (Player pl : g.getPlayers()) {

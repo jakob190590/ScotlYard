@@ -18,6 +18,20 @@ public class TheInGameController extends TheAbstractGameController {
 		super(game, gameGraph, rules);
 		this.undoManager = undoManager;
 	}
+	
+	private void changeTicketOwner(Game game, MovePolicy policy, Move move) {
+		
+		Player p1 = move.getPlayer();
+		Player p2 = policy.getNextItemOwner(game, move, move.getItem());
+		
+		game.getItems(p1).remove(move.getItem());
+		game.getItems(p2).add(move.getItem());
+		
+		// Rekursiv fuer alle Sub Moves (if any)
+		for (Move m : move.getMoves()) {
+			changeTicketOwner(game, policy, m);
+		}
+	}
 
 	@Override
 	public void equipGameStateRequester(GameStateRequester requester) { }
@@ -29,7 +43,6 @@ public class TheInGameController extends TheAbstractGameController {
 	
 	@Override
 	public UndoManager getUndoManager() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -78,7 +91,11 @@ public class TheInGameController extends TheAbstractGameController {
 	}
 
 	@Override
-	public void abort() { }
+	public void abort() {
+		// nothing to do
+		// zustandsaenderungen uebernimmt der "state holder",
+		// also TheGameController
+	}
 
 	@Override
 	public void move(Move move) {
@@ -91,8 +108,8 @@ public class TheInGameController extends TheAbstractGameController {
 		
 		MovePolicy movePolicy = getRules().getMovePolicy();
 		
-		movePolicy.checkMove(game, graph, move);		
-		move.seal();
+		movePolicy.checkMove(game, graph, move);
+		// TODO move.seal() hier oder beim Add im model?
 		
 		// Tickets richtig weitergeben
 		changeTicketOwner(game, movePolicy, move);
@@ -100,20 +117,6 @@ public class TheInGameController extends TheAbstractGameController {
 		game.getMoves().add(move);
 		
 		setWin(getRules().getGameWinPolicy().isGameWon(game, graph)); 		
-	}
-	
-	private void changeTicketOwner(Game game, MovePolicy policy, Move move) {
-		
-		Player p1 = move.getPlayer();
-		Player p2 = policy.getNextItemOwner(game, move, move.getItem());
-		
-		game.getItems(p1).remove(move.getItem());
-		game.getItems(p2).add(move.getItem());
-		
-		// Rekursiv fuer alle Sub Moves (if any)
-		for (Move m : move.getMoves()) {
-			changeTicketOwner(game, policy, m);
-		}
 	}
 
 }

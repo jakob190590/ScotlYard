@@ -3,7 +3,6 @@ package kj.scotlyard.game.util;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.ListIterator;
 
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;

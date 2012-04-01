@@ -27,13 +27,21 @@ public class TheGameController extends TheAbstractGameController {
 		inGame = new TheInGameController(game, gameGraph, rules, undoManager);
 		state = notInGame;
 	}
+	
+	/** Should be called when GameStatus or GameWin have changed. */
+	private void stateChanged() {
+		setChanged();
+		// soll ich GameStatus oder GameWin als param uebergeben?
+		// weiss nicht -- dann lieber gar keinen param (null).
+		notifyObservers();
+	}
 
 	@Override
 	public void equipGameStateRequester(GameStateRequester requester) {
 		if (requester instanceof DetectiveAi) {
 			requester.setGameState(getRules().getGameStateAccessPolicy().createGameStateForDetectives(getGame()));
 		} else {
-			// Alle anderen requester (View/Controller, MrXAi) bekommen FullGameState
+			// Alle anderen requester (View/Controller, MrXAi) bekommen DefaultGameState
 			requester.setGameState(new DefaultGameState(getGame()));
 		}
 	}
@@ -50,8 +58,15 @@ public class TheGameController extends TheAbstractGameController {
 
 	@Override
 	public void newGame() {
+		
 		state.newGame();
+		
+		GameWin oldWin = getWin();
 		setWin(GameWin.NO);
+				
+		if (oldWin != GameWin.NO) {
+			stateChanged();
+		}
 	}
 
 	@Override
@@ -88,23 +103,32 @@ public class TheGameController extends TheAbstractGameController {
 	public void start() {
 		state.start();
 		setWin(state.getWin());
+		
 		if (getWin() == GameWin.NO) {
 			state = inGame;
 		}
+		
+		// hier aendert sich der zustand in jedem fall
+		stateChanged();
 	}
 
 	@Override
 	public void abort() {
 		state.abort();
 		state = notInGame;
+		
+		stateChanged();
 	}
 
 	@Override
 	public void move(Move move) {
 		state.move(move);
-		setWin(state.getWin());
-		if (getWin() != GameWin.NO) {
+		
+		GameWin win = state.getWin();
+		setWin(win);
+		if (win != GameWin.NO) {
 			state = notInGame;
+			stateChanged();
 		}
 	}
 }
