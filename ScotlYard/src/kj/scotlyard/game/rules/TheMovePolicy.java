@@ -85,8 +85,10 @@ public class TheMovePolicy implements MovePolicy {
 		// Allgemein
 		boolean subMoves = !move.getMoves().isEmpty(); // there are sub moves
 		Move previous = new GameStateExtension(gameState).getLastMoveFlat(move.getPlayer());
+
+		throwIllegalMove(!gameState.getPlayers().contains(move.getPlayer()), 
+				"The specified player is not part of this game.");
 		
-		// TODO das muss vllt anders sein wg. reihenfolge von detectives, weil die evtl. frei is...
 		throwIllegalMove(move.getPlayer() != gameState.getCurrentPlayer(),  
 				"It is not your player's turn.");
 	
@@ -94,7 +96,8 @@ public class TheMovePolicy implements MovePolicy {
 				"The specified round number is not the current one.");
 		
 		throwIllegalMove(move.getMoveIndex() != Move.NO_MOVE_INDEX,
-				"This move must not have a move index. Only sub moves may and must have one. Use Move.NO_MOVE_INDEX here.");
+				"This move must not have a move index. Only sub moves may and must " +
+				"have one. Use Move.NO_MOVE_INDEX here.");
 		
 		
 		if (previous == null) {
@@ -108,7 +111,7 @@ public class TheMovePolicy implements MovePolicy {
 					"You must specify the initial station.");
 			
 			// TODO Station ueberpruefen
-			// - dass da kein anderer steht
+			// - dass da kein anderer
 			// - und element von Graph ist
 			
 			throwIllegalMove(move.getConnection() != null, 
@@ -124,7 +127,7 @@ public class TheMovePolicy implements MovePolicy {
 		} else if (subMoves) {
 			// Multi Move
 		
-			throwIllegalMove(move.getPlayer() instanceof DetectivePlayer,
+			throwIllegalMove(move.getPlayer() != gameState.getMrX(),
 					"Only MrX can carry out a multi move.");
 			
 			throwIllegalMove(move.getMoveNumber() != Move.NO_MOVE_NUMBER,
@@ -149,6 +152,14 @@ public class TheMovePolicy implements MovePolicy {
 			
 			int i = 0;
 			for (Move m : move.getMoves()) {
+				
+				throwIllegalMove(m.getPlayer() != move.getPlayer(), 
+						"The player must be consistent within the multi move. " +
+						"(The player of at least one sub move differs from the one of the base move.)");
+				
+				throwIllegalMove(m.getRoundNumber() != move.getRoundNumber(), 
+						"The round number must be consistent within the multi move. " +
+						"(The round number of at least one sub move differs from the one of the base move.)");
 				
 				throwIllegalMove(m.getMoveIndex() != i, 
 						"The move index of a sub move is " + m.getMoveIndex() + " but must be: " + i);
