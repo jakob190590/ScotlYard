@@ -114,8 +114,17 @@ public class TheInGameController extends TheAbstractGameController {
 		// Tickets richtig weitergeben
 		changeTicketOwner(game, movePolicy, move);
 		
+		// Move eintragen
 		game.getMoves().add(move);
 		
+		// Current sachen nach Move aktualisieren
+		Player nextPlayer = getRules().getTurnPolicy().getNextPlayer(game);
+		int nextRoundNumber = getRules().getTurnPolicy().getNextRoundNumber(game);
+		
+		game.setCurrentPlayer(nextPlayer);
+		game.setCurrentRoundNumber(nextRoundNumber);
+		
+		// GameWin ermitteln
 		setWin(getRules().getGameWinPolicy().isGameWon(game, graph)); 		
 	}
 
