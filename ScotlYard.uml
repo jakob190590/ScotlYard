@@ -26,7 +26,7 @@
       <fontname>Dialog</fontname>
       <fontsize>12</fontsize>
       <defaultstereotypeview>0</defaultstereotypeview>
-      <activediagram>Interfaces</activediagram>
+      <activediagram>Implementation</activediagram>
     </settings>
     <searchpath href="PROJECT_DIR" />
     <members>
@@ -49,7 +49,7 @@
       <member type="pgml"
               name="ScotlYard_Implementierung.pgml"
               diagramclass="org.argouml.uml.diagram.static_structure.ui.UMLClassDiagram"
-              diagramname="Implementierung" />
+              diagramname="Implementation" />
       <member type="todo"
               name="ScotlYard.todo" />
     </members>
@@ -66,7 +66,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Sat Mar 31 20:23:24 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Sun Apr 01 21:25:47 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -10949,7 +10949,7 @@ control)!</text>
 >
 </pgml>
 <pgml description="org.argouml.uml.diagram.static_structure.ui.UMLClassDiagram|-64--88--22-1-f61ec3b:134bd4433b3:-8000:0000000000000865"
-      name="Implementierung"
+      name="Implementation"
 >
   <group name="Fig0"
        description="org.argouml.uml.diagram.static_structure.ui.FigPackage[16, 16, 1784, 528]pathVisible=false;stereotypeView=0;stereotypeVisible=true;visibilityVisible=false"
@@ -11593,7 +11593,7 @@ control)!</text>
       justification="Center"
     >TheMoveProducer</text>
     <group name="Fig5.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[649, 217, 247, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[649, 217, 832, 0]"
          href="-64--88--78-22-6c12df7:136626a351d:-8000:0000000000000C64"
          fill="0"
          fillcolor="white"
@@ -11607,7 +11607,7 @@ control)!</text>
       <rectangle name="Fig5.2.0"
         x="649"
         y="217"
-        width="247"
+        width="832"
         height="0"
         fill="0"
         fillcolor="white"
