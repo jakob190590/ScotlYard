@@ -8,6 +8,7 @@ import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.rules.GameWin;
+import kj.scotlyard.game.rules.IllegalMoveException;
 import kj.scotlyard.game.rules.Rules;
 
 public abstract class GameController extends Observable {
@@ -51,6 +52,6 @@ public abstract class GameController extends Observable {
 	public abstract void abort();
 	
 	
-	public abstract void move(Move move);
+	public abstract void move(Move move) throws IllegalMoveException;
 	
 }
