@@ -26,8 +26,27 @@ public class TheGameInitPolicy implements GameInitPolicy {
 		} catch (Exception e) {
 			throw new RuntimeException("Does not work for given item class", e);
 		}
+	}	
+	
+	@Override
+	public int getMinDetectiveCount() {
+		// geht aus sonderregel hevor, dass wenn nur 2 spieler 
+		// gegen mrX sind, duerfen sie je 2 spielfiguren haben.
+		return 3;
+	}
+	
+	@Override
+	public int getMaxDetectiveCount() {
+		return 5;
 	}
 
+	@Override
+	public StationVertex suggestInitialStation(GameState gameState,
+			GameGraph gameGraph, Player player) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	@Override
 	public Set<Item> createItemSet(GameState gameState, Player player) {	
 		Set<Item> set = new HashSet<>();
@@ -47,13 +66,6 @@ public class TheGameInitPolicy implements GameInitPolicy {
 		}
 		
 		return set;
-	}
-
-	@Override
-	public StationVertex suggestInitialStation(GameState gameState,
-			GameGraph gameGraph, Player player) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

@@ -10,8 +10,12 @@ import kj.scotlyard.game.model.item.Item;
 
 public interface GameInitPolicy {
 	
-	Set<Item> createItemSet(GameState gameState, Player player);
+	int getMinDetectiveCount();
+	
+	int getMaxDetectiveCount();
 	
 	StationVertex suggestInitialStation(GameState gameState, GameGraph gameGraph, Player player);
+	
+	Set<Item> createItemSet(GameState gameState, Player player);
 
 }
