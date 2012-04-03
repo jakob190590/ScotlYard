@@ -13,6 +13,7 @@ import kj.scotlyard.game.graph.connection.UndergroundConnection;
 import kj.scotlyard.game.model.DefaultMove;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
@@ -32,7 +33,7 @@ public class GameStateExtensionTest {
 	Game g;
 	GameStateExtension ext;
 	
-	TheMoveProducer prod = new TheMoveProducer();
+	TheMoveProducer prod = TheMoveProducer.createInstance();
 	
 	
 	MrXPlayer mrX;
@@ -157,29 +158,37 @@ public class GameStateExtensionTest {
 					}
 					
 					assertEquals(0, i);
-				
+					
+					for (int l = 20; l < 23; l++) {						
+						
+						it = ext.moveIterator(p, false, l);
+						assertTrue(!it.hasNext());
+						assertTrue(it.hasPrevious());
+						assertEquals(g.getLastMove(p), it.previous());
+						assertEquals(g.getMove(p, -2, GameState.MoveAccessMode.ROUND_NUMBER), it.previous());
+						assertEquals(g.getMove(p, -3, GameState.MoveAccessMode.ROUND_NUMBER), it.previous());
+						assertEquals(g.getMove(p, -3, GameState.MoveAccessMode.ROUND_NUMBER), it.next());
+						assertEquals(g.getMove(p, -2, GameState.MoveAccessMode.ROUND_NUMBER), it.next());
+						assertEquals(g.getMove(p, -1, GameState.MoveAccessMode.ROUND_NUMBER), it.next());
+						assertTrue(!it.hasNext());				
+						
+					}
 				}
 				
 			}
 			
 			pi++;
 			
-			try {
-				it = ext.moveIterator(p, false, 21);
-				fail("exception expected");
-			} catch (IllegalArgumentException e) { }
-			
-			
-			// mrx flat iterator testen
-			it = ext.moveIterator(mrX, true, 0);
-			int i = 0;
-			while (it.hasNext()) {
-				it.next();
-				i++;
-			}
-			assertEquals(22, i); // weil er zwei double moves dabei hat.
-			
 		}
+		
+		// mrx flat iterator testen
+		it = ext.moveIterator(mrX, true, 0);
+		int i = 0;
+		while (it.hasNext()) {
+			it.next();
+			i++;
+		}
+		assertEquals(22, i); // weil er zwei double moves dabei hat.
 		
 	}
 

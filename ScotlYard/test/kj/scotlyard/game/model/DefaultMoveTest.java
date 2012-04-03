@@ -11,7 +11,7 @@ import kj.scotlyard.game.model.items.Item;
 
 import org.junit.Test;
 
-public class TheMoveTest {
+public class DefaultMoveTest {
 	
 	TheMoveProducer prod = TheMoveProducer.createInstance();
 	

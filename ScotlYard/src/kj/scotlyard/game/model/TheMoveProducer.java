@@ -16,12 +16,12 @@ import kj.scotlyard.game.model.items.Ticket;
 public class TheMoveProducer {
 	
 	private List<Move> subMoves = new LinkedList<>();
+	
+	private TheMoveProducer() { }
 
 	/**
 	 * Creates and returns a new instance of TheMoveProducer.
 	 * At least every thread should have it's own Producer.
-	 * Using the default constructer instead of this method
-	 * has the exactly same effect. 
 	 * @return a new instance to work with
 	 */
 	public static TheMoveProducer createInstance() {
