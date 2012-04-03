@@ -9,7 +9,7 @@ import org.apache.commons.attributes.DefaultSealable;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.model.items.Item;
+import kj.scotlyard.game.model.item.Item;
 
 public class DefaultMove extends DefaultSealable implements Move {
 	

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.attributes.Sealable;
 
-import kj.scotlyard.game.model.items.Item;
+import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
 

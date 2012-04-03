@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import kj.scotlyard.game.model.items.Item;
+import kj.scotlyard.game.model.item.Item;
 
 public class TheGame extends AbstractGameState implements Game {
 

@@ -3,7 +3,7 @@ package kj.scotlyard.game.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import kj.scotlyard.game.model.items.Item;
+import kj.scotlyard.game.model.item.Item;
 
 /**
  * This class implements the listener handling. It organizes the listeners in
