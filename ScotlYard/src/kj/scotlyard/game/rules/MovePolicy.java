@@ -5,8 +5,8 @@ import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.items.Item;
-import kj.scotlyard.game.model.items.Ticket;
+import kj.scotlyard.game.model.item.Item;
+import kj.scotlyard.game.model.item.Ticket;
 
 public interface MovePolicy {	
 	

@@ -19,11 +19,11 @@ import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
 import kj.scotlyard.game.model.TheMoveProducer;
-import kj.scotlyard.game.model.items.BusTicket;
-import kj.scotlyard.game.model.items.DoubleMoveCard;
-import kj.scotlyard.game.model.items.TaxiTicket;
-import kj.scotlyard.game.model.items.Ticket;
-import kj.scotlyard.game.model.items.UndergroundTicket;
+import kj.scotlyard.game.model.item.BusTicket;
+import kj.scotlyard.game.model.item.DoubleMoveCard;
+import kj.scotlyard.game.model.item.TaxiTicket;
+import kj.scotlyard.game.model.item.Ticket;
+import kj.scotlyard.game.model.item.UndergroundTicket;
 
 import org.junit.Before;
 import org.junit.Test;

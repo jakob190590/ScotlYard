@@ -5,9 +5,9 @@ import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
-import kj.scotlyard.game.model.items.BlackTicket;
-import kj.scotlyard.game.model.items.DoubleMoveCard;
-import kj.scotlyard.game.model.items.Item;
+import kj.scotlyard.game.model.item.BlackTicket;
+import kj.scotlyard.game.model.item.DoubleMoveCard;
+import kj.scotlyard.game.model.item.Item;
 
 import org.junit.Test;
 

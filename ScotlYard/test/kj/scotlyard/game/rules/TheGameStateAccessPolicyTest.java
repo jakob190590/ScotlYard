@@ -11,8 +11,8 @@ import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
 import kj.scotlyard.game.model.TheMoveProducer;
-import kj.scotlyard.game.model.items.DoubleMoveCard;
-import kj.scotlyard.game.model.items.TaxiTicket;
+import kj.scotlyard.game.model.item.DoubleMoveCard;
+import kj.scotlyard.game.model.item.TaxiTicket;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -3,7 +3,7 @@ package kj.scotlyard.game.model;
 import java.util.List;
 import java.util.Set;
 
-import kj.scotlyard.game.model.items.Item;
+import kj.scotlyard.game.model.item.Item;
 
 
 public interface GameState {
