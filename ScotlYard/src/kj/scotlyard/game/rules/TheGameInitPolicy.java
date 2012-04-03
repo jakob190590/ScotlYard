@@ -9,12 +9,12 @@ import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.items.BlackTicket;
-import kj.scotlyard.game.model.items.BusTicket;
-import kj.scotlyard.game.model.items.DoubleMoveCard;
-import kj.scotlyard.game.model.items.Item;
-import kj.scotlyard.game.model.items.TaxiTicket;
-import kj.scotlyard.game.model.items.UndergroundTicket;
+import kj.scotlyard.game.model.item.BlackTicket;
+import kj.scotlyard.game.model.item.BusTicket;
+import kj.scotlyard.game.model.item.DoubleMoveCard;
+import kj.scotlyard.game.model.item.Item;
+import kj.scotlyard.game.model.item.TaxiTicket;
+import kj.scotlyard.game.model.item.UndergroundTicket;
 
 public class TheGameInitPolicy implements GameInitPolicy {
 	
