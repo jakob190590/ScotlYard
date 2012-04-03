@@ -8,30 +8,8 @@ import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.util.GameStateExtension;
 
-public class TheGameWinPolicy implements GameWinPolicy {
-	
-	/** Is MrX surrounded in the specified round? */
-	private boolean isMrXSurrounded(GameState gameState, GameGraph gameGraph, int roundNumber) {
-		
-		GameStateExtension ext = new GameStateExtension(gameState);
-		List<Move> round = ext.getMoves(roundNumber, false);
-		// damit hast du eine liste der moves der round (erstes element ist move von mrX).
-		
-		// TODO implement, korbi?
-		
-		return false;
-	}
-	
-	private boolean canMove(DetectivePlayer detective) {
-		// fuer jede anliegende edge pruefen, ob ticket da is
-		// wenn ticket da is, pruefen, ob benachbarte station frei is (kein anderer detektiv)
-		
-		// TODO implement, korbi?
-		
-		return false;
-	}
+public class TheGameWinPolicy implements GameWinPolicy {	
 
 	@Override
 	public GameWin isGameWon(GameState gameState, GameGraph gameGraph) {
@@ -41,7 +19,7 @@ public class TheGameWinPolicy implements GameWinPolicy {
 		
 		// TODO zu spielbeginn is es gefaehrlich
 		Move mrXLastMove = gameState.getLastMove(mrX);
-		
+		MovePolicy movePolicy = new TheMovePolicy();
 		
 		// Detectives win wenn 
 		// - MrX umzingelt ist (TODO Beleg fehlt mir)
@@ -63,7 +41,7 @@ public class TheGameWinPolicy implements GameWinPolicy {
 		
 		// mrX umzingelt
 		if (gameState.getCurrentPlayer() == mrX 
-				&& isMrXSurrounded(gameState, gameGraph, gameState.getCurrentRoundNumber() - 1)) {
+				&& movePolicy.canMove(gameState, gameGraph, mrX)) {
 			
 			// d.h.wenn jetzt wieder mrX dran ist,
 			// er aber umzingelt ist...
@@ -88,7 +66,7 @@ public class TheGameWinPolicy implements GameWinPolicy {
 		// detectives koennen nimmer ziehen
 		boolean noDetectiveCanMove = true;
 		for (DetectivePlayer detective : gameState.getDetectives()) {
-			if (canMove(detective)) {
+			if (movePolicy.canMove(gameState, gameGraph, detective)) {
 				noDetectiveCanMove = false;
 				break;
 			}
