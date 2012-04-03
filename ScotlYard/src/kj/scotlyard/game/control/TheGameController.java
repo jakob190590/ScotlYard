@@ -99,7 +99,6 @@ void setState(GameController sender, GameStatus status, GameWin win) {
 		return game;
 	}
 	
-	@Override
 	public void equipGameStateRequester(GameStateRequester requester) {
 		if (requester instanceof DetectiveAi) {
 			requester.setGameState(getRules().getGameStateAccessPolicy().createGameStateForDetectives(getGame()));
@@ -108,20 +107,15 @@ void setState(GameController sender, GameStatus status, GameWin win) {
 			requester.setGameState(new DefaultGameState(getGame()));
 		}
 	}
-	
 
-
-	@Override
 	public GameGraph getGameGraph() {
 		return gameGraph;
 	}
 		
-	@Override
 	public Rules getRules() {
 		return rules;
 	}
 	
-	@Override
 	public void setRules(Rules rules) {
 		this.rules = rules;
 	}
@@ -138,7 +132,6 @@ void setState(GameController sender, GameStatus status, GameWin win) {
 	}
 
 	
-	@Override
 	public UndoManager getUndoManager() {
 		return undoManager;
 	}
@@ -206,42 +199,13 @@ abstract class GameControllerState extends GameController {
 		this.controller = controller;
 	}
 	
-	private void raiseUnsupportedException() {
-		throw new UnsupportedOperationException("Unsupported operation. Use TheGameController's method instead.");		
-	}
-	
-	protected TheGameController getController() { // TODO oder doch lieber GAME controller
+	protected TheGameController getController() {
 		return controller;
-	}
-
-	@Override
-	public void equipGameStateRequester(GameStateRequester requester) {		
-		raiseUnsupportedException();
 	}
 
 	@Override
 	public GameWin getWin() {
 		return controller.getWin();
-	}
-
-	@Override
-	public UndoManager getUndoManager() {
-		return controller.getUndoManager();
-	}
-	
-	@Override
-	public GameGraph getGameGraph() {
-		return controller.getGameGraph();
-	}
-
-	@Override
-	public Rules getRules() {
-		return controller.getRules();
-	}
-	
-	@Override
-	public void setRules(Rules rules) {
-		raiseUnsupportedException();
 	}
 	
 }
@@ -270,18 +234,10 @@ class InGameControllerState extends GameControllerState {
 	}
 
 	@Override
-	public void equipGameStateRequester(GameStateRequester requester) { }
-
-	@Override
 	public GameStatus getStatus() {
 		return GameStatus.IN_GAME;
 	}
 	
-	@Override
-	public UndoManager getUndoManager() {
-		return null;
-	}
-
 	@Override
 	public void newGame() {
 		throw new IllegalStateException("For this operation we must be NOT_IN_GAME. Finish the game first or use abort.");
@@ -337,12 +293,12 @@ class InGameControllerState extends GameControllerState {
 	public void move(Move move) {
 		
 		Game game = getController().getGame();
-		GameGraph graph = getGameGraph();
+		GameGraph graph = getController().getGameGraph();
 		
 		// Move abfertigen (fehlende Params setzen)
 		
 		
-		MovePolicy movePolicy = getRules().getMovePolicy();
+		MovePolicy movePolicy = getController().getRules().getMovePolicy();
 		
 		movePolicy.checkMove(game, graph, move);
 		// TODO move.seal() hier oder beim Add im model?
@@ -354,14 +310,14 @@ class InGameControllerState extends GameControllerState {
 		game.getMoves().add(move);
 		
 		// Current sachen nach Move aktualisieren
-		Player nextPlayer = getRules().getTurnPolicy().getNextPlayer(game);
-		int nextRoundNumber = getRules().getTurnPolicy().getNextRoundNumber(game);
+		Player nextPlayer = getController().getRules().getTurnPolicy().getNextPlayer(game);
+		int nextRoundNumber = getController().getRules().getTurnPolicy().getNextRoundNumber(game);
 		
 		game.setCurrentPlayer(nextPlayer);
 		game.setCurrentRoundNumber(nextRoundNumber);
 		
 		// GameWin ermitteln
-		GameWin win = getRules().getGameWinPolicy().isGameWon(game, graph);
+		GameWin win = getController().getRules().getGameWinPolicy().isGameWon(game, graph);
 		getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win); 		
 	}
 
@@ -404,16 +360,8 @@ class NotInGameControllerState extends GameControllerState {
 
 
 	@Override
-	public void equipGameStateRequester(GameStateRequester requester) { }
-
-	@Override
 	public GameStatus getStatus() {
 		return GameStatus.NOT_IN_GAME;
-	}
-
-	@Override
-	public UndoManager getUndoManager() {
-		return null;
 	}
 
 	@Override
@@ -469,7 +417,7 @@ class NotInGameControllerState extends GameControllerState {
 	@Override
 	public void start() {
 		Game game = getController().getGame();
-		GameGraph graph = getGameGraph();
+		GameGraph graph = getController().getGameGraph();
 		TheMoveProducer moveProducer = TheMoveProducer.createInstance();
 				
 		if (game.getMoves().size() > 0) {
@@ -477,8 +425,8 @@ class NotInGameControllerState extends GameControllerState {
 		}
 		
 		// Valid GameState -> proceed with initialization
-		GameInitPolicy initPolicy = getRules().getGameInitPolicy();
-		TurnPolicy turnPolicy = getRules().getTurnPolicy();
+		GameInitPolicy initPolicy = getController().getRules().getGameInitPolicy();
+		TurnPolicy turnPolicy = getController().getRules().getTurnPolicy();
 		
 		game.setCurrentRoundNumber(GameState.INITIAL_ROUND_NUMBER);
 		while (turnPolicy.getNextRoundNumber(game) == GameState.INITIAL_ROUND_NUMBER) {
@@ -491,7 +439,7 @@ class NotInGameControllerState extends GameControllerState {
 			game.getMoves().add(initMove);
 		}
 
-		GameWin win = getRules().getGameWinPolicy().isGameWon(game, graph);
+		GameWin win = getController().getRules().getGameWinPolicy().isGameWon(game, graph);
 		getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
 		
 	}
