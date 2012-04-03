@@ -32,7 +32,7 @@ public class MrXTrackerTest {
 	GameStateExtension ext;
 	MrXTracker tr;
 	
-	TheMoveProducer prod = new TheMoveProducer();
+	TheMoveProducer prod = TheMoveProducer.createInstance();
 	
 	
 	MrXPlayer mrX;
