@@ -18,7 +18,7 @@ import org.junit.Test;
 
 public class AbstractGameStateTest {
 	
-	class TestStateListener implements StateListener {
+	class TestStateListener implements TurnListener {
 
 		GameState gs;
 		

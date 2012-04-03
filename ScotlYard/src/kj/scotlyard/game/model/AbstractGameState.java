@@ -18,7 +18,7 @@ import kj.scotlyard.game.model.item.Item;
  */
 public abstract class AbstractGameState implements GameState {
 
-	private final Set<StateListener> stateListeners = new HashSet<StateListener>();
+	private final Set<TurnListener> stateListeners = new HashSet<TurnListener>();
 
 	private final Set<PlayerListener> playerListeners = new HashSet<PlayerListener>();
 
@@ -28,12 +28,12 @@ public abstract class AbstractGameState implements GameState {
 
 	// Informer, that informs the registered listeners
 
-	private final StateListener stateListenerInformer = new StateListener() {
+	private final TurnListener stateListenerInformer = new TurnListener() {
 
 		@Override
 		public void currentRoundChanged(GameState gameState,
 				int oldRoundNumber, int newRoundNumber) {
-			for (StateListener l : stateListeners) {
+			for (TurnListener l : stateListeners) {
 				l.currentRoundChanged(AbstractGameState.this, oldRoundNumber,
 						newRoundNumber);
 			}
@@ -42,7 +42,7 @@ public abstract class AbstractGameState implements GameState {
 		@Override
 		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
 				Player newPlayer) {
-			for (StateListener l : stateListeners) {
+			for (TurnListener l : stateListeners) {
 				l.currentPlayerChanged(AbstractGameState.this, oldPlayer,
 						newPlayer);
 			}
@@ -128,7 +128,7 @@ public abstract class AbstractGameState implements GameState {
 
 	// Access to listeners informer
 
-	protected StateListener getStateListenerInformer() {
+	protected TurnListener getStateListenerInformer() {
 		return stateListenerInformer;
 	}
 
@@ -145,7 +145,7 @@ public abstract class AbstractGameState implements GameState {
 	}
 
 	// TODO sind folgende getter notwendig?
-	protected Set<StateListener> getStateListeners() {
+	protected Set<TurnListener> getStateListeners() {
 		return stateListeners;
 	}
 
@@ -164,12 +164,12 @@ public abstract class AbstractGameState implements GameState {
 	// Listener registration
 
 	@Override
-	public void addStateListener(StateListener listener) {
+	public void addStateListener(TurnListener listener) {
 		stateListeners.add(listener);
 	}
 
 	@Override
-	public void removeStateListener(StateListener listener) {
+	public void removeStateListener(TurnListener listener) {
 		stateListeners.remove(listener);
 	}
 
