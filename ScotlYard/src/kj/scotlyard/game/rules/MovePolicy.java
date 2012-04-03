@@ -10,6 +10,8 @@ import kj.scotlyard.game.model.item.Ticket;
 
 public interface MovePolicy {	
 	
+	boolean canMove(GameState gameState, GameGraph gameGraph, Player player);
+	
 	boolean isTicketValidForConnection(Ticket ticket, ConnectionEdge connection);
 	
 	void checkMove(GameState gameState, GameGraph gameGraph, Move move) throws IllegalMoveException;

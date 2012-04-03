@@ -19,7 +19,7 @@ import kj.scotlyard.game.model.item.UndergroundTicket;
 import kj.scotlyard.game.util.GameStateExtension;
 
 public class TheMovePolicy implements MovePolicy {
-
+		
 	private void throwIllegalMove(boolean doRaiseException, String message) {
 		// TODO evtl move als argument, und hinter message anhaengen.
 		// ist aber kritisch, weil dadurch der move vllt in die falschen "haende" geraten koennt
@@ -52,6 +52,18 @@ public class TheMovePolicy implements MovePolicy {
 		throwIllegalMove(!gameState.getItems(move.getPlayer()).contains(t), 
 				"The ticket you are providing is not your's. You must have stolen it.");
 		
+	}
+
+	@Override
+	public boolean canMove(GameState gameState, GameGraph gameGraph,
+			Player player) {
+
+		// fuer jede anliegende edge pruefen, ob ticket da is
+		// wenn ticket da is, pruefen, ob benachbarte station frei is (kein anderer detektiv)
+		
+		// TODO implement, korbi?
+
+		return true;
 	}
 	
 	@Override
@@ -208,5 +220,6 @@ public class TheMovePolicy implements MovePolicy {
 		// else: item == null or MrX' Move
 		return null;
 	}
+
 
 }
