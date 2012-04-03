@@ -33,7 +33,7 @@ public class GameStateExtensionTest {
 	Game g;
 	GameStateExtension ext;
 	
-	TheMoveProducer prod = new TheMoveProducer();
+	TheMoveProducer prod = TheMoveProducer.createInstance();
 	
 	
 	MrXPlayer mrX;
