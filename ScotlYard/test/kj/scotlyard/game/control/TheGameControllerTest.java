@@ -27,7 +27,7 @@ public class TheGameControllerTest {
 
 	Game g;
 	GameGraph gg;
-	GameController ctrl;	
+	TheGameController ctrl;	
 	
 	GameStateExtension ext;
 	
