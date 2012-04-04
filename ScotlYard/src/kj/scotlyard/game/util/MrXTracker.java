@@ -65,23 +65,7 @@ public class MrXTracker {
 		}
 		return list;
 	}
-	
-	public int getRoundsSince() {
-		MrXPlayer mrX = gameState.getMrX();
-		Move last = gameState.getLastMove(mrX);
-		Move lastKnown = getLastKnownMove();
 		
-		// TODO erst mal spezifikation festlegen!
-		int result = 0;
-		if (last != null) {
-			if (lastKnown == null) {
-				result = last.getRoundNumber();
-			}
-		}
-		
-		return result;
-	}
-	
 	public Set<StationVertex> getPossiblePositions() {
 		// ohne bewertung, denn das ist aufgabe der AI!
 		
