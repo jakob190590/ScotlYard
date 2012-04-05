@@ -21,7 +21,9 @@ public class TheTurnPolicy implements TurnPolicy {
 			return players.get(0);
 		}
 		
-		return players.get(i + 1);		
+		p = players.get(i + 1);
+		//if (new TheMovePolicy().canMove(gameState, gameGraph, p));
+		return p;		
 	}
 
 	@Override
