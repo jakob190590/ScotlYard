@@ -127,15 +127,11 @@ Grundsätze
 \end_layout
 
 \begin_layout Itemize
-GameController ist der einzige mit direktem Zugriff auf Game
-\end_layout
-
-\begin_layout Itemize
 GameState speichert den Spielverlauf und -zustand
 \end_layout
 
 \begin_layout Itemize
-Game ist ein GameState, der Veränderungen zulässt
+GameState informiert Listener über Änderungen
 \end_layout
 
 \begin_layout Itemize
@@ -148,27 +144,11 @@ Eingeschränkte Moves zur Verfügung zu stellen ist Aufgabe des jeweiligen
 \end_layout
 
 \begin_layout Itemize
-GameState informiert Listener über Änderungen
+Game ist ein GameState, der Veränderungen zulässt
 \end_layout
 
 \begin_layout Itemize
-Rules und AI brauchen Default-Konstruktor (Class.forName(
-\begin_inset Quotes gld
-\end_inset
-
-...
-\begin_inset Quotes grd
-\end_inset
-
-).createInstance())
-\end_layout
-
-\begin_layout Itemize
-GUI/Controller besitzen eine Instanz des GameControllers
-\end_layout
-
-\begin_layout Itemize
-DetectiveAI denkt für alle Detectives
+GameController ist der einzige mit direktem Zugriff auf Game
 \end_layout
 
 \begin_layout Itemize
@@ -186,8 +166,28 @@ GameState ändert sich nicht von selbst
 
 \end_deeper
 \begin_layout Itemize
+GUI/Controller besitzen eine Instanz des GameControllers
+\end_layout
+
+\begin_layout Itemize
+Rules und AI brauchen Default-Konstruktor (Class.forName(
+\begin_inset Quotes gld
+\end_inset
+
+...
+\begin_inset Quotes grd
+\end_inset
+
+).createInstance())
+\end_layout
+
+\begin_layout Itemize
 AIs haben keine Ahnung von der Außenwelt und haben nur ihren persönlichen
  GameState und GameGraph
+\end_layout
+
+\begin_layout Itemize
+DetectiveAI denkt für alle Detectives
 \end_layout
 
 \begin_layout Itemize
@@ -396,6 +396,34 @@ Spielbeginn
 
 \begin_layout Subsubsection
 Spielzüge
+\end_layout
+
+\begin_layout Itemize
+movePolicy.checkMove(gameState, move)
+\end_layout
+
+\begin_layout Itemize
+Items weitergeben: movePolcy.getNextItemOwner(gameState, move, item)
+\end_layout
+
+\begin_layout Itemize
+Move zur Liste hinzufügen: gameState.getMoves().add(move)
+\end_layout
+
+\begin_layout Itemize
+gameWinPolicy.isGameWon(gameState, gameGraph)
+\end_layout
+
+\begin_layout Itemize
+turnPolicy.getNextPlayer/getNextRoundNumber
+\end_layout
+
+\begin_layout Itemize
+gameState.setCurrentPlayer/setCurrentRoundNumber
+\end_layout
+
+\begin_layout Itemize
+gameController.setState(gameStatus, gameWin)
 \end_layout
 
 \begin_layout Subsubsection
