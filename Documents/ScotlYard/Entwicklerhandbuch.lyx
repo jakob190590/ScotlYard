@@ -112,10 +112,112 @@ ngen und wie diese verwendet werden.
 
 \begin_layout Part
 Architektur und Schnittstellen
+\begin_inset Newline newline
+\end_inset
+
+ScotlYard (Core)
 \end_layout
 
 \begin_layout Chapter
 Architektur
+\end_layout
+
+\begin_layout Section
+Grundsätze
+\end_layout
+
+\begin_layout Itemize
+GameController ist der einzige mit direktem Zugriff auf Game
+\end_layout
+
+\begin_layout Itemize
+GameState speichert den Spielverlauf und -zustand
+\end_layout
+
+\begin_layout Itemize
+Game ist ein GameState, der Veränderungen zulässt
+\end_layout
+
+\begin_layout Itemize
+Für GameState gibt es Proxies mit eingeschränktem Zugriff
+\end_layout
+
+\begin_layout Itemize
+Eingeschränkte Moves zur Verfügung zu stellen ist Aufgabe des jeweiligen
+ Proxys
+\end_layout
+
+\begin_layout Itemize
+GameState informiert Listener über Änderungen
+\end_layout
+
+\begin_layout Itemize
+Rules und AI brauchen Default-Konstruktor (Class.forName(
+\begin_inset Quotes gld
+\end_inset
+
+...
+\begin_inset Quotes grd
+\end_inset
+
+).createInstance())
+\end_layout
+
+\begin_layout Itemize
+GUI/Controller besitzen eine Instanz des GameControllers
+\end_layout
+
+\begin_layout Itemize
+DetectiveAI denkt für alle Detectives
+\end_layout
+
+\begin_layout Itemize
+GameController verwaltet Model (GameState)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+er erzeugt Player
+\end_layout
+
+\begin_layout Itemize
+GameState ändert sich nicht von selbst
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+AIs haben keine Ahnung von der Außenwelt und haben nur ihren persönlichen
+ GameState und GameGraph
+\end_layout
+
+\begin_layout Itemize
+GameController ist Observable, um Clients über Änderungen des Spielzustands
+ (GameStatus, GameWin) zu informieren
+\end_layout
+
+\begin_layout Itemize
+Es ist nicht Aufgabe der Rules, einen inkonsistenten GameState zu bemerken
+ (das wäre aussichtslos) -- aber wenn sie zufällig was merken: CorruptGameStateE
+xception
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes gld
+\end_inset
+
+To carry out a Move
+\begin_inset Quotes grd
+\end_inset
+
+ heißt add(Move) 
+\emph on
+und
+\emph default
+ Current Player/Round weiterschalten
+\end_layout
+
+\begin_layout Itemize
+Die Standardimplementierung ist stark an JGraphT gekoppelt
 \end_layout
 
 \begin_layout Chapter
@@ -280,8 +382,8 @@ Grundprinzipien
 \end_layout
 
 \begin_layout Standard
-Es muss wenige Grundprinzipien im Spiel geben, damit die Abtrennung der
- Regeln vom Rest funktioniert.
+Es muss wenige Grundprinzipien im Spiel geben, damit Regeln überhaupt sinn
+ machen und die Abtrennung vom Rest funktioniert.
 \end_layout
 
 \begin_layout Subsection
@@ -314,6 +416,42 @@ Utilities
 
 \begin_layout Part
 Standardimplementierung
+\begin_inset Newline newline
+\end_inset
+
+(
+\begin_inset Quotes gld
+\end_inset
+
+The Scotland Yard
+\begin_inset Quotes grd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Section
+Begriffe
+\end_layout
+
+\begin_layout Itemize
+Initial Move
+\end_layout
+
+\begin_layout Itemize
+Single Move
+\end_layout
+
+\begin_layout Itemize
+Multi Move
+\end_layout
+
+\begin_layout Itemize
+Base Move
+\end_layout
+
+\begin_layout Itemize
+Sub Move
 \end_layout
 
 \begin_layout Part*
