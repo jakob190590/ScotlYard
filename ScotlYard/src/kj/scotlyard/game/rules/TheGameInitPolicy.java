@@ -43,7 +43,7 @@ public class TheGameInitPolicy implements GameInitPolicy {
 			GameGraph gameGraph, Player player) {
 		
 		// es gibt 18 startkarten, die verlost werden.
-		// TODO 
+		// TODO woher soll die regel wissen, welche vertex des graph die startpunkte sind?
 		return null;
 	}
 	
