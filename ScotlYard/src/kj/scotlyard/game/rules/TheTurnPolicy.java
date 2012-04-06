@@ -2,45 +2,78 @@ package kj.scotlyard.game.rules;
 
 import java.util.List;
 
+import kj.scotlyard.game.graph.GameGraph;
+import kj.scotlyard.game.model.CorruptGameStateException;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Player;
 
 public class TheTurnPolicy implements TurnPolicy {
+	
+	private MovePolicy movePolicy = new TheMovePolicy();
 
 	@Override
-	public Player getNextPlayer(GameState gameState) {
+	public Player getNextPlayer(GameState gameState, GameGraph gameGraph) {
+		
 		List<Player> players = gameState.getPlayers();
-		Player p = gameState.getCurrentPlayer();
+		Player player = gameState.getCurrentPlayer();
 		
-		if (p == null) {
-			return players.get(0);
+		// Zu Spielbeginn
+		if (player == null) { // oder getMoves().isEmpty();
+			return gameState.getMrX();
 		}
 		
-		int i = players.indexOf(p);
-		if (i < 0 || i >= (players.size() - 1)) {
-			return players.get(0);
+		boolean found = false;
+		for (Player p : players) {
+			if (found && movePolicy.canMove(gameState, gameGraph, p)) {
+				return p;
+			}
+			
+			if (p == player) {
+				found = true;
+			}
 		}
 		
-		p = players.get(i + 1);
-		//if (new TheMovePolicy().canMove(gameState, gameGraph, p));
-		return p;		
+		if (found) {
+			// Current Player gefunden, aber alle folgenden Detectives koennen nicht ziehen
+			// -> dann ist wieder MrX (der Erste) dran.
+			return gameState.getMrX();
+		} else {
+			// Das ist so eindeutig, das muss gemeldet werden.
+			throw new CorruptGameStateException("Current player is not part of the game.");			
+		}
 	}
 
 	@Override
-	public int getNextRoundNumber(GameState gameState) {
+	public int getNextRoundNumber(GameState gameState, GameGraph gameGraph) {
+
 		List<Player> players = gameState.getPlayers();
-		Player p = gameState.getCurrentPlayer();
-		int r = gameState.getCurrentRoundNumber();
+		Player player = gameState.getCurrentPlayer();
 		
-		if (p == null || r < GameState.INITIAL_ROUND_NUMBER) {
+		// Zu Spielbeginn
+		if (player == null) { // oder getMoves().isEmpty();
 			return GameState.INITIAL_ROUND_NUMBER;
 		}
 		
-		if (players.indexOf(p) == (players.size() - 1)) {
-			return r + 1;
+		boolean found = false;
+		for (Player p : players) {
+			if (found && movePolicy.canMove(gameState, gameGraph, p)) {
+				return gameState.getCurrentRoundNumber();
+			}
+			
+			if (p == player) {
+				found = true;
+			}
 		}
 		
-		return r;
+		if (found) {
+			// Current Player gefunden, aber alle folgenden Detectives koennen nicht ziehen
+			// -> dann ist wieder MrX (der Erste) dran.
+			return gameState.getCurrentRoundNumber() + 1;
+		} else {
+			// Das ist so eindeutig, das muss gemeldet werden.
+			throw new CorruptGameStateException("Current player is not part of the game.");			
+		}
+		
 	}
 
 }
