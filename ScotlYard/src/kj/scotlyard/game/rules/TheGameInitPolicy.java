@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.BlackTicket;
@@ -39,7 +39,7 @@ public class TheGameInitPolicy implements GameInitPolicy {
 	}
 
 	@Override
-	public StationVertex suggestInitialStation(GameState gameState,
+	public Station suggestInitialStation(GameState gameState,
 			GameGraph gameGraph, Player player) {
 		
 		// es gibt 18 startkarten, die verlost werden.

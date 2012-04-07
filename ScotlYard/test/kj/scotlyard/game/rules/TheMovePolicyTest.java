@@ -2,9 +2,9 @@ package kj.scotlyard.game.rules;
 
 import static org.junit.Assert.*;
 
-import kj.scotlyard.game.graph.ConnectionEdge;
+import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
@@ -44,9 +44,9 @@ public class TheMovePolicyTest {
 	Ticket tt, ut, bt, blt;
 	DoubleMoveCard dmc;
 	
-	StationVertex s1, s2, s3, s4;
-	ConnectionEdge tc1, uc1, bc1, fc1;
-	ConnectionEdge tc2, uc2, bc2, fc2;
+	Station s1, s2, s3, s4;
+	Connection tc1, uc1, bc1, fc1;
+	Connection tc2, uc2, bc2, fc2;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -74,10 +74,10 @@ public class TheMovePolicyTest {
 			g.setItems(p, r.getGameInitPolicy().createItemSet(g, p));
 		}
 		
-		s1 = new StationVertex();
-		s2 = new StationVertex();
-		s3 = new StationVertex();
-		s4 = new StationVertex();
+		s1 = new Station();
+		s2 = new Station();
+		s3 = new Station();
+		s4 = new Station();
 		
 		tc1 = new TaxiConnection();
 		uc1 = new UndergroundConnection();

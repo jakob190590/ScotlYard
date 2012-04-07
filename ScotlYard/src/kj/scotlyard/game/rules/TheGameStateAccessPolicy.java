@@ -9,8 +9,8 @@ import java.util.Set;
 
 import org.apache.commons.attributes.DefaultSealable;
 
-import kj.scotlyard.game.graph.ConnectionEdge;
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Connection;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.model.AbstractGameState;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.DefaultGameState;
@@ -121,7 +121,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		}
 
 		@Override
-		public StationVertex getStation() {
+		public Station getStation() {
 			if (uncovered) {
 				return move.getStation();
 			}
@@ -129,17 +129,17 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		}
 
 		@Override
-		public void setStation(StationVertex station) {
+		public void setStation(Station station) {
 			checkSealed();
 		}
 
 		@Override
-		public ConnectionEdge getConnection() {
+		public Connection getConnection() {
 			throw new IllegalAccessException("Move detail cannot be accessed.");
 		}
 
 		@Override
-		public void setConnection(ConnectionEdge connection) {
+		public void setConnection(Connection connection) {
 			checkSealed();
 		}
 

@@ -3,10 +3,9 @@ package kj.scotlyard.game.util;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.ListIterator;
 
 import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
@@ -16,9 +15,8 @@ import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
 import kj.scotlyard.game.model.TheMoveProducer;
-import kj.scotlyard.game.model.items.DoubleMoveCard;
-import kj.scotlyard.game.model.items.TaxiTicket;
-import kj.scotlyard.game.model.items.Ticket;
+import kj.scotlyard.game.model.item.DoubleMoveCard;
+import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
 
@@ -63,24 +61,24 @@ public class MrXTrackerTest {
 		for (int i = 0; i < 20; i++) {
 			for (Player p : g.getPlayers()) {
 				ms[j] = prod.createSingleMove(p, i, i,
-						new StationVertex(), new TaxiConnection(), new TaxiTicket());
+						new Station(), new TaxiConnection(), new TaxiTicket());
 				j++;
 			}
 		}
 
 		// round number 1
-		prod.addSubMove(new StationVertex(), new TaxiConnection(), new TaxiTicket());
-		prod.addSubMove(new StationVertex(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
 		ms[5] = prod.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
 
 		// round number 2
-		prod.addSubMove(new StationVertex(), new TaxiConnection(), new TaxiTicket());
-		prod.addSubMove(new StationVertex(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
 		ms[10] = prod.createMultiMove(mrX, 2, 3, new DoubleMoveCard());
 		
 		// round number 5
-		prod.addSubMove(new StationVertex(), new TaxiConnection(), new TaxiTicket());
-		prod.addSubMove(new StationVertex(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
 		ms[25] = prod.createMultiMove(mrX, 5, 7, new DoubleMoveCard());
 
 		// Move numbers fuer mrX neu anpassen (wegen den nachtraeglichen multi moves)
@@ -144,7 +142,7 @@ public class MrXTrackerTest {
 	}
 	
 	@Test
-	public final void testGetTicketsSince() {
+	public final void testGetMovesSince() {
 		
 		while (!g.getMoves().isEmpty()) {
 			
@@ -166,10 +164,13 @@ public class MrXTrackerTest {
 				uncover = 3;
 			}
 			
-			List<Ticket> ts = tr.getTicketsSince();
+			List<Move> ts = tr.getMovesSince();
 			
 			if (moveNumber >= 3) {
 				assertEquals(ext.getLastMoveFlat(mrX).getMoveNumber() - uncover, ts.size());
+				if (ts.size() > 0) {
+					assertEquals(ext.getLastMoveFlat(mrX), ts.get(ts.size() - 1));
+				}
 			}
 			
 			if (moveNumber < 3 || m == ext.getLastMoveFlat(mrX)) {
@@ -180,15 +181,15 @@ public class MrXTrackerTest {
 			} else {
 				
 				// erstes ticket
-				assertEquals(g.getMove(mrX, uncover + 1, GameState.MoveAccessMode.MOVE_NUMBER).getItem(), ts.get(0));
+				assertEquals(g.getMove(mrX, uncover + 1, GameState.MoveAccessMode.MOVE_NUMBER).getItem(), ts.get(0).getItem());
 				
 				// letztes ticket
-				assertEquals(ext.getLastMoveFlat(mrX).getItem(), ts.get(ts.size() - 1));
+				assertEquals(ext.getLastMoveFlat(mrX).getItem(), ts.get(ts.size() - 1).getItem());
 				
 				assertEquals(mrX, m.getPlayer());
 				assertEquals(uncover, m.getMoveNumber());
 				assertEquals(m, tr.getLastKnownMove());
-			}
+			}			
 			
 			g.getMoves().remove(GameState.LAST_MOVE);
 		}

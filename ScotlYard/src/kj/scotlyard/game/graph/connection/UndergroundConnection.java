@@ -1,7 +1,7 @@
 package kj.scotlyard.game.graph.connection;
 
-import kj.scotlyard.game.graph.ConnectionEdge;
+import kj.scotlyard.game.graph.Connection;
 
-public class UndergroundConnection extends ConnectionEdge {
+public class UndergroundConnection extends Connection {
 
 }
