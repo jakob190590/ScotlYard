@@ -240,10 +240,18 @@ Spielzustand
 Spielgraph
 \end_layout
 
+\begin_layout Standard
+Der Graph modelliert das Spielfeld.
+\end_layout
+
 \begin_layout Subsection
 
 \noun on
 JGraphT
+\end_layout
+
+\begin_layout Standard
+Als Graph-Toolkit kommt JGraphT zum Einsatz.
 \end_layout
 
 \begin_layout Subsection
@@ -292,20 +300,32 @@ Grundlage
 \end_layout
 
 \begin_layout Standard
-Eine grundlegende Anpassung ist zunächst, die Superklasse von kj.scotlyard.game.gra
-ph.GameGraph abzuändern zur Graph-Schnittstelle des verwendeten Toolkits.
+Die grundlegendsten Anpassung müssen im Package kj.scotlyard.game.graph gemacht
+ werden.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Enumerate
+Zunächst muss die Superklasse von GameGraph abgeändert werden zur Graph-Schnitts
+telle des verwendeten Toolkits.
+\begin_inset Newline newline
+\end_inset
+
 public interface GameGraph extends UndirectedGraph { }
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout Standard
 wird damit zu
+\begin_inset Newline newline
+\end_inset
+
+public interface GameGraph extends OtherToolkitsGraphInterface { }
 \end_layout
 
-\begin_layout Standard
-public interface GameGraph extends OtherToolkitsGraphInterface { }
+\begin_layout Enumerate
+Außerdem definieren die Schnittstellen StationVertex und ConnectionEdge
+ grundlegende Methoden, die den Zugriff auf den Graph vereinfachen.
+ Die Implementierung in Station und Connection verwendet die Graph-Schnittstelle
+, und muss bei Verwendung eines anderen Toolkits natürlich anders aussehen.
 \end_layout
 
 \begin_layout Subsubsection
@@ -314,8 +334,9 @@ Keine Änderungen im Model
 
 \begin_layout Standard
 Im Model (kj.scotlyard.game.model.*) muss nichts verändert werden, denn diese
- Klassen beziehen sich ausschließlich auf Knoten und Kanten des Graphen.
- Diese sind aber von ScotlYard definiert; der Graph strukturiert sie nur.
+ Klassen beziehen sich ausschließlich auf Knoten und Kanten des Graphen
+ -- und diese sind ja in ScotlYard definiert; der Graph strukturiert sie
+ nur.
 \end_layout
 
 \begin_layout Subsubsection
@@ -335,10 +356,10 @@ Im Controller (kj.scotlyard.game.control.*) muss ebenfalls nichts verändert
 \end_layout
 
 \begin_layout Standard
-Das Interface in kj.scotlyard.game.rules.* ändert sich überhaupt nicht, in der
- Implementierung der Regeln müssen aber Anpassungen durchgeführt werden,
- denn die Regeln testen zum Beispiel, ob in einem Zug der nächste Knoten
- überhaupt erreichbar ist.
+Das Interface in kj.scotlyard.game.rules.* ändert sich überhaupt nicht.
+ In der Implementierung der Regeln müssen aber Anpassungen durchgeführt
+ werden, denn die Regeln testen zum Beispiel, ob durch einen Zug der nächste
+ Knoten überhaupt erreichbar ist.
 \end_layout
 
 \begin_layout Subsubsection
