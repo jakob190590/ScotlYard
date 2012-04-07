@@ -67,7 +67,7 @@ public class TheGameController extends GameController {
 		if (sender == state) {
 			
 			if (status == null || win == null) {
-				throw new IllegalArgumentException("GameStatus and GameWin must not be null.");
+				throw new NullPointerException("GameStatus and GameWin must not be null.");
 			}
 			
 			if (status != getStatus()) {
