@@ -1,5 +1,5 @@
 package kj.scotlyard.game.graph;
 
-public class StationVertex {
+public class Station {
 
 }

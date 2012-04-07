@@ -5,8 +5,8 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.ListIterator;
 
-import kj.scotlyard.game.graph.ConnectionEdge;
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Connection;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.UndergroundConnection;
@@ -63,22 +63,22 @@ public class GameStateExtensionTest {
 		for (int i = 0; i < 20; i++) {
 			for (Player p : g.getPlayers()) {
 				ms[j] = prod.createSingleMove(p, i, i,
-						new StationVertex(), new TaxiConnection(), new TaxiTicket());
+						new Station(), new TaxiConnection(), new TaxiTicket());
 				j++;
 			}
 		}
 
-		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+		prod.addSubMove(new Station(), new TaxiConnection(),
 				new TaxiTicket());
-		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+		prod.addSubMove(new Station(), new TaxiConnection(),
 				new TaxiTicket());
 		m2 = ms[5] = prod.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
 		m2.getMoves().get(0);
 		m2 = m2.getMoves().get(1);
 
-		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+		prod.addSubMove(new Station(), new TaxiConnection(),
 				new TaxiTicket());
-		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+		prod.addSubMove(new Station(), new TaxiConnection(),
 				new TaxiTicket());
 		m2 = ms[15] = prod.createMultiMove(mrX, 3, 4, new DoubleMoveCard());
 		m2.getMoves().get(0);
@@ -301,15 +301,15 @@ public class GameStateExtensionTest {
 	public final void testGetLastMoveFlat() {
 		Move m1, m2, m3;
 		
-		prod.addSubMove(new StationVertex(), new BusConnection(), new BusTicket());
-		prod.addSubMove(new StationVertex(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(), new BusConnection(), new BusTicket());
+		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
 		g.getMoves().add(m1 = prod.createMultiMove(mrX, 20, 22, new DoubleMoveCard()));
 		
-		prod.addSubMove(new StationVertex(), new BusConnection(), new BusTicket());
-		prod.addSubMove(new StationVertex(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(), new BusConnection(), new BusTicket());
+		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
 		g.getMoves().add(m2 = prod.createMultiMove(d1, 20, 20, new DoubleMoveCard()));
 		
-		g.getMoves().add(m3 = prod.createSingleMove(d2, 20, 20, new StationVertex(), new UndergroundConnection(), new UndergroundTicket()));
+		g.getMoves().add(m3 = prod.createSingleMove(d2, 20, 20, new Station(), new UndergroundConnection(), new UndergroundTicket()));
 		
 		assertEquals(m1.getMoves().get(1), ext.getLastMoveFlat(mrX));
 		assertEquals(m2.getMoves().get(1), ext.getLastMoveFlat(d1));
@@ -319,9 +319,9 @@ public class GameStateExtensionTest {
 	@Test
 	public final void testFlattenMove() { 
 		
-		prod.addSubMove(new StationVertex(), new TaxiConnection(), new TaxiTicket());
-		prod.addSubMove(new StationVertex(), new BusConnection(), new BusTicket());
-		prod.addSubMove(new StationVertex(), new UndergroundConnection(), new UndergroundTicket());
+		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(), new BusConnection(), new BusTicket());
+		prod.addSubMove(new Station(), new UndergroundConnection(), new UndergroundTicket());
 		Move m = prod.createMultiMove(new MrXPlayer(), 4, 4, new DoubleMoveCard());
 		
 		List<Move> ms;
@@ -339,9 +339,9 @@ public class GameStateExtensionTest {
 		// noch tiefere hierarchie testen
 		
 		Player p = new MrXPlayer();
-		StationVertex s = new StationVertex();
+		Station s = new Station();
 		Ticket t = new TaxiTicket();
-		ConnectionEdge c = new TaxiConnection();
+		Connection c = new TaxiConnection();
 		
 		Move m00 = prod.createInitialMove(p, s);
 		Move m01 = prod.createInitialMove(p, s);

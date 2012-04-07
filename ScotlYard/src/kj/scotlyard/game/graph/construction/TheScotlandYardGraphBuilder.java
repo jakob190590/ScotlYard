@@ -1,7 +1,7 @@
 package kj.scotlyard.game.graph.construction;
 
-import kj.scotlyard.game.graph.ConnectionEdge;
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Connection;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
@@ -10,32 +10,32 @@ import kj.scotlyard.game.graph.connection.UndergroundConnection;
 public class TheScotlandYardGraphBuilder implements ScotlandYardGraphBuilder {
 	
 	private ScotlandYardGraphFactory factory;
-	private StationVertex current;
+	private Station current;
 
 	public TheScotlandYardGraphBuilder(TheScotlandYardGraphFactory factory) {
 		this.factory = factory;
 	}
 	
-	private void link(StationVertex stationA, StationVertex stationB,
-			ConnectionEdge connection) {
+	private void link(Station stationA, Station stationB,
+			Connection connection) {
 		// TODO implement		
 	}
 
 	@Override
-	public StationVertex makeStation() {
+	public Station makeStation() {
 		current = factory.createStation();
 		return current;
 	}
 
 	@Override
-	public TaxiConnection makeTaxiConnectionTo(StationVertex station) {
+	public TaxiConnection makeTaxiConnectionTo(Station station) {
 		TaxiConnection conn = factory.createTaxiConnection();
 		link(current, station, conn);
 		return conn;
 	}
 
 	@Override
-	public BusConnection makeBusConnectionTo(StationVertex station) {
+	public BusConnection makeBusConnectionTo(Station station) {
 		BusConnection conn = factory.createBusConnection();
 		link(current, station, conn);
 		return conn;
@@ -43,14 +43,14 @@ public class TheScotlandYardGraphBuilder implements ScotlandYardGraphBuilder {
 
 	@Override
 	public UndergroundConnection makeUndergroundConnectionTo(
-			StationVertex station) {
+			Station station) {
 		UndergroundConnection conn = factory.createUndergroundConnection();
 		link(current, station, conn);
 		return conn;
 	}
 
 	@Override
-	public FerryConnection makeFerryConnectionTo(StationVertex station) {
+	public FerryConnection makeFerryConnectionTo(Station station) {
 		FerryConnection conn = factory.createFerryConnection();
 		link(current, station, conn);
 		return conn;
@@ -58,7 +58,7 @@ public class TheScotlandYardGraphBuilder implements ScotlandYardGraphBuilder {
 
 	@Override
 	public TaxiConnection makeTaxiConnectionToNewStation() {
-		StationVertex station = factory.createStation();
+		Station station = factory.createStation();
 		TaxiConnection conn = factory.createTaxiConnection();
 		link(current, station, conn);
 		gotoStation(station);
@@ -67,7 +67,7 @@ public class TheScotlandYardGraphBuilder implements ScotlandYardGraphBuilder {
 
 	@Override
 	public BusConnection makeBusConnectionToNewStation() {
-		StationVertex station = factory.createStation();
+		Station station = factory.createStation();
 		BusConnection conn = factory.createBusConnection();
 		link(current, station, conn);
 		gotoStation(station);
@@ -76,7 +76,7 @@ public class TheScotlandYardGraphBuilder implements ScotlandYardGraphBuilder {
 
 	@Override
 	public UndergroundConnection makeUndergroundConnectionToNewStation() {
-		StationVertex station = factory.createStation();
+		Station station = factory.createStation();
 		UndergroundConnection conn = factory.createUndergroundConnection();
 		link(current, station, conn);
 		gotoStation(station);
@@ -85,7 +85,7 @@ public class TheScotlandYardGraphBuilder implements ScotlandYardGraphBuilder {
 
 	@Override
 	public FerryConnection makeFerryConnectionToNewStation() {
-		StationVertex station = factory.createStation();
+		Station station = factory.createStation();
 		FerryConnection conn = factory.createFerryConnection();
 		link(current, station, conn);
 		gotoStation(station);
@@ -93,12 +93,12 @@ public class TheScotlandYardGraphBuilder implements ScotlandYardGraphBuilder {
 	}
 
 	@Override
-	public void gotoStation(StationVertex station) {
+	public void gotoStation(Station station) {
 		current = station;
 	}
 
 	@Override
-	public StationVertex getCurrentStation() {
+	public Station getCurrentStation() {
 		return current;
 	}
 

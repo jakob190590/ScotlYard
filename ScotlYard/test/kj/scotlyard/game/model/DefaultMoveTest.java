@@ -1,8 +1,8 @@
 package kj.scotlyard.game.model;
 
 import static org.junit.Assert.*;
-import kj.scotlyard.game.graph.ConnectionEdge;
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Connection;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.model.item.BlackTicket;
@@ -51,7 +51,7 @@ public class DefaultMoveTest {
 		} catch (Exception e) { }
 		
 		try {
-			m.setStation(new StationVertex());
+			m.setStation(new Station());
 			fail("method should be sealed, but is not.");
 		} catch (Exception e) { }
 		
@@ -74,7 +74,7 @@ public class DefaultMoveTest {
 	@Test
 	public void testTheMovePlayerStationVertex() {
 		Player p = new DetectivePlayer();
-		StationVertex s = new StationVertex();
+		Station s = new Station();
 		
 		Move m = new DefaultMove();
 		m.setPlayer(p);
@@ -87,8 +87,8 @@ public class DefaultMoveTest {
 	@Test
 	public void testTheMovePlayerConnectionEdgeStationVertexItem() {
 		Player p = new DetectivePlayer();
-		StationVertex s = new StationVertex();
-		ConnectionEdge c = new FerryConnection();
+		Station s = new Station();
+		Connection c = new FerryConnection();
 		Item i = new BlackTicket();
 		
 		Move m = new DefaultMove();
@@ -126,7 +126,7 @@ public class DefaultMoveTest {
 	public void testSetGet() {
 		Move m = new DefaultMove();
 		
-		ConnectionEdge c = new BusConnection();
+		Connection c = new BusConnection();
 		m.setConnection(c);
 		assertEquals(c, m.getConnection());
 	
@@ -147,7 +147,7 @@ public class DefaultMoveTest {
 		m.setRoundNumber(1);
 		assertEquals(1, m.getRoundNumber());
 	
-		StationVertex s = new StationVertex(); 
+		Station s = new Station(); 
 		m.setStation(s);
 		assertEquals(s, m.getStation());
 	

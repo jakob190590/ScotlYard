@@ -1,6 +1,6 @@
 package kj.scotlyard.game.rules;
 
-import kj.scotlyard.game.graph.ConnectionEdge;
+import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
@@ -54,7 +54,7 @@ public class TheMovePolicy implements MovePolicy {
 	
 	@Override
 	public boolean isTicketValidForConnection(Ticket ticket,
-			ConnectionEdge connection) {
+			Connection connection) {
 		
 		if (ticket instanceof TaxiTicket && connection instanceof TaxiConnection) {
 			return true;

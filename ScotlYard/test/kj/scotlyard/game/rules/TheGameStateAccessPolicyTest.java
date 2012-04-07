@@ -1,7 +1,7 @@
 package kj.scotlyard.game.rules;
 
 import static org.junit.Assert.*;
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
@@ -53,22 +53,22 @@ public class TheGameStateAccessPolicyTest {
 		for (int i = 0; i < 20; i++) {
 			for (Player p : g.getPlayers()) {
 				ms[j] = producer.createSingleMove(p, i, i,
-						new StationVertex(), new TaxiConnection(), new TaxiTicket());
+						new Station(), new TaxiConnection(), new TaxiTicket());
 				j++;
 			}
 		}
 
-		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+		producer.addSubMove(new Station(), new TaxiConnection(),
 				new TaxiTicket());
-		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+		producer.addSubMove(new Station(), new TaxiConnection(),
 				new TaxiTicket());
 		m2 = ms[5] = producer.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
 		m1 = m2.getMoves().get(0);
 		m2 = m2.getMoves().get(1);
 
-		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+		producer.addSubMove(new Station(), new TaxiConnection(),
 				new TaxiTicket());
-		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+		producer.addSubMove(new Station(), new TaxiConnection(),
 				new TaxiTicket());
 		m2 = ms[15] = producer.createMultiMove(mrX, 3, 4, new DoubleMoveCard());
 		m1 = m2.getMoves().get(0);
@@ -419,9 +419,9 @@ public class TheGameStateAccessPolicyTest {
 		// double moves testen
 		g.getMoves().clear();
 
-		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+		producer.addSubMove(new Station(), new TaxiConnection(),
 				new TaxiTicket());
-		producer.addSubMove(new StationVertex(), new TaxiConnection(),
+		producer.addSubMove(new Station(), new TaxiConnection(),
 				new TaxiTicket());
 		g.getMoves().add(
 				m2 = producer.createMultiMove(mrX, 1, 1, new DoubleMoveCard()));
@@ -466,9 +466,9 @@ public class TheGameStateAccessPolicyTest {
 		} catch (IllegalAccessException e) {
 		}
 
-		producer.addSubMove(new StationVertex(), new TaxiConnection(), 
+		producer.addSubMove(new Station(), new TaxiConnection(), 
 				new TaxiTicket());
-		producer.addSubMove(new StationVertex(), new TaxiConnection(), 
+		producer.addSubMove(new Station(), new TaxiConnection(), 
 				new TaxiTicket());
 		g.getMoves().add(m2 = producer.createMultiMove(mrX, 3, 3, new DoubleMoveCard()));
 		m1 = m2.getMoves().get(0);
@@ -515,9 +515,9 @@ public class TheGameStateAccessPolicyTest {
 		}
 
 		
-		producer.addSubMove(new StationVertex(), new TaxiConnection(), 
+		producer.addSubMove(new Station(), new TaxiConnection(), 
 				new TaxiTicket());
-		producer.addSubMove(new StationVertex(), new TaxiConnection(), 
+		producer.addSubMove(new Station(), new TaxiConnection(), 
 				new TaxiTicket());
 		g.getMoves().add(m2 = producer.createMultiMove(mrX, 3, 2, new DoubleMoveCard()));
 		m1 = m2.getMoves().get(0);

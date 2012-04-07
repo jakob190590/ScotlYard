@@ -6,7 +6,7 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.UndoManager;
 
 import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
@@ -114,7 +114,7 @@ public class TheNotInGameController extends TheAbstractGameController {
 			game.setCurrentPlayer(player);
 			game.setItems(player, initPolicy.createItemSet(game, player));
 			
-			StationVertex station = initPolicy.suggestInitialStation(game, graph, player);
+			Station station = initPolicy.suggestInitialStation(game, graph, player);
 			Move initMove = moveProducer.createInitialMove(player, station);
 			game.getMoves().add(initMove);
 		}

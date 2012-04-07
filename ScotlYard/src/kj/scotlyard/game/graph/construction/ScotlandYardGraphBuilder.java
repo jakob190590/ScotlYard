@@ -1,6 +1,6 @@
 package kj.scotlyard.game.graph.construction;
 
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
@@ -13,7 +13,7 @@ public interface ScotlandYardGraphBuilder {
 	 * sich dort nieder.
 	 * @return die neue Station
 	 */
-	StationVertex makeStation();
+	Station makeStation();
 	
 	// Diese Beschreibung gilt analog fuer die restlichen Methoden dieser Art!
 	/**
@@ -26,10 +26,10 @@ public interface ScotlandYardGraphBuilder {
 	 * worden sein, und nicht von jemand anderem!
 	 * @return die gebaute Taxiverbindung
 	 */
-	TaxiConnection makeTaxiConnectionTo(StationVertex station);
-	BusConnection makeBusConnectionTo(StationVertex station);
-	UndergroundConnection makeUndergroundConnectionTo(StationVertex station);
-	FerryConnection makeFerryConnectionTo(StationVertex station);
+	TaxiConnection makeTaxiConnectionTo(Station station);
+	BusConnection makeBusConnectionTo(Station station);
+	UndergroundConnection makeUndergroundConnectionTo(Station station);
+	FerryConnection makeFerryConnectionTo(Station station);
 	
 	// Diese Beschreibung gilt analog fuer die restlichen Methoden dieser Art!
 	/**
@@ -51,12 +51,12 @@ public interface ScotlandYardGraphBuilder {
 	 * sollte durch den Builder selbst erstellt worden sein,
 	 * und nicht von jemand anderem!
 	 */
-	void gotoStation(StationVertex station);
+	void gotoStation(Station station);
 	
 	/**
 	 * Die Station, an der sich der Builder gerade aufhaelt.
 	 * @return momentaner Arbeitsplatz des Builders
 	 */
-	StationVertex getCurrentStation();
+	Station getCurrentStation();
 
 }
