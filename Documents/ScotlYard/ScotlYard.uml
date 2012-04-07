@@ -66,7 +66,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Apr 04 12:41:12 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Sat Apr 07 20:53:28 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -3124,19 +3124,6 @@ flat Move List</UML:TaggedValue.dataValue>
                     </UML:Parameter>
                   </UML:BehavioralFeature.parameter>
                 </UML:Operation>
-                <UML:Operation xmi.id = '-64--88--78-22--202e34f5:13679f66ca1:-8000:0000000000000CFB'
-                  name = 'getRoundsSince' visibility = 'public' isSpecification = 'false'
-                  ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-                  isLeaf = 'false' isAbstract = 'false'>
-                  <UML:BehavioralFeature.parameter>
-                    <UML:Parameter xmi.id = '-64--88--78-22--202e34f5:13679f66ca1:-8000:0000000000000CFC'
-                      name = 'return' isSpecification = 'false' kind = 'return'>
-                      <UML:Parameter.type>
-                        <UML:DataType href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:000000000000087C'/>
-                      </UML:Parameter.type>
-                    </UML:Parameter>
-                  </UML:BehavioralFeature.parameter>
-                </UML:Operation>
                 <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3D'
                   name = 'getPossiblePositions' visibility = 'public' isSpecification = 'false'
                   ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
@@ -4069,6 +4056,9 @@ flat Move List</UML:TaggedValue.dataValue>
             <UML:Operation xmi.idref = '-64--88--78-22--6f6332dc:13674144561:-8000:0000000000000CA8'/>
           </UML:Comment.annotatedElement>
         </UML:Comment>
+        <UML:Package xmi.id = '-64--88--78-22-13bda38b:1368e22524b:-8000:0000000000000CFD'
+          name = 'kj.scotlyard.game.graph' isSpecification = 'false' isRoot = 'false'
+          isLeaf = 'false' isAbstract = 'false'/>
       </UML:Namespace.ownedElement>
     </UML:Model>
   </XMI.content>
@@ -11386,7 +11376,7 @@ control)!</text>
     </group>
   </group>
   <group name="Fig64"
-       description="org.argouml.uml.diagram.static_structure.ui.FigClass[1128, 736, 283, 122]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[1128, 736, 241, 105]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
        href="-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3A"
        fill="1"
        fillcolor="white"
@@ -11400,8 +11390,8 @@ control)!</text>
     <rectangle name="Fig64.0"
       x="1128"
       y="736"
-      width="283"
-      height="122"
+      width="241"
+      height="105"
       fill="1"
       fillcolor="white"
       stroke="1"
@@ -11410,7 +11400,7 @@ control)!</text>
     <text name="Fig64.1"
       x="1129"
       y="737"
-      width="281"
+      width="239"
       height="23"
       fill="0"
       fillcolor="white"
@@ -11449,7 +11439,7 @@ control)!</text>
     <rectangle name="Fig64.3"
       x="1128"
       y="760"
-      width="283"
+      width="241"
       height="1"
       fill="1"
       fillcolor="black"
@@ -11457,7 +11447,7 @@ control)!</text>
       strokecolor="black"
     />
     <group name="Fig64.4"
-         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[1129, 761, 281, 21]"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[1129, 761, 239, 21]"
          href="-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3A"
          fill="0"
          fillcolor="white"
@@ -11470,7 +11460,7 @@ control)!</text>
       <rectangle name="Fig64.4.0"
         x="1129"
         y="761"
-        width="281"
+        width="239"
         height="21"
         fill="0"
         fillcolor="white"
@@ -11481,7 +11471,7 @@ control)!</text>
     <rectangle name="Fig64.5"
       x="1128"
       y="781"
-      width="283"
+      width="241"
       height="1"
       fill="1"
       fillcolor="black"
@@ -11489,7 +11479,7 @@ control)!</text>
       strokecolor="black"
     />
     <group name="Fig64.6"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1129, 782, 281, 76]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1129, 782, 239, 59]"
          href="-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3A"
          fill="0"
          fillcolor="white"
@@ -11502,8 +11492,8 @@ control)!</text>
       <rectangle name="Fig64.6.0"
         x="1129"
         y="782"
-        width="281"
-        height="76"
+        width="239"
+        height="59"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -11512,7 +11502,7 @@ control)!</text>
       <text name="Fig64.6.1"
         x="1129"
         y="782"
-        width="281"
+        width="239"
         height="17"
         fill="0"
         fillcolor="white"
@@ -11528,7 +11518,7 @@ control)!</text>
       <text name="Fig64.6.2"
         x="1129"
         y="799"
-        width="281"
+        width="239"
         height="17"
         fill="0"
         fillcolor="white"
@@ -11544,23 +11534,7 @@ control)!</text>
       <text name="Fig64.6.3"
         x="1129"
         y="816"
-        width="281"
-        height="17"
-        fill="0"
-        fillcolor="white"
-        stroke="0"
-        strokecolor="black"
-        textcolor="black"
-        font="Dialog"
-        italic="false"
-        bold="false"
-        textsize="12"
-        justification="Left"
-      >getRoundsSince() : Integer</text>
-      <text name="Fig64.6.4"
-        x="1129"
-        y="833"
-        width="281"
+        width="239"
         height="23"
         fill="0"
         fillcolor="white"
@@ -11861,6 +11835,105 @@ control)!</text>
       <lineto x="344"
               y="177" />
     </path>
+  </group>
+  <group name="Fig68"
+       description="org.argouml.uml.diagram.static_structure.ui.FigPackage[1648, 1080, 976, 712]pathVisible=false;stereotypeView=0;stereotypeVisible=true;visibilityVisible=false"
+       href="-64--88--78-22-13bda38b:1368e22524b:-8000:0000000000000CFD"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+    </private>
+    
+    <rectangle name="Fig68.0"
+      x="1648"
+      y="1080"
+      width="976"
+      height="712"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+    />
+    <path name="Fig68.1"
+      description="org.argouml.uml.diagram.static_structure.ui.FigPackage$PackageBackground"
+      fill="1"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+    >
+      <moveto x="1648"
+              y="1080" />
+      <lineto x="2574"
+              y="1080" />
+      <lineto x="2574"
+              y="1104" />
+      <lineto x="2623"
+              y="1104" />
+      <lineto x="2623"
+              y="1791" />
+      <lineto x="1648"
+              y="1791" />
+      <lineto x="1648"
+              y="1080" />
+    </path>
+    <text name="Fig68.2"
+      x="1648"
+      y="1080"
+      width="927"
+      height="25"
+      fill="0"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+      textcolor="black"
+      font="Dialog"
+      italic="false"
+      bold="false"
+      textsize="12"
+      justification="Left"
+    >kj.scotlyard.game.graph</text>
+    <group name="Fig68.3"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1648, 1080, 926, 1]"
+         href="-64--88--78-22-13bda38b:1368e22524b:-8000:0000000000000CFD"
+         fill="1"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+         visibility="0"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig68.3.0"
+        x="1648"
+        y="1080"
+        width="926"
+        height="1"
+        fill="1"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <text name="Fig68.4"
+      x="1648"
+      y="1104"
+      width="976"
+      height="688"
+      fill="0"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+      textcolor="black"
+      font="Dialog"
+      italic="false"
+      bold="false"
+      textsize="12"
+      justification="Center"
+    ></text>
   </group>
 </pgml>
 <pgml description="org.argouml.sequence2.diagram.UMLSequenceDiagram|-64--88--22-1-f61ec3b:134bd4433b3:-8000:0000000000000882"
