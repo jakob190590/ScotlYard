@@ -2,7 +2,6 @@ package kj.scotlyard.game.rules;
 
 import java.util.Set;
 
-import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
@@ -67,19 +66,24 @@ public class TheMovePolicy implements MovePolicy {
 		
 		// TODO implement, korbi?
 		
+		Move lastMove = gameState.getLastMove(player);
+		StationVertex currentStation = lastMove.getStation();
+		
 		Set<Item> items = gameState.getItems(player);
-		StationVertex currentStation = gameState.getLastMove(player).getStation();
-		for (ConnectionEdge conn : currentStation.getEdges()) {
+		Set<StationVertex> detectivePositions = new GameStateExtension(gameState).getDetectivesPositions(lastMove.getRoundNumber());
+		
+		for (ConnectionEdge connection : currentStation.getEdges()) {
+			
 			boolean ticketFound = false;
 			for (Item item : items) {
-				if (item instanceof Ticket && isTicketValidForConnection((Ticket) item, conn)) {
+				if (item instanceof Ticket && isTicketValidForConnection((Ticket) item, connection)) {
 					ticketFound = true;
 					break;
 				}
-				if (ticketFound) {
-					StationVertex otherStation = conn.getOther(currentStation);
-					return true;
-				}
+			}
+			
+			if (ticketFound && !detectivePositions.contains(connection.getOther(currentStation))) {
+				return true;
 			}
 		}
 
