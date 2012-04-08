@@ -109,6 +109,10 @@ public class TheGameController extends GameController {
 		return game;
 	}
 	
+	protected Set<StationVertex> getInitialPositions() { // TODO public or protected?
+		return initialPositions;
+	}
+
 	public void equipGameStateRequester(GameStateRequester requester) {
 		if (requester instanceof DetectiveAi) {
 			requester.setGameState(getRules().getGameStateAccessPolicy().createGameStateForDetectives(getGame()));
@@ -417,8 +421,8 @@ class InGameControllerState extends GameControllerState {
 		UndoableEdit itemPassEdit = passItems(game, movePolicy, move);
 		
 		// Turn/Current sachen nach Move aktualisieren
-		Player nextPlayer = rules.getTurnPolicy().getNextPlayer(game);
-		int nextRoundNumber = rules.getTurnPolicy().getNextRoundNumber(game);
+		Player nextPlayer = rules.getTurnPolicy().getNextPlayer(game, gameGraph);
+		int nextRoundNumber = rules.getTurnPolicy().getNextRoundNumber(game, gameGraph);
 		
 		game.setCurrentPlayer(nextPlayer);
 		game.setCurrentRoundNumber(nextRoundNumber);
@@ -672,16 +676,16 @@ class NotInGameControllerState extends GameControllerState {
 		TurnPolicy turnPolicy = rules.getTurnPolicy();
 		
 		game.setCurrentRoundNumber(GameState.INITIAL_ROUND_NUMBER);
-		while (turnPolicy.getNextRoundNumber(game) == GameState.INITIAL_ROUND_NUMBER) {
-			Player player = turnPolicy.getNextPlayer(game);
+		while (turnPolicy.getNextRoundNumber(game, gameGraph) == GameState.INITIAL_ROUND_NUMBER) {
+			Player player = turnPolicy.getNextPlayer(game, gameGraph);
 			game.setCurrentPlayer(player);
 			game.setItems(player, initPolicy.createItemSet(game, player));
 			
-			StationVertex station = initPolicy.suggestInitialStation(game, gameGraph, initialPositions, player);
+			StationVertex station = initPolicy.suggestInitialStation(game, gameGraph, getController().getInitialPositions(), player);
 			Move initMove = moveProducer.createInitialMove(player, station);
 			game.getMoves().add(initMove);
 		}
-		game.setCurrentRoundNumber(turnPolicy.getNextRoundNumber(game));
+		game.setCurrentRoundNumber(turnPolicy.getNextRoundNumber(game, gameGraph));
 
 		GameWin win = getController().getRules().getGameWinPolicy().isGameWon(game, gameGraph);
 		getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
