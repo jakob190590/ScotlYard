@@ -6,7 +6,6 @@ import java.util.List;
 import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
-import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.Ticket;
 
 // Zum Klassennamen:

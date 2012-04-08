@@ -1,6 +1,7 @@
 package kj.scotlyard.game.control;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -33,6 +34,8 @@ public class TheGameController extends GameController {
 	
 	private final GameGraph gameGraph;
 	
+	private final Set<StationVertex> initialPositions;
+	
 	private Rules rules;
 	
 	
@@ -48,9 +51,10 @@ public class TheGameController extends GameController {
 	
 	private GameWin win;
 	
-	public TheGameController(Game game, GameGraph gameGraph, Rules rules) {
+	public TheGameController(Game game, GameGraph gameGraph, Set<StationVertex> initialPositions, Rules rules) {
 		this.game = game;
 		this.gameGraph = gameGraph;
+		this.initialPositions = initialPositions;
 		this.rules = rules;
 		
 		notInGame = new NotInGameControllerState(this);
@@ -673,7 +677,7 @@ class NotInGameControllerState extends GameControllerState {
 			game.setCurrentPlayer(player);
 			game.setItems(player, initPolicy.createItemSet(game, player));
 			
-			StationVertex station = initPolicy.suggestInitialStation(game, gameGraph, player);
+			StationVertex station = initPolicy.suggestInitialStation(game, gameGraph, initialPositions, player);
 			Move initMove = moveProducer.createInitialMove(player, station);
 			game.getMoves().add(initMove);
 		}
