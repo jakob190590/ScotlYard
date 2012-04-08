@@ -7,7 +7,7 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
@@ -65,13 +65,13 @@ public class MrXTracker {
 		return list;
 	}
 		
-	public Set<StationVertex> getPossiblePositions() {
+	public Set<Station> getPossiblePositions() {
 		// ohne bewertung, denn das ist aufgabe der AI!
 		
 		// wenn die AI diese methode nicht nutzen will, ist mir das auch egal.
 		// die GUI kann sie auf jeden fall brauchen.
 		
-		Set<StationVertex> result = new HashSet<>();
+		Set<Station> result = new HashSet<>();
 		
 		// TODO implement -- korbi?		
 		
