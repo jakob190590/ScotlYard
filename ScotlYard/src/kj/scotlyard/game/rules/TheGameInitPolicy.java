@@ -44,7 +44,28 @@ public class TheGameInitPolicy implements GameInitPolicy {
 	public int getMaxDetectiveCount() {
 		return 5;
 	}
-
+	
+	@Override
+	public Set<Item> createItemSet(GameState gameState, Player player) {
+		Set<Item> set = new HashSet<>();
+		
+		if (player == gameState.getMrX()) {
+			addNTimes(set, 4, TaxiTicket.class);
+			addNTimes(set, 3, UndergroundTicket.class);
+			addNTimes(set, 3, BusTicket.class);
+			addNTimes(set, 2, DoubleMoveCard.class);
+			addNTimes(set, gameState.getDetectives().size(), BlackTicket.class);
+		} else if (gameState.getDetectives().contains(player)) {
+			addNTimes(set, 10, TaxiTicket.class);
+			addNTimes(set, 8, BusTicket.class);
+			addNTimes(set, 4, UndergroundTicket.class);
+		} else {
+			throw new IllegalArgumentException("Specified player is not part of the game.");
+		}
+		
+		return set;
+	}
+	
 	@Override
 	public StationVertex suggestInitialStation(GameState gameState,
 			GameGraph gameGraph, Set<StationVertex> initialPositions, Player player) {
@@ -67,25 +88,4 @@ public class TheGameInitPolicy implements GameInitPolicy {
 		return poss.get(random.nextInt(poss.size()));
 	}
 	
-	@Override
-	public Set<Item> createItemSet(GameState gameState, Player player) {	
-		Set<Item> set = new HashSet<>();
-		
-		if (player == gameState.getMrX()) {
-			addNTimes(set, 4, TaxiTicket.class);
-			addNTimes(set, 3, UndergroundTicket.class);
-			addNTimes(set, 3, BusTicket.class);
-			addNTimes(set, 2, DoubleMoveCard.class);
-			addNTimes(set, gameState.getDetectives().size(), BlackTicket.class);
-		} else if (gameState.getDetectives().contains(player)) {
-			addNTimes(set, 10, TaxiTicket.class);
-			addNTimes(set, 8, BusTicket.class);
-			addNTimes(set, 4, UndergroundTicket.class);
-		} else {
-			throw new IllegalArgumentException("Specified player is not part of the game.");
-		}
-		
-		return set;
-	}
-
 }

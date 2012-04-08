@@ -8,7 +8,6 @@ import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.UndergroundConnection;
-import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
@@ -43,6 +42,7 @@ public class TheMovePolicy implements MovePolicy {
 		// TODO korbi ?
 		// - ist move.station direkter nachbar von previousMove.station ?
 		// - liegt move.connection dazwischen ?
+		// und throwIllegalMove  Exception, so wie hier sonst ueberall...
 		
 		throwIllegalMove(!(move.getItem() instanceof Ticket), 
 				"You must provide a ticket for this move.");
@@ -147,8 +147,9 @@ public class TheMovePolicy implements MovePolicy {
 					"You must specify the initial station.");
 			
 			// TODO Station ueberpruefen
-			// - dass da kein anderer
-			// - und element von Graph ist
+			// - dass da kein anderer detective steht!
+			// - und vertex element von Graph ist (graph.vertexSet().contains(...))
+			// und passende fehlermeldung wenn nicht
 			
 			throwIllegalMove(move.getConnection() != null, 
 					"You cannot attach a connection to the initial move.");
@@ -201,7 +202,7 @@ public class TheMovePolicy implements MovePolicy {
 						"The move index of a sub move is " + m.getMoveIndex() + " but must be: " + i);
 				
 				throwIllegalMove(!m.getMoves().isEmpty(), 
-						"A sub move must not have further sub moves."); // further or more ?
+						"A sub move must not have further sub moves.");
 				
 				checkSingleMove(gameState, gameGraph, m, previous);
 				
@@ -224,6 +225,7 @@ public class TheMovePolicy implements MovePolicy {
 	@Override
 	public Player getNextItemOwner(GameState gameState, Move move, Item item) {
 		
+		// TODO gueltigkeitstest doch weglassen? wo fang ich an, wo hoer ich auf...
 		// Grundlegende Gueltigkeitstests
 		boolean itemInMove = false;
 		for (Move m : new GameStateExtension(gameState).flattenMove(move, false)) {
@@ -237,7 +239,7 @@ public class TheMovePolicy implements MovePolicy {
 		}
 		
 		
-		if (item != null && move.getPlayer() instanceof DetectivePlayer) {
+		if (item != null && gameState.getDetectives().contains(move.getPlayer())) {
 			return gameState.getMrX();
 		}
 		
