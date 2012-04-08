@@ -1,11 +1,16 @@
 package kj.scotlyard.game.rules;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.GameState;
+import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.BusTicket;
@@ -13,8 +18,11 @@ import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.model.item.UndergroundTicket;
+import kj.scotlyard.game.util.GameStateExtension;
 
 public class TheGameInitPolicy implements GameInitPolicy {
+	
+	private static Random random = new Random();
 	
 	private void addNTimes(Set<Item> set, int n, Class<? extends Item> item) {
 		try {
@@ -39,12 +47,25 @@ public class TheGameInitPolicy implements GameInitPolicy {
 	}
 
 	@Override
-	public Station suggestInitialStation(GameState gameState,
-			GameGraph gameGraph, Player player) {
+	public StationVertex suggestInitialStation(GameState gameState,
+			GameGraph gameGraph, Set<StationVertex> initialPositions, Player player) {
 		
 		// es gibt 18 startkarten, die verlost werden.
-		// TODO 
-		return null;
+		
+		// die moeglichen startpositionen gehoeren hiermit
+		// aber nicht zu den regeln, sondern zum Graph!
+		
+		// Possible initial positions
+		List<StationVertex> poss = new ArrayList<>(initialPositions);
+		for (Move m : new GameStateExtension(gameState).getMoves(GameState.INITIAL_ROUND_NUMBER, false)) {
+			poss.remove(m.getStation());
+		}
+		
+		if (poss.size() == 0) {
+			throw new IllegalArgumentException("Too few possible initial positions specified for this game.");
+		}
+		
+		return poss.get(random.nextInt(poss.size()));
 	}
 	
 	@Override

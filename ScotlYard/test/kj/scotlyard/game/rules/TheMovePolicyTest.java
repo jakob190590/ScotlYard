@@ -184,20 +184,31 @@ public class TheMovePolicyTest {
 				g.setCurrentPlayer(pl);
 				
 				try {
+					// player not part of game
+					p.checkMove(g, gg, producer.createInitialMove(new MrXPlayer(), s1));
+					fail("move exception expected");
+				} catch (IllegalMoveException e) {
+					if (!e.getMessage().contains("not part of"))
+						fail("not the expected exception: " + e.getMessage());
+				}
+				
+				if (pl != g.getPlayers().get(0)) {
+					try {
+						// not players turn
+						p.checkMove(g, gg, producer.createInitialMove(g.getPlayers().get(0), s1));
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("turn"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+				}
+				
+				try {
 					// missing station
 					p.checkMove(g, gg, producer.createInitialMove(pl, j, null));
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
 					if (!e.getMessage().contains("station"))
-						fail("not the expected exception: " + e.getMessage());
-				}
-				
-				try {
-					// not players turn
-					p.checkMove(g, gg, producer.createInitialMove(new MrXPlayer(), s1));
-					fail("move exception expected");
-				} catch (IllegalMoveException e) {
-					if (!e.getMessage().contains("turn"))
 						fail("not the expected exception: " + e.getMessage());
 				}
 				
@@ -261,7 +272,7 @@ public class TheMovePolicyTest {
 				
 				
 				try {
-					// wrong number in initial move
+					// wrong move number in initial move
 					Move m = producer.createInitialMove(pl, j, s3);
 					m.setMoveNumber(1);
 					p.checkMove(g, gg, m);
@@ -273,7 +284,7 @@ public class TheMovePolicyTest {
 				
 				
 				try {
-					// pass ticket in initial move
+					// pass sub move in initial move
 					Move m = producer.createInitialMove(pl, j, s3);
 					m.getMoves().add(producer.createSingleMove(pl, 0, 0, s3, bc1, tt));
 					p.checkMove(g, gg, m);
@@ -288,7 +299,7 @@ public class TheMovePolicyTest {
 	}
 	
 	@Test
-	public final void testSingleMove() {
+	public final void testSingleMoveCheck() {
 		g.setCurrentRoundNumber(0);
 		
 		for (Player pl : g.getPlayers()) {
@@ -304,6 +315,26 @@ public class TheMovePolicyTest {
 			for (Player pl : g.getPlayers()) {
 				g.setCurrentPlayer(pl);
 				
+				
+				try {
+					// player not part of game
+					p.checkMove(g, gg, producer.createInitialMove(new MrXPlayer(), s1));
+					fail("move exception expected");
+				} catch (IllegalMoveException e) {
+					if (!e.getMessage().contains("not part of"))
+						fail("not the expected exception: " + e.getMessage());
+				}
+				
+				if (pl != g.getPlayers().get(0)) {
+					try {
+						// not players turn
+						p.checkMove(g, gg, producer.createInitialMove(g.getPlayers().get(0), s1));
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("turn"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+				}
 				
 				try {
 					// invalid round number
@@ -324,19 +355,7 @@ public class TheMovePolicyTest {
 				} catch (IllegalMoveException e) {
 					if (!e.getMessage().contains("move number"))
 						fail("not the expected exception: " + e.getMessage());
-				}
-				
-				
-				try {
-					// wrong player
-					Move m = producer.createSingleMove(new DetectivePlayer(), j, j, s4, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
-					p.checkMove(g, gg, m);
-					fail("move exception expected");
-				} catch (IllegalMoveException e) {
-					if (!e.getMessage().contains("turn"))
-						fail("not the expected exception: " + e.getMessage());
-				}
-				
+				}				
 				
 				try {
 					// wrong move index
@@ -347,8 +366,7 @@ public class TheMovePolicyTest {
 				} catch (IllegalMoveException e) {
 					if (!e.getMessage().contains("move index"))
 						fail("not the expected exception: " + e.getMessage());
-				}
-				
+				}				
 				
 				try {
 					// station null
@@ -358,8 +376,7 @@ public class TheMovePolicyTest {
 				} catch (IllegalMoveException e) {
 					if (!e.getMessage().contains("station"))
 						fail("not the expected exception: " + e.getMessage());
-				}
-				
+				}				
 				
 				try {
 					// stolen ticket
@@ -380,8 +397,7 @@ public class TheMovePolicyTest {
 				} catch (IllegalMoveException e) {
 					if (!e.getMessage().contains("not valid"))
 						fail("not the expected exception: " + e.getMessage());
-				}
-				
+				}				
 				
 				try {
 					// not ticket but double move card
@@ -392,20 +408,16 @@ public class TheMovePolicyTest {
 				} catch (IllegalMoveException e) {
 					if (!e.getMessage().contains("provide a ticket"))
 						fail("not the expected exception: " + e.getMessage());
-				}
-				
+				}				
 				
 				// sauberen move adden, damit der test in die naechste runde gehen kann
 				g.getMoves().add(producer.createSingleMove(pl, j, j, s4, tc1, (Ticket) ext.getItem(pl, TaxiTicket.class)));
 			}
-		}
-		
-		
-		
+		}		
 	}
 	
 	@Test
-	public final void testMultiMove() {
+	public final void testMultiMoveCheck() {
 		g.setCurrentRoundNumber(0);
 		
 		for (Player pl : g.getPlayers()) {
@@ -416,18 +428,244 @@ public class TheMovePolicyTest {
 		}
 		
 		
+		for (int j = 1; j < 3; j++) {
+			g.setCurrentRoundNumber(j);
+			
+			for (Player pl : g.getPlayers()) {
+				g.setCurrentPlayer(pl);
 		
-		
-//		try {
-//			Move m = producer.;
-//			producer.addSubMov
-//			producer.addSubMov
-//			p.checkMove(g, gg, m);
-//			fail("move exception expected");
-//		} catch (IllegalMoveException e) {
-//			if (!e.getMessage().contains(""))
-//				fail("not the expected exception: " + e.getMessage());
-//		}
+				
+				
+				try {
+					// player not part of game
+					producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+					producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+					Move m = producer.createMultiMove(new MrXPlayer(), j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+					p.checkMove(g, gg, m);
+					fail("move exception expected");
+				} catch (IllegalMoveException e) {
+					if (!e.getMessage().contains("not part of"))
+						fail("not the expected exception: " + e.getMessage());
+				}
+				
+				
+				if (pl != g.getDetectives().get(0)) {
+					try {
+						// not player's turn
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(g.getDetectives().get(0), j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("turn"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+				}
+					
+				if (pl instanceof DetectivePlayer) {
+					try {
+						// only mr x can
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(new MrXPlayer(), j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("is not part of"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+				}
+				
+				if (pl == g.getMrX()) {
+					try {
+						// players differs
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						m.getMoves().get(1).setPlayer(new MrXPlayer());
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("differs from"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// round number differs
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						m.getMoves().get(1).setRoundNumber(0);
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("round number"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// wrong move index in sub move
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						m.getMoves().get(1).setMoveIndex(3);
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains(""))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					try {
+						// wrong move number in sub move
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						m.getMoves().get(1).setMoveNumber(40);
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("move number"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// triple move forbidden
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("double move"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// komischer move forbidden
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("double move"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// further sub move forbidden
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						m.getMoves().get(0).getMoves().add(producer.createInitialMove(new DetectivePlayer(), s4));
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("further sub moves"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// no connection in sub move
+						producer.addSubMove(new StationVertex(), null, (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("connection"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// a connection in base move
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						m.setConnection(tc2);
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("connection"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// stolen ticket in sub move
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						m.getMoves().get(0).setItem(new TaxiTicket());
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("stolen"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// invalid ticket in sub move
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, UndergroundTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("not valid"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// no correct multi move card
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						m.setItem(new TaxiTicket());
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("double move card"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// no item in base move
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						m.setItem(null);
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("double move card"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					try {
+						// stolen correct multi move card
+						producer.addSubMove(new StationVertex(), new TaxiConnection(), (Ticket) ext.getItem(pl, TaxiTicket.class));
+						producer.addSubMove(new StationVertex(), new BusConnection(), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						m.setItem(new DoubleMoveCard());
+						p.checkMove(g, gg, m);
+						fail("move exception expected");
+					} catch (IllegalMoveException e) {
+						if (!e.getMessage().contains("stolen"))
+							fail("not the expected exception: " + e.getMessage());
+					}
+					
+					
+				}
+				
+				
+				
+				
+				
+				// sauberen move adden, damit der test in die naechste runde gehen kann
+				g.getMoves().add(producer.createSingleMove(pl, j, j, s4, tc1, (Ticket) ext.getItem(pl, TaxiTicket.class)));
+			}
+		}
 	}
 	
 	@Test
