@@ -5,8 +5,8 @@ import java.util.List;
 import org.apache.commons.attributes.Sealable;
 
 import kj.scotlyard.game.model.item.Item;
-import kj.scotlyard.game.graph.Connection;
-import kj.scotlyard.game.graph.Station;
+import kj.scotlyard.game.graph.ConnectionEdge;
+import kj.scotlyard.game.graph.StationVertex;
 
 public interface Move extends Sealable {
 	
@@ -33,13 +33,13 @@ public interface Move extends Sealable {
 	void setMoveIndex(int moveIndex);
 	
 
-	Station getStation();
+	StationVertex getStation();
 
-	void setStation(Station station);
+	void setStation(StationVertex station);
 	
-	Connection getConnection();
+	ConnectionEdge getConnection();
 	
-	void setConnection(Connection connection);
+	void setConnection(ConnectionEdge connection);
 
 
 	// List/Set<Item> getItems();
