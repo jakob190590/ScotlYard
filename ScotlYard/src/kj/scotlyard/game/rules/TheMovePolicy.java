@@ -2,6 +2,7 @@ package kj.scotlyard.game.rules;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.UndergroundConnection;
@@ -62,8 +63,13 @@ public class TheMovePolicy implements MovePolicy {
 		// wenn ticket da is, pruefen, ob benachbarte station frei is (kein anderer detektiv)
 		
 		// TODO implement, korbi?
+		StationVertex current = gameState.getLastMove(player).getStation();
+		
+		for (ConnectionEdge conn : current.getEdges()) {
+			if (ext.)
+		}
 
-		return true;
+		return false;
 	}
 	
 	@Override
