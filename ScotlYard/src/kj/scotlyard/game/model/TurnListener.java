@@ -1,6 +1,6 @@
 package kj.scotlyard.game.model;
 
-public interface StateListener {
+public interface TurnListener {
 
 	void currentPlayerChanged(GameState gameState, Player oldPlayer, Player newPlayer);
 	

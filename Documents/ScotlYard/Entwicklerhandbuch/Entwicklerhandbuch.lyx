@@ -1,0 +1,545 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass scrreprt
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family sfdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language german
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+
+\noun on
+ScotlYard
+\noun default
+
+\begin_inset Newline newline
+\end_inset
+
+Entwicklerhandbuch
+\end_layout
+
+\begin_layout Author
+Jakob Schöttl
+\begin_inset Newline newline
+\end_inset
+
+jschoett@gmail.com
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+Dieses Handbuch wendet sich an Entwickler, die ScotlYard in ihr Projekt
+ einbinden oder weiterentwickeln wollen.
+ Es beschreibt die Architektur, die Schnittstellen und die Standardimplementieru
+ngen und wie diese verwendet werden.
+\end_layout
+
+\begin_layout Part
+Architektur und Schnittstellen
+\begin_inset Newline newline
+\end_inset
+
+ScotlYard (Core)
+\end_layout
+
+\begin_layout Chapter
+Architektur
+\end_layout
+
+\begin_layout Section
+Grundsätze
+\end_layout
+
+\begin_layout Itemize
+GameState speichert den Spielverlauf und -zustand
+\end_layout
+
+\begin_layout Itemize
+GameState informiert Listener über Änderungen
+\end_layout
+
+\begin_layout Itemize
+Für GameState gibt es Proxies mit eingeschränktem Zugriff
+\end_layout
+
+\begin_layout Itemize
+Eingeschränkte Moves zur Verfügung zu stellen ist Aufgabe des jeweiligen
+ Proxys
+\end_layout
+
+\begin_layout Itemize
+Game ist ein GameState, der Veränderungen zulässt
+\end_layout
+
+\begin_layout Itemize
+GameController ist der einzige mit direktem Zugriff auf Game
+\end_layout
+
+\begin_layout Itemize
+GameController verwaltet Model (GameState)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+er erzeugt Player
+\end_layout
+
+\begin_layout Itemize
+GameState ändert sich nicht von selbst
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+GUI/Controller besitzen eine Instanz des GameControllers
+\end_layout
+
+\begin_layout Itemize
+Rules und AI brauchen Default-Konstruktor (Class.forName(
+\begin_inset Quotes gld
+\end_inset
+
+...
+\begin_inset Quotes grd
+\end_inset
+
+).createInstance())
+\end_layout
+
+\begin_layout Itemize
+AIs haben keine Ahnung von der Außenwelt und haben nur ihren persönlichen
+ GameState und GameGraph
+\end_layout
+
+\begin_layout Itemize
+DetectiveAI denkt für alle Detectives
+\end_layout
+
+\begin_layout Itemize
+GameController ist Observable, um Clients über Änderungen des Spielzustands
+ (GameStatus, GameWin) zu informieren
+\end_layout
+
+\begin_layout Itemize
+Es ist nicht Aufgabe der Rules, einen inkonsistenten GameState zu bemerken
+ (das wäre aussichtslos) -- aber wenn sie zufällig was merken: CorruptGameStateE
+xception
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes gld
+\end_inset
+
+To carry out a Move
+\begin_inset Quotes grd
+\end_inset
+
+ heißt add(Move) 
+\emph on
+und
+\emph default
+ Current Player/Round weiterschalten
+\end_layout
+
+\begin_layout Itemize
+Die Standardimplementierung ist stark an JGraphT gekoppelt
+\end_layout
+
+\begin_layout Chapter
+Model
+\end_layout
+
+\begin_layout Standard
+Das Model stellt -- wie bei der MVC-Architektur -- ein reines Datenmodell
+ für das Spiel dar.
+ Es ist dazu ausgelegt, den gesamten Spielverlauf und -zustand zu speichern.
+ Das Model selbst ist nicht gefeit gegen Änderungen, die zu einem inkonsistenten
+ Spielzustand führen.
+\end_layout
+
+\begin_layout Section
+Spielzustand
+\end_layout
+
+\begin_layout Section
+Spielgraph
+\end_layout
+
+\begin_layout Standard
+Der Graph modelliert das Spielfeld.
+ Er ist nicht Teil der Regeln, sondern wird gesondert erzeugt.
+ Die Regeln haben auch kaum etwas mit dem konkreten Graphen zu tun.
+ Die einzige Ausnahme ist in der GameInitPolicy die Methode suggestInitialStatio
+n.
+ Diese muss aus möglichen Startpositionen für den gegebenen Spieler eine
+ auswählen.
+ Die möglichen Startpositionen hängen aber eng mit dem konkreten Graph zusammen.
+ Daher wird in diesem Ausnahmefall zusätzlich zum GameGraph noch eine Menge
+ an möglichen Startpositionen übergeben (Set<StationVertex>).
+ Diese möglichen Startpositionen gehören also auch zum Spielgraph und nicht
+ zu den Regeln.
+\end_layout
+
+\begin_layout Subsection
+
+\noun on
+JGraphT
+\end_layout
+
+\begin_layout Standard
+Als Graph-Toolkit kommt JGraphT zum Einsatz.
+\end_layout
+
+\begin_layout Subsection
+Aufwand bei Wechsel des Graph-Toolkits
+\end_layout
+
+\begin_layout Standard
+Das JGraphT-Toolkit ist relativ eng mit ScotlYard gekoppelt.
+ Trotzdem ist es möglich, ein anderes Toolkit zu verwenden, ohne die Architektur
+ oder Schnittstellen verändern zu müssen.
+ Die Anpassungen, die durchgeführt werden müssen, beschränken sich fast
+ ausschließlich auf die Implementierung.
+ Wer direkt die Standardimplementierung verwenden will muss diese ändern.
+ Im folgenden werden Vorraussetzungen und nötige Anpassungen näher beschrieben.
+\end_layout
+
+\begin_layout Subsubsection
+Vorraussetzungen an das Graph-Toolkit
+\end_layout
+
+\begin_layout Standard
+Folgende wenige Vorraussetzungen muss das Toolkit erfüllen:
+\end_layout
+
+\begin_layout Enumerate
+Es muss 
+\emph on
+eine
+\emph default
+ Schnittstelle bereitstellt, über die man auf den gesamten Graphen zugreifen
+ kann.
+\end_layout
+
+\begin_layout Enumerate
+Es muss es erlauben, für Knoten beliebige eigene Objekte einer Klasse festzulege
+n.
+\end_layout
+
+\begin_layout Enumerate
+Es muss es erlauben, für Kanten beliebige eigene Objekte einer Klasse festzulege
+n.
+\end_layout
+
+\begin_layout Subsubsection
+Grundlage
+\end_layout
+
+\begin_layout Standard
+Die grundlegendsten Anpassung müssen im Package kj.scotlyard.game.graph gemacht
+ werden.
+\end_layout
+
+\begin_layout Enumerate
+Zunächst muss die Superklasse von GameGraph abgeändert werden zur Graph-Schnitts
+telle des verwendeten Toolkits.
+\begin_inset Newline newline
+\end_inset
+
+public interface GameGraph extends org.jgrapht.UndirectedGraph { }
+\begin_inset Newline newline
+\end_inset
+
+wird damit zu
+\begin_inset Newline newline
+\end_inset
+
+public interface GameGraph extends OtherToolkitsGraphInterface { }
+\end_layout
+
+\begin_layout Enumerate
+Außerdem definieren die Schnittstellen StationVertex und ConnectionEdge
+ grundlegende Methoden, die den Zugriff auf den Graph vereinfachen und vereinhei
+tlichen.
+ Die Implementierung in Station und Connection verwendet die Graph-Schnittstelle
+, und muss bei Verwendung eines anderen Toolkits natürlich anders aussehen.
+\end_layout
+
+\begin_layout Subsubsection
+Keine Änderungen im Model
+\end_layout
+
+\begin_layout Standard
+Im Model (kj.scotlyard.game.model.*) muss nichts verändert werden, denn diese
+ Klassen beziehen sich ausschließlich auf Knoten und Kanten des Graphen
+ -- und diese sind ja in ScotlYard definiert; der Graph strukturiert sie
+ nur.
+\end_layout
+
+\begin_layout Subsubsection
+Keine Änderungen im Controller
+\end_layout
+
+\begin_layout Standard
+Im Controller (kj.scotlyard.game.control.*) muss ebenfalls nichts verändert
+ werden.
+ Diese Klassen beziehen sich nur auf das Model und wenden dabei Regeln an.
+ Den Regeln muss der Graph (in Form des GameGraph) zwar übergeben werden,
+ aber was sich hinter GameGraph verbirgt interessiert den Controller nicht.
+\end_layout
+
+\begin_layout Subsubsection
+Änderungen in Regeln
+\end_layout
+
+\begin_layout Standard
+Das Interface in kj.scotlyard.game.rules.* ändert sich überhaupt nicht.
+ In der Implementierung der Regeln wird aber auf den Graphen zugegriffen,
+ denn die Regeln testen zum Beispiel, ob durch einen Zug der nächste Knoten
+ überhaupt erreichbar ist.
+\end_layout
+
+\begin_layout Standard
+Würde die Implementierung mit dem Interface von StationVertex und ConnectionEdge
+ auskommen, wären auch hier keine Änderungen notwendig.
+ Wird aber auf das Interface von GameGraph zurückgegriffen, müssen Anpassungen
+ durchgeführt werden.
+\end_layout
+
+\begin_layout Subsubsection
+Änderungen in AI
+\end_layout
+
+\begin_layout Standard
+Auch hier ändern sich die Schnittstellen in kj.scotlyard.game.ai.* nicht, die
+ Implementierung aber wahrscheinlich schon.
+ Die AI lebt schließlich von Operationen im Graph und wird sich dabei nicht
+ auf die schmale Schnittstelle von StationVertex und ConnectionEdge beschränken.
+\end_layout
+
+\begin_layout Subsubsection
+Änderungen in Utilities
+\end_layout
+
+\begin_layout Standard
+Einige Utilities (kj.scotlyard.game.utils.*), die eventuell mit dem GameGraph
+ arbeiten, müssen angepasst werden.
+ Dazu gehört vielleicht der MrXTracker.
+\end_layout
+
+\begin_layout Chapter
+Controller und Rules
+\end_layout
+
+\begin_layout Standard
+Der Controller steuert den Zugriff auf das Model.
+ Er verhindert, dass es zu einem inkonsistenten Zustand im Model kommt,
+ indem er die Regeln anwendet.
+\end_layout
+
+\begin_layout Section
+Regeln
+\end_layout
+
+\begin_layout Subsection
+Grundprinzipien
+\end_layout
+
+\begin_layout Standard
+Es muss wenige Grundprinzipien im Spiel geben, damit Regeln überhaupt sinn
+ machen und die Abtrennung vom Rest funktioniert.
+\end_layout
+
+\begin_layout Subsection
+Anwendung der Regeln
+\end_layout
+
+\begin_layout Subsubsection
+Spielbeginn
+\end_layout
+
+\begin_layout Subsubsection
+Spielzüge
+\end_layout
+
+\begin_layout Itemize
+movePolicy.checkMove(gameState, move)
+\end_layout
+
+\begin_layout Itemize
+Items weitergeben: movePolcy.getNextItemOwner(gameState, move, item)
+\end_layout
+
+\begin_layout Itemize
+Move zur Liste hinzufügen: gameState.getMoves().add(move)
+\end_layout
+
+\begin_layout Itemize
+gameWinPolicy.isGameWon(gameState, gameGraph)
+\end_layout
+
+\begin_layout Itemize
+turnPolicy.getNextPlayer/getNextRoundNumber
+\end_layout
+
+\begin_layout Itemize
+gameState.setCurrentPlayer/setCurrentRoundNumber
+\end_layout
+
+\begin_layout Itemize
+gameController.setState(gameStatus, gameWin)
+\end_layout
+
+\begin_layout Subsubsection
+Spielende
+\end_layout
+
+\begin_layout Chapter
+AI
+\end_layout
+
+\begin_layout Standard
+Die künstliche Intelligenz kann für Detectives oder MrX Spielzüge vorschlagen.
+\end_layout
+
+\begin_layout Chapter
+Utilities
+\end_layout
+
+\begin_layout Part
+Standardimplementierung
+\begin_inset Newline newline
+\end_inset
+
+(
+\begin_inset Quotes gld
+\end_inset
+
+The Scotland Yard
+\begin_inset Quotes grd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Section
+Begriffe
+\end_layout
+
+\begin_layout Itemize
+Initial Move
+\end_layout
+
+\begin_layout Itemize
+Single Move
+\end_layout
+
+\begin_layout Itemize
+Multi Move
+\end_layout
+
+\begin_layout Itemize
+Base Move
+\end_layout
+
+\begin_layout Itemize
+Sub Move
+\end_layout
+
+\begin_layout Part*
+Anhang
+\end_layout
+
+\begin_layout Section
+Eigennamen
+\end_layout
+
+\begin_layout Itemize
+ScotlYard
+\end_layout
+
+\begin_layout Itemize
+Board
+\end_layout
+
+\begin_layout Itemize
+JGraphT
+\end_layout
+
+\end_body
+\end_document

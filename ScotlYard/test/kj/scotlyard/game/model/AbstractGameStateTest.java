@@ -5,7 +5,8 @@ import static org.junit.Assert.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.GameGraph;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.model.item.BusTicket;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
@@ -18,7 +19,7 @@ import org.junit.Test;
 
 public class AbstractGameStateTest {
 	
-	class TestStateListener implements StateListener {
+	class TestStateListener implements TurnListener {
 
 		GameState gs;
 		
@@ -145,6 +146,7 @@ public class AbstractGameStateTest {
 
 	Game g;
 	GameState gs;
+	GameGraph gg = null;
 	TheMoveProducer prod = TheMoveProducer.createInstance();
 	MrXPlayer mrX;
 	DetectivePlayer d1, d2, d3, d4;
@@ -171,20 +173,20 @@ public class AbstractGameStateTest {
 		for (int i = 0; i < 4; i++) {
 			for (Player p : g.getPlayers()) {
 				ms[j] = prod.createSingleMove(p, i, i,
-						new StationVertex(), new TaxiConnection(), new TaxiTicket());
+						new Station(gg), new TaxiConnection(gg), new TaxiTicket());
 				j++;
 			}
 		}
 
-		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
 				new TaxiTicket());
-		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
 				new TaxiTicket());
 		ms[5] = prod.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
 
-		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
 				new TaxiTicket());
-		prod.addSubMove(new StationVertex(), new TaxiConnection(),
+		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
 				new TaxiTicket());
 		ms[15] = prod.createMultiMove(mrX, 3, 4, new DoubleMoveCard());
 

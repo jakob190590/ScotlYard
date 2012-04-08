@@ -7,12 +7,10 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.model.CorruptGameStateException;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.items.Ticket;
 import kj.scotlyard.game.rules.Rules;
 
 public class MrXTracker {
@@ -26,7 +24,6 @@ public class MrXTracker {
 	private GameStateExtension gameStateExtension;
 	
 	public MrXTracker(GameState gameState, GameGraph gameGraph, Rules rules) {
-		super();
 		this.gameState = gameState;
 		this.gameGraph = gameGraph;
 		gameStateExtension = new GameStateExtension(gameState);
@@ -49,34 +46,32 @@ public class MrXTracker {
 		return null;
 	}
 	
-	public List<Ticket> getTicketsSince() {
-		// ... Since last known Move, was sonst ...
+	public List<Move> getMovesSince() {
+		// ... Since: Last known Move (was sonst)
 		
-		List<Ticket> list = new LinkedList<>();
+		List<Move> list = new LinkedList<>();
 		
 		Move lastUncovered = getLastKnownMove();
 		
 		if (lastUncovered != null) {
-			try {
-				ListIterator<Move> it = gameStateExtension.moveIterator(gameState.getMrX(), true, lastUncovered.getMoveNumber() + 1);
-				while (it.hasNext()) {
-					// hier koennts cast exception geben, bei corrupt game state
-					list.add((Ticket) it.next().getItem());
-				}
-			} catch (ClassCastException e) {
-				throw new CorruptGameStateException("The item attached to the single/normal move is not a Ticket (but it must be one).", e);
+			
+			ListIterator<Move> it = gameStateExtension.moveIterator(
+					gameState.getMrX(), true, lastUncovered.getMoveNumber() + 1);
+			
+			while (it.hasNext()) {
+				list.add(it.next());
 			}
 		}
 		return list;
 	}
-	
-	public Set<StationVertex> getPossiblePositions() {
+		
+	public Set<Station> getPossiblePositions() {
 		// ohne bewertung, denn das ist aufgabe der AI!
 		
 		// wenn die AI diese methode nicht nutzen will, ist mir das auch egal.
 		// die GUI kann sie auf jeden fall brauchen.
 		
-		Set<StationVertex> result = new HashSet<>();
+		Set<Station> result = new HashSet<>();
 		
 		// TODO implement -- korbi?		
 		

@@ -58,7 +58,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Fri Mar 30 00:41:17 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Thu Apr 05 23:34:14 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -350,7 +350,7 @@
           name = 'kj.scotlyard.game.rules' isSpecification = 'false' isRoot = 'false'
           isLeaf = 'false' isAbstract = 'false'/>
         <UML:Package xmi.id = '-64--88--78-22-16ecf673:1364069f194:-8000:0000000000000A87'
-          name = 'kj.scotlyard.gui' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+          name = 'kj.scotlyard.board' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
           isAbstract = 'false'>
           <UML:ModelElement.comment>
             <UML:Comment xmi.idref = '-64--88--78-22--1ceb267c:1364446d453:-8000:0000000000000AA1'/>
@@ -2190,7 +2190,7 @@ singleton here).</text>
       bold="false"
       textsize="12"
       justification="Left"
-    >kj.scotlyard.gui</text>
+    >kj.scotlyard.board</text>
     <group name="Fig1.3"
          description="org.argouml.uml.diagram.ui.FigStereotypesGroup[24, 144, 774, 1]"
          href="-64--88--78-22-16ecf673:1364069f194:-8000:0000000000000A87"
@@ -3219,7 +3219,7 @@ and GameGraph</text>
                         offset="25" />
     </private>
     <path name="Fig12.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -3276,7 +3276,7 @@ and GameGraph</text>
                         offset="5" />
     </private>
     <path name="Fig13.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -3333,7 +3333,7 @@ and GameGraph</text>
                         offset="5" />
     </private>
     <path name="Fig14.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -3390,7 +3390,7 @@ and GameGraph</text>
                         offset="5" />
     </private>
     <path name="Fig15.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
