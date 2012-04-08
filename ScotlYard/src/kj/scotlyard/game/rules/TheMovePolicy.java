@@ -70,7 +70,7 @@ public class TheMovePolicy implements MovePolicy {
 		StationVertex currentStation = lastMove.getStation();
 		
 		Set<Item> items = gameState.getItems(player);
-		Set<StationVertex> detectivePositions = new GameStateExtension(gameState).getDetectivesPositions(lastMove.getRoundNumber());
+		Set<StationVertex> detectivePositions = new GameStateExtension(gameState).getDetectivePositions(lastMove.getRoundNumber());
 		
 		for (ConnectionEdge connection : currentStation.getEdges()) {
 			

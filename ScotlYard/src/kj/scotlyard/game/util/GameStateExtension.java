@@ -261,7 +261,7 @@ public class GameStateExtension {
 		return result;
 	}
 	
-	public Set<StationVertex> getDetectivesPositions(int roundNumber) {		
+	public Set<StationVertex> getDetectivePositions(int roundNumber) {		
 		Set<StationVertex> result = new HashSet<>();
 		
 		for (Move m : getMoves(roundNumber, false)) {
