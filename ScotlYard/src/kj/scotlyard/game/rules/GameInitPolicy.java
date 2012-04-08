@@ -14,7 +14,7 @@ public interface GameInitPolicy {
 	
 	int getMaxDetectiveCount();
 	
-	StationVertex suggestInitialStation(GameState gameState, GameGraph gameGraph, Player player);
+	StationVertex suggestInitialStation(GameState gameState, GameGraph gameGraph, Set<StationVertex> initialPositions, Player player);
 	
 	Set<Item> createItemSet(GameState gameState, Player player);
 
