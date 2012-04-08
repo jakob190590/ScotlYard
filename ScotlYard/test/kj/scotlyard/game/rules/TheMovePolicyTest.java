@@ -74,19 +74,19 @@ public class TheMovePolicyTest {
 			g.setItems(p, r.getGameInitPolicy().createItemSet(g, p));
 		}
 		
-		s1 = new Station();
-		s2 = new Station();
-		s3 = new Station();
-		s4 = new Station();
+		s1 = new Station(gg);
+		s2 = new Station(gg);
+		s3 = new Station(gg);
+		s4 = new Station(gg);
 		
-		tc1 = new TaxiConnection();
-		uc1 = new UndergroundConnection();
-		bc1 = new BusConnection();
-		fc1 = new FerryConnection();
-		tc2 = new TaxiConnection();
-		uc2 = new UndergroundConnection();
-		bc2 = new BusConnection();
-		fc2 = new FerryConnection();
+		tc1 = new TaxiConnection(gg);
+		uc1 = new UndergroundConnection(gg);
+		bc1 = new BusConnection(gg);
+		fc1 = new FerryConnection(gg);
+		tc2 = new TaxiConnection(gg);
+		uc2 = new UndergroundConnection(gg);
+		bc2 = new BusConnection(gg);
+		fc2 = new FerryConnection(gg);
 
 	}
 

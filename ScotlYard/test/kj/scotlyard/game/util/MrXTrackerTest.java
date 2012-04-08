@@ -61,24 +61,24 @@ public class MrXTrackerTest {
 		for (int i = 0; i < 20; i++) {
 			for (Player p : g.getPlayers()) {
 				ms[j] = prod.createSingleMove(p, i, i,
-						new Station(), new TaxiConnection(), new TaxiTicket());
+						new Station(gg), new TaxiConnection(gg), new TaxiTicket());
 				j++;
 			}
 		}
 
 		// round number 1
-		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
-		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
 		ms[5] = prod.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
 
 		// round number 2
-		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
-		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
 		ms[10] = prod.createMultiMove(mrX, 2, 3, new DoubleMoveCard());
 		
 		// round number 5
-		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
-		prod.addSubMove(new Station(), new TaxiConnection(), new TaxiTicket());
+		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
 		ms[25] = prod.createMultiMove(mrX, 5, 7, new DoubleMoveCard());
 
 		// Move numbers fuer mrX neu anpassen (wegen den nachtraeglichen multi moves)

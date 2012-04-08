@@ -2,6 +2,7 @@ package kj.scotlyard.game.model;
 
 import static org.junit.Assert.*;
 import kj.scotlyard.game.graph.Connection;
+import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
@@ -15,13 +16,15 @@ public class DefaultMoveTest {
 	
 	TheMoveProducer prod = TheMoveProducer.createInstance();
 	
+	GameGraph gg = null;
+	
 	@Test
 	public void testSeal() {
 		Move m = new DefaultMove();
 		m.seal();
 		
 		try {
-			m.setConnection(new BusConnection());
+			m.setConnection(new BusConnection(gg));
 			fail("method should be sealed, but is not.");
 		} catch (Exception e) { }
 		
@@ -51,7 +54,7 @@ public class DefaultMoveTest {
 		} catch (Exception e) { }
 		
 		try {
-			m.setStation(new Station());
+			m.setStation(new Station(gg));
 			fail("method should be sealed, but is not.");
 		} catch (Exception e) { }
 		
@@ -74,7 +77,7 @@ public class DefaultMoveTest {
 	@Test
 	public void testTheMovePlayerStationVertex() {
 		Player p = new DetectivePlayer();
-		Station s = new Station();
+		Station s = new Station(gg);
 		
 		Move m = new DefaultMove();
 		m.setPlayer(p);
@@ -87,8 +90,8 @@ public class DefaultMoveTest {
 	@Test
 	public void testTheMovePlayerConnectionEdgeStationVertexItem() {
 		Player p = new DetectivePlayer();
-		Station s = new Station();
-		Connection c = new FerryConnection();
+		Station s = new Station(gg);
+		Connection c = new FerryConnection(gg);
 		Item i = new BlackTicket();
 		
 		Move m = new DefaultMove();
@@ -126,7 +129,7 @@ public class DefaultMoveTest {
 	public void testSetGet() {
 		Move m = new DefaultMove();
 		
-		Connection c = new BusConnection();
+		Connection c = new BusConnection(gg);
 		m.setConnection(c);
 		assertEquals(c, m.getConnection());
 	
@@ -147,7 +150,7 @@ public class DefaultMoveTest {
 		m.setRoundNumber(1);
 		assertEquals(1, m.getRoundNumber());
 	
-		Station s = new Station(); 
+		Station s = new Station(gg); 
 		m.setStation(s);
 		assertEquals(s, m.getStation());
 	
