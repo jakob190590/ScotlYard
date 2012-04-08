@@ -1,10 +1,14 @@
 package kj.scotlyard.game.util;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
+import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
@@ -252,6 +256,18 @@ public class GameStateExtension {
 		
 		for (Move m : move.getMoves()) {
 			result.addAll(flattenMove(m, omitBaseMove));
+		}
+		
+		return result;
+	}
+	
+	public Set<StationVertex> getDetectivesPositions(int roundNumber) {		
+		Set<StationVertex> result = new HashSet<>();
+		
+		for (Move m : getMoves(roundNumber, false)) {
+			if (m.getPlayer() instanceof DetectivePlayer) {
+				result.add(m.getStation());
+			}
 		}
 		
 		return result;
