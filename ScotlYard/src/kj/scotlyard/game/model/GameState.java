@@ -47,9 +47,9 @@ public interface GameState {
 	
 	// To add and remove Listeners ...
 
-	void addStateListener(StateListener listener);
+	void addStateListener(TurnListener listener);
 	
-	void removeStateListener(StateListener listener);
+	void removeStateListener(TurnListener listener);
 	
 	void addPlayerListener(PlayerListener listener);
 	
