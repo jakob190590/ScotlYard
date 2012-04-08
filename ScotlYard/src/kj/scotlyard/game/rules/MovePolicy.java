@@ -1,6 +1,5 @@
 package kj.scotlyard.game.rules;
 
-import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.GameState;

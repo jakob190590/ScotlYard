@@ -1,7 +1,10 @@
 package kj.scotlyard.game.rules;
 
-import kj.scotlyard.game.graph.Connection;
+import java.util.Set;
+
+import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.UndergroundConnection;
@@ -62,13 +65,34 @@ public class TheMovePolicy implements MovePolicy {
 		// wenn ticket da is, pruefen, ob benachbarte station frei is (kein anderer detektiv)
 		
 		// TODO implement, korbi?
+		
+		Move lastMove = gameState.getLastMove(player);
+		StationVertex currentStation = lastMove.getStation();
+		
+		Set<Item> items = gameState.getItems(player);
+		Set<StationVertex> detectivePositions = new GameStateExtension(gameState).getDetectivesPositions(lastMove.getRoundNumber());
+		
+		for (ConnectionEdge connection : currentStation.getEdges()) {
+			
+			boolean ticketFound = false;
+			for (Item item : items) {
+				if (item instanceof Ticket && isTicketValidForConnection((Ticket) item, connection)) {
+					ticketFound = true;
+					break;
+				}
+			}
+			
+			if (ticketFound && !detectivePositions.contains(connection.getOther(currentStation))) {
+				return true;
+			}
+		}
 
-		return true;
+		return false;
 	}
 	
 	@Override
 	public boolean isTicketValidForConnection(Ticket ticket,
-			Connection connection) {
+			ConnectionEdge connection) {
 		
 		if (ticket instanceof TaxiTicket && connection instanceof TaxiConnection) {
 			return true;
