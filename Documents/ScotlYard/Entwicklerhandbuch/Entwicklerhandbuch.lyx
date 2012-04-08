@@ -242,6 +242,17 @@ Spielgraph
 
 \begin_layout Standard
 Der Graph modelliert das Spielfeld.
+ Er ist nicht Teil der Regeln, sondern wird gesondert erzeugt.
+ Die Regeln haben auch kaum etwas mit dem konkreten Graphen zu tun.
+ Die einzige Ausnahme ist in der GameInitPolicy die Methode suggestInitialStatio
+n.
+ Diese muss aus möglichen Startpositionen für den gegebenen Spieler eine
+ auswählen.
+ Die möglichen Startpositionen hängen aber eng mit dem konkreten Graph zusammen.
+ Daher wird in diesem Ausnahmefall zusätzlich zum GameGraph noch eine Menge
+ an möglichen Startpositionen übergeben (Set<StationVertex>).
+ Diese möglichen Startpositionen gehören also auch zum Spielgraph und nicht
+ zu den Regeln.
 \end_layout
 
 \begin_layout Subsection
@@ -310,7 +321,7 @@ telle des verwendeten Toolkits.
 \begin_inset Newline newline
 \end_inset
 
-public interface GameGraph extends UndirectedGraph { }
+public interface GameGraph extends org.jgrapht.UndirectedGraph { }
 \begin_inset Newline newline
 \end_inset
 
@@ -323,7 +334,8 @@ public interface GameGraph extends OtherToolkitsGraphInterface { }
 
 \begin_layout Enumerate
 Außerdem definieren die Schnittstellen StationVertex und ConnectionEdge
- grundlegende Methoden, die den Zugriff auf den Graph vereinfachen.
+ grundlegende Methoden, die den Zugriff auf den Graph vereinfachen und vereinhei
+tlichen.
  Die Implementierung in Station und Connection verwendet die Graph-Schnittstelle
 , und muss bei Verwendung eines anderen Toolkits natürlich anders aussehen.
 \end_layout
@@ -357,9 +369,16 @@ Im Controller (kj.scotlyard.game.control.*) muss ebenfalls nichts verändert
 
 \begin_layout Standard
 Das Interface in kj.scotlyard.game.rules.* ändert sich überhaupt nicht.
- In der Implementierung der Regeln müssen aber Anpassungen durchgeführt
- werden, denn die Regeln testen zum Beispiel, ob durch einen Zug der nächste
- Knoten überhaupt erreichbar ist.
+ In der Implementierung der Regeln wird aber auf den Graphen zugegriffen,
+ denn die Regeln testen zum Beispiel, ob durch einen Zug der nächste Knoten
+ überhaupt erreichbar ist.
+\end_layout
+
+\begin_layout Standard
+Würde die Implementierung mit dem Interface von StationVertex und ConnectionEdge
+ auskommen, wären auch hier keine Änderungen notwendig.
+ Wird aber auf das Interface von GameGraph zurückgegriffen, müssen Anpassungen
+ durchgeführt werden.
 \end_layout
 
 \begin_layout Subsubsection
@@ -368,8 +387,9 @@ Das Interface in kj.scotlyard.game.rules.* ändert sich überhaupt nicht.
 
 \begin_layout Standard
 Auch hier ändern sich die Schnittstellen in kj.scotlyard.game.ai.* nicht, die
- Implementierung aber ganz gewaltig.
- Die AI lebt schließlich von Operationen im Graph.
+ Implementierung aber wahrscheinlich schon.
+ Die AI lebt schließlich von Operationen im Graph und wird sich dabei nicht
+ auf die schmale Schnittstelle von StationVertex und ConnectionEdge beschränken.
 \end_layout
 
 \begin_layout Subsubsection
@@ -377,11 +397,9 @@ Auch hier ändern sich die Schnittstellen in kj.scotlyard.game.ai.* nicht, die
 \end_layout
 
 \begin_layout Standard
-Einige Utilities (kj.scotlyard.game.utils.*), die eventuell mit dem Graph arbeiten
- müssen angepasst werden.
- Dazu gehört z.B.
- der MrXTracker.
- Es sollte jedoch möglich sein, die Schnittstellen von Änderungen zu verschonen.
+Einige Utilities (kj.scotlyard.game.utils.*), die eventuell mit dem GameGraph
+ arbeiten, müssen angepasst werden.
+ Dazu gehört vielleicht der MrXTracker.
 \end_layout
 
 \begin_layout Chapter
