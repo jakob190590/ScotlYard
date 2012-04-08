@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.apache.commons.attributes.DefaultSealable;
 
-import kj.scotlyard.game.graph.Connection;
-import kj.scotlyard.game.graph.Station;
+import kj.scotlyard.game.graph.ConnectionEdge;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.item.Item;
 
 public class DefaultMove extends DefaultSealable implements Move {
@@ -21,9 +21,9 @@ public class DefaultMove extends DefaultSealable implements Move {
 	
 	private int moveIndex;
 	
-	private Station station;
+	private StationVertex station;
 	
-	private Connection connection;
+	private ConnectionEdge connection;
 	
 	private Item item;
 	
@@ -33,7 +33,7 @@ public class DefaultMove extends DefaultSealable implements Move {
 	public DefaultMove() { }
 
 	public DefaultMove(Player player, int roundNumber, int moveNumber,
-			int moveIndex, Station station, Connection connection,
+			int moveIndex, StationVertex station, ConnectionEdge connection,
 			Item item, Move... moves) {
 		
 		this.player = player;
@@ -100,23 +100,23 @@ public class DefaultMove extends DefaultSealable implements Move {
 	}
 
 	@Override
-	public Station getStation() {
+	public StationVertex getStation() {
 		return station;
 	}
 
 	@Override
-	public void setStation(Station station) {
+	public void setStation(StationVertex station) {
 		checkSealed();
 		this.station = station;
 	}
 
 	@Override
-	public Connection getConnection() {
+	public ConnectionEdge getConnection() {
 		return connection;
 	}
 
 	@Override
-	public void setConnection(Connection connection) {
+	public void setConnection(ConnectionEdge connection) {
 		checkSealed();
 		this.connection = connection;
 	}
