@@ -7,6 +7,12 @@ import java.util.Set;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
 
+/**
+ * Mit diesem Builder wird der Text einer Description Datei erzeugt!
+ * Dieser String kann anschliessend noch in eine Datei geschrieben werden.
+ * @author jakob190590
+ *
+ */
 public class GraphDescriptionBuilder implements GraphBuilder {
 	
 	private class Vertex {

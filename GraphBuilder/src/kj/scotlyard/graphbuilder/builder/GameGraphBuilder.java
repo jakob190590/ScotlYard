@@ -4,15 +4,11 @@ import java.awt.geom.Point2D.Double;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jgrapht.EdgeFactory;
-import org.jgrapht.graph.ClassBasedEdgeFactory;
-import org.jgrapht.graph.Multigraph;
-
-import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.TheGameGraph;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
@@ -20,8 +16,7 @@ import kj.scotlyard.game.graph.connection.UndergroundConnection;
 
 public class GameGraphBuilder implements GraphBuilder {
 	
-	private EdgeFactory<StationVertex, ConnectionEdge> ef = new ClassBasedEdgeFactory<StationVertex, ConnectionEdge>(Connection.class);
-	GameGraph g = (GameGraph) new Multigraph<StationVertex, ConnectionEdge>(ef);
+	GameGraph g = new TheGameGraph();
 	Map<Integer, StationVertex> vertexMap = new HashMap<>();
 
 	@Override

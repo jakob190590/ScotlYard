@@ -8,24 +8,19 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
-import org.jgrapht.EdgeFactory;
-import org.jgrapht.graph.ClassBasedEdgeFactory;
-import org.jgrapht.graph.Multigraph;
-
-import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.TheGameGraph;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.UndergroundConnection;
 
-public class CompleteGraphBuilder extends GraphDescriptionBuilder {
+public class BoardGraphBuilder implements GraphBuilder {
 	
-	private EdgeFactory<StationVertex, ConnectionEdge> ef = new ClassBasedEdgeFactory<StationVertex, ConnectionEdge>(Connection.class);
-	GameGraph g = (GameGraph) new Multigraph<StationVertex, ConnectionEdge>(ef);
+	GameGraph g = new TheGameGraph();
 	Map<Integer, StationVertex> vertexMap = new HashMap<>();
 	Set<JComponent> visualComponents = new HashSet<>();
 
@@ -40,7 +35,6 @@ public class CompleteGraphBuilder extends GraphDescriptionBuilder {
 		vertexMap.put(number, v);
 		g.addVertex(v);
 		
-		super.addVertex(vertexType, number, position);
 	}
 
 	@Override
@@ -61,8 +55,6 @@ public class CompleteGraphBuilder extends GraphDescriptionBuilder {
 		}
 		g.addEdge(vertexMap.get(vertex1), vertexMap.get(vertex2), e);
 		
-		// Das darf nur passieren, wenn Angaben gueltig sind:
-		super.addEdge(edgeType, vertex1, vertex2);
 	}
 	
 	public GameGraph getGameGraph() {

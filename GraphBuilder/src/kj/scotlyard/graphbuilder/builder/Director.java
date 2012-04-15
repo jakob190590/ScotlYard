@@ -18,21 +18,29 @@ import kj.scotlyard.game.graph.StationVertex;
  */
 public class Director {
 	
+	/**
+	 * Dies ist nur ein Testprogramm.
+	 * Als Argument sollte der Dateiname einer Description Datei
+	 * uebergeben werden.
+	 * @param args
+	 */
 	public static void main(String... args) {
 		if (args.length == 1) {
+			
 			GraphDescriptionBuilder desc = new GraphDescriptionBuilder();
-//			GameGraphBuilder graph = new GameGraphBuilder();
-//			CompleteGraphBuilder complete = new CompleteGraphBuilder();
+			GameGraphBuilder graph = new GameGraphBuilder();
+			BoardGraphBuilder complete = new BoardGraphBuilder();
+			
 			try {
-				construct(args[0], desc);//, graph, complete);
+				construct(args[0], desc, graph, complete);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
-//			assert (desc.getDescription() == complete.getDescription());
-			
 			System.out.println(desc.getDescription());
-			//System.out.println(graph.toString());
+			System.out.println(graph.getGameGraph() + ": " 
+					+ graph.getGameGraph().vertexSet().size() + " vertices, " 
+					+ graph.getGameGraph().edgeSet().size() + " edges");
 			
 		} else {
 			System.out.println("One argument expected: description file pathname.");

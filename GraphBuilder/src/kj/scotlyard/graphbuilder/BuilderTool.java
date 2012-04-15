@@ -62,7 +62,7 @@ import kj.scotlyard.game.graph.connection.UndergroundConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.graphbuilder.builder.Director;
 import kj.scotlyard.graphbuilder.builder.GraphDescriptionBuilder;
-import kj.scotlyard.graphbuilder.builder.ToolRepresentationBuilder;
+import kj.scotlyard.graphbuilder.builder.ToolGraphBuilder;
 import java.awt.event.KeyAdapter;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.event.ChangeListener;
@@ -645,7 +645,7 @@ public class BuilderTool extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if (descriptionChooser.showOpenDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
 				try {
-					ToolRepresentationBuilder builder = new ToolRepresentationBuilder();
+					ToolGraphBuilder builder = new ToolGraphBuilder();
 					Director.construct(descriptionChooser.getSelectedFile().getPath(), builder);
 					vertices = new Vector(builder.getVertexList());
 					edges = new Vector(builder.getEdgeList());
