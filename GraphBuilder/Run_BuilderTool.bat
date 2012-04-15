@@ -1,0 +1,1 @@
+java -classpath "bin" kj.scotlyard.graphbuilder.BuilderTool
