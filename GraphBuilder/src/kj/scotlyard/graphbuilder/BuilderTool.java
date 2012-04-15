@@ -18,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
@@ -62,7 +63,7 @@ import kj.scotlyard.game.graph.connection.UndergroundConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.graphbuilder.builder.Director;
 import kj.scotlyard.graphbuilder.builder.GraphDescriptionBuilder;
-import kj.scotlyard.graphbuilder.builder.ToolRepresentationBuilder;
+import kj.scotlyard.graphbuilder.builder.ToolGraphBuilder;
 import java.awt.event.KeyAdapter;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.event.ChangeListener;
@@ -110,6 +111,7 @@ public class BuilderTool extends JFrame {
 	
 	private Tool currentTool = null;
 	private Vertex lastSelectedVertex = null;
+	private int clicksWithoutTool = 0;
 	private Image image = null;
 	private Vector<Vertex> vertices = new Vector<>();
 	private Vector<Edge> edges = new Vector<>();
@@ -245,7 +247,7 @@ public class BuilderTool extends JFrame {
 		mnGraph.add(mntmMarkEdge);
 		
 		JMenu mnView = new JMenu("View");
-		mnView.setMnemonic('v');
+		mnView.setMnemonic('w');
 		menuBar.add(mnView);
 		
 		chckbxmntmOnlySelectedVertices = new JCheckBoxMenuItem("Only Draw selected Vertices");
@@ -259,6 +261,20 @@ public class BuilderTool extends JFrame {
 		JMenu mnHelp = new JMenu("Help");
 		mnHelp.setMnemonic('h');
 		menuBar.add(mnHelp);
+		
+		JMenuItem mntmAbout = new JMenuItem("About...");
+		mntmAbout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(BuilderTool.this, "With this BuilderTool, you can create and edit\n" +
+						"Graph-Toolkit-independent Description files for graphs.\n\n" +
+						"Load an image as background, then mark the vertices\n" +
+						"and the edges. For both you can specify the type.\n" +
+						"You can also remove vertices and edges:\n" +
+						"Select them in the list and press DELETE.", "About", JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		mntmAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+		mnHelp.add(mntmAbout);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -333,6 +349,9 @@ public class BuilderTool extends JFrame {
 				endEdging();
 			}
 		});
+		lblEdge.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+				.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "endEdging");
+		lblEdge.getActionMap().put("endEdging", endEdgingAction);
 		lblEdge.setLabelFor(toolBar_2);
 		toolBar_2.add(lblEdge);
 		
@@ -509,6 +528,7 @@ public class BuilderTool extends JFrame {
 		});
 		lblEdges.setLabelFor(edgeList);
 		imagePanel.addMouseListener(new MouseAdapter() {
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
@@ -522,20 +542,26 @@ public class BuilderTool extends JFrame {
 					
 					JSpinner number = getSpinnerNumber();				
 					
-					if (v == null) {
-						v = new Vertex((VertexType) getCmbVertexType().getSelectedItem(), 
-								(int) number.getValue(), pos); 
+					if (getVertex((int) number.getValue()) == null) {
+						// Kein Vertex mit aktueller Nummer vorhanden
+						
+						if (v == null) {
+							v = new Vertex((VertexType) getCmbVertexType().getSelectedItem(), 
+									(int) number.getValue(), pos); 
+						
+						} else {
+							// schon vorhanden: nach vorne draengeln
+							vertices.remove(v);
+							v.number = (int) number.getValue();
+						}
+						
+						// vorne einfuegen, weil vorne die aktuellsten sind.
+						vertices.add(0, v);
 					
+						number.setValue(number.getNextValue());
 					} else {
-						// schon vorhanden: nach vorne draengeln
-						vertices.remove(v);
-						v.number = (int) number.getValue();
+						JOptionPane.showMessageDialog(BuilderTool.this, "A vertex with the current number already exists!", "Error", JOptionPane.ERROR_MESSAGE);
 					}
-					
-					// vorne einfuegen, weil vorne die aktuellsten sind.
-					vertices.add(0, v);
-					
-					number.setValue(number.getNextValue());
 					
 				} else if (currentTool == Tool.MARK_EDGE) {
 					
@@ -555,14 +581,18 @@ public class BuilderTool extends JFrame {
 							endEdging();
 						}
 					}
+				} else {
+					clicksWithoutTool++;
+					if (clicksWithoutTool >= 2) {
+						JOptionPane.showMessageDialog(BuilderTool.this, "You should select a Tool. You can either mark vertices or edges.");
+						clicksWithoutTool = 0;
+					}
 				}
 				
 				updateUI();
 				
-			}
+			} 
 		});
-		
-		pack();
 		
 	}
 
@@ -596,6 +626,15 @@ public class BuilderTool extends JFrame {
 	protected JList getEdgeList() {
 		return edgeList;
 	}
+	private Vertex getVertex(int number) {
+		for (Vertex v : vertices) {
+			if (v.number == number) {
+				return v;
+			}
+		}
+		
+		return null;
+	}
 	private Vertex getVertex(Point position) {
 		
 		double r = (int) getSpinnerSize().getValue() / 2.;
@@ -616,12 +655,14 @@ public class BuilderTool extends JFrame {
 		getLblEdge().setFont(new Font("Tahoma", Font.BOLD, 11));
 		getLblEdge().setForeground(Color.BLUE);
 		getLblEdge().setIcon(checkIcon);
+		getLblEdge().setToolTipText("Finish Edge Drawing (Esc)");
 	}
 	/** Festlegen der Kanten beenden */
 	void endEdging() {
 		getLblEdge().setFont(new Font("Tahoma", Font.PLAIN, 11));
 		getLblEdge().setForeground(Color.BLACK);
 		getLblEdge().setIcon(null);
+		getLblEdge().setToolTipText("");
 		lastSelectedVertex = null;
 	}
 	@SuppressWarnings("unchecked")
@@ -645,7 +686,7 @@ public class BuilderTool extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if (descriptionChooser.showOpenDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
 				try {
-					ToolRepresentationBuilder builder = new ToolRepresentationBuilder();
+					ToolGraphBuilder builder = new ToolGraphBuilder();
 					Director.construct(descriptionChooser.getSelectedFile().getPath(), builder);
 					vertices = new Vector(builder.getVertexList());
 					edges = new Vector(builder.getEdgeList());
@@ -747,6 +788,7 @@ public class BuilderTool extends JFrame {
 				getMntmMarkEdge().setSelected(false);
 			} else {
 				currentTool = null;
+				clicksWithoutTool = 0;
 				getTglbtnMarkVertex().setSelected(false);
 				getMntmMarkVertex().setSelected(false);
 			}
@@ -770,6 +812,7 @@ public class BuilderTool extends JFrame {
 				getMntmMarkVertex().setSelected(false);
 			} else {
 				currentTool = null;
+				clicksWithoutTool = 0;
 				endEdging();
 				getTglbtnMarkEdge().setSelected(false);
 				getMntmMarkEdge().setSelected(false);

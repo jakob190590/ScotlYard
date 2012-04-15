@@ -25,7 +25,7 @@ import kj.scotlyard.graphbuilder.BuilderTool.VertexType;
  * @author jakob190590
  *
  */
-public class ToolRepresentationBuilder implements GraphBuilder {
+public class ToolGraphBuilder implements GraphBuilder {
 
 	private List<Vertex> vertList = new Vector<>();
 	private Map<Integer, Vertex> vertMap = new HashMap<>();
