@@ -18,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
@@ -348,6 +349,9 @@ public class BuilderTool extends JFrame {
 				endEdging();
 			}
 		});
+		lblEdge.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+				.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "endEdging");
+		lblEdge.getActionMap().put("endEdging", endEdgingAction);
 		lblEdge.setLabelFor(toolBar_2);
 		toolBar_2.add(lblEdge);
 		
@@ -590,8 +594,6 @@ public class BuilderTool extends JFrame {
 			} 
 		});
 		
-		pack();
-		
 	}
 
 	protected JToggleButton getTglbtnMarkVertex() {
@@ -653,12 +655,14 @@ public class BuilderTool extends JFrame {
 		getLblEdge().setFont(new Font("Tahoma", Font.BOLD, 11));
 		getLblEdge().setForeground(Color.BLUE);
 		getLblEdge().setIcon(checkIcon);
+		getLblEdge().setToolTipText("Finish Edge Drawing (Esc)");
 	}
 	/** Festlegen der Kanten beenden */
 	void endEdging() {
 		getLblEdge().setFont(new Font("Tahoma", Font.PLAIN, 11));
 		getLblEdge().setForeground(Color.BLACK);
 		getLblEdge().setIcon(null);
+		getLblEdge().setToolTipText("");
 		lastSelectedVertex = null;
 	}
 	@SuppressWarnings("unchecked")
