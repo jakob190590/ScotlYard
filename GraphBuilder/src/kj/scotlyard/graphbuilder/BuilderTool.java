@@ -64,8 +64,11 @@ import kj.scotlyard.graphbuilder.builder.Director;
 import kj.scotlyard.graphbuilder.builder.GraphDescriptionBuilder;
 import kj.scotlyard.graphbuilder.builder.ToolRepresentationBuilder;
 import java.awt.event.KeyAdapter;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 
 @SuppressWarnings({ "serial", "rawtypes" })
 public class BuilderTool extends JFrame {
@@ -145,6 +148,23 @@ public class BuilderTool extends JFrame {
 	private final Action exportDescription = new ExportDescriptionAction();
 	private final Action newGraph = new NewGraphAction();
 	private final Action quitAction = new QuitAction();
+	private final Action repaintAction = new AbstractAction() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			getImagePanel().repaint();
+			
+		}
+	};
+	private final Action endEdgingAction = new AbstractAction() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			endEdging();
+		}
+	};
+	private JCheckBoxMenuItem mntmMarkVertex;
+	private JCheckBoxMenuItem mntmMarkEdge;
+	private JCheckBoxMenuItem chckbxmntmOnlySelectedVertices;
+	private JCheckBoxMenuItem chckbxmntmOnlySelectedEdges;
 
 	/**
 	 * Launch the application.
@@ -169,7 +189,7 @@ public class BuilderTool extends JFrame {
 	public BuilderTool() {
 		setTitle("BuilderTool");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 844, 356);
+		setBounds(100, 100, 733, 240);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -181,18 +201,26 @@ public class BuilderTool extends JFrame {
 		JMenuItem mntmLoadImage = new JMenuItem("");
 		mntmLoadImage.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UNDEFINED, 0));
 		mntmLoadImage.setAction(loadImage);
+		mntmLoadImage.addActionListener(endEdgingAction);
 		mnFile.add(mntmLoadImage);
+		
+		mnFile.addSeparator();
 		
 		JMenuItem mntmNewMenuItem_1 = new JMenuItem("New menu item");
 		mntmNewMenuItem_1.setAction(importDescription);
+		mntmNewMenuItem_1.addActionListener(endEdgingAction);
 		mnFile.add(mntmNewMenuItem_1);
 		
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("New menu item");
 		mntmNewMenuItem_2.setAction(exportDescription);
+		mntmNewMenuItem_2.addActionListener(endEdgingAction);
 		mnFile.add(mntmNewMenuItem_2);
+		
+		mnFile.addSeparator();
 		
 		JMenuItem mntmNewMenuItem_3 = new JMenuItem("New menu item");
 		mntmNewMenuItem_3.setAction(quitAction);
+		mntmNewMenuItem_3.addActionListener(endEdgingAction);
 		mnFile.add(mntmNewMenuItem_3);
 		
 		JMenu mnGraph = new JMenu("Graph");
@@ -201,7 +229,36 @@ public class BuilderTool extends JFrame {
 		
 		JMenuItem mntmNewMenuItem = new JMenuItem("New menu item");
 		mntmNewMenuItem.setAction(newGraph);
+		mntmNewMenuItem.addActionListener(endEdgingAction);
 		mnGraph.add(mntmNewMenuItem);
+		
+		mnGraph.addSeparator();
+		
+		mntmMarkVertex = new JCheckBoxMenuItem("New menu item");
+		mntmMarkVertex.setAction(markVertex);
+		mntmMarkVertex.addActionListener(endEdgingAction);
+		mnGraph.add(mntmMarkVertex);
+		
+		mntmMarkEdge = new JCheckBoxMenuItem("New menu item");
+		mntmMarkEdge.setAction(markEdge);
+		mntmMarkEdge.addActionListener(endEdgingAction);
+		mnGraph.add(mntmMarkEdge);
+		
+		JMenu mnView = new JMenu("View");
+		mnView.setMnemonic('v');
+		menuBar.add(mnView);
+		
+		chckbxmntmOnlySelectedVertices = new JCheckBoxMenuItem("Only Draw selected Vertices");
+		chckbxmntmOnlySelectedVertices.addActionListener(repaintAction);
+		mnView.add(chckbxmntmOnlySelectedVertices);
+		
+		chckbxmntmOnlySelectedEdges = new JCheckBoxMenuItem("Only Draw selected Edges");
+		chckbxmntmOnlySelectedEdges.addActionListener(repaintAction);
+		mnView.add(chckbxmntmOnlySelectedEdges);
+		
+		JMenu mnHelp = new JMenu("Help");
+		mnHelp.setMnemonic('h');
+		menuBar.add(mnHelp);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -229,7 +286,17 @@ public class BuilderTool extends JFrame {
 		toolBar.add(lblNodeSizepx);
 		
 		spinnerSize = new JSpinner();
+		toolBar.add(lblNodeSizepx);
+		
+		spinnerSize = new JSpinner();
 		spinnerSize.setModel(new SpinnerNumberModel(new Integer(20), null, null, new Integer(1)));
+		spinnerSize.getModel().addChangeListener(new ChangeListener() {
+	        @Override
+	        public void stateChanged(ChangeEvent e) {
+	        	getImagePanel().repaint();
+	        }
+	    });
+
 		lblNodeSizepx.setLabelFor(spinnerSize);
 		toolBar.add(spinnerSize);
 		
@@ -243,6 +310,7 @@ public class BuilderTool extends JFrame {
 		
 		cmbVertexType = new JComboBox();
 		cmbVertexType.setModel(new DefaultComboBoxModel(VertexType.values()));
+		cmbVertexType.addActionListener(repaintAction);
 		toolBar_1.add(cmbVertexType);
 		
 		JLabel lblNumber = new JLabel("   Number: ");
@@ -269,11 +337,8 @@ public class BuilderTool extends JFrame {
 		toolBar_2.add(lblEdge);
 		
 		cmbEdgeType = new JComboBox();
-		cmbEdgeType.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				endEdging();
-			}
-		});
+		cmbEdgeType.addActionListener(endEdgingAction);
+		cmbEdgeType.addActionListener(repaintAction);
 		cmbEdgeType.setModel(new DefaultComboBoxModel(EdgeType.values()));
 		toolBar_2.add(cmbEdgeType);
 		
@@ -288,6 +353,11 @@ public class BuilderTool extends JFrame {
 		cbPolyline.setSelected(true);
 		toolBar_2.add(cbPolyline);
 		
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setContinuousLayout(true);
+		splitPane.setDividerLocation(200);
+		contentPane.add(splitPane, BorderLayout.CENTER);
+		
 		imagePanel = new JPanel() {
 			@Override
 			protected void paintComponent(Graphics g) {
@@ -298,44 +368,146 @@ public class BuilderTool extends JFrame {
 					g2D.drawImage(image, 0, 0, getWidth(), getHeight(), this);
 				}
 				
-				g2D.setColor(Color.RED);
 				g2D.setStroke(new BasicStroke(3));
 				for (Vertex v : vertices) {
+					if (getChckbxmntmOnlySelectedVertices().isSelected() && v.type != getCmbVertexType().getSelectedItem()) {
+						continue;
+					}
+					
 					int size = (int) getSpinnerSize().getValue();
 					int radius = size / 2;
 					int x = (int) Math.round(v.pos.x * getWidth());
 					int y = (int) Math.round(v.pos.y * getHeight());
+					
+					g2D.setColor(Color.RED);
 					g2D.drawOval(x - radius, y - radius, size, size);
+					
+					g2D.setColor(Color.BLACK);
+					g2D.setFont(new Font("", Font.PLAIN, 12));
+					g2D.drawString(String.valueOf(v.number), x - radius / 2, y + radius / 2);
 				}
 				
 				g2D.setStroke(new BasicStroke(2));
 				for (Edge e : edges) {
 					Color cl = null;
+					int offs = 0;
 					switch (e.type) {
 					case TAXI_CONNECTION:
 						cl = Color.YELLOW;
+						offs = 1;
 						break;
 					case BUS_CONNECTION:
 						cl = Color.GREEN;
+						offs = 3;
 						break;
 					case UNDERGROUND_CONNECTION:
 						cl = Color.BLUE;
+						offs = -1;
 						break;
 					case FERRY_CONNECTION:
 						cl = Color.BLACK;
+						offs = -3;
 						break;
 					}
 					g2D.setColor(cl);
 					
-					int x1 = (int) Math.round(e.v1.pos.x * getWidth());
-					int y1 = (int) Math.round(e.v1.pos.y * getHeight());
-					int x2 = (int) Math.round(e.v2.pos.x * getWidth());
-					int y2 = (int) Math.round(e.v2.pos.y * getHeight());
+					if (getChckbxmntmOnlySelectedEdges().isSelected()) {
+						if (e.type == getCmbEdgeType().getSelectedItem()) {
+							offs = 0;
+						} else {
+							continue;
+						}
+					}
+					
+					int x1 = (int) Math.round(e.v1.pos.x * getWidth()) + offs;
+					int y1 = (int) Math.round(e.v1.pos.y * getHeight()) + offs;
+					int x2 = (int) Math.round(e.v2.pos.x * getWidth()) + offs;
+					int y2 = (int) Math.round(e.v2.pos.y * getHeight()) + offs;
 					
 					g2D.drawLine(x1, y1, x2, y2);
 				}
 			}
 		};
+		splitPane.setRightComponent(imagePanel);
+		
+		JPanel panelSidebar = new JPanel();
+		splitPane.setLeftComponent(panelSidebar);
+		GridBagLayout gbl_panelSidebar = new GridBagLayout();
+		gbl_panelSidebar.columnWidths = new int[]{0, 0, 0};
+		gbl_panelSidebar.rowHeights = new int[]{0, 0, 0};
+		gbl_panelSidebar.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
+		gbl_panelSidebar.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		panelSidebar.setLayout(gbl_panelSidebar);
+		
+		JLabel lblVertices = new JLabel("Vertices");
+		GridBagConstraints gbc_lblVertices = new GridBagConstraints();
+		gbc_lblVertices.insets = new Insets(8, 0, 5, 5);
+		gbc_lblVertices.gridx = 0;
+		gbc_lblVertices.gridy = 0;
+		panelSidebar.add(lblVertices, gbc_lblVertices);
+		
+		JLabel lblEdges = new JLabel("Edges");
+		GridBagConstraints gbc_lblEdges = new GridBagConstraints();
+		gbc_lblEdges.insets = new Insets(8, 0, 5, 0);
+		gbc_lblEdges.gridx = 1;
+		gbc_lblEdges.gridy = 0;
+		panelSidebar.add(lblEdges, gbc_lblEdges);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane.insets = new Insets(0, 0, 0, 5);
+		gbc_scrollPane.gridx = 0;
+		gbc_scrollPane.gridy = 1;
+		panelSidebar.add(scrollPane, gbc_scrollPane);
+		
+		vertexList = new JList<>();
+		scrollPane.setViewportView(vertexList);
+		lblVertices.setLabelFor(vertexList);
+		vertexList.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				endEdging();
+				if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+					List<Vertex> selected = getVertexList().getSelectedValuesList();
+					for (Vertex v : selected) {
+						Iterator<Edge> it = edges.iterator();
+						while (it.hasNext()) {
+							Edge ee = it.next();
+							if (ee.v1 == v || ee.v2 == v) {
+								it.remove();
+							}
+						}
+						vertices.remove(v);
+					}
+					updateUI();
+				}
+			}
+		});
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
+		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane_1.gridx = 1;
+		gbc_scrollPane_1.gridy = 1;
+		panelSidebar.add(scrollPane_1, gbc_scrollPane_1);
+		
+		edgeList = new JList<>();
+		scrollPane_1.setViewportView(edgeList);
+		edgeList.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				endEdging();
+				if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+					List<Edge> selected = getEdgeList().getSelectedValuesList();
+					for (Edge ee : selected) {
+						edges.remove(ee);
+					}
+					updateUI();
+				}
+			}
+		});
+		lblEdges.setLabelFor(edgeList);
 		imagePanel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -389,80 +561,8 @@ public class BuilderTool extends JFrame {
 				
 			}
 		});
-		contentPane.add(imagePanel, BorderLayout.CENTER);
 		
-		JPanel panel_1 = new JPanel();
-		contentPane.add(panel_1, BorderLayout.WEST);
-		GridBagLayout gbl_panel_1 = new GridBagLayout();
-		gbl_panel_1.columnWidths = new int[]{0, 0, 0};
-		gbl_panel_1.rowHeights = new int[]{0, 0, 0};
-		gbl_panel_1.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
-		gbl_panel_1.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		panel_1.setLayout(gbl_panel_1);
-		
-		JLabel lblVertices = new JLabel("Vertices");
-		GridBagConstraints gbc_lblVertices = new GridBagConstraints();
-		gbc_lblVertices.insets = new Insets(0, 0, 5, 5);
-		gbc_lblVertices.gridx = 0;
-		gbc_lblVertices.gridy = 0;
-		panel_1.add(lblVertices, gbc_lblVertices);
-		
-		JLabel lblEdges = new JLabel("Edges");
-		GridBagConstraints gbc_lblEdges = new GridBagConstraints();
-		gbc_lblEdges.insets = new Insets(0, 0, 5, 0);
-		gbc_lblEdges.gridx = 1;
-		gbc_lblEdges.gridy = 0;
-		panel_1.add(lblEdges, gbc_lblEdges);
-		
-		vertexList = new JList<>();
-		lblVertices.setLabelFor(vertexList);
-		vertexList.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-					List<Vertex> selected = getVertexList().getSelectedValuesList();
-					for (Vertex v : selected) {
-						Iterator<Edge> it = edges.iterator();
-						while (it.hasNext()) {
-							Edge ee = it.next();
-							if (ee.v1 == v || ee.v2 == v) {
-								it.remove();
-							}
-						}
-						vertices.remove(v);
-					}
-					updateUI();
-				}
-			}
-		});
-		GridBagConstraints gbc_vertexList = new GridBagConstraints();
-		gbc_vertexList.weighty = 1.0;
-		gbc_vertexList.insets = new Insets(0, 0, 0, 5);
-		gbc_vertexList.fill = GridBagConstraints.BOTH;
-		gbc_vertexList.gridx = 0;
-		gbc_vertexList.gridy = 1;
-		panel_1.add(vertexList, gbc_vertexList);
-		
-		edgeList = new JList<>();
-		edgeList.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-					List<Edge> selected = getEdgeList().getSelectedValuesList();
-					for (Edge ee : selected) {
-						edges.remove(ee);
-					}
-					updateUI();
-				}
-			}
-		});
-		lblEdges.setLabelFor(edgeList);
-		GridBagConstraints gbc_edgeList = new GridBagConstraints();
-		gbc_edgeList.weighty = 1.0;
-		gbc_edgeList.fill = GridBagConstraints.BOTH;
-		gbc_edgeList.gridx = 1;
-		gbc_edgeList.gridy = 1;
-		panel_1.add(edgeList, gbc_edgeList);
+		pack();
 		
 	}
 
@@ -538,6 +638,8 @@ public class BuilderTool extends JFrame {
 		public ImportDescriptionAction() {
 			putValue(NAME, "Import Description...");
 			putValue(SHORT_DESCRIPTION, "Import a Description file");
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("pressed F8"));
+			putValue(MNEMONIC_KEY, KeyEvent.VK_I);
 		}
 		@SuppressWarnings("unchecked")
 		public void actionPerformed(ActionEvent e) {
@@ -559,6 +661,8 @@ public class BuilderTool extends JFrame {
 		public ExportDescriptionAction() {
 			putValue(NAME, "Export Description...");
 			putValue(SHORT_DESCRIPTION, "Export a Description file");
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("pressed F9"));
+			putValue(MNEMONIC_KEY, KeyEvent.VK_X);
 		}
 		public void actionPerformed(ActionEvent e) {
 			if (descriptionChooser.showSaveDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
@@ -600,11 +704,14 @@ public class BuilderTool extends JFrame {
 		public NewGraphAction() {
 			putValue(NAME, "New Graph");
 			putValue(SHORT_DESCRIPTION, "Clear the graph for a new one");
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed N"));
+			putValue(MNEMONIC_KEY, KeyEvent.VK_N);
 		}
 		public void actionPerformed(ActionEvent e) {
 			if (JOptionPane.showConfirmDialog(BuilderTool.this, "Really clear the current graph for a new one?") == JOptionPane.YES_OPTION) {
 				vertices.clear();
 				edges.clear();
+				spinnerNumber.setValue(1);
 				updateUI();
 			}
 		}
@@ -613,10 +720,10 @@ public class BuilderTool extends JFrame {
 		public LoadImageAction() {
 			putValue(NAME, "Load Image...");
 			putValue(SHORT_DESCRIPTION, "Load a background image");
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl o"));
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl pressed O"));
+			putValue(MNEMONIC_KEY, KeyEvent.VK_O);
 		}
 		public void actionPerformed(ActionEvent e) {
-			
 		    if (imageChooser.showOpenDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
 		    	image = Toolkit.getDefaultToolkit().getImage(imageChooser.getSelectedFile().getPath());
 		    	updateUI();
@@ -627,14 +734,21 @@ public class BuilderTool extends JFrame {
 		public MarkVertexAction() {
 			putValue(NAME, "Mark Vertex");
 			putValue(SHORT_DESCRIPTION, "Mark a vertex");
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("pressed INSERT"));
+			putValue(MNEMONIC_KEY, KeyEvent.VK_V);
 		}
 		public void actionPerformed(ActionEvent e) {
-			tglbtnMarkEdge.setSelected(false);
-			endEdging();
-			if (tglbtnMarkVertex.isSelected()) {
+			if (currentTool != Tool.MARK_VERTEX) {
 				currentTool = Tool.MARK_VERTEX;
+				getTglbtnMarkVertex().setSelected(true);
+				getMntmMarkVertex().setSelected(true);
+				
+				getTglbtnMarkEdge().setSelected(false);
+				getMntmMarkEdge().setSelected(false);
 			} else {
 				currentTool = null;
+				getTglbtnMarkVertex().setSelected(false);
+				getMntmMarkVertex().setSelected(false);
 			}
 		}
 	}
@@ -642,15 +756,23 @@ public class BuilderTool extends JFrame {
 		public MarkEdgeAction() {
 			putValue(NAME, "Mark Edge");
 			putValue(SHORT_DESCRIPTION, "Mark an edge");
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl pressed E"));
+			putValue(MNEMONIC_KEY, KeyEvent.VK_E);
 		}
 		public void actionPerformed(ActionEvent e) {
-			tglbtnMarkVertex.setSelected(false);
-			if (tglbtnMarkEdge.isSelected()) {
+			if (currentTool != Tool.MARK_EDGE) {
 				currentTool = Tool.MARK_EDGE;
 				lastSelectedVertex = null;
+				getTglbtnMarkEdge().setSelected(true);
+				getMntmMarkEdge().setSelected(true);
+				
+				getTglbtnMarkVertex().setSelected(false);
+				getMntmMarkVertex().setSelected(false);
 			} else {
 				currentTool = null;
 				endEdging();
+				getTglbtnMarkEdge().setSelected(false);
+				getMntmMarkEdge().setSelected(false);
 			}
 		}
 	}
@@ -658,10 +780,25 @@ public class BuilderTool extends JFrame {
 		public QuitAction() {
 			putValue(NAME, "Quit");
 			putValue(SHORT_DESCRIPTION, "Quit");
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("alt pressed F4"));
+			putValue(MNEMONIC_KEY, KeyEvent.VK_Q);
 		}
 		public void actionPerformed(ActionEvent e) {
 			setVisible(false);
 			dispose();
 		}
+	}
+	protected JMenuItem getMntmMarkVertex() {
+		return mntmMarkVertex;
+	}
+	protected JMenuItem getMntmMarkEdge() {
+		return mntmMarkEdge;
+	}
+	
+	protected JCheckBoxMenuItem getChckbxmntmOnlySelectedVertices() {
+		return chckbxmntmOnlySelectedVertices;
+	}
+	protected JCheckBoxMenuItem getChckbxmntmOnlySelectedEdges() {
+		return chckbxmntmOnlySelectedEdges;
 	}
 }
