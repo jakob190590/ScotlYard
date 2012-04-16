@@ -8,6 +8,7 @@ import kj.scotlyard.game.ai.Ai;
 import kj.scotlyard.game.ai.AiListener;
 import kj.scotlyard.game.ai.detective.DetectiveAi;
 import kj.scotlyard.game.ai.mrx.MrXAi;
+import kj.scotlyard.game.control.impl.TheGameController;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
@@ -36,7 +37,7 @@ public class TheGameControllerTest {
 		r = new TheRules();
 		g = new TheGame();
 		// gg
-		ctrl = new TheGameController(g, gg, r);
+		ctrl = new TheGameController(g, gg, null, r);
 		ext = new GameStateExtension(g);
 	}
 

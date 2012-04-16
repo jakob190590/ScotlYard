@@ -328,12 +328,12 @@ public class GameStateExtensionTest {
 		
 		List<Move> ms;
 		
-		// do not omit base move(s)
-		ms = ext.flattenMove(m, false); 
+		// do include base move(s)
+		ms = ext.flattenMove(m, true); 
 		assertEquals(4, ms.size());
 		
 		// do omit base move(s)
-		ms = ext.flattenMove(m, true);
+		ms = ext.flattenMove(m, false);
 		assertEquals(3, ms.size());
 		
 		
@@ -357,12 +357,12 @@ public class GameStateExtensionTest {
 		
 		m = new DefaultMove(p, 0, 0, 0, s, c, t, m0, m1, m2);
 		
-		// do not omit base move(s)
-		ms = ext.flattenMove(m, false); 
+		// do include base move(s)
+		ms = ext.flattenMove(m, true); 
 		assertEquals(8, ms.size());
 		
 		// do omit base move(s)
-		ms = ext.flattenMove(m, true);
+		ms = ext.flattenMove(m, false);
 		assertEquals(5, ms.size());
 	}
 

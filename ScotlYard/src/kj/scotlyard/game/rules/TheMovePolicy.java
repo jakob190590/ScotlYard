@@ -228,7 +228,7 @@ public class TheMovePolicy implements MovePolicy {
 		// TODO gueltigkeitstest doch weglassen? wo fang ich an, wo hoer ich auf...
 		// Grundlegende Gueltigkeitstests
 		boolean itemInMove = false;
-		for (Move m : new GameStateExtension(gameState).flattenMove(move, false)) {
+		for (Move m : new GameStateExtension(gameState).flattenMove(move, true)) {
 			if (m.getItem() == item) {
 				itemInMove = true;
 				break;
