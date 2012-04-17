@@ -168,12 +168,6 @@ public class BuilderTool extends JFrame {
 			getImagePanel().repaint();			
 		}
 	};
-	private final Action endEdgingAction = new AbstractAction() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			endEdging();
-		}
-	};
 
 	/**
 	 * Launch the application.
@@ -210,26 +204,22 @@ public class BuilderTool extends JFrame {
 		JMenuItem mntmLoadImage = new JMenuItem("");
 		mntmLoadImage.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UNDEFINED, 0));
 		mntmLoadImage.setAction(loadImageAction);
-		mntmLoadImage.addActionListener(endEdgingAction);
 		mnFile.add(mntmLoadImage);
 		
 		mnFile.addSeparator();
 		
 		JMenuItem mntmNewMenuItem_1 = new JMenuItem("New menu item");
 		mntmNewMenuItem_1.setAction(importDescriptionAction);
-		mntmNewMenuItem_1.addActionListener(endEdgingAction);
 		mnFile.add(mntmNewMenuItem_1);
 		
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("New menu item");
 		mntmNewMenuItem_2.setAction(exportDescriptionAction);
-		mntmNewMenuItem_2.addActionListener(endEdgingAction);
 		mnFile.add(mntmNewMenuItem_2);
 		
 		mnFile.addSeparator();
 		
 		JMenuItem mntmNewMenuItem_3 = new JMenuItem("New menu item");
 		mntmNewMenuItem_3.setAction(quitAction);
-		mntmNewMenuItem_3.addActionListener(endEdgingAction);
 		mnFile.add(mntmNewMenuItem_3);
 		
 		JMenu mnGraph = new JMenu("Graph");
@@ -238,27 +228,27 @@ public class BuilderTool extends JFrame {
 		
 		JMenuItem mntmNewMenuItem = new JMenuItem("New menu item");
 		mntmNewMenuItem.setAction(newGraphAction);
-		mntmNewMenuItem.addActionListener(endEdgingAction);
 		mnGraph.add(mntmNewMenuItem);
 		
 		mnGraph.addSeparator();
 		
 		mntmMarkVertex = new JCheckBoxMenuItem("New menu item");
 		mntmMarkVertex.setAction(markVertexAction);
-		mntmMarkVertex.addActionListener(endEdgingAction);
 		mnGraph.add(mntmMarkVertex);
 		
 		mntmMarkEdge = new JCheckBoxMenuItem("New menu item");
 		mntmMarkEdge.setAction(markEdgeAction);
-		mntmMarkEdge.addActionListener(endEdgingAction);
 		mnGraph.add(mntmMarkEdge);
 		
 		JMenu mnView = new JMenu("View");
 		mnView.setMnemonic('w');
 		menuBar.add(mnView);
 		
-		chckbxmntmOnlySelectedVertices = new JCheckBoxMenuItem("Only Draw selected Vertices");
+		chckbxmntmOnlySelectedVertices = new JCheckBoxMenuItem("Only selected Vertices");
+		chckbxmntmOnlySelectedVertices.setToolTipText("Only draw vertices of the selected type");
+		chckbxmntmOnlySelectedVertices.setMnemonic('v');
 		chckbxmntmOnlySelectedVertices.addActionListener(repaintAction);
+		
 		
 		JCheckBoxMenuItem chckbxmntmFit = new JCheckBoxMenuItem("Fit");
 		chckbxmntmFit.setAction(fitImageAction);
@@ -281,7 +271,9 @@ public class BuilderTool extends JFrame {
 				
 		mnView.add(chckbxmntmOnlySelectedVertices);		
 		
-		chckbxmntmOnlySelectedEdges = new JCheckBoxMenuItem("Only Draw selected Edges");
+		chckbxmntmOnlySelectedEdges = new JCheckBoxMenuItem("Only selected Edges");
+		chckbxmntmOnlySelectedVertices.setToolTipText("Only draw edges of the selected type");
+		chckbxmntmOnlySelectedVertices.setMnemonic('e');
 		chckbxmntmOnlySelectedEdges.addActionListener(repaintAction);
 		mnView.add(chckbxmntmOnlySelectedEdges);
 		
@@ -290,9 +282,13 @@ public class BuilderTool extends JFrame {
 		menuBar.add(mnHelp);
 		
 		JMenuItem mntmAbout = new JMenuItem("About...");
+		mntmAbout.setMnemonic('a');
+		mntmAbout.setToolTipText("About this Tool");
 		mntmAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				endEdging();
 				JOptionPane.showMessageDialog(BuilderTool.this,
+						"BuilderTool\nCopyright 2011 Jakob Schöttl\n\n" +
 						"With this BuilderTool, you can create and edit\n" +
 						"Graph-Toolkit-independent Description files for graphs.\n\n" +
 						"Load an image as background, then mark the vertices\n" +
@@ -355,6 +351,12 @@ public class BuilderTool extends JFrame {
 		cmbVertexType = new JComboBox();
 		cmbVertexType.setModel(new DefaultComboBoxModel(VertexType.values()));
 		cmbVertexType.addActionListener(repaintAction);
+		cmbVertexType.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				endEdging();
+			}
+		});
 		toolBar_1.add(cmbVertexType);
 		
 		JLabel lblNumber = new JLabel("   Number: ");
@@ -379,13 +381,17 @@ public class BuilderTool extends JFrame {
 		});
 		lblEdge.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 				.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "endEdging");
-		lblEdge.getActionMap().put("endEdging", endEdgingAction);
 		lblEdge.setLabelFor(toolBar_2);
 		toolBar_2.add(lblEdge);
 		
 		cmbEdgeType = new JComboBox();
-		cmbEdgeType.addActionListener(endEdgingAction);
 		cmbEdgeType.addActionListener(repaintAction);
+		cmbEdgeType.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				endEdging();				
+			}
+		});
 		cmbEdgeType.setModel(new DefaultComboBoxModel(EdgeType.values()));
 		toolBar_2.add(cmbEdgeType);
 		
@@ -830,6 +836,7 @@ public class BuilderTool extends JFrame {
 		}
 		@SuppressWarnings("unchecked")
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 			if (descriptionChooser.showOpenDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
 				try {
 					ToolGraphBuilder builder = new ToolGraphBuilder();
@@ -852,6 +859,7 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_X);
 		}
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 			if (descriptionChooser.showSaveDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
 				GraphDescriptionBuilder builder = new GraphDescriptionBuilder();
 				for (Vertex v : vertices) {
@@ -895,6 +903,7 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_N);
 		}
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 			if (JOptionPane.showConfirmDialog(BuilderTool.this, "Really clear the current graph for a new one?") == JOptionPane.YES_OPTION) {
 				vertices.clear();
 				edges.clear();
@@ -911,6 +920,7 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_O);
 		}
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 		    if (imageChooser.showOpenDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
 		    	image = Toolkit.getDefaultToolkit().getImage(imageChooser.getSelectedFile().getPath());
 		    	updateUI();
@@ -926,6 +936,7 @@ public class BuilderTool extends JFrame {
 			setSelected(this, false);
 		}
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 			if (isSelected(this)) {
 				setSelected(markEdgeAction, false);
 			} else {
@@ -942,6 +953,7 @@ public class BuilderTool extends JFrame {
 			setSelected(this, false);
 		}
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 			if (isSelected(this)) {
 				setSelected(markVertexAction, false);
 			} else {
@@ -957,6 +969,7 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_Q);
 		}
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 			setVisible(false);
 			dispose();
 		}
