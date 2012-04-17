@@ -162,12 +162,8 @@ public class BuilderTool extends JFrame {
 	private final Action exportDescriptionAction = new ExportDescriptionAction();
 	private final Action newGraphAction = new NewGraphAction();
 	private final Action quitAction = new QuitAction();
-	private final Action repaintAction = new AbstractAction() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			getImagePanel().repaint();			
-		}
-	};
+	private final Action repaintAction = new RepaintAction();
+	private final Action endEdgingAction = new EndEdgingAction();
 
 	/**
 	 * Launch the application.
@@ -351,12 +347,7 @@ public class BuilderTool extends JFrame {
 		cmbVertexType = new JComboBox();
 		cmbVertexType.setModel(new DefaultComboBoxModel(VertexType.values()));
 		cmbVertexType.addActionListener(repaintAction);
-		cmbVertexType.addActionListener(new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				endEdging();
-			}
-		});
+		cmbVertexType.addActionListener(endEdgingAction);
 		toolBar_1.add(cmbVertexType);
 		
 		JLabel lblNumber = new JLabel("   Number: ");
@@ -381,17 +372,13 @@ public class BuilderTool extends JFrame {
 		});
 		lblEdge.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 				.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "endEdging");
+		lblEdge.getActionMap().put("endEdging", endEdgingAction);
 		lblEdge.setLabelFor(toolBar_2);
 		toolBar_2.add(lblEdge);
 		
 		cmbEdgeType = new JComboBox();
 		cmbEdgeType.addActionListener(repaintAction);
-		cmbEdgeType.addActionListener(new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				endEdging();				
-			}
-		});
+		cmbEdgeType.addActionListener(endEdgingAction);
 		cmbEdgeType.setModel(new DefaultComboBoxModel(EdgeType.values()));
 		toolBar_2.add(cmbEdgeType);
 		
@@ -973,5 +960,17 @@ public class BuilderTool extends JFrame {
 			setVisible(false);
 			dispose();
 		}
-	}	
+	}
+	private class RepaintAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			getImagePanel().repaint();			
+		}
+	};
+	private class EndEdgingAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			endEdging();			
+		}
+	};
 }
