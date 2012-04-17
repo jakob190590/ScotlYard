@@ -27,20 +27,23 @@ public class Director {
 	public static void main(String... args) {
 		if (args.length == 1) {
 			
-			GraphDescriptionBuilder desc = new GraphDescriptionBuilder();
-			GameGraphBuilder graph = new GameGraphBuilder();
-			BoardGraphBuilder complete = new BoardGraphBuilder();
+			GraphDescriptionBuilder descBuilder = new GraphDescriptionBuilder();
+			GameGraphBuilder graphBuilder = new GameGraphBuilder();
+			
+			// Nur zum testen, ob sie fehlerlos durchlaufen:
+			BoardGraphBuilder boardBuilder = new BoardGraphBuilder();
+			ToolGraphBuilder toolBuilder = new ToolGraphBuilder();
 			
 			try {
-				construct(args[0], desc, graph, complete);
+				construct(args[0], descBuilder, graphBuilder, boardBuilder, toolBuilder);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
-			System.out.println(desc.getDescription());
-			System.out.println(graph.getGameGraph() + ": " 
-					+ graph.getGameGraph().vertexSet().size() + " vertices, " 
-					+ graph.getGameGraph().edgeSet().size() + " edges");
+			System.out.println(descBuilder.getDescription());
+			System.out.println(graphBuilder.getGameGraph() + ": " 
+					+ graphBuilder.getGameGraph().getGraph().vertexSet().size() + " vertices, " 
+					+ graphBuilder.getGameGraph().getGraph().edgeSet().size() + " edges");
 			
 		} else {
 			System.out.println("One argument expected: description file pathname.");

@@ -1,34 +1,41 @@
 package kj.scotlyard.graphbuilder.builder;
 
-import java.awt.geom.Point2D.Double;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.geom.Point2D;
+import org.jgrapht.graph.UnmodifiableUndirectedGraph;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.graph.TheGameGraph;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.UndergroundConnection;
 
-public class GameGraphBuilder implements GraphBuilder {
+/**
+ * Erzeugt zwei verschiedene GameGraph-Objekte:
+ * Einen mit einem veraenderbaren, einen mit einem
+ * unveraenderbaren Graphen. Die Produkte koennen
+ * abgeholt werden mit <tt>getGameGraph</tt> und
+ * <tt>getUnmodifiableGameGraph</tt>.
+ * @author jakob190590
+ *
+ */
+public class GameGraphBuilder extends AbstractGameGraphBuilder implements GraphBuilder {
+		
+	protected GameGraph ugg = null; // Kann erst am Ende erzeugt werden
 	
-	GameGraph g = new TheGameGraph();
-	Map<Integer, StationVertex> vertexMap = new HashMap<>();
-
 	@Override
 	public void addVertex(Class<? extends StationVertex> vertexType,
-			int number, Double position) {
+			int number, Point2D.Double position) {
 		
 		if (vertexType != Station.class) {
 			throw new IllegalArgumentException("Unknown vertex type.");
 		}
-		StationVertex v = new Station(g);
+		StationVertex v = new Station(gg);
 		vertexMap.put(number, v);
 		g.addVertex(v);
+		
 	}
 
 	@Override
@@ -37,22 +44,31 @@ public class GameGraphBuilder implements GraphBuilder {
 		
 		ConnectionEdge e;
 		if (edgeType == TaxiConnection.class) {
-			e = new TaxiConnection(g);
+			e = new TaxiConnection(gg);
 		} else if (edgeType == BusConnection.class) {
-			e = new BusConnection(g);
+			e = new BusConnection(gg);
 		} else if (edgeType == UndergroundConnection.class) {
-			e = new UndergroundConnection(g);
+			e = new UndergroundConnection(gg);
 		} else if (edgeType == FerryConnection.class) {
-			e = new FerryConnection(g);
+			e = new FerryConnection(gg);
 		} else {
 			throw new IllegalArgumentException("Unknown edge type.");
 		}
 		g.addEdge(vertexMap.get(vertex1), vertexMap.get(vertex2), e);
+		
 	}
 	
-	// GameGraph instance
 	public GameGraph getGameGraph() {
-		return g;
+		return gg;
+	}
+	
+	public GameGraph getUnmodifiableGameGraph() {
+		if (ugg == null) {
+			// Unmodifiable GameGraph einmalig erzeugen
+			ugg = new GameGraph(new UnmodifiableUndirectedGraph<StationVertex, ConnectionEdge>(g));
+		}
+		
+		return ugg;
 	}
 
 }
