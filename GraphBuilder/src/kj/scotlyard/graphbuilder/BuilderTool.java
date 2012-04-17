@@ -112,6 +112,7 @@ public class BuilderTool extends JFrame {
 		}
 	}
 	
+	/** Fuer das Zeichnen der Edges */ 
 	private Vertex lastSelectedVertex = null;
 	private int clicksWithoutTool = 0;
 	private Image image = null;
@@ -141,10 +142,19 @@ public class BuilderTool extends JFrame {
 	private JSpinner spinnerNumber;
 	private JCheckBox cbPolyline;
 	private JPanel imagePanel;
+	private JScrollPane scrollPaneImage;
 	private JSpinner spinnerSize;
 	private JList<Vertex> vertexList;
 	private JList<Edge> edgeList;
 	private JLabel lblEdge;
+	private JCheckBoxMenuItem mntmMarkVertex;
+	private JCheckBoxMenuItem mntmMarkEdge;
+	private JCheckBoxMenuItem chckbxmntmOnlySelectedVertices;
+	private JCheckBoxMenuItem chckbxmntmOnlySelectedEdges;
+	private final Action preserveImageAspectRationAction = new PreserveImageAspectRationAction();
+	private final Action fitImageAction = new FitImageAction();
+	private final Action zoomInAction = new ZoomInAction();
+	private final Action zoomOutAction = new ZoomOutAction();
 	private final Action loadImageAction = new LoadImageAction();
 	private final Action markVertexAction = new MarkVertexAction();
 	private final Action markEdgeAction = new MarkEdgeAction();
@@ -155,8 +165,7 @@ public class BuilderTool extends JFrame {
 	private final Action repaintAction = new AbstractAction() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getImagePanel().repaint();
-			
+			getImagePanel().repaint();			
 		}
 	};
 	private final Action endEdgingAction = new AbstractAction() {
@@ -165,15 +174,6 @@ public class BuilderTool extends JFrame {
 			endEdging();
 		}
 	};
-	private JCheckBoxMenuItem mntmMarkVertex;
-	private JCheckBoxMenuItem mntmMarkEdge;
-	private JCheckBoxMenuItem chckbxmntmOnlySelectedVertices;
-	private JCheckBoxMenuItem chckbxmntmOnlySelectedEdges;
-	private final Action preserveImageAspectRationAction = new PreserveImageAspectRationAction();
-	private final Action fitImageAction = new FitImageAction();
-	private final Action zoomInAction = new ZoomInAction();
-	private final Action zoomOutAction = new ZoomOutAction();
-	private JScrollPane scrollPaneImage;
 
 	/**
 	 * Launch the application.
@@ -292,12 +292,13 @@ public class BuilderTool extends JFrame {
 		JMenuItem mntmAbout = new JMenuItem("About...");
 		mntmAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(BuilderTool.this, "With this BuilderTool, you can create and edit\n" +
+				JOptionPane.showMessageDialog(BuilderTool.this,
+						"With this BuilderTool, you can create and edit\n" +
 						"Graph-Toolkit-independent Description files for graphs.\n\n" +
 						"Load an image as background, then mark the vertices\n" +
 						"and the edges. For both you can specify the type.\n" +
 						"You can also remove vertices and edges:\n" +
-						"Select them in the list and press DELETE.", "About", JOptionPane.INFORMATION_MESSAGE);
+						"Select them in the lists and press DELETE.", "About", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 		mntmAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
@@ -657,13 +658,7 @@ public class BuilderTool extends JFrame {
 		});
 		
 	}
-
-	protected JToggleButton getTglbtnMarkVertex() {
-		return tglbtnMarkVertex;
-	}
-	protected JToggleButton getTglbtnMarkEdge() {
-		return tglbtnMarkEdge;
-	}
+	
 	protected JComboBox getCmbVertexType() {
 		return cmbVertexType;
 	}
@@ -688,6 +683,22 @@ public class BuilderTool extends JFrame {
 	protected JList getEdgeList() {
 		return edgeList;
 	}
+	protected JLabel getLblEdge() {
+		return lblEdge;
+	}	
+	protected JScrollPane getImageScrollPane() {
+		return scrollPaneImage;
+	}
+	protected JCheckBoxMenuItem getChckbxmntmOnlySelectedVertices() {
+		return chckbxmntmOnlySelectedVertices;
+	}
+	protected JCheckBoxMenuItem getChckbxmntmOnlySelectedEdges() {
+		return chckbxmntmOnlySelectedEdges;
+	}
+	
+	
+	// Hilfsmethoden
+	
 	private Vertex getVertex(int number) {
 		for (Vertex v : vertices) {
 			if (v.number == number) {
@@ -712,12 +723,14 @@ public class BuilderTool extends JFrame {
 		
 		return null;
 	}
+	
 	public static void setSelected(Action action, boolean value) {
 		action.putValue(Action.SELECTED_KEY, value);
 	}
 	public static boolean isSelected(Action action) {
 		return (boolean) action.getValue(Action.SELECTED_KEY);
 	}
+	
 	/** Festlegen der Kanten starten */
 	void startEdging() {
 		getLblEdge().setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -733,15 +746,80 @@ public class BuilderTool extends JFrame {
 		getLblEdge().setToolTipText("");
 		lastSelectedVertex = null;
 	}
-	@SuppressWarnings("unchecked")
+	
+	/** Aktualisiert ImagePanel mit Graph und Vertex/Edge List. */
+	@SuppressWarnings("unchecked")	
 	protected void updateUI() {
 		getImagePanel().repaint();
 		
 		getVertexList().setListData(vertices);
 		getEdgeList().setListData(edges);
 	}
-	protected JLabel getLblEdge() {
-		return lblEdge;
+	
+	
+	// Actions
+	
+	private class PreserveImageAspectRationAction extends AbstractAction {
+		public PreserveImageAspectRationAction() {
+			putValue(NAME, "Preserve aspect ration");
+			putValue(SHORT_DESCRIPTION, "Preserve the image aspect ration");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_A);
+			setSelected(this, true);
+		}
+		public void actionPerformed(ActionEvent e) {
+			getImagePanel().repaint();
+		}
+	}
+	private class FitImageAction extends AbstractAction {
+		public FitImageAction() {
+			putValue(NAME, "Fit Image");
+			putValue(SHORT_DESCRIPTION, "Fit the image to the window");
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0));
+			putValue(MNEMONIC_KEY, KeyEvent.VK_F);
+			setSelected(this, true);
+		}
+		public void actionPerformed(ActionEvent e) {
+			boolean fitImage = isSelected(this);
+			zoomInAction.setEnabled(!fitImage);
+			zoomOutAction.setEnabled(!fitImage);
+			preserveImageAspectRationAction.setEnabled(fitImage);
+			if (fitImage) {
+				getImagePanel().setPreferredSize(getImageScrollPane().getViewport().getSize());
+				getImageScrollPane().revalidate();
+			} else {
+				setSelected(preserveImageAspectRationAction, true);
+			} 
+			getImagePanel().repaint();
+		}
+	}
+	private class ZoomInAction extends AbstractAction {
+		public ZoomInAction() {
+			setEnabled(false); // weil standardmaessig Fit Image ausgewaehlt ist
+			putValue(NAME, "Zoom In");
+			putValue(SHORT_DESCRIPTION, "Zoom into the image");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_I);
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '+', KeyEvent.CTRL_DOWN_MASK)); // TODO geht iwie ned. cast sollte unnoetig sein, dann meint aber zumindest eclipse, es ist getKeyStroke(int, int) gemeint.
+		}
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("zoom in"); // TODO zum test
+			getImagePanel().setPreferredSize(new Dimension((int) (getImagePanel().getWidth() * ZOOM_FACTOR), (int) (getImagePanel().getHeight() * ZOOM_FACTOR)));
+			getImagePanel().revalidate();
+		}
+	}
+	private class ZoomOutAction extends AbstractAction {
+		public ZoomOutAction() {
+			setEnabled(false); // weil standardmaessig Fit Image ausgewaehlt ist
+			putValue(NAME, "Zoom Out");
+			putValue(SHORT_DESCRIPTION, "Zoom out of the image");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_O);
+			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 5);
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '-', KeyEvent.CTRL_DOWN_MASK)); // TODO geht iwie ned. cast sollte unnoetig sein, dann meint aber zumindest eclipse, es ist getKeyStroke(int, int) gemeint.
+		}
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("zoom out"); // TODO zum test
+			getImagePanel().setPreferredSize(new Dimension((int) (getImagePanel().getWidth() / ZOOM_FACTOR), (int) (getImagePanel().getHeight() / ZOOM_FACTOR)));
+			getImagePanel().revalidate();
+		}
 	}
 	private class ImportDescriptionAction extends AbstractAction {
 		public ImportDescriptionAction() {
@@ -882,83 +960,5 @@ public class BuilderTool extends JFrame {
 			setVisible(false);
 			dispose();
 		}
-	}
-	protected JMenuItem getMntmMarkVertex() {
-		return mntmMarkVertex;
-	}
-	protected JMenuItem getMntmMarkEdge() {
-		return mntmMarkEdge;
-	}
-	
-	protected JCheckBoxMenuItem getChckbxmntmOnlySelectedVertices() {
-		return chckbxmntmOnlySelectedVertices;
-	}
-	protected JCheckBoxMenuItem getChckbxmntmOnlySelectedEdges() {
-		return chckbxmntmOnlySelectedEdges;
-	}
-	private class PreserveImageAspectRationAction extends AbstractAction {
-		public PreserveImageAspectRationAction() {
-			putValue(NAME, "Preserve aspect ration");
-			putValue(SHORT_DESCRIPTION, "Preserve the image aspect ration");
-			putValue(MNEMONIC_KEY, KeyEvent.VK_A);
-			setSelected(this, true);
-		}
-		public void actionPerformed(ActionEvent e) {
-			getImagePanel().repaint();
-		}
-	}
-	private class FitImageAction extends AbstractAction {
-		public FitImageAction() {
-			putValue(NAME, "Fit Image");
-			putValue(SHORT_DESCRIPTION, "Fit the image to the window");
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0));
-			putValue(MNEMONIC_KEY, KeyEvent.VK_F);
-			setSelected(this, true);
-		}
-		public void actionPerformed(ActionEvent e) {
-			boolean fitImage = isSelected(this);
-			zoomInAction.setEnabled(!fitImage);
-			zoomOutAction.setEnabled(!fitImage);
-			preserveImageAspectRationAction.setEnabled(fitImage);
-			if (fitImage) {
-				getImagePanel().setPreferredSize(getImageScrollPane().getViewport().getSize());
-				getImageScrollPane().revalidate();
-			} else {
-				setSelected(preserveImageAspectRationAction, true);
-			} 
-			getImagePanel().repaint();
-		}
-	}
-	private class ZoomInAction extends AbstractAction {
-		public ZoomInAction() {
-			setEnabled(false); // weil standardmaessig Fit Image ausgewaehlt ist
-			putValue(NAME, "Zoom In");
-			putValue(SHORT_DESCRIPTION, "Zoom into the image");
-			putValue(MNEMONIC_KEY, KeyEvent.VK_I);
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '+', KeyEvent.CTRL_DOWN_MASK)); // TODO geht iwie ned. cast sollte unnoetig sein, dann meint aber zumindest eclipse, es ist getKeyStroke(int, int) gemeint.
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("zoom in"); // TODO zum test
-			getImagePanel().setPreferredSize(new Dimension((int) (getImagePanel().getWidth() * ZOOM_FACTOR), (int) (getImagePanel().getHeight() * ZOOM_FACTOR)));
-			getImagePanel().revalidate();
-		}
-	}
-	private class ZoomOutAction extends AbstractAction {
-		public ZoomOutAction() {
-			setEnabled(false); // weil standardmaessig Fit Image ausgewaehlt ist
-			putValue(NAME, "Zoom Out");
-			putValue(SHORT_DESCRIPTION, "Zoom out of the image");
-			putValue(MNEMONIC_KEY, KeyEvent.VK_O);
-			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 5);
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '-', KeyEvent.CTRL_DOWN_MASK)); // TODO geht iwie ned. cast sollte unnoetig sein, dann meint aber zumindest eclipse, es ist getKeyStroke(int, int) gemeint.
-		}
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("zoom out"); // TODO zum test
-			getImagePanel().setPreferredSize(new Dimension((int) (getImagePanel().getWidth() / ZOOM_FACTOR), (int) (getImagePanel().getHeight() / ZOOM_FACTOR)));
-			getImagePanel().revalidate();
-		}
-	}
-	protected JScrollPane getImageScrollPane() {
-		return scrollPaneImage;
-	}
+	}	
 }
