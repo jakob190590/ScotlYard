@@ -38,7 +38,7 @@ public class TheGameControllerTest {
 		r = new TheRules();
 		g = new TheGame();
 		// gg
-		ctrl = new TheGameController(g, gg, r);
+		ctrl = new TheGameController(g, gg, null, r);
 		ext = new GameStateExtension(g);
 	}
 

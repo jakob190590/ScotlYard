@@ -748,4 +748,44 @@ public class TheGameTest {
 		
 	}
 	
+	@Test
+	public final void testClone() {
+		
+		/*
+		 * Hier wird getestet, ob die GameState-Kopie
+		 * g2 auch wirklich nichts von Aenderungen im
+		 * GameState g mitbekommt.
+		 */
+		
+		Game g2 = (Game) g.copy();
+		
+		g.setMrX(null);
+		assertTrue(g.getMrX() == null);
+		assertTrue(g2.getMrX() != null);
+		
+		g.getDetectives().remove(0);
+		assertEquals(g.getDetectives().size(), 3);
+		assertEquals(g2.getDetectives().size(), 4);
+		
+		Set<Item> is = new HashSet<Item>();
+		g.setItems(d1, is);
+		assertEquals(g.getItems(d1), is);
+		assertEquals(g2.getItems(d1), null);
+		
+		int c = g.getMoves().size();
+		g.getMoves().remove(-1);
+		g.getMoves().remove(-1);
+		assertEquals(g.getMoves().size(), c - 2);
+		assertEquals(g2.getMoves().size(), c);
+		
+		
+		g.setCurrentPlayer(d3);
+		assertTrue(g.getCurrentPlayer() == d3);
+		assertTrue(g2.getCurrentPlayer() == null);
+		
+		g.setCurrentRoundNumber(5);
+		assertTrue(g.getCurrentRoundNumber() == 5);
+		assertTrue(g2.getCurrentRoundNumber() == 0);
+				
+	}
 }

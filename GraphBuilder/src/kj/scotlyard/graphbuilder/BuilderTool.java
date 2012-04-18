@@ -3,6 +3,7 @@ package kj.scotlyard.graphbuilder;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -32,6 +33,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JSpinner;
 import javax.swing.JCheckBox;
 import javax.swing.AbstractAction;
+import javax.swing.Timer;
+
 import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.SpinnerNumberModel;
@@ -73,6 +76,8 @@ import javax.swing.JSplitPane;
 
 @SuppressWarnings({ "serial", "rawtypes" })
 public class BuilderTool extends JFrame {
+
+	private static final double ZOOM_FACTOR = 1.2;
 	
 	public static enum VertexType { STATION };
 	public static enum EdgeType { TAXI_CONNECTION, BUS_CONNECTION, UNDERGROUND_CONNECTION, FERRY_CONNECTION };
@@ -88,7 +93,7 @@ public class BuilderTool extends JFrame {
 		}
 		@Override
 		public String toString() {
-			return type.toString() + " #" + number;// + " " + pos;
+			return type.toString() + " #" + number;
 		}
 	}
 	
@@ -107,9 +112,7 @@ public class BuilderTool extends JFrame {
 		}
 	}
 	
-	private enum Tool { MARK_VERTEX, MARK_EDGE };
-	
-	private Tool currentTool = null;
+	/** Fuer das Zeichnen der Edges */ 
 	private Vertex lastSelectedVertex = null;
 	private int clicksWithoutTool = 0;
 	private Image image = null;
@@ -139,34 +142,32 @@ public class BuilderTool extends JFrame {
 	private JSpinner spinnerNumber;
 	private JCheckBox cbPolyline;
 	private JPanel imagePanel;
+	private JScrollPane scrollPaneImage;
 	private JSpinner spinnerSize;
 	private JList<Vertex> vertexList;
 	private JList<Edge> edgeList;
 	private JLabel lblEdge;
-	private final Action loadImage = new LoadImageAction();
-	private final Action markVertex = new MarkVertexAction();
-	private final Action markEdge = new MarkEdgeAction();
-	private final Action importDescription = new ImportDescriptionAction();
-	private final Action exportDescription = new ExportDescriptionAction();
-	private final Action newGraph = new NewGraphAction();
-	private final Action quitAction = new QuitAction();
-	private final Action repaintAction = new AbstractAction() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			getImagePanel().repaint();
-			
-		}
-	};
-	private final Action endEdgingAction = new AbstractAction() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			endEdging();
-		}
-	};
 	private JCheckBoxMenuItem mntmMarkVertex;
 	private JCheckBoxMenuItem mntmMarkEdge;
 	private JCheckBoxMenuItem chckbxmntmOnlySelectedVertices;
 	private JCheckBoxMenuItem chckbxmntmOnlySelectedEdges;
+	private final Action preserveImageAspectRationAction = new PreserveImageAspectRationAction();
+	private final Action fitImageAction = new FitImageAction();
+	private final Action zoomInAction = new ZoomInAction();
+	private final Action zoomOutAction = new ZoomOutAction();
+	private final Action loadImageAction = new LoadImageAction();
+	private final Action markVertexAction = new MarkVertexAction();
+	private final Action markEdgeAction = new MarkEdgeAction();
+	private final Action importDescriptionAction = new ImportDescriptionAction();
+	private final Action exportDescriptionAction = new ExportDescriptionAction();
+	private final Action newGraphAction = new NewGraphAction();
+	private final Action quitAction = new QuitAction();
+	private final Action repaintAction = new AbstractAction() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			getImagePanel().repaint();			
+		}
+	};
 
 	/**
 	 * Launch the application.
@@ -202,27 +203,23 @@ public class BuilderTool extends JFrame {
 		
 		JMenuItem mntmLoadImage = new JMenuItem("");
 		mntmLoadImage.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UNDEFINED, 0));
-		mntmLoadImage.setAction(loadImage);
-		mntmLoadImage.addActionListener(endEdgingAction);
+		mntmLoadImage.setAction(loadImageAction);
 		mnFile.add(mntmLoadImage);
 		
 		mnFile.addSeparator();
 		
 		JMenuItem mntmNewMenuItem_1 = new JMenuItem("New menu item");
-		mntmNewMenuItem_1.setAction(importDescription);
-		mntmNewMenuItem_1.addActionListener(endEdgingAction);
+		mntmNewMenuItem_1.setAction(importDescriptionAction);
 		mnFile.add(mntmNewMenuItem_1);
 		
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("New menu item");
-		mntmNewMenuItem_2.setAction(exportDescription);
-		mntmNewMenuItem_2.addActionListener(endEdgingAction);
+		mntmNewMenuItem_2.setAction(exportDescriptionAction);
 		mnFile.add(mntmNewMenuItem_2);
 		
 		mnFile.addSeparator();
 		
 		JMenuItem mntmNewMenuItem_3 = new JMenuItem("New menu item");
 		mntmNewMenuItem_3.setAction(quitAction);
-		mntmNewMenuItem_3.addActionListener(endEdgingAction);
 		mnFile.add(mntmNewMenuItem_3);
 		
 		JMenu mnGraph = new JMenu("Graph");
@@ -230,31 +227,53 @@ public class BuilderTool extends JFrame {
 		menuBar.add(mnGraph);
 		
 		JMenuItem mntmNewMenuItem = new JMenuItem("New menu item");
-		mntmNewMenuItem.setAction(newGraph);
-		mntmNewMenuItem.addActionListener(endEdgingAction);
+		mntmNewMenuItem.setAction(newGraphAction);
 		mnGraph.add(mntmNewMenuItem);
 		
 		mnGraph.addSeparator();
 		
 		mntmMarkVertex = new JCheckBoxMenuItem("New menu item");
-		mntmMarkVertex.setAction(markVertex);
-		mntmMarkVertex.addActionListener(endEdgingAction);
+		mntmMarkVertex.setAction(markVertexAction);
 		mnGraph.add(mntmMarkVertex);
 		
 		mntmMarkEdge = new JCheckBoxMenuItem("New menu item");
-		mntmMarkEdge.setAction(markEdge);
-		mntmMarkEdge.addActionListener(endEdgingAction);
+		mntmMarkEdge.setAction(markEdgeAction);
 		mnGraph.add(mntmMarkEdge);
 		
 		JMenu mnView = new JMenu("View");
 		mnView.setMnemonic('w');
 		menuBar.add(mnView);
 		
-		chckbxmntmOnlySelectedVertices = new JCheckBoxMenuItem("Only Draw selected Vertices");
+		chckbxmntmOnlySelectedVertices = new JCheckBoxMenuItem("Only selected Vertices");
+		chckbxmntmOnlySelectedVertices.setToolTipText("Only draw vertices of the selected type");
+		chckbxmntmOnlySelectedVertices.setMnemonic('v');
 		chckbxmntmOnlySelectedVertices.addActionListener(repaintAction);
-		mnView.add(chckbxmntmOnlySelectedVertices);
 		
-		chckbxmntmOnlySelectedEdges = new JCheckBoxMenuItem("Only Draw selected Edges");
+		
+		JCheckBoxMenuItem chckbxmntmFit = new JCheckBoxMenuItem("Fit");
+		chckbxmntmFit.setAction(fitImageAction);
+		mnView.add(chckbxmntmFit);
+		
+		JCheckBoxMenuItem chckbxmntmAspect = new JCheckBoxMenuItem("Aspect");
+		chckbxmntmAspect.setAction(preserveImageAspectRationAction);
+		mnView.add(chckbxmntmAspect);
+		
+		JMenuItem mntmZoomIn = new JMenuItem("Zoom in");
+		mntmZoomIn.setAction(zoomInAction);
+		mnView.add(mntmZoomIn);
+		
+		JMenuItem mntmZoomOut = new JMenuItem("Zoom out");
+		mntmZoomOut.setAction(zoomOutAction);
+		mnView.add(mntmZoomOut);
+		
+		
+		mnView.addSeparator();
+				
+		mnView.add(chckbxmntmOnlySelectedVertices);		
+		
+		chckbxmntmOnlySelectedEdges = new JCheckBoxMenuItem("Only selected Edges");
+		chckbxmntmOnlySelectedVertices.setToolTipText("Only draw edges of the selected type");
+		chckbxmntmOnlySelectedVertices.setMnemonic('e');
 		chckbxmntmOnlySelectedEdges.addActionListener(repaintAction);
 		mnView.add(chckbxmntmOnlySelectedEdges);
 		
@@ -263,14 +282,19 @@ public class BuilderTool extends JFrame {
 		menuBar.add(mnHelp);
 		
 		JMenuItem mntmAbout = new JMenuItem("About...");
+		mntmAbout.setMnemonic('a');
+		mntmAbout.setToolTipText("About this Tool");
 		mntmAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(BuilderTool.this, "With this BuilderTool, you can create and edit\n" +
+				endEdging();
+				JOptionPane.showMessageDialog(BuilderTool.this,
+						"BuilderTool\nCopyright 2011 Jakob Schöttl\n\n" +
+						"With this BuilderTool, you can create and edit\n" +
 						"Graph-Toolkit-independent Description files for graphs.\n\n" +
 						"Load an image as background, then mark the vertices\n" +
 						"and the edges. For both you can specify the type.\n" +
 						"You can also remove vertices and edges:\n" +
-						"Select them in the list and press DELETE.", "About", JOptionPane.INFORMATION_MESSAGE);
+						"Select them in the lists and press DELETE.", "About", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 		mntmAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
@@ -289,12 +313,12 @@ public class BuilderTool extends JFrame {
 		
 		tglbtnMarkVertex = new JToggleButton("Mark Vertex");
 		tglbtnMarkVertex.setMnemonic('v');
-		tglbtnMarkVertex.setAction(markVertex);
+		tglbtnMarkVertex.setAction(markVertexAction);
 		toolBar.add(tglbtnMarkVertex);
 		
 		tglbtnMarkEdge = new JToggleButton("Mark Edge");
 		tglbtnMarkEdge.setMnemonic('e');
-		tglbtnMarkEdge.setAction(markEdge);
+		tglbtnMarkEdge.setAction(markEdgeAction);
 		toolBar.add(tglbtnMarkEdge);
 		
 		JLabel lblNodeSizepx = new JLabel("   Vertex size (px): ");
@@ -327,6 +351,12 @@ public class BuilderTool extends JFrame {
 		cmbVertexType = new JComboBox();
 		cmbVertexType.setModel(new DefaultComboBoxModel(VertexType.values()));
 		cmbVertexType.addActionListener(repaintAction);
+		cmbVertexType.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				endEdging();
+			}
+		});
 		toolBar_1.add(cmbVertexType);
 		
 		JLabel lblNumber = new JLabel("   Number: ");
@@ -351,13 +381,17 @@ public class BuilderTool extends JFrame {
 		});
 		lblEdge.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 				.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "endEdging");
-		lblEdge.getActionMap().put("endEdging", endEdgingAction);
 		lblEdge.setLabelFor(toolBar_2);
 		toolBar_2.add(lblEdge);
 		
 		cmbEdgeType = new JComboBox();
-		cmbEdgeType.addActionListener(endEdgingAction);
 		cmbEdgeType.addActionListener(repaintAction);
+		cmbEdgeType.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				endEdging();				
+			}
+		});
 		cmbEdgeType.setModel(new DefaultComboBoxModel(EdgeType.values()));
 		toolBar_2.add(cmbEdgeType);
 		
@@ -376,78 +410,6 @@ public class BuilderTool extends JFrame {
 		splitPane.setContinuousLayout(true);
 		splitPane.setDividerLocation(200);
 		contentPane.add(splitPane, BorderLayout.CENTER);
-		
-		imagePanel = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				
-				Graphics2D g2D = (Graphics2D) g;
-				if (image != null) {
-					g2D.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-				}
-				
-				g2D.setStroke(new BasicStroke(3));
-				for (Vertex v : vertices) {
-					if (getChckbxmntmOnlySelectedVertices().isSelected() && v.type != getCmbVertexType().getSelectedItem()) {
-						continue;
-					}
-					
-					int size = (int) getSpinnerSize().getValue();
-					int radius = size / 2;
-					int x = (int) Math.round(v.pos.x * getWidth());
-					int y = (int) Math.round(v.pos.y * getHeight());
-					
-					g2D.setColor(Color.RED);
-					g2D.drawOval(x - radius, y - radius, size, size);
-					
-					g2D.setColor(Color.BLACK);
-					g2D.setFont(new Font("", Font.PLAIN, 12));
-					g2D.drawString(String.valueOf(v.number), x - radius / 2, y + radius / 2);
-				}
-				
-				g2D.setStroke(new BasicStroke(2));
-				for (Edge e : edges) {
-					Color cl = null;
-					int offs = 0;
-					switch (e.type) {
-					case TAXI_CONNECTION:
-						cl = Color.YELLOW;
-						offs = 1;
-						break;
-					case BUS_CONNECTION:
-						cl = Color.GREEN;
-						offs = 3;
-						break;
-					case UNDERGROUND_CONNECTION:
-						cl = Color.BLUE;
-						offs = -1;
-						break;
-					case FERRY_CONNECTION:
-						cl = Color.BLACK;
-						offs = -3;
-						break;
-					}
-					g2D.setColor(cl);
-					
-					if (getChckbxmntmOnlySelectedEdges().isSelected()) {
-						if (e.type == getCmbEdgeType().getSelectedItem()) {
-							offs = 0;
-						} else {
-							continue;
-						}
-					}
-					
-					int x1 = (int) Math.round(e.v1.pos.x * getWidth()) + offs;
-					int y1 = (int) Math.round(e.v1.pos.y * getHeight()) + offs;
-					int x2 = (int) Math.round(e.v2.pos.x * getWidth()) + offs;
-					int y2 = (int) Math.round(e.v2.pos.y * getHeight()) + offs;
-					
-					g2D.drawLine(x1, y1, x2, y2);
-				}
-			}
-		};
-		splitPane.setRightComponent(imagePanel);
 		
 		JPanel panelSidebar = new JPanel();
 		splitPane.setLeftComponent(panelSidebar);
@@ -527,6 +489,105 @@ public class BuilderTool extends JFrame {
 			}
 		});
 		lblEdges.setLabelFor(edgeList);
+		
+		scrollPaneImage = new JScrollPane();
+		splitPane.setRightComponent(scrollPaneImage);
+		
+		imagePanel = new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				
+				Graphics2D g2D = (Graphics2D) g;				
+				if (image != null) {
+					if (isSelected(preserveImageAspectRationAction)) {
+						int l = 0; // left
+						int t = 0; // top
+						int w = image.getWidth(null);
+						int h = image.getHeight(null);
+						double ar = (double) w / h; // aspect ratio
+						
+						int wp = getWidth();
+						int hp = getHeight();
+						
+						if (hp * ar > wp) { 
+							// -> auf breite anpassen
+							w = wp;
+							h = (int) (wp / ar);
+							t = (hp - h) / 2;
+						} else {
+							// -> auf hoehe anpassen
+							w = (int) (hp * ar);
+							h = hp;
+							l = (wp - w) / 2;
+						}
+						g2D.drawImage(image, l, t, w, h, this);
+					} else {
+						g2D.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+					}
+				}
+				
+				g2D.setStroke(new BasicStroke(3));
+				for (Vertex v : vertices) {
+					if (getChckbxmntmOnlySelectedVertices().isSelected() && v.type != getCmbVertexType().getSelectedItem()) {
+						continue;
+					}
+					
+					int size = (int) getSpinnerSize().getValue();
+					int radius = size / 2;
+					int x = (int) Math.round(v.pos.x * getWidth());
+					int y = (int) Math.round(v.pos.y * getHeight());
+					
+					g2D.setColor(Color.RED);
+					g2D.drawOval(x - radius, y - radius, size, size);
+					
+					g2D.setColor(Color.BLACK);
+					g2D.setFont(new Font("", Font.PLAIN, 12));
+					g2D.drawString(String.valueOf(v.number), x - radius / 2, y + radius / 2);
+				}
+				
+				g2D.setStroke(new BasicStroke(2));
+				for (Edge e : edges) {
+					Color cl = null;
+					int offs = 0;
+					switch (e.type) {
+					case TAXI_CONNECTION:
+						cl = Color.YELLOW;
+						offs = 1;
+						break;
+					case BUS_CONNECTION:
+						cl = Color.GREEN;
+						offs = 3;
+						break;
+					case UNDERGROUND_CONNECTION:
+						cl = Color.BLUE;
+						offs = -1;
+						break;
+					case FERRY_CONNECTION:
+						cl = Color.BLACK;
+						offs = -3;
+						break;
+					}
+					g2D.setColor(cl);
+					
+					if (getChckbxmntmOnlySelectedEdges().isSelected()) {
+						if (e.type == getCmbEdgeType().getSelectedItem()) {
+							offs = 0;
+						} else {
+							continue;
+						}
+					}
+					
+					int x1 = (int) Math.round(e.v1.pos.x * getWidth()) + offs;
+					int y1 = (int) Math.round(e.v1.pos.y * getHeight()) + offs;
+					int x2 = (int) Math.round(e.v2.pos.x * getWidth()) + offs;
+					int y2 = (int) Math.round(e.v2.pos.y * getHeight()) + offs;
+					
+					g2D.drawLine(x1, y1, x2, y2);
+				}
+			}
+		};
+		scrollPaneImage.setViewportView(imagePanel);
 		imagePanel.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -538,7 +599,7 @@ public class BuilderTool extends JFrame {
 				double y = (double) e.getY() / getImagePanel().getHeight();
 				Point2D.Double pos = new Point2D.Double(x, y);
 				
-				if (currentTool == Tool.MARK_VERTEX) {
+				if (isSelected(markVertexAction)) {
 					
 					JSpinner number = getSpinnerNumber();				
 					
@@ -563,7 +624,7 @@ public class BuilderTool extends JFrame {
 						JOptionPane.showMessageDialog(BuilderTool.this, "A vertex with the current number already exists!", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					
-				} else if (currentTool == Tool.MARK_EDGE) {
+				} else if (isSelected(markEdgeAction)) {
 					
 					if (lastSelectedVertex == null) {
 						if (v != null) {
@@ -587,6 +648,14 @@ public class BuilderTool extends JFrame {
 						JOptionPane.showMessageDialog(BuilderTool.this, "You should select a Tool. You can either mark vertices or edges.");
 						clicksWithoutTool = 0;
 					}
+					Timer t = new Timer(5000, new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							clicksWithoutTool = 0;						
+						}
+					});
+					t.setRepeats(false);
+					t.start();
 				}
 				
 				updateUI();
@@ -595,13 +664,7 @@ public class BuilderTool extends JFrame {
 		});
 		
 	}
-
-	protected JToggleButton getTglbtnMarkVertex() {
-		return tglbtnMarkVertex;
-	}
-	protected JToggleButton getTglbtnMarkEdge() {
-		return tglbtnMarkEdge;
-	}
+	
 	protected JComboBox getCmbVertexType() {
 		return cmbVertexType;
 	}
@@ -626,6 +689,22 @@ public class BuilderTool extends JFrame {
 	protected JList getEdgeList() {
 		return edgeList;
 	}
+	protected JLabel getLblEdge() {
+		return lblEdge;
+	}	
+	protected JScrollPane getImageScrollPane() {
+		return scrollPaneImage;
+	}
+	protected JCheckBoxMenuItem getChckbxmntmOnlySelectedVertices() {
+		return chckbxmntmOnlySelectedVertices;
+	}
+	protected JCheckBoxMenuItem getChckbxmntmOnlySelectedEdges() {
+		return chckbxmntmOnlySelectedEdges;
+	}
+	
+	
+	// Hilfsmethoden
+	
 	private Vertex getVertex(int number) {
 		for (Vertex v : vertices) {
 			if (v.number == number) {
@@ -650,6 +729,14 @@ public class BuilderTool extends JFrame {
 		
 		return null;
 	}
+	
+	public static void setSelected(Action action, boolean value) {
+		action.putValue(Action.SELECTED_KEY, value);
+	}
+	public static boolean isSelected(Action action) {
+		return (boolean) action.getValue(Action.SELECTED_KEY);
+	}
+	
 	/** Festlegen der Kanten starten */
 	void startEdging() {
 		getLblEdge().setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -665,15 +752,80 @@ public class BuilderTool extends JFrame {
 		getLblEdge().setToolTipText("");
 		lastSelectedVertex = null;
 	}
-	@SuppressWarnings("unchecked")
+	
+	/** Aktualisiert ImagePanel mit Graph und Vertex/Edge List. */
+	@SuppressWarnings("unchecked")	
 	protected void updateUI() {
 		getImagePanel().repaint();
 		
 		getVertexList().setListData(vertices);
 		getEdgeList().setListData(edges);
 	}
-	protected JLabel getLblEdge() {
-		return lblEdge;
+	
+	
+	// Actions
+	
+	private class PreserveImageAspectRationAction extends AbstractAction {
+		public PreserveImageAspectRationAction() {
+			putValue(NAME, "Preserve aspect ration");
+			putValue(SHORT_DESCRIPTION, "Preserve the image aspect ration");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_A);
+			setSelected(this, true);
+		}
+		public void actionPerformed(ActionEvent e) {
+			getImagePanel().repaint();
+		}
+	}
+	private class FitImageAction extends AbstractAction {
+		public FitImageAction() {
+			putValue(NAME, "Fit Image");
+			putValue(SHORT_DESCRIPTION, "Fit the image to the window");
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0));
+			putValue(MNEMONIC_KEY, KeyEvent.VK_F);
+			setSelected(this, true);
+		}
+		public void actionPerformed(ActionEvent e) {
+			boolean fitImage = isSelected(this);
+			zoomInAction.setEnabled(!fitImage);
+			zoomOutAction.setEnabled(!fitImage);
+			preserveImageAspectRationAction.setEnabled(fitImage);
+			if (fitImage) {
+				getImagePanel().setPreferredSize(getImageScrollPane().getViewport().getSize());
+				getImageScrollPane().revalidate();
+			} else {
+				setSelected(preserveImageAspectRationAction, true);
+			} 
+			getImagePanel().repaint();
+		}
+	}
+	private class ZoomInAction extends AbstractAction {
+		public ZoomInAction() {
+			setEnabled(false); // weil standardmaessig Fit Image ausgewaehlt ist
+			putValue(NAME, "Zoom In");
+			putValue(SHORT_DESCRIPTION, "Zoom into the image");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_I);
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '+', KeyEvent.CTRL_DOWN_MASK)); // TODO geht iwie ned. cast sollte unnoetig sein, dann meint aber zumindest eclipse, es ist getKeyStroke(int, int) gemeint.
+		}
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("zoom in"); // TODO zum test
+			getImagePanel().setPreferredSize(new Dimension((int) (getImagePanel().getWidth() * ZOOM_FACTOR), (int) (getImagePanel().getHeight() * ZOOM_FACTOR)));
+			getImagePanel().revalidate();
+		}
+	}
+	private class ZoomOutAction extends AbstractAction {
+		public ZoomOutAction() {
+			setEnabled(false); // weil standardmaessig Fit Image ausgewaehlt ist
+			putValue(NAME, "Zoom Out");
+			putValue(SHORT_DESCRIPTION, "Zoom out of the image");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_O);
+			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 5);
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '-', KeyEvent.CTRL_DOWN_MASK)); // TODO geht iwie ned. cast sollte unnoetig sein, dann meint aber zumindest eclipse, es ist getKeyStroke(int, int) gemeint.
+		}
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("zoom out"); // TODO zum test
+			getImagePanel().setPreferredSize(new Dimension((int) (getImagePanel().getWidth() / ZOOM_FACTOR), (int) (getImagePanel().getHeight() / ZOOM_FACTOR)));
+			getImagePanel().revalidate();
+		}
 	}
 	private class ImportDescriptionAction extends AbstractAction {
 		public ImportDescriptionAction() {
@@ -684,6 +836,7 @@ public class BuilderTool extends JFrame {
 		}
 		@SuppressWarnings("unchecked")
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 			if (descriptionChooser.showOpenDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
 				try {
 					ToolGraphBuilder builder = new ToolGraphBuilder();
@@ -706,6 +859,7 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_X);
 		}
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 			if (descriptionChooser.showSaveDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
 				GraphDescriptionBuilder builder = new GraphDescriptionBuilder();
 				for (Vertex v : vertices) {
@@ -749,6 +903,7 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_N);
 		}
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 			if (JOptionPane.showConfirmDialog(BuilderTool.this, "Really clear the current graph for a new one?") == JOptionPane.YES_OPTION) {
 				vertices.clear();
 				edges.clear();
@@ -765,6 +920,7 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_O);
 		}
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 		    if (imageChooser.showOpenDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
 		    	image = Toolkit.getDefaultToolkit().getImage(imageChooser.getSelectedFile().getPath());
 		    	updateUI();
@@ -777,20 +933,14 @@ public class BuilderTool extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Mark a vertex");
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("pressed INSERT"));
 			putValue(MNEMONIC_KEY, KeyEvent.VK_V);
+			setSelected(this, false);
 		}
 		public void actionPerformed(ActionEvent e) {
-			if (currentTool != Tool.MARK_VERTEX) {
-				currentTool = Tool.MARK_VERTEX;
-				getTglbtnMarkVertex().setSelected(true);
-				getMntmMarkVertex().setSelected(true);
-				
-				getTglbtnMarkEdge().setSelected(false);
-				getMntmMarkEdge().setSelected(false);
+			endEdging();
+			if (isSelected(this)) {
+				setSelected(markEdgeAction, false);
 			} else {
-				currentTool = null;
 				clicksWithoutTool = 0;
-				getTglbtnMarkVertex().setSelected(false);
-				getMntmMarkVertex().setSelected(false);
 			}
 		}
 	}
@@ -800,22 +950,14 @@ public class BuilderTool extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Mark an edge");
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl pressed E"));
 			putValue(MNEMONIC_KEY, KeyEvent.VK_E);
+			setSelected(this, false);
 		}
 		public void actionPerformed(ActionEvent e) {
-			if (currentTool != Tool.MARK_EDGE) {
-				currentTool = Tool.MARK_EDGE;
-				lastSelectedVertex = null;
-				getTglbtnMarkEdge().setSelected(true);
-				getMntmMarkEdge().setSelected(true);
-				
-				getTglbtnMarkVertex().setSelected(false);
-				getMntmMarkVertex().setSelected(false);
+			endEdging();
+			if (isSelected(this)) {
+				setSelected(markVertexAction, false);
 			} else {
-				currentTool = null;
 				clicksWithoutTool = 0;
-				endEdging();
-				getTglbtnMarkEdge().setSelected(false);
-				getMntmMarkEdge().setSelected(false);
 			}
 		}
 	}
@@ -827,21 +969,9 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_Q);
 		}
 		public void actionPerformed(ActionEvent e) {
+			endEdging();
 			setVisible(false);
 			dispose();
 		}
-	}
-	protected JMenuItem getMntmMarkVertex() {
-		return mntmMarkVertex;
-	}
-	protected JMenuItem getMntmMarkEdge() {
-		return mntmMarkEdge;
-	}
-	
-	protected JCheckBoxMenuItem getChckbxmntmOnlySelectedVertices() {
-		return chckbxmntmOnlySelectedVertices;
-	}
-	protected JCheckBoxMenuItem getChckbxmntmOnlySelectedEdges() {
-		return chckbxmntmOnlySelectedEdges;
-	}
+	}	
 }

@@ -188,12 +188,18 @@ public class GameStateExtension {
 		this.gameState = gameState;
 	}
 
+	/**
+	 * Gibt eine flache Liste aller Moves zurueck. Bei Multi Moves werden
+	 * nur alle Sub Moves eingetragen, nicht der Base Move.
+	 * (Verwendet <tt>flattenMove(Move)</tt>.)
+	 * @return Liste aller Moves
+	 */
 	public List<Move> getMovesFlat() {
 		List<Move> result = new LinkedList<>();
 		for (Move m : gameState.getMoves()) {
 			// auch das hier koennte man effizienter machen:
-			// if (m.getMoves().isEmpty()) result.add(m); else
-			result.addAll(flattenMove(m, true));
+			// if (m.getMoves().isEmpty()) result.add(m); else ... egal
+			result.addAll(flattenMove(m));
 		}
 		return result;
 	}
@@ -234,31 +240,54 @@ public class GameStateExtension {
 		}
 	}
 	
+	/**
+	 * Get the very last Move or Sub Move (if Multi Move) of the
+	 * specified Player.
+	 * @param player
+	 * @return the last Single Move
+	 */
 	public Move getLastMoveFlat(Player player) {
 		Move m = gameState.getLastMove(player);
 		if (m != null) {
-			List<Move> ms = m.getMoves();
-			if (!ms.isEmpty()) {
-				m = ms.get(ms.size() - 1);
-			}
+			List<Move> ms = flattenMove(m, true);
+			return ms.get(ms.size() - 1);
 		}
-		return m;
+		return null;
 	}
 	
-	public List<Move> flattenMove(Move move, boolean omitBaseMove) { // base move or root move ?
+	/**
+	 * Gibt den gegebenen Move als flache Liste mit den einzelnen Moves zurueck.
+	 * Wenn der Move ein Single Move ist, hat die Liste nur ein Element.
+	 * @param move der Move, der flach gemacht werden soll
+	 * @param includeBaseMove gibt an, ob bei Multi Moves der Base Move ebenfalls
+	 * in der Liste stehen soll
+	 * @return eine Liste mit Moves, die keine Sub Moves mehr enthalten
+	 */
+	public List<Move> flattenMove(Move move, boolean includeBaseMove) { // base move or root move ?
 		List<Move> result = new LinkedList<>();
 		
 		// move selbst adden, wenn er keine sub moves hat 
 		// oder wenn er nicht weggelassen werden soll.
-		if (move.getMoves().isEmpty() || !omitBaseMove) {
+		if (move.getMoves().isEmpty() || includeBaseMove) {
 			result.add(move);
 		}
 		
 		for (Move m : move.getMoves()) {
-			result.addAll(flattenMove(m, omitBaseMove));
+			result.addAll(flattenMove(m, includeBaseMove));
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Ruft <tt>flattenMove(Move, boolean)</tt> so auf, dass bei Multi Moves
+	 * der Base Move - der die Sub Moves enthaelt - nicht in der resultierenden
+	 * Liste vorkommt (d.h. <tt>includeBaseMove == false</tt>, Standardverhalten).
+	 * @param move
+	 * @return
+	 */
+	public List<Move> flattenMove(Move move) {
+		return flattenMove(move, false);
 	}
 	
 	public Set<StationVertex> getDetectivePositions(int roundNumber) {		
