@@ -815,10 +815,20 @@ public class BuilderTool extends JFrame {
 			putValue(NAME, "Zoom In");
 			putValue(SHORT_DESCRIPTION, "Zoom into the image");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_I);
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '+', KeyEvent.CTRL_DOWN_MASK)); // TODO geht iwie ned. cast sollte unnoetig sein, dann meint aber zumindest eclipse, es ist getKeyStroke(int, int) gemeint.
+			
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '+', KeyEvent.CTRL_DOWN_MASK)); // TODO dont work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed +")); // TODO dont work
+			
+			// KeyStroke.getKeyStroke('+', KeyEvent.CTRL_DOWN_MASK)
+			// wird aufgefasst als getKeyStroke(int, int) -- wtf?? java castet einen char lieber automatisch als int, anstatt auto boxing zu Character.
+			//  http://stackoverflow.com/questions/7931862/java-int-and-char
+			// was werd ich wohl eher mit dem character '-' meinen? den character oder eine Zahl...
+			
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
+			// dabei will ich doch, dass es einfach funktioniert, wenn ein + getippt wird. dafuer ist doch auch getKeyStroke("ctrl typed ...") da, oder? 
 		}
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("zoom in"); // TODO zum test
 			getImagePanel().setPreferredSize(new Dimension((int) (getImagePanel().getWidth() * ZOOM_FACTOR), (int) (getImagePanel().getHeight() * ZOOM_FACTOR)));
 			getImagePanel().revalidate();
 		}
@@ -830,10 +840,13 @@ public class BuilderTool extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Zoom out of the image");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_O);
 			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 5);
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '-', KeyEvent.CTRL_DOWN_MASK)); // TODO geht iwie ned. cast sollte unnoetig sein, dann meint aber zumindest eclipse, es ist getKeyStroke(int, int) gemeint.
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '-', KeyEvent.CTRL_DOWN_MASK)); // TODO dont work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed -")); // TODO dont work
+			
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
 		}
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("zoom out"); // TODO zum test
 			getImagePanel().setPreferredSize(new Dimension((int) (getImagePanel().getWidth() / ZOOM_FACTOR), (int) (getImagePanel().getHeight() / ZOOM_FACTOR)));
 			getImagePanel().revalidate();
 		}
@@ -855,8 +868,8 @@ public class BuilderTool extends JFrame {
 					vertices = new Vector(builder.getVertexList());
 					edges = new Vector(builder.getEdgeList());
 				} catch (IOException e1) {
-					// TODO msg
 					e1.printStackTrace();
+					JOptionPane.showMessageDialog(BuilderTool.this, e1.getLocalizedMessage(), "Import Error", JOptionPane.ERROR_MESSAGE);
 				}
 				updateUI();
 			}
@@ -900,8 +913,8 @@ public class BuilderTool extends JFrame {
 					w.write(builder.getDescription());
 					w.close();
 				} catch (IOException e1) {
-					// TODO msg
 					e1.printStackTrace();
+					JOptionPane.showMessageDialog(BuilderTool.this, e1.getLocalizedMessage(), "Export Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
