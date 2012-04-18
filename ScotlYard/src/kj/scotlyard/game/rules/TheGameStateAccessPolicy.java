@@ -198,6 +198,11 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		}
 
 		@Override
+		public DetectivesGameState copy() {
+			return new DetectivesGameState(gameState.copy());
+		}
+		
+		@Override
 		public MrXPlayer getMrX() {
 			return gameState.getMrX();
 		}
