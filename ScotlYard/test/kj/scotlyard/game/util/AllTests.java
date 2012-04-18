@@ -6,6 +6,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ GameStateExtensionTest.class, MrXTrackerTest.class })
-public class AllUtilTests {
+public class AllTests {
 
 }

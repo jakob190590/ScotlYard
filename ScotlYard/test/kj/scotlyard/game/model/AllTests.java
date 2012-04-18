@@ -6,6 +6,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ DefaultMoveTest.class, TheGameTest.class, AbstractGameStateTest.class })
-public class AllModelTests {
+public class AllTests {
 
 }
