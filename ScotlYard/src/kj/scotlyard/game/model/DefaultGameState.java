@@ -22,6 +22,11 @@ public class DefaultGameState extends AbstractGameState {
 	}
 
 	@Override
+	public DefaultGameState copy() {
+		return new DefaultGameState(gameState.copy());
+	}
+
+	@Override
 	public MrXPlayer getMrX() {
 		return gameState.getMrX();
 	}

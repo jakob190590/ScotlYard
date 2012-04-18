@@ -24,6 +24,17 @@ public interface GameState {
 	/** Speziell fuer <tt>getMoves().remove/get(LAST_MOVE)</tt>. */
 	int LAST_MOVE = -1;
 	
+	
+	/**
+	 * Liefert eine Kopie des GameStates. Ich verzichte auf
+	 * Cloneable und clone(), weil ich nicht ueberall diese
+	 * verdammte checked CloneNotSupported Exception abfangen
+	 * will.
+	 * @return Kopie dieses GameStates
+	 */
+	GameState copy();
+	
+	
 	MrXPlayer getMrX();
 	
 	List<DetectivePlayer> getDetectives();
