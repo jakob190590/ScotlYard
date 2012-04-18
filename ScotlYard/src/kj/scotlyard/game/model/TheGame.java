@@ -56,8 +56,17 @@ public class TheGame extends AbstractGameState implements Game {
 	
 	private class DetectiveList extends AbstractList<DetectivePlayer> {
 		
-		List<DetectivePlayer> list = new LinkedList<>();
+		List<DetectivePlayer> list;
 
+		public DetectiveList() { 
+			list = new LinkedList<>();
+		}
+		
+		/** Copy constructor */
+		public DetectiveList(List<DetectivePlayer> detectives) {
+			list = new LinkedList<>(detectives);
+		}
+		
 		@Override
 		public DetectivePlayer get(int index) {
 			return list.get(index);
@@ -91,7 +100,16 @@ public class TheGame extends AbstractGameState implements Game {
 	
 	private class MoveList extends AbstractList<Move> {
 
-		List<Move> list = new Vector<>();
+		List<Move> list;
+		
+		public MoveList() {
+			list = new Vector<>();
+		}
+		
+		/** Copy constructor */
+		public MoveList(List<Move> moves) {
+			list = new Vector<>(moves);
+		}
 		
 		private List<Move> getMovesWithMoveNumber(Move move) {
 			List<Move> mvs = new Vector<>();
@@ -183,7 +201,15 @@ public class TheGame extends AbstractGameState implements Game {
 		private Set<Item> set;
 		
 		private Player player;
-		
+
+		/**
+		 * Auch eine Art Copy constructor:
+		 * Es wird fuer intern ein neuer Set
+		 * angelegt, der die Elemente von den
+		 * uebergebenen items enthaelt. 
+		 * @param player
+		 * @param items
+		 */
 		public ItemSet(Player player, Set<Item> items) {
 			this.player = player;
 			
@@ -248,6 +274,28 @@ public class TheGame extends AbstractGameState implements Game {
 	
 	private Map<PlayerNumberKey, Move> movesByMoveNumber = new HashMap<>();
 		
+	@Override
+	public TheGame copy() {
+		TheGame g = new TheGame();
+		
+		g.mrX = mrX;
+		g.detectives = new DetectiveList(detectives);
+		
+		// Player-Items-Map kopieren, Set fuer Set
+		for (Player key : items.keySet()) {
+			g.items.put(key, new ItemSet(key, items.get(key)));
+		}
+		
+		g.moves = new MoveList(moves);
+		
+		g.currentPlayer = currentPlayer;
+		g.currentRoundNumber = currentRoundNumber;
+		
+		// Listeners lassen wir natuerlich weg
+		
+		return g;
+	}
+	
 
 	@Override
 	public MrXPlayer getMrX() {
