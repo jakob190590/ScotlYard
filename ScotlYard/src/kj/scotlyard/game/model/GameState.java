@@ -30,7 +30,7 @@ public interface GameState {
 	 * Cloneable und clone(), weil ich nicht ueberall diese
 	 * verdammte checked CloneNotSupported Exception abfangen
 	 * will.
-	 * @return
+	 * @return Kopie dieses GameStates
 	 */
 	GameState copy();
 	
