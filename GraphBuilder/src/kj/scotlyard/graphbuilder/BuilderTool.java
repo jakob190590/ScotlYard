@@ -272,8 +272,8 @@ public class BuilderTool extends JFrame {
 		mnView.add(chckbxmntmOnlySelectedVertices);		
 		
 		chckbxmntmOnlySelectedEdges = new JCheckBoxMenuItem("Only selected Edges");
-		chckbxmntmOnlySelectedVertices.setToolTipText("Only draw edges of the selected type");
-		chckbxmntmOnlySelectedVertices.setMnemonic('e');
+		chckbxmntmOnlySelectedEdges.setToolTipText("Only draw edges of the selected type");
+		chckbxmntmOnlySelectedEdges.setMnemonic('e');
 		chckbxmntmOnlySelectedEdges.addActionListener(repaintAction);
 		mnView.add(chckbxmntmOnlySelectedEdges);
 		
