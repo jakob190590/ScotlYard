@@ -50,7 +50,7 @@ public class TheTurnPolicy implements TurnPolicy {
 		Player player = gameState.getCurrentPlayer();
 		
 		// Zu Spielbeginn
-		if (player == null) { // oder getMoves().isEmpty();
+		if (gameState.getMoves().isEmpty()) {
 			return GameState.INITIAL_ROUND_NUMBER;
 		}
 		
