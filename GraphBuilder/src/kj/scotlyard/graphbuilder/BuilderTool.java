@@ -816,8 +816,8 @@ public class BuilderTool extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Zoom into the image");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_I);
 			
-//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '+', KeyEvent.CTRL_DOWN_MASK)); // TODO dont work
-//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed +")); // TODO dont work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '+', KeyEvent.CTRL_DOWN_MASK)); // dont work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed +")); // dont work
 			
 			// KeyStroke.getKeyStroke('+', KeyEvent.CTRL_DOWN_MASK)
 			// wird aufgefasst als getKeyStroke(int, int) -- wtf?? java castet einen char lieber automatisch als int, anstatt auto boxing zu Character.
@@ -840,8 +840,8 @@ public class BuilderTool extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Zoom out of the image");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_O);
 			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 5);
-//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '-', KeyEvent.CTRL_DOWN_MASK)); // TODO dont work
-//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed -")); // TODO dont work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '-', KeyEvent.CTRL_DOWN_MASK)); // dont work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed -")); // dont work
 			
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
 //			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
