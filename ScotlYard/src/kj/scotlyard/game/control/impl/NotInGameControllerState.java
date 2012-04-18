@@ -12,7 +12,6 @@ import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
-import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
@@ -214,12 +213,15 @@ class NotInGameControllerState extends GameControllerState {
 	
 	private final GameGraph gameGraph;
 	
+	private final Rules rules;
+	
 	private final UndoManager undoManager;
 	
 	protected NotInGameControllerState(TheGameController controller) {
 		super(controller);
 		game = controller.getGame();
 		gameGraph = controller.getGameGraph();
+		rules = controller.getRules();
 		undoManager = controller.getUndoManager();
 	}
 
@@ -279,6 +281,9 @@ class NotInGameControllerState extends GameControllerState {
 	public void shiftUpDetective(DetectivePlayer detective) {
 		List<DetectivePlayer> ds = getController().getGame().getDetectives();
 		int i = ds.indexOf(detective);
+		if (i < 0) {
+			throw new IllegalArgumentException("The specified detective is not part of the game.");
+		}
 		if (i > 0) {
 			ds.remove(detective);
 			ds.add(i - 1, detective);
@@ -290,7 +295,10 @@ class NotInGameControllerState extends GameControllerState {
 	public void shiftDownDetective(DetectivePlayer detective) {
 		List<DetectivePlayer> ds = getController().getGame().getDetectives();
 		int i = ds.indexOf(detective);
-		if (i < ds.size()) {
+		if (i < 0) {
+			throw new IllegalArgumentException("The specified detective is not part of the game.");
+		}		
+		if (i < (ds.size() - 1)) {
 			ds.remove(detective);
 			ds.add(i + 1, detective);
 			undoManager.addEdit(new ShiftDownDetectiveEdit(i, detective));
@@ -299,31 +307,50 @@ class NotInGameControllerState extends GameControllerState {
 
 	@Override
 	public void start() {
+		
+		GameInitPolicy initPolicy = rules.getGameInitPolicy();
+		TurnPolicy turnPolicy = rules.getTurnPolicy();
+		
 		TheMoveProducer moveProducer = TheMoveProducer.createInstance();
 				
 		if (!game.getMoves().isEmpty()) {
 			throw new IllegalStateException("Cannot start game, while Move list is not cleared. Call newGame and try again.");
 		}
 		
-		// TODO rules zu detective count beachten? ja, wo sonst?
+		if (game.getMrX() == null) {
+			throw new IllegalStateException("Cannot start game without MrX.");
+		}
 		
-		// Valid GameState -> proceed with initialization
-		Rules rules = getController().getRules();
-		GameInitPolicy initPolicy = rules.getGameInitPolicy();
-		TurnPolicy turnPolicy = rules.getTurnPolicy();
+		int dc = game.getDetectives().size();
+		int min = initPolicy.getMinDetectiveCount();
+		int max = initPolicy.getMaxDetectiveCount();
+		if (dc < min || dc > max) {
+			throw new IllegalStateException("Cannot start game with " + dc + " detective(s). " +
+					"Required: At least " + min + ", at most " + max + ".");
+		}
 		
-		game.setCurrentRoundNumber(GameState.INITIAL_ROUND_NUMBER);
-		while (turnPolicy.getNextRoundNumber(game, gameGraph) == GameState.INITIAL_ROUND_NUMBER) {
+		
+		// Valid GameState -> proceed with initialization	
+		
+		final int initRoundNumber = turnPolicy.getNextRoundNumber(game, gameGraph);
+		game.setCurrentRoundNumber(initRoundNumber); // should be INITIAL_ROUND_NUMBER
+		
+		while (turnPolicy.getNextRoundNumber(game, gameGraph) == initRoundNumber) {
 			Player player = turnPolicy.getNextPlayer(game, gameGraph);
 			game.setCurrentPlayer(player);
 			game.setItems(player, initPolicy.createItemSet(game, player));
 			
-			StationVertex station = initPolicy.suggestInitialStation(game, gameGraph, getController().getInitialPositions(), player);
-			Move initMove = moveProducer.createInitialMove(player, station);
+			StationVertex initStation = initPolicy.suggestInitialStation(game, gameGraph, getController().getInitialPositions(), player);
+			Move initMove = moveProducer.createInitialMove(player, initStation);
 			game.getMoves().add(initMove);
 		}
+		
 		game.setCurrentRoundNumber(turnPolicy.getNextRoundNumber(game, gameGraph));
 
+		
+		// Grundsaetzlich kann ein Spiel auch sofort entschieden sein.
+		// Beim echten Scotland Yard zwar nicht, weil die moeglichen Startpositionen einen gewissen Abstand 
+		// haben und MrX deswegen nicht sofort umzingelt sein kann. Aber es soll ja allgemein sein!
 		GameWin win = getController().getRules().getGameWinPolicy().isGameWon(game, gameGraph);
 		getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
 		

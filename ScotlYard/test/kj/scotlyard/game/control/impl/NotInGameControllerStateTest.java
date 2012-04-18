@@ -7,17 +7,27 @@ import java.util.List;
 
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
+import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.model.DefaultMove;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
+import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
+import kj.scotlyard.game.model.TheMoveProducer;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
 
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Testet den Not in Game Zustand. Undo/Redo
+ * kann leider hier ned getestet werden. Das
+ * geht nur beim echten Controller.
+ * @author jakob190590
+ *
+ */
 public class NotInGameControllerStateTest {
 
 	GameGraph gg;
@@ -26,6 +36,7 @@ public class NotInGameControllerStateTest {
 	GameControllerState cs; // controller state
 	Rules r;
 	
+	TheMoveProducer mp; // move producer
 	
 	@Before
 	public void setUp() throws Exception {
@@ -33,6 +44,18 @@ public class NotInGameControllerStateTest {
 		g = new TheGame();
 		c = new TheGameController(g, gg, null, r);
 		cs = new NotInGameControllerState(c);
+		
+		mp = TheMoveProducer.createInstance();
+		
+		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
+		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
+		
+		g.setMrX(new MrXPlayer());
+		
+		g.getDetectives().add(new DetectivePlayer());
+		g.getDetectives().add(new DetectivePlayer());
+		g.getDetectives().add(new DetectivePlayer());
+		g.getDetectives().add(new DetectivePlayer());
 	}
 
 	@Test
@@ -42,15 +65,12 @@ public class NotInGameControllerStateTest {
 
 	@Test
 	public final void testNewGame() {
-		fail("Not yet implemented");
-		
+		cs.newGame();
 		assertTrue(g.getMoves().isEmpty());
 	}
 
 	@Test
 	public final void testClearPlayers() {
-		fail("Not yet implemented");
-		
 		c.clearPlayers();
 		assertEquals(g.getMrX(), null);
 		assertTrue(g.getDetectives().isEmpty());
@@ -59,18 +79,14 @@ public class NotInGameControllerStateTest {
 
 	@Test
 	public final void testNewMrX() {
-		fail("Not yet implemented");
-		
-		Player p = g.getMrX();
-		c.newMrX();
+		MrXPlayer p = g.getMrX();
+		cs.newMrX();
 		assertFalse(g.getMrX().equals(p));
 		assertFalse(g.getMrX().equals(null));
 	}
 
 	@Test
 	public final void testNewDetective() {
-		fail("Not yet implemented");
-		
 		List<Player> ps = new ArrayList<>(g.getPlayers());
 		c.newDetective();
 		assertEquals(g.getPlayers().size(), ps.size() + 1);
@@ -80,8 +96,6 @@ public class NotInGameControllerStateTest {
 
 	@Test
 	public final void testRemoveDetective() {
-		fail("Not yet implemented");
-		
 		for (DetectivePlayer d : g.getDetectives()) {
 			c.removeDetective(d);
 			assertFalse(g.getDetectives().contains(d));
@@ -91,12 +105,32 @@ public class NotInGameControllerStateTest {
 
 	@Test
 	public final void testShiftUpDetective() {
-		fail("Not yet implemented");
+		
+		for (DetectivePlayer d : g.getDetectives()) {
+			int i = g.getDetectives().indexOf(d);
+			while (i > 0) {
+				i--;
+				cs.shiftUpDetective(d);
+				assertEquals(i, g.getDetectives().indexOf(d));
+			}
+			cs.shiftUpDetective(d); // nur um zu sehen, dass es keine exception gibt
+			cs.shiftUpDetective(d);
+		}
 	}
 
 	@Test
 	public final void testShiftDownDetective() {
-		fail("Not yet implemented");
+		
+		for (DetectivePlayer d : g.getDetectives()) {
+			int i = g.getDetectives().indexOf(d);
+			while (i < (g.getDetectives().size() - 1)) {
+				i++;
+				cs.shiftDownDetective(d);
+				assertEquals(i, g.getDetectives().indexOf(d));
+			}
+			cs.shiftDownDetective(d); // nur um zu sehen, dass es keine exception gibt
+			cs.shiftDownDetective(d);
+		}
 	}
 
 	@Test
