@@ -158,7 +158,57 @@ class NotInGameControllerState extends GameControllerState {
 		
 	}
 	
+	@SuppressWarnings("serial")
+	private class NewGameEdit extends AbstractUndoableEdit {
+		
+		private List<Move> oldMoves;
+		
+		public NewGameEdit(List<Move> oldMoves) {
+			this.oldMoves = oldMoves;
+		}
+
+		@Override
+		public void undo() throws CannotUndoException {
+			super.undo();
+			game.getMoves().addAll(oldMoves);
+		}
+		
+		@Override
+		public void redo() throws CannotRedoException {
+			super.redo();			
+			game.getMoves().clear();
+		}
+		
+	}
 	
+	@SuppressWarnings("serial")
+	private class ClearPlayersEdit extends AbstractUndoableEdit {
+		
+		private MrXPlayer oldMrX;
+		
+		private List<DetectivePlayer> oldDetectives;
+		
+		public ClearPlayersEdit(MrXPlayer oldMrX, 
+				List<DetectivePlayer> oldDetectives) {
+			this.oldMrX = oldMrX;
+			this.oldDetectives = oldDetectives;
+		}
+
+		@Override
+		public void undo() throws CannotUndoException {
+			super.undo();
+			game.setMrX(oldMrX);
+			game.getDetectives().addAll(oldDetectives);
+		}
+		
+		@Override
+		public void redo() throws CannotRedoException {
+			super.redo();			
+			game.setMrX(null);
+			game.getDetectives().clear();
+		}
+		
+	}
 	
 	private final Game game;
 	
@@ -184,28 +234,35 @@ class NotInGameControllerState extends GameControllerState {
 
 	@Override
 	public void newGame() {
-		getController().getGame().getMoves().clear();
+		List<Move> moves = game.getMoves();
+		game.getMoves().clear();
 		// Das reicht schon aus.
 		// Andere Werte werden bei Initialisierung (start) ueberschrieben.
-		undoManager.discardAllEdits();
+		// current player und round werden durch Rules festgelegt.
+		
+		undoManager.addEdit(new NewGameEdit(moves));
 	}
 
 	@Override
 	public void clearPlayers() {
-		getController().getGame().setMrX(null);
-		getController().getGame().getDetectives().clear();
-		undoManager.discardAllEdits(); // TODO oder auch Undoable machen?
+		MrXPlayer mrX = game.getMrX();
+		List<DetectivePlayer> detectives = game.getDetectives();
+		
+		game.setMrX(null);
+		game.getDetectives().clear();
+		
+		undoManager.addEdit(new ClearPlayersEdit(mrX, detectives));
 	}
 
 	@Override
 	public void newMrX() {
-		undoManager.addEdit(new NewMrXEdit(game.getMrX()));
+		MrXPlayer mrX = game.getMrX();
 		game.setMrX(new MrXPlayer());
+		undoManager.addEdit(new NewMrXEdit(mrX));
 	}
 
 	@Override
 	public void newDetective() {
-		// TODO regeln beachten?
 		DetectivePlayer d = new DetectivePlayer();
 		game.getDetectives().add(d);
 		undoManager.addEdit(new NewDetectiveEdit(d));
@@ -213,9 +270,9 @@ class NotInGameControllerState extends GameControllerState {
 
 	@Override
 	public void removeDetective(DetectivePlayer detective) {
-		// TODO regeln beachten?
-		undoManager.addEdit(new RemoveDetectiveEdit(game.getDetectives().indexOf(detective), detective));
+		int i = game.getDetectives().indexOf(detective);
 		game.getDetectives().remove(detective);
+		undoManager.addEdit(new RemoveDetectiveEdit(i, detective));
 	}
 
 	@Override
@@ -248,7 +305,7 @@ class NotInGameControllerState extends GameControllerState {
 			throw new IllegalStateException("Cannot start game, while Move list is not cleared. Call newGame and try again.");
 		}
 		
-		// TODO rules zu detective count beachten?
+		// TODO rules zu detective count beachten? ja, wo sonst?
 		
 		// Valid GameState -> proceed with initialization
 		Rules rules = getController().getRules();
