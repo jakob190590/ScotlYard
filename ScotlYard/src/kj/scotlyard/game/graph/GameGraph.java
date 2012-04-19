@@ -1,8 +1,20 @@
 package kj.scotlyard.game.graph;
 
-import org.apache.commons.attributes.Sealable;
 import org.jgrapht.UndirectedGraph;
 
-public interface GameGraph extends UndirectedGraph<StationVertex, ConnectionEdge>, Sealable {
+public class GameGraph {
 
+	private UndirectedGraph<StationVertex, ConnectionEdge> graph;
+	
+	public GameGraph(UndirectedGraph<StationVertex, ConnectionEdge> graph) {
+		if (graph == null) {
+			throw new NullPointerException("Graph must not be null.");
+		}
+		this.graph = graph;
+	}
+	
+	public UndirectedGraph<StationVertex, ConnectionEdge> getGraph() {
+		return graph;
+	}
+	
 }
