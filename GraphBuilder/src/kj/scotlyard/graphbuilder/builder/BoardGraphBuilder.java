@@ -64,5 +64,9 @@ public class BoardGraphBuilder implements GraphBuilder {
 	public Set<JComponent> getVisualComponents() {
 		return visualComponents;
 	}
+	
+	public Map<Integer, StationVertex> getNumberStationMap() {
+		return vertexMap;
+	}
 
 }
