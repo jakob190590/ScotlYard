@@ -29,6 +29,7 @@ public class GameGraphLoader {
 		GameGraphLoader loader = new GameGraphLoader();
 		try {
 			loader.load("graph-description", "initial-stations");
+			
 			loader.getGameGraph();
 			loader.getVisualComponents();
 			loader.getNumberStationMap();
@@ -58,7 +59,7 @@ public class GameGraphLoader {
 		
 		initialStations = new HashSet<>();
 		Scanner sc = new Scanner(initialStationsFilename);
-		while (sc.hasNext()) {
+		while (sc.hasNextInt()) {
 			StationVertex station = numberStationMap.get(sc.nextInt());
 			if (station == null) {
 				throw new RuntimeException("Initial Stations file contains numbers, that are not in the graph."); // TODO
