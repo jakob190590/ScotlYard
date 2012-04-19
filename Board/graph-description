@@ -26,11 +26,9 @@ E kj.scotlyard.game.graph.connection.TaxiConnection 7 6
 E kj.scotlyard.game.graph.connection.TaxiConnection 2 10
 E kj.scotlyard.game.graph.connection.BusConnection 11 8
 E kj.scotlyard.game.graph.connection.TaxiConnection 11 7
-E kj.scotlyard.game.graph.connection.TaxiConnection 6 3
 E kj.scotlyard.game.graph.connection.TaxiConnection 3 1
 E kj.scotlyard.game.graph.connection.TaxiConnection 9 8
 E kj.scotlyard.game.graph.connection.TaxiConnection 12 4
 E kj.scotlyard.game.graph.connection.TaxiConnection 6 5
-E kj.scotlyard.game.graph.connection.TaxiConnection 10 10
 E kj.scotlyard.game.graph.connection.TaxiConnection 6 2
 E kj.scotlyard.game.graph.connection.TaxiConnection 1 2
