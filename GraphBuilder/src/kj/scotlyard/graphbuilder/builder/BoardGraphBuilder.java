@@ -2,6 +2,7 @@ package kj.scotlyard.graphbuilder.builder;
 
 import java.awt.geom.Point2D;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JComponent;
