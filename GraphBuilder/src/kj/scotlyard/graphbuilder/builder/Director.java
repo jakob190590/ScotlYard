@@ -53,14 +53,14 @@ public final class Director {
 	/**
 	 * Liest aus der angegebenen Description Datei, und sagt den angegebenen Buildern,
 	 * was zu tun ist.
-	 * @param descriptionFilename Pfad zur Description Datei. Der Aufbau der Datei wird
+	 * @param graphDescriptionFilename Pfad zur Description Datei. Der Aufbau der Datei wird
 	 * im <tt>GraphDescriptionBuilder</tt> festgelegt!
 	 * @param builders die Builder, denen der Director die Anweisungen geben soll.
 	 * @throws IOException bei I/O-Fehler oder ungueltigem Aufbau der Datei.
 	 */
 	@SuppressWarnings("unchecked")
-	public static void construct(String descriptionFilename, GraphBuilder... builders) throws IOException {
-		Scanner sc = new Scanner(new File(descriptionFilename));
+	public static void construct(String graphDescriptionFilename, GraphBuilder... builders) throws IOException {
+		Scanner sc = new Scanner(new File(graphDescriptionFilename));
 		
 		try {
 			while (sc.hasNext()) {
