@@ -3,14 +3,18 @@ package kj.scotlyard.game.control.impl;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DefaultMove;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
+import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
@@ -30,6 +34,7 @@ import org.junit.Test;
  */
 public class NotInGameControllerStateTest {
 
+	Set<StationVertex> initialStations;
 	GameGraph gg;
 	Game g;
 	TheGameController c; // controller
@@ -40,9 +45,12 @@ public class NotInGameControllerStateTest {
 	
 	@Before
 	public void setUp() throws Exception {
+		
+		initialStations = new HashSet<>();
+		
 		r = new TheRules();
 		g = new TheGame();
-		c = new TheGameController(g, gg, null, r);
+		c = new TheGameController(g, gg, initialStations, r);
 		cs = new NotInGameControllerState(c);
 		
 		mp = TheMoveProducer.createInstance();
@@ -135,7 +143,53 @@ public class NotInGameControllerStateTest {
 
 	@Test
 	public final void testStart() {
-		fail("Not yet implemented");
+		
+		try {
+			cs.start();
+			fail("no exception");
+		} catch (IllegalStateException e) { }
+		g.getMoves().clear();		
+		
+		g.setMrX(null);		
+		try {
+			cs.start();
+			fail("no exception");
+		} catch (IllegalStateException e) { }
+		g.setMrX(new MrXPlayer());		
+
+		g.getDetectives().clear();
+		for (int i = 1; i < 7; i++) {
+			g.getDetectives().add(new DetectivePlayer());
+			if (i < 3 || i > 5)
+				try {
+					cs.start();
+					fail("no exception");
+				} catch (IllegalStateException e) { }			
+		}
+		
+		g.getDetectives().retainAll(g.getDetectives().subList(0, 4));
+		
+		// jetzt wird zum ersten mal ernsthaft gestartet:
+		
+		try {
+			cs.start();
+			fail("no exception");
+		} catch (SecurityException e) {			
+			// die muss kommen, weilcs den state von TheGameController nicht aendern darf
+			e.printStackTrace();
+		}
+				
+		assertEquals(g.getPlayers().size(), g.getMoves().size());
+		int i = 0;
+		for (Player p : g.getPlayers()) {
+			Move m = g.getMoves().get(i++);
+			assertEquals(p, m.getPlayer());	
+			assertTrue(initialStations.contains(m.getStation()));
+		}
+		
+		assertEquals(1, g.getCurrentRoundNumber());
+		assertEquals(g.getMrX(), g.getCurrentPlayer());
+		
 	}
 
 	@Test
