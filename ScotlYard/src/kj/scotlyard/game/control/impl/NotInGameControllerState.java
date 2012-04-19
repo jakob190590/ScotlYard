@@ -346,6 +346,7 @@ class NotInGameControllerState extends GameControllerState {
 		}
 		
 		game.setCurrentRoundNumber(turnPolicy.getNextRoundNumber(game, gameGraph));
+		game.setCurrentPlayer(turnPolicy.getNextPlayer(game, gameGraph));
 
 		
 		// Grundsaetzlich kann ein Spiel auch sofort entschieden sein.
