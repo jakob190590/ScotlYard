@@ -16,7 +16,10 @@ import kj.scotlyard.game.graph.StationVertex;
  * @author jakob190590
  *
  */
-public class Director {
+public final class Director {
+	
+	/** No instances */
+	private Director() { }
 	
 	/**
 	 * Dies ist nur ein Testprogramm.
