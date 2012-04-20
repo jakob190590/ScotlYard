@@ -168,6 +168,7 @@ public class BuilderTool extends JFrame {
 	private final Action quitAction = new QuitAction();
 	private final Action repaintAction = new RepaintAction();
 	private final Action endEdgingAction = new EndEdgingAction();
+	private final Action allowLoopsAction = new AllowLoopsAction();
 
 	/**
 	 * Launch the application.
@@ -239,6 +240,12 @@ public class BuilderTool extends JFrame {
 		mntmMarkEdge = new JCheckBoxMenuItem("New menu item");
 		mntmMarkEdge.setAction(markEdgeAction);
 		mnGraph.add(mntmMarkEdge);
+		
+		mnGraph.addSeparator();
+		
+		JCheckBoxMenuItem mntmAllowLoops = new JCheckBoxMenuItem("Allow Loops");
+		mntmAllowLoops.setAction(allowLoopsAction);
+		mnGraph.add(mntmAllowLoops);
 		
 		JMenu mnView = new JMenu("View");
 		mnView.setMnemonic('w');
@@ -625,20 +632,43 @@ public class BuilderTool extends JFrame {
 					
 				} else if (isSelected(markEdgeAction)) {
 					
-					if (lastSelectedVertex == null) {
-						if (v != null) {
+					if (v != null) {
+						if (lastSelectedVertex == null) {
+							
 							lastSelectedVertex = v;
 							startEdging();
-						}
-					} else if (v != null) {
-						
-						// connection zw. lastselected und v
-						edges.add(0, new Edge((EdgeType) getCmbEdgeType().getSelectedItem(), lastSelectedVertex, v));
-						
-						if (getCbPolyline().isSelected()) {
-							lastSelectedVertex = v;
-						} else {
-							endEdging();
+							
+						} else if (v != lastSelectedVertex || isSelected(allowLoopsAction)) { 
+							// "Some references require that multigraphs possess no graph loops" 
+							// -- http://mathworld.wolfram.com/Multigraph.html
+							// This is JGraphT. But only because of this, I cannot disallow loops generally...
+							// Deshalb gibt's eine Option im Graph-Menue, default: not selected.
+							// (Loops kann man relativ leicht aus der Description rausfiltern (sed mit regex).) 
+							
+							EdgeType edgeType = (EdgeType) getCmbEdgeType().getSelectedItem();
+							
+							/*
+							 * Da bei einem Multigraph mehrere Kanten (auch gleichen Typs) ja nicht verboten
+							 * sind, kommt nur eine Warnmeldung, wenn versucht wird mehr als eine Kante
+							 * selben Typs zwischen zwei Knoten hinzuzufuegen. Dann kann der Benutzer entscheiden.
+							 */
+							
+							if (getEdge(lastSelectedVertex, v, edgeType, true) == null // noch keine kante dazwischen
+									|| JOptionPane.showConfirmDialog(BuilderTool.this, 
+											"An edge of same type already exists between\nthese vertices (direction ignored).\n" +
+											"Anyway proceed adding edge?", 
+											null, JOptionPane.YES_NO_CANCEL_OPTION, 
+											JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) { 
+							
+								// connection zw. lastselected und v
+								edges.add(0, new Edge(edgeType, lastSelectedVertex, v));
+								
+								if (getCbPolyline().isSelected()) {
+									lastSelectedVertex = v;
+								} else {
+									endEdging();
+								}
+							}
 						}
 					}
 				} else {
@@ -660,7 +690,7 @@ public class BuilderTool extends JFrame {
 				updateUI();
 				
 			} 
-		});
+					});
 		
 	}
 	
@@ -734,6 +764,26 @@ public class BuilderTool extends JFrame {
 			}
 		}
 		
+		return null;
+	}
+	/**
+	 * Gibt die naechstbeste Kante vom angegebenen Typ 
+	 * zwischen den beiden angegebenen Vertices zurueck.
+	 * @param v1
+	 * @param v2
+	 * @param edgeType der Typ der Kante (Taxi, Bus, ...), oder null wenn egal!
+	 * @param ignoreDirection gibt an, ob die Richtung der Kante eine Rolle spielt.
+	 * @return die Kante zwischen den Knoten oder null, wenn
+	 * es keine solche gibt.
+	 */
+	private Edge getEdge(Vertex v1, Vertex v2, EdgeType edgeType, boolean ignoreDirection) {
+		for (Edge e : edges) {
+			if ((edgeType == null || e.type == edgeType) 
+					&& ((e.v1 == v1 && e.v2 == v2) 
+					|| (ignoreDirection && e.v1 == v2 && e.v2 == v1))) {
+				return e;
+			}
+		}
 		return null;
 	}
 	
@@ -1010,4 +1060,14 @@ public class BuilderTool extends JFrame {
 			endEdging();			
 		}
 	};
+	private class AllowLoopsAction extends AbstractAction {
+		public AllowLoopsAction() {
+			putValue(NAME, "Allow Loops");
+			putValue(SHORT_DESCRIPTION, "Allow loops in the graph");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_L);
+			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 6);
+			setSelected(this, false);
+		}
+		public void actionPerformed(ActionEvent e) { }
+	}
 }
