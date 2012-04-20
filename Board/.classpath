@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GraphBuilder"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ScotlYard"/>
+	<classpathentry kind="lib" path="/Library/lib/jgrapht/jgrapht-jdk1.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
