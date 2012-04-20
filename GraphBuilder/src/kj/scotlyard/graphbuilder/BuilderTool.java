@@ -168,6 +168,7 @@ public class BuilderTool extends JFrame {
 	private final Action quitAction = new QuitAction();
 	private final Action repaintAction = new RepaintAction();
 	private final Action endEdgingAction = new EndEdgingAction();
+	private final Action allowLoopsAction = new AllowLoopsAction();
 
 	/**
 	 * Launch the application.
@@ -239,6 +240,12 @@ public class BuilderTool extends JFrame {
 		mntmMarkEdge = new JCheckBoxMenuItem("New menu item");
 		mntmMarkEdge.setAction(markEdgeAction);
 		mnGraph.add(mntmMarkEdge);
+		
+		mnGraph.addSeparator();
+		
+		JCheckBoxMenuItem mntmAllowLoops = new JCheckBoxMenuItem("Allow Loops");
+		mntmAllowLoops.setAction(allowLoopsAction);
+		mnGraph.add(mntmAllowLoops);
 		
 		JMenu mnView = new JMenu("View");
 		mnView.setMnemonic('w');
@@ -631,12 +638,12 @@ public class BuilderTool extends JFrame {
 							lastSelectedVertex = v;
 							startEdging();
 							
-						} else { // if (v != lastSelectedVertex) { 
+						} else if (v != lastSelectedVertex || isSelected(allowLoopsAction)) { 
 							// "Some references require that multigraphs possess no graph loops" 
 							// -- http://mathworld.wolfram.com/Multigraph.html
 							// This is JGraphT. But only because of this, I cannot disallow loops generally...
-							// Und da man Loops relativ leicht aus der Description rausfiltern (sed mir regex) 
-							// kann, kommt hier erst mal keine Warnung.
+							// Deshalb gibt's eine Option im Graph-Menue, default: not selected.
+							// (Loops kann man relativ leicht aus der Description rausfiltern (sed mit regex).) 
 							
 							EdgeType edgeType = (EdgeType) getCmbEdgeType().getSelectedItem();
 							
@@ -1053,4 +1060,14 @@ public class BuilderTool extends JFrame {
 			endEdging();			
 		}
 	};
+	private class AllowLoopsAction extends AbstractAction {
+		public AllowLoopsAction() {
+			putValue(NAME, "Allow Loops");
+			putValue(SHORT_DESCRIPTION, "Allow loops in the graph");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_L);
+			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 6);
+			setSelected(this, false);
+		}
+		public void actionPerformed(ActionEvent e) { }
+	}
 }
