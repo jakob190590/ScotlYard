@@ -34,11 +34,10 @@ public final class Director {
 			GameGraphBuilder graphBuilder = new GameGraphBuilder();
 			
 			// Nur zum testen, ob sie fehlerlos durchlaufen:
-			BoardGraphBuilder boardBuilder = new BoardGraphBuilder();
 			ToolGraphBuilder toolBuilder = new ToolGraphBuilder();
 			
 			try {
-				construct(args[0], descBuilder, graphBuilder, boardBuilder, toolBuilder);
+				construct(args[0], descBuilder, graphBuilder, toolBuilder);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

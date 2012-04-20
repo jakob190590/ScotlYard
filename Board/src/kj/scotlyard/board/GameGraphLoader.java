@@ -8,7 +8,6 @@ import java.util.Set;
 
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.graphbuilder.builder.BoardGraphBuilder;
 import kj.scotlyard.graphbuilder.builder.Director;
 
 import javax.swing.JComponent;

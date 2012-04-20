@@ -1,4 +1,4 @@
-package kj.scotlyard.graphbuilder.builder;
+package kj.scotlyard.board;
 
 import java.awt.geom.Point2D;
 import java.util.HashSet;
@@ -17,6 +17,8 @@ import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.UndergroundConnection;
+import kj.scotlyard.graphbuilder.builder.AbstractGameGraphBuilder;
+import kj.scotlyard.graphbuilder.builder.GraphBuilder;
 
 public class BoardGraphBuilder extends AbstractGameGraphBuilder implements GraphBuilder {
 	
