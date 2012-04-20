@@ -12,7 +12,7 @@ import kj.scotlyard.graphbuilder.builder.Director;
 
 import javax.swing.JComponent;
 
-public class GameGraphLoader {
+public class BoardGraphLoader {
 
 	private boolean loaded = false;	
 	
@@ -25,7 +25,7 @@ public class GameGraphLoader {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		GameGraphLoader loader = new GameGraphLoader();
+		BoardGraphLoader loader = new BoardGraphLoader();
 		try {
 			loader.load("graph-description", "initial-stations");
 			
