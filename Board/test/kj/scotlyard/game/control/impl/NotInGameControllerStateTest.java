@@ -20,6 +20,7 @@ import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
 import kj.scotlyard.game.model.TheMoveProducer;
+import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
 
@@ -176,9 +177,11 @@ public class NotInGameControllerStateTest {
 		g.getDetectives().retainAll(g.getDetectives().subList(0, 4));
 		
 		// jetzt wird zum ersten mal ernsthaft gestartet:
+		assertEquals(GameStatus.NOT_IN_GAME, c.getStatus());
 		
 		c.start();
 		
+		assertEquals(GameWin.NO, c.getWin());
 		assertEquals(GameStatus.IN_GAME, c.getStatus());
 				
 		assertEquals(g.getPlayers().size(), g.getMoves().size());
