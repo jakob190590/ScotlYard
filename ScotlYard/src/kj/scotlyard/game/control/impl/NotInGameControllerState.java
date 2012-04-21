@@ -1,6 +1,7 @@
 package kj.scotlyard.game.control.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -308,10 +309,12 @@ class NotInGameControllerState extends GameControllerState {
 	@Override
 	public void start() {
 		
-		GameInitPolicy initPolicy = rules.getGameInitPolicy();
-		TurnPolicy turnPolicy = rules.getTurnPolicy();
+		final GameInitPolicy initPolicy = rules.getGameInitPolicy();
+		final TurnPolicy turnPolicy = rules.getTurnPolicy();
 		
-		TheMoveProducer moveProducer = TheMoveProducer.createInstance();
+		final Set<StationVertex> initialStations = getController().getInitialPositions();
+
+		final TheMoveProducer moveProducer = TheMoveProducer.createInstance();
 				
 		if (!game.getMoves().isEmpty()) {
 			throw new IllegalStateException("Cannot start game, while Move list is not cleared. Call newGame and try again.");
@@ -340,7 +343,7 @@ class NotInGameControllerState extends GameControllerState {
 			game.setCurrentPlayer(player);
 			game.setItems(player, initPolicy.createItemSet(game, player));
 			
-			StationVertex initStation = initPolicy.suggestInitialStation(game, gameGraph, getController().getInitialPositions(), player);
+			StationVertex initStation = initPolicy.suggestInitialStation(game, gameGraph, initialStations, player);
 			Move initMove = moveProducer.createInitialMove(player, initStation);
 			game.getMoves().add(initMove);
 		}
