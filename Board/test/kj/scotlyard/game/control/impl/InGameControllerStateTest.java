@@ -11,12 +11,15 @@ import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.TheGame;
 import kj.scotlyard.game.util.MoveProducer;
 import kj.scotlyard.game.rules.GameWin;
+import kj.scotlyard.game.rules.GameWinPolicy;
 import kj.scotlyard.game.rules.Rules;
+import kj.scotlyard.game.rules.TheGameWinPolicy;
 import kj.scotlyard.game.rules.TheRules;
 
 import org.junit.Before;
@@ -178,11 +181,23 @@ public class InGameControllerStateTest {
 
 	@Test
 	public final void testMove() {
-		Move m = mp.createNextBestSingleMove(g, gg);
-		try {
+		GameWinPolicy winPolicy = new TheGameWinPolicy();
+		
+		for (int i = 0; i < 100; i++) {
+			Move m = mp.createNextBestSingleMove(g, gg);
+			
 			c.move(m);
-			fail("no excption");
-		} catch (IllegalStateException e) {			
+			
+			assertEquals(m, g.getMoves().get(GameState.LAST_MOVE));
+			
+			// TODO sicherstellen, dass tickets richtig weitergegeben wurden
+			
+			GameWin win = winPolicy.isGameWon(g, gg); 
+			if (win != GameWin.NO) {
+				System.out.println(win);
+				assertEquals(GameStatus.NOT_IN_GAME, c.getStatus());
+				break;
+			}			
 		}
 	}
 
