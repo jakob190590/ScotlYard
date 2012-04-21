@@ -14,17 +14,17 @@ public class TheTurnPolicy implements TurnPolicy {
 	@Override
 	public Player getNextPlayer(GameState gameState, GameGraph gameGraph) {
 		
-		List<Player> players = gameState.getPlayers();
-		Player player = gameState.getCurrentPlayer();
-		
 		// Zu Spielbeginn
-		if (player == null) { // oder getMoves().isEmpty();
+		if (gameState.getMoves().isEmpty()) { // oder (player == null) -- nein, weil wenn current player unter dem spiel null is, muss es die exception unten geben!
 			return gameState.getMrX();
 		}
 		
+		List<Player> players = gameState.getPlayers();
+		Player player = gameState.getCurrentPlayer();
+		
 		boolean found = false;
 		for (Player p : players) {
-			if (found && movePolicy.canMove(gameState, gameGraph, p)) {
+			if (found && (gameState.getLastMove(p) == null || movePolicy.canMove(gameState, gameGraph, p))) {
 				return p;
 			}
 			
@@ -34,7 +34,8 @@ public class TheTurnPolicy implements TurnPolicy {
 		}
 		
 		if (found) {
-			// Current Player gefunden, aber alle folgenden Detectives koennen nicht ziehen
+			// Current Player gefunden, aber alle folgenden Detectives 
+			// koennen nicht ziehen, oder er der letzte der runde war
 			// -> dann ist wieder MrX (der Erste) dran.
 			return gameState.getMrX();
 		} else {
@@ -46,17 +47,17 @@ public class TheTurnPolicy implements TurnPolicy {
 	@Override
 	public int getNextRoundNumber(GameState gameState, GameGraph gameGraph) {
 
-		List<Player> players = gameState.getPlayers();
-		Player player = gameState.getCurrentPlayer();
-		
 		// Zu Spielbeginn
 		if (gameState.getMoves().isEmpty()) {
 			return GameState.INITIAL_ROUND_NUMBER;
 		}
 		
+		List<Player> players = gameState.getPlayers();
+		Player player = gameState.getCurrentPlayer();
+		
 		boolean found = false;
 		for (Player p : players) {
-			if (found && movePolicy.canMove(gameState, gameGraph, p)) {
+			if (found && (gameState.getLastMove(p) == null || movePolicy.canMove(gameState, gameGraph, p))) {
 				return gameState.getCurrentRoundNumber();
 			}
 			
@@ -66,7 +67,8 @@ public class TheTurnPolicy implements TurnPolicy {
 		}
 		
 		if (found) {
-			// Current Player gefunden, aber alle folgenden Detectives koennen nicht ziehen
+			// Current Player gefunden, aber alle folgenden Detectives 
+			// koennen nicht ziehen, oder er der letzte der runde war
 			// -> dann ist wieder MrX (der Erste) dran.
 			return gameState.getCurrentRoundNumber() + 1;
 		} else {
