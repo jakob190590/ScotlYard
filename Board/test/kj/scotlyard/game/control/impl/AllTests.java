@@ -1,12 +1,12 @@
-package kj.scotlyard.game;
+package kj.scotlyard.game.control.impl;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ kj.scotlyard.game.model.AllTests.class, kj.scotlyard.game.rules.AllTests.class, 
-		kj.scotlyard.game.util.AllTests.class })
+@SuiteClasses({ InGameControllerStateTest.class,
+		NotInGameControllerStateTest.class, TheGameControllerTest.class })
 public class AllTests {
 
 }

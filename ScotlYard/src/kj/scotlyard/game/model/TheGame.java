@@ -310,7 +310,9 @@ public class TheGame extends AbstractGameState implements Game {
 	@Override
 	public List<Player> getPlayers() {
 		List<Player> list = new LinkedList<>();
-		list.add(mrX);
+		if (mrX != null) {
+			list.add(mrX);
+		}
 		list.addAll(detectives);		
 		return Collections.unmodifiableList(list);
 	}
