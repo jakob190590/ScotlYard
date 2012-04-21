@@ -19,7 +19,6 @@ import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
-import kj.scotlyard.game.model.TheMoveProducer;
 import kj.scotlyard.game.model.item.BusTicket;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.TaxiTicket;
@@ -35,7 +34,7 @@ public class GameStateExtensionTest {
 	GameStateExtension ext;
 	GameGraph gg = null;
 	
-	TheMoveProducer prod = TheMoveProducer.createInstance();
+	MoveProducer prod = MoveProducer.createInstance();
 	
 	
 	MrXPlayer mrX;

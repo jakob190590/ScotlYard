@@ -15,11 +15,11 @@ import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.TheMoveProducer;
 import kj.scotlyard.game.rules.GameInitPolicy;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TurnPolicy;
+import kj.scotlyard.game.util.MoveProducer;
 
 class NotInGameControllerState extends GameControllerState {
 	
@@ -311,7 +311,7 @@ class NotInGameControllerState extends GameControllerState {
 		GameInitPolicy initPolicy = rules.getGameInitPolicy();
 		TurnPolicy turnPolicy = rules.getTurnPolicy();
 		
-		TheMoveProducer moveProducer = TheMoveProducer.createInstance();
+		MoveProducer moveProducer = MoveProducer.createInstance();
 				
 		if (!game.getMoves().isEmpty()) {
 			throw new IllegalStateException("Cannot start game, while Move list is not cleared. Call newGame and try again.");

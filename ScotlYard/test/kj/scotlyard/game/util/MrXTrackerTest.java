@@ -14,7 +14,6 @@ import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
-import kj.scotlyard.game.model.TheMoveProducer;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.rules.Rules;
@@ -31,7 +30,7 @@ public class MrXTrackerTest {
 	GameStateExtension ext;
 	MrXTracker tr;
 	
-	TheMoveProducer prod = TheMoveProducer.createInstance();
+	MoveProducer prod = MoveProducer.createInstance();
 	
 	
 	MrXPlayer mrX;

@@ -18,9 +18,9 @@ import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
-import kj.scotlyard.game.model.TheMoveProducer;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
+import kj.scotlyard.game.util.MoveProducer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class NotInGameControllerStateTest {
 	GameControllerState cs; // controller state
 	Rules r;
 	
-	TheMoveProducer mp; // move producer
+	MoveProducer mp; // move producer
 	
 	@Before
 	public void setUp() throws Exception {
@@ -53,7 +53,7 @@ public class NotInGameControllerStateTest {
 		c = new TheGameController(g, gg, initialStations, r);
 		cs = new NotInGameControllerState(c);
 		
-		mp = TheMoveProducer.createInstance();
+		mp = MoveProducer.createInstance();
 		
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));

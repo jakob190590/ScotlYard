@@ -1,10 +1,14 @@
-package kj.scotlyard.game.model;
+package kj.scotlyard.game.util;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.model.DefaultMove;
+import kj.scotlyard.game.model.GameState;
+import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.Ticket;
 
@@ -13,19 +17,19 @@ import kj.scotlyard.game.model.item.Ticket;
 //    (auch wenn's in Java die BorderFactory gibt)
 // -  Kein Builder im Sinne des Builder Pattern
 // -> Deswegen was eigenes: Producer
-public class TheMoveProducer {
+public class MoveProducer {
 	
 	private List<Move> subMoves = new LinkedList<>();
 	
-	private TheMoveProducer() { }
+	private MoveProducer() { }
 
 	/**
 	 * Creates and returns a new instance of TheMoveProducer.
 	 * At least every thread should have it's own Producer.
 	 * @return a new instance to work with
 	 */
-	public static TheMoveProducer createInstance() {
-		return new TheMoveProducer(); 
+	public static MoveProducer createInstance() {
+		return new MoveProducer(); 
 	}	
 	
 	

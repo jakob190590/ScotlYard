@@ -11,9 +11,9 @@ import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
-import kj.scotlyard.game.model.TheMoveProducer;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.TaxiTicket;
+import kj.scotlyard.game.util.MoveProducer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class TheGameStateAccessPolicyTest {
 	Move[] ms = new Move[100];
 	Move m1, m2;
 	
-	TheMoveProducer producer = TheMoveProducer.createInstance();
+	MoveProducer producer = MoveProducer.createInstance();
 
 	@Before
 	public void setUp() throws Exception {
