@@ -59,7 +59,7 @@ public class TheGameWinPolicy implements GameWinPolicy {
 			
 			// mrX umzingelt
 			if (gameState.getCurrentPlayer() == mrX 
-					&& movePolicy.canMove(gameState, gameGraph, mrX)) {
+					&& !movePolicy.canMove(gameState, gameGraph, mrX)) {
 				
 				// d.h. wenn jetzt wieder mrX dran ist,
 				// er aber umzingelt ist...
