@@ -4,21 +4,21 @@ import kj.scotlyard.game.model.Player;
 
 public class Turn {
 
-	private Player currentPlayer;
+	private Player player;
 	
-	private int currentRoundNumber;
+	private int roundNumber;
 
-	public Turn(Player currentPlayer, int currentRoundNumber) {
-		this.currentPlayer = currentPlayer;
-		this.currentRoundNumber = currentRoundNumber;
+	public Turn(Player player, int roundNumber) {
+		this.player = player;
+		this.roundNumber = roundNumber;
 	}
 
-	public Player getCurrentPlayer() {
-		return currentPlayer;
+	public Player getPlayer() {
+		return player;
 	}
 
-	public int getCurrentRoundNumber() {
-		return currentRoundNumber;
+	public int getRoundNumber() {
+		return roundNumber;
 	}
 	
 }
