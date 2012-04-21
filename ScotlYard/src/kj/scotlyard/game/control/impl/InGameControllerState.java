@@ -19,6 +19,7 @@ import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.MovePolicy;
 import kj.scotlyard.game.rules.Rules;
+import kj.scotlyard.game.rules.Turn;
 import kj.scotlyard.game.util.GameStateExtension;
 
 class InGameControllerState extends GameControllerState {
@@ -215,11 +216,9 @@ class InGameControllerState extends GameControllerState {
 		UndoableEdit itemPassEdit = passItems(game, movePolicy, move);
 		
 		// Turn/Current sachen nach Move aktualisieren
-		Player nextPlayer = rules.getTurnPolicy().getNextPlayer(game, gameGraph);
-		int nextRoundNumber = rules.getTurnPolicy().getNextRoundNumber(game, gameGraph);
-		
-		game.setCurrentPlayer(nextPlayer);
-		game.setCurrentRoundNumber(nextRoundNumber);
+		Turn turn = rules.getTurnPolicy().getNextTurn(game, gameGraph);		
+		game.setCurrentPlayer(turn.getPlayer());
+		game.setCurrentRoundNumber(turn.getRoundNumber());
 		
 		// GameWin ermitteln
 		GameWin win = rules.getGameWinPolicy().isGameWon(game, gameGraph);

@@ -20,6 +20,7 @@ import kj.scotlyard.game.model.TheMoveProducer;
 import kj.scotlyard.game.rules.GameInitPolicy;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
+import kj.scotlyard.game.rules.Turn;
 import kj.scotlyard.game.rules.TurnPolicy;
 
 class NotInGameControllerState extends GameControllerState {
@@ -335,11 +336,15 @@ class NotInGameControllerState extends GameControllerState {
 		
 		// Valid GameState -> proceed with initialization	
 		
-		final int initRoundNumber = turnPolicy.getNextRoundNumber(game, gameGraph);
+		Turn turn = turnPolicy.getNextTurn(game, gameGraph);
+		
+		final int initRoundNumber = turn.getRoundNumber();
 		game.setCurrentRoundNumber(initRoundNumber); // should be INITIAL_ROUND_NUMBER
 		
-		while (turnPolicy.getNextRoundNumber(game, gameGraph) == initRoundNumber) {
-			Player player = turnPolicy.getNextPlayer(game, gameGraph);
+		while ((turn = turnPolicy.getNextTurn(game, gameGraph))
+				.getRoundNumber() == initRoundNumber) {
+			
+			Player player = turn.getPlayer();
 			game.setCurrentPlayer(player);
 			game.setItems(player, initPolicy.createItemSet(game, player));
 			
@@ -347,9 +352,9 @@ class NotInGameControllerState extends GameControllerState {
 			Move initMove = moveProducer.createInitialMove(player, initStation);
 			game.getMoves().add(initMove);
 		}
-		
-		game.setCurrentRoundNumber(turnPolicy.getNextRoundNumber(game, gameGraph));
-		game.setCurrentPlayer(turnPolicy.getNextPlayer(game, gameGraph));
+				
+		game.setCurrentRoundNumber(turn.getRoundNumber());
+		game.setCurrentPlayer(turn.getPlayer());
 
 		
 		// Grundsaetzlich kann ein Spiel auch sofort entschieden sein.
