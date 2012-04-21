@@ -214,4 +214,5 @@ public class NotInGameControllerStateTest {
 		} catch (IllegalStateException e) {			
 		}
 	}
+
 }
