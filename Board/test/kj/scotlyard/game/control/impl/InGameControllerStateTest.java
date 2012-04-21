@@ -3,23 +3,18 @@ package kj.scotlyard.game.control.impl;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import kj.scotlyard.board.BoardGraphLoader;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.model.DefaultMove;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
-import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
-import kj.scotlyard.game.model.TheMoveProducer;
+import kj.scotlyard.game.util.MoveProducer;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
@@ -49,7 +44,7 @@ public class InGameControllerStateTest {
 		initialStations = loader.getInitialStations();
 	}
 	
-	final TheMoveProducer mp = TheMoveProducer.createInstance(); // move producer
+	final MoveProducer mp = MoveProducer.createInstance(); // move producer
 	
 	final Rules r = new TheRules();
 	
