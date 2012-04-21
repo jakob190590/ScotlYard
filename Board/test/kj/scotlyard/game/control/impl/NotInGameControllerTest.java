@@ -34,7 +34,7 @@ import org.junit.Test;
  * @author jakob190590
  *
  */
-public class NotInGameControllerStateTest {
+public class NotInGameControllerTest {
 
 	final BoardGraphLoader loader = new BoardGraphLoader();
 	final Set<StationVertex> initialStations;

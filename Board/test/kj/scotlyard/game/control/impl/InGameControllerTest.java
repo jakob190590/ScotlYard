@@ -32,7 +32,7 @@ import org.junit.Test;
  * @author jakob190590
  *
  */
-public class InGameControllerStateTest {
+public class InGameControllerTest {
 
 	final BoardGraphLoader loader = new BoardGraphLoader();
 	final Set<StationVertex> initialStations;
