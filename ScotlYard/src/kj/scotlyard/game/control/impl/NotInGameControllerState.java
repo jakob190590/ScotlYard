@@ -1,6 +1,7 @@
 package kj.scotlyard.game.control.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -18,6 +19,7 @@ import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.rules.GameInitPolicy;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
+import kj.scotlyard.game.rules.Turn;
 import kj.scotlyard.game.rules.TurnPolicy;
 import kj.scotlyard.game.util.MoveProducer;
 
@@ -308,10 +310,12 @@ class NotInGameControllerState extends GameControllerState {
 	@Override
 	public void start() {
 		
-		GameInitPolicy initPolicy = rules.getGameInitPolicy();
-		TurnPolicy turnPolicy = rules.getTurnPolicy();
+		final GameInitPolicy initPolicy = rules.getGameInitPolicy();
+		final TurnPolicy turnPolicy = rules.getTurnPolicy();
 		
-		MoveProducer moveProducer = MoveProducer.createInstance();
+		final Set<StationVertex> initialStations = getController().getInitialPositions();
+
+		final MoveProducer moveProducer = MoveProducer.createInstance();
 				
 		if (!game.getMoves().isEmpty()) {
 			throw new IllegalStateException("Cannot start game, while Move list is not cleared. Call newGame and try again.");
@@ -332,21 +336,25 @@ class NotInGameControllerState extends GameControllerState {
 		
 		// Valid GameState -> proceed with initialization	
 		
-		final int initRoundNumber = turnPolicy.getNextRoundNumber(game, gameGraph);
+		Turn turn = turnPolicy.getNextTurn(game, gameGraph);
+		
+		final int initRoundNumber = turn.getRoundNumber();
 		game.setCurrentRoundNumber(initRoundNumber); // should be INITIAL_ROUND_NUMBER
 		
-		while (turnPolicy.getNextRoundNumber(game, gameGraph) == initRoundNumber) {
-			Player player = turnPolicy.getNextPlayer(game, gameGraph);
+		while ((turn = turnPolicy.getNextTurn(game, gameGraph))
+				.getRoundNumber() == initRoundNumber) {
+			
+			Player player = turn.getPlayer();
 			game.setCurrentPlayer(player);
 			game.setItems(player, initPolicy.createItemSet(game, player));
 			
-			StationVertex initStation = initPolicy.suggestInitialStation(game, gameGraph, getController().getInitialPositions(), player);
+			StationVertex initStation = initPolicy.suggestInitialStation(game, gameGraph, initialStations, player);
 			Move initMove = moveProducer.createInitialMove(player, initStation);
 			game.getMoves().add(initMove);
 		}
-		
-		game.setCurrentRoundNumber(turnPolicy.getNextRoundNumber(game, gameGraph));
-		game.setCurrentPlayer(turnPolicy.getNextPlayer(game, gameGraph));
+				
+		game.setCurrentRoundNumber(turn.getRoundNumber());
+		game.setCurrentPlayer(turn.getPlayer());
 
 		
 		// Grundsaetzlich kann ein Spiel auch sofort entschieden sein.

@@ -104,7 +104,7 @@ public class TheGameController extends GameController {
 		return game;
 	}
 	
-	protected Set<StationVertex> getInitialPositions() { // TODO public or protected?
+	protected Set<StationVertex> getInitialPositions() { // TODO public or protected? wenn getgraph public is...
 		return initialPositions;
 	}
 

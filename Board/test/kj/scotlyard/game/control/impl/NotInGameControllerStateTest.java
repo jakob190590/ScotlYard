@@ -2,11 +2,12 @@ package kj.scotlyard.game.control.impl;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import kj.scotlyard.board.BoardGraphLoader;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
@@ -18,9 +19,10 @@ import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
+import kj.scotlyard.game.util.MoveProducer;
+import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
-import kj.scotlyard.game.util.MoveProducer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,26 +36,31 @@ import org.junit.Test;
  */
 public class NotInGameControllerStateTest {
 
-	Set<StationVertex> initialStations;
-	GameGraph gg;
+	final BoardGraphLoader loader = new BoardGraphLoader();
+	final Set<StationVertex> initialStations;
+	final GameGraph gg;
+	{
+		try {
+			loader.load("graph-description", "initial-stations");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}				
+		gg = loader.getGameGraph();
+		initialStations = loader.getInitialStations();
+	}
+	
+	final MoveProducer mp = MoveProducer.createInstance(); // move producer
+	
+	final Rules r = new TheRules();
+	
 	Game g;
 	TheGameController c; // controller
-	GameControllerState cs; // controller state
-	Rules r;
-	
-	MoveProducer mp; // move producer
 	
 	@Before
 	public void setUp() throws Exception {
 		
-		initialStations = new HashSet<>();
-		
-		r = new TheRules();
 		g = new TheGame();
 		c = new TheGameController(g, gg, initialStations, r);
-		cs = new NotInGameControllerState(c);
-		
-		mp = MoveProducer.createInstance();
 		
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
@@ -73,7 +80,7 @@ public class NotInGameControllerStateTest {
 
 	@Test
 	public final void testNewGame() {
-		cs.newGame();
+		c.newGame();
 		assertTrue(g.getMoves().isEmpty());
 	}
 
@@ -88,7 +95,7 @@ public class NotInGameControllerStateTest {
 	@Test
 	public final void testNewMrX() {
 		MrXPlayer p = g.getMrX();
-		cs.newMrX();
+		c.newMrX();
 		assertFalse(g.getMrX().equals(p));
 		assertFalse(g.getMrX().equals(null));
 	}
@@ -118,11 +125,11 @@ public class NotInGameControllerStateTest {
 			int i = g.getDetectives().indexOf(d);
 			while (i > 0) {
 				i--;
-				cs.shiftUpDetective(d);
+				c.shiftUpDetective(d);
 				assertEquals(i, g.getDetectives().indexOf(d));
 			}
-			cs.shiftUpDetective(d); // nur um zu sehen, dass es keine exception gibt
-			cs.shiftUpDetective(d);
+			c.shiftUpDetective(d); // nur um zu sehen, dass es keine exception gibt
+			c.shiftUpDetective(d);
 		}
 	}
 
@@ -133,11 +140,11 @@ public class NotInGameControllerStateTest {
 			int i = g.getDetectives().indexOf(d);
 			while (i < (g.getDetectives().size() - 1)) {
 				i++;
-				cs.shiftDownDetective(d);
+				c.shiftDownDetective(d);
 				assertEquals(i, g.getDetectives().indexOf(d));
 			}
-			cs.shiftDownDetective(d); // nur um zu sehen, dass es keine exception gibt
-			cs.shiftDownDetective(d);
+			c.shiftDownDetective(d); // nur um zu sehen, dass es keine exception gibt
+			c.shiftDownDetective(d);
 		}
 	}
 
@@ -145,14 +152,14 @@ public class NotInGameControllerStateTest {
 	public final void testStart() {
 		
 		try {
-			cs.start();
+			c.start();
 			fail("no exception");
 		} catch (IllegalStateException e) { }
 		g.getMoves().clear();		
 		
 		g.setMrX(null);		
 		try {
-			cs.start();
+			c.start();
 			fail("no exception");
 		} catch (IllegalStateException e) { }
 		g.setMrX(new MrXPlayer());		
@@ -162,7 +169,7 @@ public class NotInGameControllerStateTest {
 			g.getDetectives().add(new DetectivePlayer());
 			if (i < 3 || i > 5)
 				try {
-					cs.start();
+					c.start();
 					fail("no exception");
 				} catch (IllegalStateException e) { }			
 		}
@@ -170,14 +177,12 @@ public class NotInGameControllerStateTest {
 		g.getDetectives().retainAll(g.getDetectives().subList(0, 4));
 		
 		// jetzt wird zum ersten mal ernsthaft gestartet:
+		assertEquals(GameStatus.NOT_IN_GAME, c.getStatus());
 		
-		try {
-			cs.start();
-			fail("no exception");
-		} catch (SecurityException e) {			
-			// die muss kommen, weilcs den state von TheGameController nicht aendern darf
-			e.printStackTrace();
-		}
+		c.start();
+		
+		assertEquals(GameWin.NO, c.getWin());
+		assertEquals(GameStatus.IN_GAME, c.getStatus());
 				
 		assertEquals(g.getPlayers().size(), g.getMoves().size());
 		int i = 0;
@@ -208,11 +213,6 @@ public class NotInGameControllerStateTest {
 			fail("no excption");
 		} catch (IllegalStateException e) {			
 		}
-	}
-
-	@Test
-	public final void testGetController() {
-		assertEquals(cs.getController(), c);
 	}
 
 }

@@ -1,5 +1,6 @@
 package kj.scotlyard.board;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
@@ -57,8 +58,8 @@ public class BoardGraphLoader {
 		
 		
 		initialStations = new HashSet<>();
-		Scanner sc = new Scanner(initialStationsFilename);
-		while (sc.hasNextInt()) {
+		Scanner sc = new Scanner(new File(initialStationsFilename));
+		while (sc.hasNext()) {
 			StationVertex station = numberStationMap.get(sc.nextInt());
 			if (station == null) {
 				throw new RuntimeException("Initial Stations file contains numbers, that are not in the graph."); // TODO
