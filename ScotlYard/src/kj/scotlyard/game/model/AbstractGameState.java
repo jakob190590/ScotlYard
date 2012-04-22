@@ -202,13 +202,4 @@ public abstract class AbstractGameState implements GameState {
 	public void removeMoveListener(MoveListener listener) {
 		moveListeners.remove(listener);
 	}
-
-	
-	/**
-	 * Fuer alle, die sich von AbstractGameState ableiten,
-	 * aber zu faul sind, <tt>copy</tt> zu implementieren. 
-	 */
-	public GameState copy() {
-		throw new UnsupportedOperationException("This subclass of GameState do not support copying!");
-	}
 }
