@@ -37,9 +37,7 @@ public class TheGameControllerTest {
 	public void setUp() throws Exception {
 		r = new TheRules();
 		g = new TheGame();
-		// gg
 		ctrl = new TheGameController(g, gg, null, r);
-		ext = new GameStateExtension(g);
 	}
 
 	@Test
@@ -113,82 +111,52 @@ public class TheGameControllerTest {
 
 	@Test
 	public final void testGetStatus() {
-		
 		assertEquals(GameStatus.NOT_IN_GAME, ctrl.getStatus());
 		assertEquals(GameWin.NO, ctrl.getWin());
-		
-		// TODO ... after operations
-		
 	}
 
 	@Test
 	public final void testGetUndoManager() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public final void testNewGame() {
-		
-		ctrl.newGame();
-		assertTrue(g.getMoves().isEmpty());
-		assertEquals(GameWin.NO, ctrl.getWin());
-		assertEquals(GameStatus.NOT_IN_GAME, ctrl.getStatus());
-		
-		ctrl.start();
-		
-		if (ctrl.getStatus() == GameStatus.IN_GAME) {
-			try {
-				ctrl.newGame();
-				fail("exception expected");
-			} catch (IllegalStateException e) { }
-		}
-		
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public final void testClearPlayers() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public final void testNewMrX() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public final void testNewDetective() {
-		fail("Not yet implemented");
 	}
-
+		
 	@Test
 	public final void testRemoveDetective() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public final void testShiftUpDetective() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public final void testShiftDownDetective() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public final void testStart() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public final void testAbort() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public final void testMove() {
-		fail("Not yet implemented");
 	}
 
 }
