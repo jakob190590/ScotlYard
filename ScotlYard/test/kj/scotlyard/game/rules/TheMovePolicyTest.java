@@ -716,5 +716,10 @@ public class TheMovePolicyTest {
 		
 	}
 	
+	@Test
+	public void testCanMove() {
+		fail("not yet implemented");
+	}
+	
 
 }
