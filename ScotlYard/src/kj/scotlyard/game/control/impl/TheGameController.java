@@ -2,7 +2,12 @@ package kj.scotlyard.game.control.impl;
 
 import java.util.Set;
 
+import javax.swing.undo.AbstractUndoableEdit;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoManager;
+
 import kj.scotlyard.game.ai.detective.DetectiveAi;
 import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.GameStateRequester;
@@ -12,11 +17,89 @@ import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.DefaultGameState;
 import kj.scotlyard.game.model.Game;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 
 public class TheGameController extends GameController {
+	
+	@SuppressWarnings("serial")
+	protected class MoveEdit extends CompoundEdit {
+
+		private Player oldPlayer;
+		
+		private int oldRoundNumber;
+		
+		// Werden beim Undo ermittelt:
+		
+		private int roundNumber;
+		
+		private Player player;
+		
+		private Move move;
+		
+		private GameStatus status;
+		
+		private GameWin win;
+
+		public MoveEdit(Player oldPlayer, int oldRoundNumber) {
+			this.oldPlayer = oldPlayer;
+			this.oldRoundNumber = oldRoundNumber;
+		}
+
+		@Override
+		public void undo() throws CannotUndoException {
+			super.undo();
+			
+			player = game.getCurrentPlayer();
+			roundNumber = game.getCurrentRoundNumber();
+			
+			status = getStatus();
+			win = getWin();
+			
+			move = game.getMoves().remove(GameState.LAST_MOVE);
+			
+			game.setCurrentPlayer(oldPlayer);
+			game.setCurrentRoundNumber(oldRoundNumber);
+			
+			// falls es der game-winning move war: zustand wieder auf IN_GAME setzen
+			if (status == GameStatus.NOT_IN_GAME)
+				setState(notInGame, GameStatus.IN_GAME, GameWin.NO);
+		}
+
+		@Override
+		public void redo() throws CannotRedoException {
+			super.redo();
+			
+			game.getMoves().add(move);
+			
+			game.setCurrentPlayer(player);
+			game.setCurrentRoundNumber(roundNumber);
+			
+			setState(inGame, status, win);
+		}
+		
+	}
+	
+	@SuppressWarnings("serial")
+	protected class AbortEdit extends AbstractUndoableEdit {
+		
+		@Override
+		public void undo() throws CannotUndoException {
+			super.undo();
+			setState(notInGame, GameStatus.IN_GAME, GameWin.NO);
+		}
+		
+		@Override
+		public void redo() throws CannotRedoException {
+			super.redo();
+			setState(inGame, GameStatus.NOT_IN_GAME, GameWin.NO);
+		}
+		
+	}
+
 
 	private final Game game;
 	

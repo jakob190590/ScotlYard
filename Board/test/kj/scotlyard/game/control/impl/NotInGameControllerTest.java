@@ -15,6 +15,7 @@ import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DefaultMove;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
@@ -34,7 +35,7 @@ import org.junit.Test;
  * @author jakob190590
  *
  */
-public class NotInGameControllerStateTest {
+public class NotInGameControllerTest {
 
 	final BoardGraphLoader loader = new BoardGraphLoader();
 	final Set<StationVertex> initialStations;
@@ -80,13 +81,31 @@ public class NotInGameControllerStateTest {
 
 	@Test
 	public final void testNewGame() {
+		List<Move> ms = new ArrayList<>(g.getMoves());
+		
 		c.newGame();
+		assertTrue(g.getMoves().isEmpty());
+		
+		c.getUndoManager().undo();
+		assertEquals(ms, g.getMoves());
+		
+		c.getUndoManager().redo();
 		assertTrue(g.getMoves().isEmpty());
 	}
 
 	@Test
 	public final void testClearPlayers() {
+		List<Player> ps = new ArrayList<>(g.getPlayers());
+		
 		c.clearPlayers();
+		assertEquals(g.getMrX(), null);
+		assertTrue(g.getDetectives().isEmpty());
+		assertTrue(g.getPlayers().isEmpty());
+		
+		c.getUndoManager().undo();
+		assertEquals(ps, g.getPlayers());
+		
+		c.getUndoManager().redo();
 		assertEquals(g.getMrX(), null);
 		assertTrue(g.getDetectives().isEmpty());
 		assertTrue(g.getPlayers().isEmpty());
@@ -94,27 +113,48 @@ public class NotInGameControllerStateTest {
 
 	@Test
 	public final void testNewMrX() {
-		MrXPlayer p = g.getMrX();
+		MrXPlayer p1 = g.getMrX();
 		c.newMrX();
-		assertFalse(g.getMrX().equals(p));
-		assertFalse(g.getMrX().equals(null));
+		MrXPlayer p2 = g.getMrX();
+		assertFalse(p2.equals(p1));
+		assertFalse(p2.equals(null));
+		
+		c.getUndoManager().undo();
+		assertEquals(p1, g.getMrX());
+		
+		c.getUndoManager().redo();
+		assertEquals(p2, g.getMrX());
 	}
 
 	@Test
 	public final void testNewDetective() {
-		List<Player> ps = new ArrayList<>(g.getPlayers());
+		List<Player> ps1 = new ArrayList<>(g.getPlayers());
 		c.newDetective();
-		assertEquals(g.getPlayers().size(), ps.size() + 1);
-		assertEquals(g.getPlayers().subList(0, ps.size()), ps);
+		List<Player> ps2 = new ArrayList<>(g.getPlayers());
+		assertEquals(ps2.size(), ps1.size() + 1);
+		assertEquals(ps2.subList(0, ps1.size()), ps1);
 		assertFalse(g.getDetectives().get(g.getDetectives().size() - 1).equals(null));
+		
+		c.getUndoManager().undo();
+		assertEquals(ps1, g.getPlayers());
+		
+		c.getUndoManager().redo();
+		assertEquals(ps2, g.getPlayers());
 	}
 
 	@Test
 	public final void testRemoveDetective() {
 		for (DetectivePlayer d : g.getDetectives()) {
+			int i = g.getPlayers().indexOf(d);
 			c.removeDetective(d);
 			assertFalse(g.getDetectives().contains(d));
 			assertFalse(g.getPlayers().contains(d));
+			
+			c.getUndoManager().undo();
+			assertEquals(d, g.getPlayers().get(i));
+			
+			c.getUndoManager().redo();
+			assertFalse(g.getDetectives().contains(d));
 		}
 	}
 
@@ -124,12 +164,26 @@ public class NotInGameControllerStateTest {
 		for (DetectivePlayer d : g.getDetectives()) {
 			int i = g.getDetectives().indexOf(d);
 			while (i > 0) {
+				GameState gs1 = g.copy();
+				
 				i--;
 				c.shiftUpDetective(d);
 				assertEquals(i, g.getDetectives().indexOf(d));
+				
+				GameState gs2 = g.copy();
+				if (!gs1.getDetectives().equals(gs2.getDetectives())) {
+					
+					c.getUndoManager().undo();
+					assertEquals(gs1.getDetectives(), g.getDetectives());
+					
+					c.getUndoManager().redo();
+					assertEquals(gs2.getDetectives(), g.getDetectives());
+				}
+				
 			}
 			c.shiftUpDetective(d); // nur um zu sehen, dass es keine exception gibt
-			c.shiftUpDetective(d);
+			c.shiftUpDetective(d);			
+			
 		}
 	}
 
@@ -139,9 +193,22 @@ public class NotInGameControllerStateTest {
 		for (DetectivePlayer d : g.getDetectives()) {
 			int i = g.getDetectives().indexOf(d);
 			while (i < (g.getDetectives().size() - 1)) {
+				GameState gs1 = g.copy();
+				
 				i++;
 				c.shiftDownDetective(d);
 				assertEquals(i, g.getDetectives().indexOf(d));
+				
+				GameState gs2 = g.copy();
+				if (!gs1.getDetectives().equals(gs2.getDetectives())) {
+					
+					c.getUndoManager().undo();
+					assertEquals(gs1.getDetectives(), g.getDetectives());
+					
+					c.getUndoManager().redo();
+					assertEquals(gs2.getDetectives(), g.getDetectives());
+				}
+				
 			}
 			c.shiftDownDetective(d); // nur um zu sehen, dass es keine exception gibt
 			c.shiftDownDetective(d);
@@ -194,6 +261,9 @@ public class NotInGameControllerStateTest {
 		
 		assertEquals(1, g.getCurrentRoundNumber());
 		assertEquals(g.getMrX(), g.getCurrentPlayer());
+		
+		
+		assertEquals(false, c.getUndoManager().canUndo());
 		
 	}
 

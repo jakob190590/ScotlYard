@@ -109,20 +109,16 @@ public class MoveProducer {
 		
 		MovePolicy movePolicy = new TheMovePolicy();
 		
-		Move last = gameState.getMoves().get(GameState.LAST_MOVE);
+		// Wir gehen von einem konsistenten GameState aus
+		Move last = gameState.getLastMove(gameState.getCurrentPlayer());
 		Move m = new DefaultMove(gameState.getCurrentPlayer(), gameState.getCurrentRoundNumber(), 
 				last.getMoveNumber() + 1, Move.NO_MOVE_INDEX, null, null, null);
 		
 		StationVertex station = last.getStation();
 		for (ConnectionEdge e : station.getEdges()) {
-			boolean hasTicket = false;
-			for (Item i : gameState.getItems(last.getPlayer())) {
+			for (Item i : gameState.getItems(gameState.getCurrentPlayer())) {
 				if (i instanceof Ticket && movePolicy.isTicketValidForConnection((Ticket) i, e)) {
-					m.setItem(i);
-					hasTicket = true;
-					break;
-				}
-				if (hasTicket) {
+					
 					StationVertex oStation = e.getOther(station);
 					boolean vacant = true;
 					for (Player p : gameState.getPlayers()) {
@@ -132,6 +128,7 @@ public class MoveProducer {
 						}
 					}
 					if (vacant) {
+						m.setItem(i);
 						m.setConnection(e);
 						m.setStation(oStation);
 						return m;

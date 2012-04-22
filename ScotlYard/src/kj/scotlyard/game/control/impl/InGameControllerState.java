@@ -1,18 +1,18 @@
 package kj.scotlyard.game.control.impl;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
 
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
-import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.Item;
@@ -65,35 +65,6 @@ class InGameControllerState extends GameControllerState {
 		
 	}
 	
-	@SuppressWarnings("serial")
-	private class MoveEdit extends AbstractUndoableEdit {
-		
-		private Move move;
-		
-		private GameStatus status;
-		
-		private GameWin win;
-		// TODO da gehoert noch mehr dazu: items, current player/round
-		@Override
-		public void undo() throws CannotUndoException {
-			super.undo();
-			status = getController().getStatus();
-			win = getController().getWin();
-			
-			move = game.getMoves().remove(GameState.LAST_MOVE);
-			
-			// falls es der letzte zug war: zustand wieder auf IN_GAME setzen
-			getController().setState(InGameControllerState.this, GameStatus.IN_GAME, GameWin.NO);
-		}
-
-		@Override
-		public void redo() throws CannotRedoException {
-			super.redo();
-			game.getMoves().add(move);
-			getController().setState(InGameControllerState.this, status, win);
-		}
-		
-	}
 	
 	
 	private final Game game;
@@ -116,14 +87,12 @@ class InGameControllerState extends GameControllerState {
 		throw new IllegalStateException("For this operation we must be NOT_IN_GAME. Finish the game first or use abort.");
 	}
 
-	private UndoableEdit passItems(Game game, MovePolicy policy, Move move) {
+	private List<ItemPassEdit> passItems(Game game, MovePolicy policy, Move move) {
 		
-		UndoableEdit edit = null;
-		UndoableEdit lastEdit = null;
-		UndoableEdit nextEdit;
+		List<ItemPassEdit> edits = new LinkedList<>();
 		
 		Player p1 = move.getPlayer();
-		List<Move> moves = gameStateExtension.flattenMove(move, false);
+		List<Move> moves = gameStateExtension.flattenMove(move, true);
 		
 		for (Move m : moves) {
 			Item item = m.getItem();
@@ -135,18 +104,12 @@ class InGameControllerState extends GameControllerState {
 					game.getItems(p2).add(item);
 				}
 				
-				nextEdit = new ItemPassEdit(p1, p2, item);
-				if (edit == null) {
-					lastEdit = edit = nextEdit; 
-				} else {
-					lastEdit.addEdit(nextEdit);
-					lastEdit = nextEdit;
-				}
+				edits.add(new ItemPassEdit(p1, p2, item));
 				
 			}			
 		}
-		
-		return edit;
+
+		return edits;
 	}
 
 	@Override
@@ -196,7 +159,8 @@ class InGameControllerState extends GameControllerState {
 
 	@Override
 	public void abort() {
-		getController().setState(this, GameStatus.NOT_IN_GAME, GameWin.NO);
+		getController().setState(this, GameStatus.NOT_IN_GAME, GameWin.NO);		
+		undoManager.addEdit(getController().new AbortEdit());
 	}
 
 	@Override
@@ -207,13 +171,20 @@ class InGameControllerState extends GameControllerState {
 		
 		movePolicy.checkMove(game, gameGraph, move);
 		
+		CompoundEdit moveEdit = getController().new MoveEdit(
+				game.getCurrentPlayer(), game.getCurrentRoundNumber());
+		
 		// move.seal(): das macht game.getMoves().add(..)		
 		
 		// Move eintragen
 		game.getMoves().add(move);
 		
 		// Tickets richtig weitergeben
-		UndoableEdit itemPassEdit = passItems(game, movePolicy, move);
+		List<ItemPassEdit> itemPassEdits = passItems(game, movePolicy, move);
+		for (ItemPassEdit e : itemPassEdits) {
+			moveEdit.addEdit(e);
+		}
+		moveEdit.end();
 		
 		// Turn/Current sachen nach Move aktualisieren
 		Turn turn = rules.getTurnPolicy().getNextTurn(game, gameGraph);		
@@ -224,8 +195,6 @@ class InGameControllerState extends GameControllerState {
 		GameWin win = rules.getGameWinPolicy().isGameWon(game, gameGraph);
 		getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
 		
-		UndoableEdit moveEdit = new MoveEdit();
-		moveEdit.addEdit(itemPassEdit);
 		undoManager.addEdit(moveEdit);
 	}
 

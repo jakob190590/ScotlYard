@@ -1,5 +1,6 @@
 package kj.scotlyard.game.control.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -7,6 +8,7 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
 
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
@@ -165,7 +167,7 @@ class NotInGameControllerState extends GameControllerState {
 		private List<Move> oldMoves;
 		
 		public NewGameEdit(List<Move> oldMoves) {
-			this.oldMoves = oldMoves;
+			this.oldMoves = new ArrayList<>(oldMoves);
 		}
 
 		@Override
@@ -192,7 +194,7 @@ class NotInGameControllerState extends GameControllerState {
 		public ClearPlayersEdit(MrXPlayer oldMrX, 
 				List<DetectivePlayer> oldDetectives) {
 			this.oldMrX = oldMrX;
-			this.oldDetectives = oldDetectives;
+			this.oldDetectives = new ArrayList<>(oldDetectives);
 		}
 
 		@Override
@@ -238,24 +240,23 @@ class NotInGameControllerState extends GameControllerState {
 
 	@Override
 	public void newGame() {
-		List<Move> moves = game.getMoves();
+		UndoableEdit edit = new NewGameEdit(game.getMoves());
 		game.getMoves().clear();
 		// Das reicht schon aus.
 		// Andere Werte werden bei Initialisierung (start) ueberschrieben.
 		// current player und round werden durch Rules festgelegt.
 		
-		undoManager.addEdit(new NewGameEdit(moves));
+		undoManager.addEdit(edit);
 	}
 
 	@Override
 	public void clearPlayers() {
-		MrXPlayer mrX = game.getMrX();
-		List<DetectivePlayer> detectives = game.getDetectives();
+		UndoableEdit edit = new ClearPlayersEdit(game.getMrX(), game.getDetectives());
 		
 		game.setMrX(null);
 		game.getDetectives().clear();
 		
-		undoManager.addEdit(new ClearPlayersEdit(mrX, detectives));
+		undoManager.addEdit(edit);
 	}
 
 	@Override
@@ -363,6 +364,7 @@ class NotInGameControllerState extends GameControllerState {
 		GameWin win = getController().getRules().getGameWinPolicy().isGameWon(game, gameGraph);
 		getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
 		
+		undoManager.die();		
 	}
 
 	@Override
