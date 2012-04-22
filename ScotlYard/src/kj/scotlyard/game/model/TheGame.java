@@ -275,6 +275,26 @@ public class TheGame extends AbstractGameState implements Game {
 	private Map<PlayerNumberKey, Move> movesByMoveNumber = new HashMap<>();
 		
 	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof TheGame) {
+			TheGame g = (TheGame) obj;			
+			if ((mrX == g.mrX || mrX.equals(g.mrX)) // wg. NullPointerException
+					&& detectives.equals(g.detectives) 
+					&& items.equals(g.items)
+					&& moves.equals(g.moves)
+					&& (currentPlayer == g.currentPlayer || currentPlayer.equals(g.currentPlayer)) 
+					&& currentRoundNumber == g.currentRoundNumber) {
+				
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public TheGame copy() {
 		TheGame g = new TheGame();
 		

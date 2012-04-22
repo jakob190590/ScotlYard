@@ -15,7 +15,6 @@ import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
-import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TheGame;
 import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.Ticket;
@@ -228,6 +227,7 @@ public class InGameControllerTest {
 						
 			// Undo ------------
 			c.getUndoManager().undo();
+			/*
 			assertEquals(vorher.getCurrentPlayer(), g.getCurrentPlayer());
 			assertEquals(vorher.getCurrentRoundNumber(), g.getCurrentRoundNumber());
 			assertEquals(vorher.getMoves(), g.getMoves());
@@ -235,19 +235,24 @@ public class InGameControllerTest {
 			for (Player p : g.getPlayers()) {
 				assertEquals(vorher.getItems(p).size(), g.getItems(p).size());
 			}
+			*/
 			assertEquals(GameStatus.IN_GAME, c.getStatus());
 			assertEquals(GameWin.NO, c.getWin());
 			
+			assertEquals(vorher, g);
 
 			// Redo ------------
 			c.getUndoManager().redo();
+			assertEquals(nacher, g);
+			/*
 			assertEquals(nacher.getCurrentPlayer(), g.getCurrentPlayer());
 			assertEquals(nacher.getCurrentRoundNumber(), g.getCurrentRoundNumber());
 			assertEquals(nacher.getMoves(), g.getMoves());
 			assertEquals(nacher.getPlayers(), g.getPlayers());			
 			for (Player p : g.getPlayers()) {				
 				assertEquals(nacher.getItems(p), g.getItems(p));
-			}			
+			}
+			*/			
 			assertEquals(win, c.getWin());
 			if (win != GameWin.NO) {
 				System.out.println(win);
