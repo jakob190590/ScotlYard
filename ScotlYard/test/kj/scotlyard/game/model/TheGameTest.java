@@ -370,7 +370,11 @@ public class TheGameTest {
 			fail("no index out of bound exc??");
 		} catch (Exception e) { }
 		
-		
+
+		try {
+			g.getMoves().add(null);
+			fail("add null works");
+		} catch (Exception e) { }
 		
 		try {
 			g.getMoves().set(3, ms[7]);
