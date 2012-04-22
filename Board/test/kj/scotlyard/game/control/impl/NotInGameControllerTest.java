@@ -174,10 +174,10 @@ public class NotInGameControllerTest {
 				if (!gs1.getDetectives().equals(gs2.getDetectives())) {
 					
 					c.getUndoManager().undo();
-					assertEquals(gs1.getDetectives(), g.getDetectives());
+					assertEquals(gs1, g);
 					
 					c.getUndoManager().redo();
-					assertEquals(gs2.getDetectives(), g.getDetectives());
+					assertEquals(gs2, g);
 				}
 				
 			}
@@ -203,10 +203,10 @@ public class NotInGameControllerTest {
 				if (!gs1.getDetectives().equals(gs2.getDetectives())) {
 					
 					c.getUndoManager().undo();
-					assertEquals(gs1.getDetectives(), g.getDetectives());
+					assertEquals(gs1, g);
 					
 					c.getUndoManager().redo();
-					assertEquals(gs2.getDetectives(), g.getDetectives());
+					assertEquals(gs2, g);
 				}
 				
 			}
