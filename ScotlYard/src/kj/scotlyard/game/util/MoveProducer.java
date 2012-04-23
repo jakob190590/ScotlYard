@@ -19,30 +19,21 @@ import kj.scotlyard.game.rules.TheMovePolicy;
 //    Keine Factory im Sinne des Abstract Factory Pattern
 //    (auch wenn's in Java die BorderFactory gibt)
 // -> Deswegen was Eigenes: Producer
-public class MoveProducer {
-	
-	private MoveProducer() { }
+public abstract class MoveProducer {
 
-	/**
-	 * Creates and returns a new instance of TheMoveProducer.
-	 * At least every thread should have it's own Producer.
-	 * @return a new instance to work with
-	 */
-	public static MoveProducer createInstance() {
-		return new MoveProducer(); 
-	}	
+	private MoveProducer() { }
 	
-	
+
 	// Initial Move
-	
-	public Move createInitialMove(Player player, int roundNumber, StationVertex station) {
+
+	public static Move createInitialMove(Player player, int roundNumber, StationVertex station) {
 		
 		// roundNumber muss nicht INITIAL_ROUND_NUMBER sein! Player kann auch spaeter joinen.
 		return new DefaultMove(player, roundNumber, 
 				GameState.INITIAL_MOVE_NUMBER, Move.NO_MOVE_INDEX, station, null, null);
 	} 
 	
-	public Move createInitialMove(Player player, StationVertex station) {
+	public static Move createInitialMove(Player player, StationVertex station) {
 		
 		return createInitialMove(player, GameState.INITIAL_ROUND_NUMBER, station);
 	} 
@@ -50,7 +41,7 @@ public class MoveProducer {
 	
 	// Single Move
 	
-	public Move createSingleMove(Player player, int roundNumber, int moveNumber, 
+	public static Move createSingleMove(Player player, int roundNumber, int moveNumber, 
 			StationVertex station, ConnectionEdge connection, Ticket ticket) {
 		
 		return new DefaultMove(player, roundNumber, moveNumber, 
@@ -61,7 +52,7 @@ public class MoveProducer {
 	
 	// Multi Move
 	
-	public Move createMultiMove(Player player, int roundNumber, 
+	public static Move createMultiMove(Player player, int roundNumber, 
 			int firstMoveNumber, DoubleMoveCard card, SubMoves subMoves) {
 		
 		Move m = new DefaultMove(player, roundNumber, Move.NO_MOVE_NUMBER, 
@@ -87,7 +78,7 @@ public class MoveProducer {
 	
 	// Next Best Single Move
 	
-	public Move createNextBestSingleMove(GameState gameState, GameGraph gameGraph) {
+	public static Move createNextBestSingleMove(GameState gameState, GameGraph gameGraph) {
 		
 		MovePolicy movePolicy = new TheMovePolicy();
 		
