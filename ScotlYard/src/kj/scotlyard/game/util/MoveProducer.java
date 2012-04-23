@@ -1,7 +1,6 @@
 package kj.scotlyard.game.util;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Iterator;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
@@ -17,13 +16,10 @@ import kj.scotlyard.game.rules.MovePolicy;
 import kj.scotlyard.game.rules.TheMovePolicy;
 
 // Zum Klassennamen:
-// -  Keine Factory im Sinne des Abstract Factory Pattern
+//    Keine Factory im Sinne des Abstract Factory Pattern
 //    (auch wenn's in Java die BorderFactory gibt)
-// -  Kein Builder im Sinne des Builder Pattern
-// -> Deswegen was eigenes: Producer
+// -> Deswegen was Eigenes: Producer
 public class MoveProducer {
-	
-	private List<Move> subMoves = new LinkedList<>();
 	
 	private MoveProducer() { }
 
@@ -63,41 +59,27 @@ public class MoveProducer {
 	
 	
 	
-	// Multi Move (Builder interface)	
-	
-	// Because of this methods, there must be at least one instance per thread.
-	// With static methods instead, the multi move production would not be thread-safe. 
-	
-	public void addSubMove(StationVertex station, ConnectionEdge connection, Ticket ticket) {
-		
-		// Player and Numbers will be set later in createMultiMove
-		subMoves.add(new DefaultMove(null, 0, Move.NO_MOVE_NUMBER, 
-				Move.NO_MOVE_INDEX, station, connection, ticket));
-	}
-	
-	public void discardSubMoves() {
-		subMoves.clear();
-	}
+	// Multi Move
 	
 	public Move createMultiMove(Player player, int roundNumber, 
-			int firstMoveNumber, DoubleMoveCard card) {
+			int firstMoveNumber, DoubleMoveCard card, SubMoves subMoves) {
 		
 		Move m = new DefaultMove(player, roundNumber, Move.NO_MOVE_NUMBER, 
 				Move.NO_MOVE_INDEX, null, null, card);
 		
-		
 		int i = 0;
-		for (Move n : subMoves) {
+		Move n = null;
+		Iterator<Move> it = subMoves.iterator();
+		while (it.hasNext()) {
+			n = it.next();
 			n.setPlayer(player);
 			n.setRoundNumber(roundNumber);
 			n.setMoveNumber(firstMoveNumber + i);
 			n.setMoveIndex(i++);
+			m.getMoves().add(n);
 		}
-		m.setStation(subMoves.get(subMoves.size() - 1).getStation());
+		m.setStation((n == null) ? null : n.getStation());
 
-		m.getMoves().addAll(subMoves);
-		subMoves.clear();
-		
 		return m;
 	}
 	
