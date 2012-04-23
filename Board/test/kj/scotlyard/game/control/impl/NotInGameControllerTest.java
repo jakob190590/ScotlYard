@@ -50,8 +50,6 @@ public class NotInGameControllerTest {
 		initialStations = loader.getInitialStations();
 	}
 	
-	final MoveProducer mp = MoveProducer.createInstance(); // move producer
-	
 	final Rules r = new TheRules();
 	
 	Game g;
@@ -63,8 +61,8 @@ public class NotInGameControllerTest {
 		g = new TheGame();
 		c = new TheGameController(g, gg, initialStations, r);
 		
-		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
-		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
+		g.getMoves().add(MoveProducer.createInitialMove(new DetectivePlayer(), new Station(gg)));
+		g.getMoves().add(MoveProducer.createInitialMove(new DetectivePlayer(), new Station(gg)));
 		
 		g.setMrX(new MrXPlayer());
 		

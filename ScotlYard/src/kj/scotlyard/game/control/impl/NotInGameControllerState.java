@@ -316,8 +316,6 @@ class NotInGameControllerState extends GameControllerState {
 		
 		final Set<StationVertex> initialStations = getController().getInitialPositions();
 
-		final MoveProducer moveProducer = MoveProducer.createInstance();
-				
 		if (!game.getMoves().isEmpty()) {
 			throw new IllegalStateException("Cannot start game, while Move list is not cleared. Call newGame and try again.");
 		}
@@ -350,7 +348,7 @@ class NotInGameControllerState extends GameControllerState {
 			game.setItems(player, initPolicy.createItemSet(game, player));
 			
 			StationVertex initStation = initPolicy.suggestInitialStation(game, gameGraph, initialStations, player);
-			Move initMove = moveProducer.createInitialMove(player, initStation);
+			Move initMove = MoveProducer.createInitialMove(player, initStation);
 			game.getMoves().add(initMove);
 		}
 				
