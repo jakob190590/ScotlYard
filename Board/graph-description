@@ -1,0 +1,78 @@
+V kj.scotlyard.game.graph.Station 9 0.07424593967517401 0.18210862619808307
+V kj.scotlyard.game.graph.Station 2 0.08120649651972157 0.10223642172523961
+V kj.scotlyard.game.graph.Station 26 0.3209302325581395 0.3865814696485623
+V kj.scotlyard.game.graph.Station 16 0.060324825986078884 0.3354632587859425
+V kj.scotlyard.game.graph.Station 8 0.12761020881670534 0.26198083067092653
+V kj.scotlyard.game.graph.Station 10 0.03248259860788863 0.23322683706070288
+V kj.scotlyard.game.graph.Station 18 0.03944315545243619 0.46325878594249204
+V kj.scotlyard.game.graph.Station 20 0.12761020881670534 0.4440894568690096
+V kj.scotlyard.game.graph.Station 11 0.060324825986078884 0.28115015974440893
+V kj.scotlyard.game.graph.Station 3 0.1554524361948956 0.10223642172523961
+V kj.scotlyard.game.graph.Station 5 0.1136890951276102 0.1501597444089457
+V kj.scotlyard.game.graph.Station 27 0.13670694864048338 0.36656282450674976
+V kj.scotlyard.game.graph.Station 19 0.09744779582366589 0.4504792332268371
+V kj.scotlyard.game.graph.Station 25 0.2837209302325581 0.3961661341853035
+V kj.scotlyard.game.graph.Station 15 0.2505800464037123 0.24281150159744408
+V kj.scotlyard.game.graph.Station 4 0.04640371229698376 0.14376996805111822
+V kj.scotlyard.game.graph.Station 17 0.09048723897911833 0.38338658146964855
+V kj.scotlyard.game.graph.Station 6 0.1925754060324826 0.12779552715654952
+V kj.scotlyard.game.graph.Station 7 0.16705336426914152 0.2108626198083067
+V kj.scotlyard.game.graph.Station 12 0.16705336426914152 0.3226837060702875
+V kj.scotlyard.game.graph.Station 1 0.12296983758700696 0.04472843450479233
+V kj.scotlyard.game.graph.Station 24 0.29767441860465116 0.2268370607028754
+V kj.scotlyard.game.graph.Station 14 0.23897911832946636 0.19488817891373802
+V kj.scotlyard.game.graph.Station 21 0.2372093023255814 0.40894568690095845
+V kj.scotlyard.game.graph.Station 22 0.26976744186046514 0.329073482428115
+V kj.scotlyard.game.graph.Station 28 0.19486404833836857 0.3655244029075805
+V kj.scotlyard.game.graph.Station 23 0.2069767441860465 0.31629392971246006
+V kj.scotlyard.game.graph.Station 29 0.3021148036253776 0.31568016614745587
+V kj.scotlyard.game.graph.Station 13 0.19489559164733178 0.2747603833865815
+E kj.scotlyard.game.graph.connection.UndergroundConnection 18 26
+E kj.scotlyard.game.graph.connection.TaxiConnection 1 3
+E kj.scotlyard.game.graph.connection.TaxiConnection 12 13
+E kj.scotlyard.game.graph.connection.BusConnection 26 15
+E kj.scotlyard.game.graph.connection.TaxiConnection 17 27
+E kj.scotlyard.game.graph.connection.TaxiConnection 11 8
+E kj.scotlyard.game.graph.connection.BusConnection 1 18
+E kj.scotlyard.game.graph.connection.TaxiConnection 15 24
+E kj.scotlyard.game.graph.connection.TaxiConnection 26 25
+E kj.scotlyard.game.graph.connection.TaxiConnection 28 12
+E kj.scotlyard.game.graph.connection.TaxiConnection 27 19
+E kj.scotlyard.game.graph.connection.TaxiConnection 6 14
+E kj.scotlyard.game.graph.connection.TaxiConnection 13 7
+E kj.scotlyard.game.graph.connection.UndergroundConnection 26 15
+E kj.scotlyard.game.graph.connection.TaxiConnection 22 29
+E kj.scotlyard.game.graph.connection.TaxiConnection 7 14
+E kj.scotlyard.game.graph.connection.UndergroundConnection 15 1
+E kj.scotlyard.game.graph.connection.TaxiConnection 22 15
+E kj.scotlyard.game.graph.connection.TaxiConnection 14 15
+E kj.scotlyard.game.graph.connection.TaxiConnection 25 21
+E kj.scotlyard.game.graph.connection.TaxiConnection 28 23
+E kj.scotlyard.game.graph.connection.TaxiConnection 12 27
+E kj.scotlyard.game.graph.connection.TaxiConnection 5 2
+E kj.scotlyard.game.graph.connection.TaxiConnection 9 8
+E kj.scotlyard.game.graph.connection.TaxiConnection 27 8
+E kj.scotlyard.game.graph.connection.TaxiConnection 19 17
+E kj.scotlyard.game.graph.connection.TaxiConnection 19 20
+E kj.scotlyard.game.graph.connection.TaxiConnection 11 16
+E kj.scotlyard.game.graph.connection.TaxiConnection 10 11
+E kj.scotlyard.game.graph.connection.TaxiConnection 19 18
+E kj.scotlyard.game.graph.connection.BusConnection 15 1
+E kj.scotlyard.game.graph.connection.TaxiConnection 10 4
+E kj.scotlyard.game.graph.connection.TaxiConnection 25 22
+E kj.scotlyard.game.graph.connection.TaxiConnection 3 6
+E kj.scotlyard.game.graph.connection.TaxiConnection 4 9
+E kj.scotlyard.game.graph.connection.TaxiConnection 8 7
+E kj.scotlyard.game.graph.connection.TaxiConnection 15 13
+E kj.scotlyard.game.graph.connection.TaxiConnection 7 5
+E kj.scotlyard.game.graph.connection.TaxiConnection 2 1
+E kj.scotlyard.game.graph.connection.TaxiConnection 22 28
+E kj.scotlyard.game.graph.connection.TaxiConnection 5 3
+E kj.scotlyard.game.graph.connection.TaxiConnection 2 4
+E kj.scotlyard.game.graph.connection.TaxiConnection 21 28
+E kj.scotlyard.game.graph.connection.TaxiConnection 16 17
+E kj.scotlyard.game.graph.connection.TaxiConnection 13 23
+E kj.scotlyard.game.graph.connection.TaxiConnection 29 26
+E kj.scotlyard.game.graph.connection.TaxiConnection 24 29
+E kj.scotlyard.game.graph.connection.TaxiConnection 9 10
+E kj.scotlyard.game.graph.connection.TaxiConnection 23 22

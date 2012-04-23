@@ -1,37 +1,41 @@
-package kj.scotlyard.graphbuilder.builder;
+package kj.scotlyard.board;
 
-import java.awt.geom.Point2D.Double;
-import java.util.HashMap;
+import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JComponent;
 
+import org.jgrapht.graph.UnmodifiableUndirectedGraph;
+
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.graph.TheGameGraph;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.UndergroundConnection;
+import kj.scotlyard.graphbuilder.builder.AbstractGameGraphBuilder;
+import kj.scotlyard.graphbuilder.builder.GraphBuilder;
 
-public class BoardGraphBuilder implements GraphBuilder {
+public class BoardGraphBuilder extends AbstractGameGraphBuilder implements GraphBuilder {
 	
-	GameGraph g = new TheGameGraph();
-	Map<Integer, StationVertex> vertexMap = new HashMap<>();
-	Set<JComponent> visualComponents = new HashSet<>();
+	/** Gibt an, ob der Graph bereits unmodifiable gemacht wurde. */
+	protected boolean unmodifiable = false;
+	
+	/** Visuelle Komponenten, die Board fuer die GUI benoetigt. */
+	protected Set<JComponent> visualComponents = new HashSet<>();
 
 	@Override
 	public void addVertex(Class<? extends StationVertex> vertexType,
-			int number, Double position) {
+			int number, Point2D.Double position) {
 		
 		if (vertexType != Station.class) {
 			throw new IllegalArgumentException("Unknown vertex type.");
 		}
-		StationVertex v = new Station(g);
+		StationVertex v = new Station(gg);
 		vertexMap.put(number, v);
 		g.addVertex(v);
 		
@@ -43,13 +47,13 @@ public class BoardGraphBuilder implements GraphBuilder {
 		
 		ConnectionEdge e;
 		if (edgeType == TaxiConnection.class) {
-			e = new TaxiConnection(g);
+			e = new TaxiConnection(gg);
 		} else if (edgeType == BusConnection.class) {
-			e = new BusConnection(g);
+			e = new BusConnection(gg);
 		} else if (edgeType == UndergroundConnection.class) {
-			e = new UndergroundConnection(g);
+			e = new UndergroundConnection(gg);
 		} else if (edgeType == FerryConnection.class) {
-			e = new FerryConnection(g);
+			e = new FerryConnection(gg);
 		} else {
 			throw new IllegalArgumentException("Unknown edge type.");
 		}
@@ -58,11 +62,21 @@ public class BoardGraphBuilder implements GraphBuilder {
 	}
 	
 	public GameGraph getGameGraph() {
-		return g;
+		if (!unmodifiable) {
+			// Unmodifiable GameGraph einmalig erzeugen
+			gg = new GameGraph(new UnmodifiableUndirectedGraph<StationVertex, ConnectionEdge>(g));
+			unmodifiable = true;
+		}
+		
+		return gg;
 	}
 	
 	public Set<JComponent> getVisualComponents() {
 		return visualComponents;
+	}
+	
+	public Map<Integer, StationVertex> getNumberStationMap() {
+		return vertexMap;
 	}
 
 }

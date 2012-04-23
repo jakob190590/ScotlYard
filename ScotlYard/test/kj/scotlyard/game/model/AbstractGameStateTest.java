@@ -13,6 +13,7 @@ import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.model.item.UndergroundTicket;
+import kj.scotlyard.game.util.MoveProducer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -147,7 +148,7 @@ public class AbstractGameStateTest {
 	Game g;
 	GameState gs;
 	GameGraph gg = null;
-	TheMoveProducer prod = TheMoveProducer.createInstance();
+	MoveProducer prod = MoveProducer.createInstance();
 	MrXPlayer mrX;
 	DetectivePlayer d1, d2, d3, d4;
 	Move[] ms = new Move[20];

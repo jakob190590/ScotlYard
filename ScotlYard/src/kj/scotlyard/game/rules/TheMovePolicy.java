@@ -64,9 +64,14 @@ public class TheMovePolicy implements MovePolicy {
 		// fuer jede anliegende edge pruefen, ob ticket da is
 		// wenn ticket da is, pruefen, ob benachbarte station frei is (kein anderer detektiv)
 		
-		// TODO implement, korbi?
+		// TODO review, korbi?
 		
 		Move lastMove = gameState.getLastMove(player);
+		if (lastMove == null) {
+			throw new IllegalStateException("Player has not moved yet.");
+			// TODO hm, was soll ich machen hier?
+//			return false;
+		}
 		StationVertex currentStation = lastMove.getStation();
 		
 		Set<Item> items = gameState.getItems(player);

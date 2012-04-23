@@ -66,7 +66,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Sun Apr 08 11:19:51 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Sat Apr 21 22:19:37 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -326,19 +326,6 @@
                   <UML:BehavioralFeature.parameter>
                     <UML:Parameter xmi.id = '-64--88--78-22-1d291ea2:13602acbfc3:-8000:0000000000000BCF'
                       name = 'return' isSpecification = 'false' kind = 'return'/>
-                  </UML:BehavioralFeature.parameter>
-                </UML:Operation>
-                <UML:Operation xmi.id = '-64--88--78-22-1d291ea2:13602acbfc3:-8000:0000000000000BD0'
-                  name = 'getUndoManager' visibility = 'public' isSpecification = 'false'
-                  ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-                  isLeaf = 'false' isAbstract = 'false'>
-                  <UML:BehavioralFeature.parameter>
-                    <UML:Parameter xmi.id = '-64--88--78-22-1d291ea2:13602acbfc3:-8000:0000000000000BD1'
-                      name = 'return' isSpecification = 'false' kind = 'return'>
-                      <UML:Parameter.type>
-                        <UML:Class xmi.idref = '-64--88--78-22-1d291ea2:13602acbfc3:-8000:0000000000000BD2'/>
-                      </UML:Parameter.type>
-                    </UML:Parameter>
                   </UML:BehavioralFeature.parameter>
                 </UML:Operation>
                 <UML:Operation xmi.id = '-64--88--78-22-1d291ea2:13602acbfc3:-8000:0000000000000BD8'
@@ -1193,39 +1180,26 @@ aber der Name gefällt mir.</UML:TaggedValue.dataValue>
               </UML:ModelElement.taggedValue>
               <UML:Classifier.feature>
                 <UML:Operation xmi.id = '-64--88--78-22--5a550942:135d492f461:-8000:0000000000000B4E'
-                  name = 'getNextPlayer' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  name = 'getNextTurn' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
                   isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
                   isAbstract = 'false'>
                   <UML:BehavioralFeature.parameter>
                     <UML:Parameter xmi.id = '-64--88--78-22--5a550942:135d492f461:-8000:0000000000000B4F'
                       name = 'return' isSpecification = 'false' kind = 'return'>
                       <UML:Parameter.type>
-                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000A7C'/>
+                        <UML:Class xmi.idref = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D26'/>
                       </UML:Parameter.type>
                     </UML:Parameter>
                     <UML:Parameter xmi.id = '-64--88--78-22--5a550942:135d492f461:-8000:0000000000000B5A'
                       name = 'gameState' isSpecification = 'false' kind = 'in'>
                       <UML:Parameter.type>
-                        <UML:Interface xmi.idref = '-64--88--22-1--1d5cccdd:134dc26a78a:-8000:0000000000000AC2'/>
+                        <UML:Class xmi.idref = '-64--88--78-22--6f6332dc:13674144561:-8000:0000000000000C87'/>
                       </UML:Parameter.type>
                     </UML:Parameter>
-                  </UML:BehavioralFeature.parameter>
-                </UML:Operation>
-                <UML:Operation xmi.id = '-64--88--78-22--3598f0e:13613496f80:-8000:0000000000000BDF'
-                  name = 'getNextRoundNumber' visibility = 'public' isSpecification = 'false'
-                  ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-                  isLeaf = 'false' isAbstract = 'false'>
-                  <UML:BehavioralFeature.parameter>
-                    <UML:Parameter xmi.id = '-64--88--78-22--3598f0e:13613496f80:-8000:0000000000000BE0'
-                      name = 'return' isSpecification = 'false' kind = 'return'>
+                    <UML:Parameter xmi.id = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D32'
+                      name = 'gameGraph' isSpecification = 'false' kind = 'in'>
                       <UML:Parameter.type>
-                        <UML:Class xmi.idref = '-64--88--22-1--5b2fb4c9:134e08e2f49:-8000:0000000000000AEE'/>
-                      </UML:Parameter.type>
-                    </UML:Parameter>
-                    <UML:Parameter xmi.id = '-64--88--78-22--3598f0e:13613496f80:-8000:0000000000000BE1'
-                      name = 'gameState' isSpecification = 'false' kind = 'in'>
-                      <UML:Parameter.type>
-                        <UML:Interface xmi.idref = '-64--88--22-1--1d5cccdd:134dc26a78a:-8000:0000000000000AC2'/>
+                        <UML:Class xmi.idref = '-64--88--78-22-1d291ea2:13602acbfc3:-8000:0000000000000BC9'/>
                       </UML:Parameter.type>
                     </UML:Parameter>
                   </UML:BehavioralFeature.parameter>
@@ -1395,6 +1369,62 @@ aber der Name gefällt mir.</UML:TaggedValue.dataValue>
                   </UML:TaggedValue.type>
                 </UML:TaggedValue>
               </UML:ModelElement.taggedValue>
+            </UML:Class>
+            <UML:Class xmi.id = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D26'
+              name = 'Turn' visibility = 'public' isSpecification = 'false' isRoot = 'false'
+              isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
+              <UML:Classifier.feature>
+                <UML:Operation xmi.id = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D2E'
+                  name = 'Turn' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:ModelElement.stereotype>
+                    <UML:Stereotype href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#.:000000000000082B'/>
+                  </UML:ModelElement.stereotype>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D2F'
+                      name = 'return' isSpecification = 'false' kind = 'return'/>
+                    <UML:Parameter xmi.id = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D30'
+                      name = 'player' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000A7C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D31'
+                      name = 'roundNumber' isSpecification = 'false' kind = 'in'>
+                      <UML:Parameter.type>
+                        <UML:DataType href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:000000000000087C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+                <UML:Operation xmi.id = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D2A'
+                  name = 'getPlayer' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
+                  isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
+                  isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D2B'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:Class xmi.idref = '-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000A7C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+                <UML:Operation xmi.id = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D2C'
+                  name = 'getRoundNumber' visibility = 'public' isSpecification = 'false'
+                  ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
+                  isLeaf = 'false' isAbstract = 'false'>
+                  <UML:BehavioralFeature.parameter>
+                    <UML:Parameter xmi.id = '-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D2D'
+                      name = 'return' isSpecification = 'false' kind = 'return'>
+                      <UML:Parameter.type>
+                        <UML:DataType href = 'http://argouml.org/profiles/uml14/default-uml14.xmi#-84-17--56-5-43645a83:11466542d86:-8000:000000000000087C'/>
+                      </UML:Parameter.type>
+                    </UML:Parameter>
+                  </UML:BehavioralFeature.parameter>
+                </UML:Operation>
+              </UML:Classifier.feature>
             </UML:Class>
           </UML:Namespace.ownedElement>
         </UML:Package>
@@ -4656,7 +4686,7 @@ flat Move List</UML:TaggedValue.dataValue>
     ></text>
   </group>
   <group name="Fig3"
-       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[1816, 592, 475, 121]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
+       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[1816, 576, 475, 121]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
        href="-64--88--22-1-f61ec3b:134bd4433b3:-8000:000000000000086E"
        fill="1"
        fillcolor="white"
@@ -4669,7 +4699,7 @@ flat Move List</UML:TaggedValue.dataValue>
     
     <rectangle name="Fig3.0"
       x="1816"
-      y="592"
+      y="576"
       width="475"
       height="121"
       fill="1"
@@ -4679,7 +4709,7 @@ flat Move List</UML:TaggedValue.dataValue>
     />
     <text name="Fig3.1"
       x="1817"
-      y="593"
+      y="577"
       width="473"
       height="43"
       fill="0"
@@ -4694,7 +4724,7 @@ flat Move List</UML:TaggedValue.dataValue>
       justification="Center"
     >MovePolicy</text>
     <group name="Fig3.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1817, 593, 473, 20]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1817, 577, 473, 20]"
          href="-64--88--22-1-f61ec3b:134bd4433b3:-8000:000000000000086E"
          fill="0"
          fillcolor="white"
@@ -4706,7 +4736,7 @@ flat Move List</UML:TaggedValue.dataValue>
       
       <rectangle name="Fig3.2.0"
         x="1817"
-        y="593"
+        y="577"
         width="473"
         height="20"
         fill="0"
@@ -4716,7 +4746,7 @@ flat Move List</UML:TaggedValue.dataValue>
       />
       <text name="Fig3.2.1"
         x="1817"
-        y="593"
+        y="577"
         width="473"
         height="18"
         fill="0"
@@ -4733,7 +4763,7 @@ flat Move List</UML:TaggedValue.dataValue>
     </group>
     <rectangle name="Fig3.3"
       x="1816"
-      y="636"
+      y="620"
       width="475"
       height="1"
       fill="1"
@@ -4742,7 +4772,7 @@ flat Move List</UML:TaggedValue.dataValue>
       strokecolor="black"
     />
     <group name="Fig3.4"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1817, 637, 473, 76]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1817, 621, 473, 76]"
          href="-64--88--22-1-f61ec3b:134bd4433b3:-8000:000000000000086E"
          fill="0"
          fillcolor="white"
@@ -4754,7 +4784,7 @@ flat Move List</UML:TaggedValue.dataValue>
       
       <rectangle name="Fig3.4.0"
         x="1817"
-        y="637"
+        y="621"
         width="473"
         height="76"
         fill="0"
@@ -4764,7 +4794,7 @@ flat Move List</UML:TaggedValue.dataValue>
       />
       <text name="Fig3.4.1"
         x="1817"
-        y="637"
+        y="621"
         width="473"
         height="17"
         fill="0"
@@ -4780,7 +4810,7 @@ flat Move List</UML:TaggedValue.dataValue>
       >canMove(gameState : GameState,gameGraph : GameGraph,player : Player) : Boolean</text>
       <text name="Fig3.4.2"
         x="1817"
-        y="654"
+        y="638"
         width="473"
         height="17"
         fill="0"
@@ -4796,7 +4826,7 @@ flat Move List</UML:TaggedValue.dataValue>
       >checkMove(gameState : GameState,gameGraph : GameGraph,move : Move)</text>
       <text name="Fig3.4.3"
         x="1817"
-        y="671"
+        y="655"
         width="473"
         height="17"
         fill="0"
@@ -4812,7 +4842,7 @@ flat Move List</UML:TaggedValue.dataValue>
       >isTicketValidForConnection(ticket : Ticket,connection : ConnectionEdge) : Boolean</text>
       <text name="Fig3.4.4"
         x="1817"
-        y="688"
+        y="672"
         width="473"
         height="23"
         fill="0"
@@ -4829,7 +4859,7 @@ flat Move List</UML:TaggedValue.dataValue>
     </group>
   </group>
   <group name="Fig4"
-       description="org.argouml.uml.diagram.static_structure.ui.FigClass[272, 512, 296, 275]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[288, 520, 261, 258]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
        href="-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000AB1"
        fill="1"
        fillcolor="white"
@@ -4841,19 +4871,19 @@ flat Move List</UML:TaggedValue.dataValue>
     </private>
     
     <rectangle name="Fig4.0"
-      x="272"
-      y="512"
-      width="296"
-      height="275"
+      x="288"
+      y="520"
+      width="261"
+      height="258"
       fill="1"
       fillcolor="white"
       stroke="1"
       strokecolor="black"
     />
     <text name="Fig4.1"
-      x="273"
-      y="513"
-      width="294"
+      x="289"
+      y="521"
+      width="259"
       height="23"
       fill="0"
       fillcolor="white"
@@ -4867,7 +4897,7 @@ flat Move List</UML:TaggedValue.dataValue>
       justification="Center"
     >GameController</text>
     <group name="Fig4.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[273, 513, 260, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[289, 521, 260, 0]"
          href="-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000AB1"
          fill="0"
          fillcolor="white"
@@ -4879,8 +4909,8 @@ flat Move List</UML:TaggedValue.dataValue>
       </private>
       
       <rectangle name="Fig4.2.0"
-        x="273"
-        y="513"
+        x="289"
+        y="521"
         width="260"
         height="0"
         fill="0"
@@ -4890,9 +4920,9 @@ flat Move List</UML:TaggedValue.dataValue>
       />
     </group>
     <rectangle name="Fig4.3"
-      x="272"
-      y="536"
-      width="296"
+      x="288"
+      y="544"
+      width="261"
       height="1"
       fill="1"
       fillcolor="black"
@@ -4900,7 +4930,7 @@ flat Move List</UML:TaggedValue.dataValue>
       strokecolor="black"
     />
     <group name="Fig4.4"
-         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[273, 537, 294, 21]"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[289, 545, 259, 21]"
          href="-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000AB1"
          fill="0"
          fillcolor="white"
@@ -4911,9 +4941,9 @@ flat Move List</UML:TaggedValue.dataValue>
       </private>
       
       <rectangle name="Fig4.4.0"
-        x="273"
-        y="537"
-        width="294"
+        x="289"
+        y="545"
+        width="259"
         height="21"
         fill="0"
         fillcolor="white"
@@ -4922,9 +4952,9 @@ flat Move List</UML:TaggedValue.dataValue>
       />
     </group>
     <rectangle name="Fig4.5"
-      x="272"
-      y="557"
-      width="296"
+      x="288"
+      y="565"
+      width="261"
       height="1"
       fill="1"
       fillcolor="black"
@@ -4932,7 +4962,7 @@ flat Move List</UML:TaggedValue.dataValue>
       strokecolor="black"
     />
     <group name="Fig4.6"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[273, 558, 294, 229]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[289, 566, 259, 212]"
          href="-64--88--22-1-6d4d0e:134bd71b379:-8000:0000000000000AB1"
          fill="0"
          fillcolor="white"
@@ -4943,19 +4973,19 @@ flat Move List</UML:TaggedValue.dataValue>
       </private>
       
       <rectangle name="Fig4.6.0"
-        x="273"
-        y="558"
-        width="294"
-        height="229"
+        x="289"
+        y="566"
+        width="259"
+        height="212"
         fill="0"
         fillcolor="white"
         stroke="0"
         strokecolor="black"
       />
       <text name="Fig4.6.1"
-        x="273"
-        y="558"
-        width="294"
+        x="289"
+        y="566"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -4969,9 +4999,9 @@ flat Move List</UML:TaggedValue.dataValue>
         justification="Left"
       >newDetective()</text>
       <text name="Fig4.6.2"
-        x="273"
-        y="575"
-        width="294"
+        x="289"
+        y="583"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -4985,9 +5015,9 @@ flat Move List</UML:TaggedValue.dataValue>
         justification="Left"
       >newMrX()</text>
       <text name="Fig4.6.3"
-        x="273"
-        y="592"
-        width="294"
+        x="289"
+        y="600"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5001,9 +5031,9 @@ flat Move List</UML:TaggedValue.dataValue>
         justification="Left"
       >removeDetective(detective : DetectivePlayer)</text>
       <text name="Fig4.6.4"
-        x="273"
-        y="609"
-        width="294"
+        x="289"
+        y="617"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5017,9 +5047,9 @@ flat Move List</UML:TaggedValue.dataValue>
         justification="Left"
       >start()</text>
       <text name="Fig4.6.5"
-        x="273"
-        y="626"
-        width="294"
+        x="289"
+        y="634"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5033,9 +5063,9 @@ flat Move List</UML:TaggedValue.dataValue>
         justification="Left"
       >abort()</text>
       <text name="Fig4.6.6"
-        x="273"
-        y="643"
-        width="294"
+        x="289"
+        y="651"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5049,9 +5079,9 @@ flat Move List</UML:TaggedValue.dataValue>
         justification="Left"
       >move(move : Move)</text>
       <text name="Fig4.6.7"
-        x="273"
-        y="660"
-        width="294"
+        x="289"
+        y="668"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5065,9 +5095,9 @@ flat Move List</UML:TaggedValue.dataValue>
         justification="Left"
       >newGame()</text>
       <text name="Fig4.6.8"
-        x="273"
-        y="677"
-        width="294"
+        x="289"
+        y="685"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5081,25 +5111,9 @@ flat Move List</UML:TaggedValue.dataValue>
         justification="Left"
       >clearPlayers()</text>
       <text name="Fig4.6.9"
-        x="273"
-        y="694"
-        width="294"
-        height="17"
-        fill="0"
-        fillcolor="white"
-        stroke="0"
-        strokecolor="black"
-        textcolor="black"
-        font="Dialog"
-        italic="false"
-        bold="false"
-        textsize="12"
-        justification="Left"
-      >getUndoManager() : UndoManager</text>
-      <text name="Fig4.6.10"
-        x="273"
-        y="711"
-        width="294"
+        x="289"
+        y="702"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5112,10 +5126,10 @@ flat Move List</UML:TaggedValue.dataValue>
         textsize="12"
         justification="Left"
       >shiftUpDetective(detective : DetectivePlayer)</text>
-      <text name="Fig4.6.11"
-        x="273"
-        y="728"
-        width="294"
+      <text name="Fig4.6.10"
+        x="289"
+        y="719"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5128,10 +5142,10 @@ flat Move List</UML:TaggedValue.dataValue>
         textsize="12"
         justification="Left"
       >shiftDownDetective(detective : DetectivePlayer)</text>
-      <text name="Fig4.6.12"
-        x="273"
-        y="745"
-        width="294"
+      <text name="Fig4.6.11"
+        x="289"
+        y="736"
+        width="259"
         height="17"
         fill="0"
         fillcolor="white"
@@ -5144,10 +5158,10 @@ flat Move List</UML:TaggedValue.dataValue>
         textsize="12"
         justification="Left"
       >getWin() : GameWin</text>
-      <text name="Fig4.6.13"
-        x="273"
-        y="762"
-        width="294"
+      <text name="Fig4.6.12"
+        x="289"
+        y="753"
+        width="259"
         height="23"
         fill="0"
         fillcolor="white"
@@ -5408,7 +5422,7 @@ has access to the &quot;real&quot; Game!</text>
       <moveto x="312"
               y="488" />
       <lineto x="312"
-              y="512" />
+              y="520" />
     </path>
   </group>
   <group name="Fig8"
@@ -5867,7 +5881,7 @@ has access to the &quot;real&quot; Game!</text>
     </group>
   </group>
   <group name="Fig11"
-       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[1816, 728, 433, 72]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
+       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[1816, 712, 433, 72]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
        href="-64--88--78-22--60ee30d2:135c9d63415:-8000:0000000000000FFE"
        fill="1"
        fillcolor="white"
@@ -5880,7 +5894,7 @@ has access to the &quot;real&quot; Game!</text>
     
     <rectangle name="Fig11.0"
       x="1816"
-      y="728"
+      y="712"
       width="433"
       height="72"
       fill="1"
@@ -5890,7 +5904,7 @@ has access to the &quot;real&quot; Game!</text>
     />
     <text name="Fig11.1"
       x="1817"
-      y="729"
+      y="713"
       width="431"
       height="43"
       fill="0"
@@ -5905,7 +5919,7 @@ has access to the &quot;real&quot; Game!</text>
       justification="Center"
     >GameWinPolicy</text>
     <group name="Fig11.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1817, 729, 431, 20]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1817, 713, 431, 20]"
          href="-64--88--78-22--60ee30d2:135c9d63415:-8000:0000000000000FFE"
          fill="0"
          fillcolor="white"
@@ -5917,7 +5931,7 @@ has access to the &quot;real&quot; Game!</text>
       
       <rectangle name="Fig11.2.0"
         x="1817"
-        y="729"
+        y="713"
         width="431"
         height="20"
         fill="0"
@@ -5927,7 +5941,7 @@ has access to the &quot;real&quot; Game!</text>
       />
       <text name="Fig11.2.1"
         x="1817"
-        y="729"
+        y="713"
         width="431"
         height="18"
         fill="0"
@@ -5944,7 +5958,7 @@ has access to the &quot;real&quot; Game!</text>
     </group>
     <rectangle name="Fig11.3"
       x="1816"
-      y="772"
+      y="756"
       width="433"
       height="1"
       fill="1"
@@ -5953,7 +5967,7 @@ has access to the &quot;real&quot; Game!</text>
       strokecolor="black"
     />
     <group name="Fig11.4"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1817, 773, 431, 26]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1817, 757, 431, 26]"
          href="-64--88--78-22--60ee30d2:135c9d63415:-8000:0000000000000FFE"
          fill="0"
          fillcolor="white"
@@ -5965,7 +5979,7 @@ has access to the &quot;real&quot; Game!</text>
       
       <rectangle name="Fig11.4.0"
         x="1817"
-        y="773"
+        y="757"
         width="431"
         height="26"
         fill="0"
@@ -5975,7 +5989,7 @@ has access to the &quot;real&quot; Game!</text>
       />
       <text name="Fig11.4.1"
         x="1817"
-        y="773"
+        y="757"
         width="431"
         height="23"
         fill="0"
@@ -6165,7 +6179,7 @@ has access to the &quot;real&quot; Game!</text>
     </group>
   </group>
   <group name="Fig13"
-       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[1816, 488, 302, 87]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
+       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[1816, 488, 388, 70]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
        href="-64--88--78-22--5a550942:135d492f461:-8000:0000000000000B4D"
        fill="1"
        fillcolor="white"
@@ -6179,8 +6193,8 @@ has access to the &quot;real&quot; Game!</text>
     <rectangle name="Fig13.0"
       x="1816"
       y="488"
-      width="302"
-      height="87"
+      width="388"
+      height="70"
       fill="1"
       fillcolor="white"
       stroke="1"
@@ -6189,7 +6203,7 @@ has access to the &quot;real&quot; Game!</text>
     <text name="Fig13.1"
       x="1817"
       y="489"
-      width="300"
+      width="386"
       height="43"
       fill="0"
       fillcolor="white"
@@ -6203,7 +6217,7 @@ has access to the &quot;real&quot; Game!</text>
       justification="Center"
     >TurnPolicy</text>
     <group name="Fig13.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1817, 489, 300, 20]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1817, 489, 386, 20]"
          href="-64--88--78-22--5a550942:135d492f461:-8000:0000000000000B4D"
          fill="0"
          fillcolor="white"
@@ -6216,7 +6230,7 @@ has access to the &quot;real&quot; Game!</text>
       <rectangle name="Fig13.2.0"
         x="1817"
         y="489"
-        width="300"
+        width="386"
         height="20"
         fill="0"
         fillcolor="white"
@@ -6226,7 +6240,7 @@ has access to the &quot;real&quot; Game!</text>
       <text name="Fig13.2.1"
         x="1817"
         y="489"
-        width="300"
+        width="386"
         height="18"
         fill="0"
         fillcolor="white"
@@ -6243,7 +6257,7 @@ has access to the &quot;real&quot; Game!</text>
     <rectangle name="Fig13.3"
       x="1816"
       y="532"
-      width="302"
+      width="388"
       height="1"
       fill="1"
       fillcolor="black"
@@ -6251,7 +6265,7 @@ has access to the &quot;real&quot; Game!</text>
       strokecolor="black"
     />
     <group name="Fig13.4"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1817, 533, 300, 42]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1817, 533, 386, 25]"
          href="-64--88--78-22--5a550942:135d492f461:-8000:0000000000000B4D"
          fill="0"
          fillcolor="white"
@@ -6264,8 +6278,8 @@ has access to the &quot;real&quot; Game!</text>
       <rectangle name="Fig13.4.0"
         x="1817"
         y="533"
-        width="300"
-        height="42"
+        width="386"
+        height="25"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -6274,23 +6288,7 @@ has access to the &quot;real&quot; Game!</text>
       <text name="Fig13.4.1"
         x="1817"
         y="533"
-        width="300"
-        height="17"
-        fill="0"
-        fillcolor="white"
-        stroke="0"
-        strokecolor="black"
-        textcolor="black"
-        font="Dialog"
-        italic="false"
-        bold="false"
-        textsize="12"
-        justification="Left"
-      >getNextPlayer(gameState : GameState) : Player</text>
-      <text name="Fig13.4.2"
-        x="1817"
-        y="550"
-        width="300"
+        width="386"
         height="23"
         fill="0"
         fillcolor="white"
@@ -6302,7 +6300,7 @@ has access to the &quot;real&quot; Game!</text>
         bold="false"
         textsize="12"
         justification="Left"
-      >getNextRoundNumber(gameState : GameState) : int</text>
+      >getNextTurn(gameState : GameState,gameGraph : GameGraph) : Turn</text>
     </group>
   </group>
   <group name="Fig14"
@@ -6540,7 +6538,7 @@ has access to the &quot;real&quot; Game!</text>
         bold="false"
         textsize="12"
         justification="Left"
-      >getDetectivesPositions(roundNumber : Integer) : Set&lt;StationVertex&gt;</text>
+      >getDetectivePositions(roundNumber : Integer) : Set&lt;StationVertex&gt;</text>
       <text name="Fig14.6.8"
         x="1097"
         y="701"
@@ -8609,7 +8607,7 @@ has access to the &quot;real&quot; Game!</text>
       strokecolor="black"
     >
       <moveto x="400"
-              y="786" />
+              y="777" />
       <lineto x="400"
               y="1648" />
     </path>
@@ -11505,7 +11503,7 @@ control)!</text>
       strokecolor="51 51 153"
     >
       <moveto x="532"
-              y="512" />
+              y="520" />
       <lineto x="532"
               y="419" />
     </path>
@@ -12657,7 +12655,7 @@ control)!</text>
       justification="Center"
     >Station</text>
     <group name="Fig72.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1689, 1417, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1689, 1417, 226, 0]"
          href="-64--88--78-22-48c030a6:136913d3c96:-8000:0000000000000D05"
          fill="0"
          fillcolor="white"
@@ -12671,7 +12669,7 @@ control)!</text>
       <rectangle name="Fig72.2.0"
         x="1689"
         y="1417"
-        width="64"
+        width="226"
         height="0"
         fill="0"
         fillcolor="white"
@@ -12779,7 +12777,7 @@ control)!</text>
                         offset="25" />
     </private>
     <path name="Fig73.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -12830,7 +12828,7 @@ control)!</text>
       justification="Center"
     >Connection</text>
     <group name="Fig74.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2001, 1417, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2001, 1417, 251, 0]"
          href="-64--88--78-22-48c030a6:136913d3c96:-8000:0000000000000D08"
          fill="0"
          fillcolor="white"
@@ -12844,7 +12842,7 @@ control)!</text>
       <rectangle name="Fig74.2.0"
         x="2001"
         y="1417"
-        width="64"
+        width="251"
         height="0"
         fill="0"
         fillcolor="white"
@@ -12952,7 +12950,7 @@ control)!</text>
                         offset="25" />
     </private>
     <path name="Fig75.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -13003,7 +13001,7 @@ control)!</text>
       justification="Center"
     >TaxiConnection</text>
     <group name="Fig76.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1905, 1537, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1905, 1537, 230, 0]"
          href="-64--88--78-22-48c030a6:136913d3c96:-8000:0000000000000D0B"
          fill="0"
          fillcolor="white"
@@ -13017,7 +13015,7 @@ control)!</text>
       <rectangle name="Fig76.2.0"
         x="1905"
         y="1537"
-        width="64"
+        width="230"
         height="0"
         fill="0"
         fillcolor="white"
@@ -13129,7 +13127,7 @@ control)!</text>
       justification="Center"
     >BusConnection</text>
     <group name="Fig77.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2017, 1537, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2017, 1537, 230, 0]"
          href="-64--88--78-22-48c030a6:136913d3c96:-8000:0000000000000D0C"
          fill="0"
          fillcolor="white"
@@ -13143,7 +13141,7 @@ control)!</text>
       <rectangle name="Fig77.2.0"
         x="2017"
         y="1537"
-        width="64"
+        width="230"
         height="0"
         fill="0"
         fillcolor="white"
@@ -13255,7 +13253,7 @@ control)!</text>
       justification="Center"
     >UndergroundConnection</text>
     <group name="Fig78.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2129, 1537, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2129, 1537, 281, 0]"
          href="-64--88--78-22-48c030a6:136913d3c96:-8000:0000000000000D0D"
          fill="0"
          fillcolor="white"
@@ -13269,7 +13267,7 @@ control)!</text>
       <rectangle name="Fig78.2.0"
         x="2129"
         y="1537"
-        width="64"
+        width="281"
         height="0"
         fill="0"
         fillcolor="white"
@@ -13381,7 +13379,7 @@ control)!</text>
       justification="Center"
     >FerryConnection</text>
     <group name="Fig79.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2297, 1537, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2297, 1537, 235, 0]"
          href="-64--88--78-22-48c030a6:136913d3c96:-8000:0000000000000D0E"
          fill="0"
          fillcolor="white"
@@ -13395,7 +13393,7 @@ control)!</text>
       <rectangle name="Fig79.2.0"
         x="2297"
         y="1537"
-        width="64"
+        width="235"
         height="0"
         fill="0"
         fillcolor="white"
@@ -13487,7 +13485,7 @@ control)!</text>
                         offset="-10" />
     </private>
     <path name="Fig80.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -13522,7 +13520,7 @@ control)!</text>
                         offset="26" />
     </private>
     <path name="Fig81.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -13553,7 +13551,7 @@ control)!</text>
                         offset="52" />
     </private>
     <path name="Fig82.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -13584,7 +13582,7 @@ control)!</text>
                         offset="-10" />
     </private>
     <path name="Fig83.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -13645,7 +13643,7 @@ control)!</text>
                         offset="5" />
     </private>
     <path name="Fig84.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -13704,7 +13702,7 @@ control)!</text>
                         offset="5" />
     </private>
     <path name="Fig85.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -13715,6 +13713,180 @@ control)!</text>
       <lineto x="1728"
               y="1201" />
     </path>
+  </group>
+  <group name="Fig86"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[2136, 72, 309, 105]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       href="-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D26"
+       fill="1"
+       fillcolor="white"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+      enclosingFig="Fig2"
+    </private>
+    
+    <rectangle name="Fig86.0"
+      x="2136"
+      y="72"
+      width="309"
+      height="105"
+      fill="1"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    />
+    <text name="Fig86.1"
+      x="2137"
+      y="73"
+      width="307"
+      height="23"
+      fill="0"
+      fillcolor="white"
+      stroke="0"
+      strokecolor="black"
+      textcolor="black"
+      font="Dialog"
+      italic="false"
+      bold="false"
+      textsize="12"
+      justification="Center"
+    >Turn</text>
+    <group name="Fig86.2"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2137, 73, 64, 0]"
+         href="-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D26"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+         visibility="0"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig86.2.0"
+        x="2137"
+        y="73"
+        width="64"
+        height="0"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig86.3"
+      x="2136"
+      y="96"
+      width="309"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig86.4"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[2137, 97, 307, 21]"
+         href="-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D26"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig86.4.0"
+        x="2137"
+        y="97"
+        width="307"
+        height="21"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+    </group>
+    <rectangle name="Fig86.5"
+      x="2136"
+      y="117"
+      width="309"
+      height="1"
+      fill="1"
+      fillcolor="black"
+      stroke="1"
+      strokecolor="black"
+    />
+    <group name="Fig86.6"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[2137, 118, 307, 59]"
+         href="-127--69-118--34--195fc54d:136d68abe82:-8000:0000000000000D26"
+         fill="0"
+         fillcolor="white"
+         stroke="0"
+         strokecolor="black"
+    >
+      <private>
+      </private>
+      
+      <rectangle name="Fig86.6.0"
+        x="2137"
+        y="118"
+        width="307"
+        height="59"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+      />
+      <text name="Fig86.6.1"
+        x="2137"
+        y="118"
+        width="307"
+        height="17"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Dialog"
+        italic="false"
+        bold="false"
+        textsize="12"
+        justification="Left"
+      >&lt;&lt;create&gt;&gt; Turn(player : Player,roundNumber : Integer)</text>
+      <text name="Fig86.6.2"
+        x="2137"
+        y="135"
+        width="307"
+        height="17"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Dialog"
+        italic="false"
+        bold="false"
+        textsize="12"
+        justification="Left"
+      >getPlayer() : Player</text>
+      <text name="Fig86.6.3"
+        x="2137"
+        y="152"
+        width="307"
+        height="23"
+        fill="0"
+        fillcolor="white"
+        stroke="0"
+        strokecolor="black"
+        textcolor="black"
+        font="Dialog"
+        italic="false"
+        bold="false"
+        textsize="12"
+        justification="Left"
+      >getRoundNumber() : Integer</text>
+    </group>
   </group>
 </pgml>
 <pgml description="org.argouml.sequence2.diagram.UMLSequenceDiagram|-64--88--22-1-f61ec3b:134bd4433b3:-8000:0000000000000882"

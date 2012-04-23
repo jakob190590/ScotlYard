@@ -4,20 +4,20 @@ import java.util.Set;
 
 public class Station implements StationVertex {
 	
-	private GameGraph graph;
+	private GameGraph gameGraph;
 
-	public Station(GameGraph graph) {
-		this.graph = graph;
+	public Station(GameGraph gameGraph) {
+		this.gameGraph = gameGraph;
 	}
 
 	@Override
 	public Set<ConnectionEdge> getEdges() {		
-		return graph.edgesOf(this);
+		return gameGraph.getGraph().edgesOf(this);
 	}
 
 	@Override
 	public Set<ConnectionEdge> getEdges(StationVertex otherVertex) {
-		return graph.getAllEdges(this, otherVertex);
+		return gameGraph.getGraph().getAllEdges(this, otherVertex);
 	}
 
 }

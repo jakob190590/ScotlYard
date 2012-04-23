@@ -16,7 +16,10 @@ import kj.scotlyard.game.graph.StationVertex;
  * @author jakob190590
  *
  */
-public class Director {
+public final class Director {
+	
+	/** No instances */
+	private Director() { }
 	
 	/**
 	 * Dies ist nur ein Testprogramm.
@@ -27,20 +30,22 @@ public class Director {
 	public static void main(String... args) {
 		if (args.length == 1) {
 			
-			GraphDescriptionBuilder desc = new GraphDescriptionBuilder();
-			GameGraphBuilder graph = new GameGraphBuilder();
-			BoardGraphBuilder complete = new BoardGraphBuilder();
+			GraphDescriptionBuilder descBuilder = new GraphDescriptionBuilder();
+			GameGraphBuilder graphBuilder = new GameGraphBuilder();
+			
+			// Nur zum testen, ob sie fehlerlos durchlaufen:
+			ToolGraphBuilder toolBuilder = new ToolGraphBuilder();
 			
 			try {
-				construct(args[0], desc, graph, complete);
+				construct(args[0], descBuilder, graphBuilder, toolBuilder);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
-			System.out.println(desc.getDescription());
-			System.out.println(graph.getGameGraph() + ": " 
-					+ graph.getGameGraph().vertexSet().size() + " vertices, " 
-					+ graph.getGameGraph().edgeSet().size() + " edges");
+			System.out.println(descBuilder.getDescription());
+			System.out.println(graphBuilder.getGameGraph() + ": " 
+					+ graphBuilder.getGameGraph().getGraph().vertexSet().size() + " vertices, " 
+					+ graphBuilder.getGameGraph().getGraph().edgeSet().size() + " edges");
 			
 		} else {
 			System.out.println("One argument expected: description file pathname.");
@@ -50,14 +55,14 @@ public class Director {
 	/**
 	 * Liest aus der angegebenen Description Datei, und sagt den angegebenen Buildern,
 	 * was zu tun ist.
-	 * @param descriptionFilename Pfad zur Description Datei. Der Aufbau der Datei wird
+	 * @param graphDescriptionFilename Pfad zur Description Datei. Der Aufbau der Datei wird
 	 * im <tt>GraphDescriptionBuilder</tt> festgelegt!
 	 * @param builders die Builder, denen der Director die Anweisungen geben soll.
 	 * @throws IOException bei I/O-Fehler oder ungueltigem Aufbau der Datei.
 	 */
 	@SuppressWarnings("unchecked")
-	public static void construct(String descriptionFilename, GraphBuilder... builders) throws IOException {
-		Scanner sc = new Scanner(new File(descriptionFilename));
+	public static void construct(String graphDescriptionFilename, GraphBuilder... builders) throws IOException {
+		Scanner sc = new Scanner(new File(graphDescriptionFilename));
 		
 		try {
 			while (sc.hasNext()) {
