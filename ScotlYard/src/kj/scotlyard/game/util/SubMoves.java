@@ -25,7 +25,7 @@ public class SubMoves implements Iterable<Move> {
 	
 	private List<Move> subMoves = new LinkedList<>();
 	
-	public SubMoves addSubMove(StationVertex station, ConnectionEdge connection, Ticket ticket) {
+	public SubMoves add(StationVertex station, ConnectionEdge connection, Ticket ticket) {
 		
 		// Player and Numbers will be set later in createMultiMove
 		subMoves.add(new DefaultMove(null, 0, Move.NO_MOVE_NUMBER, 
