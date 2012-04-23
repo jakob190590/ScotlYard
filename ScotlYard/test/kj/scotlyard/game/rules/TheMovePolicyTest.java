@@ -24,16 +24,17 @@ import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.model.item.UndergroundTicket;
 import kj.scotlyard.game.util.GameStateExtension;
 import kj.scotlyard.game.util.MoveProducer;
+import kj.scotlyard.game.util.SubMoves;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class TheMovePolicyTest {
 
+	SubMoves subMoves;
+	
 	Rules r;
 	MovePolicy p;
-	
-	MoveProducer producer = MoveProducer.createInstance();
 	
 	Game g;
 	GameGraph gg;
@@ -140,24 +141,25 @@ public class TheMovePolicyTest {
 		
 		Move[][] ms = new Move[4][3];
 		
-		ms[0][0] = producer.createInitialMove(mrX, s2);
-		ms[1][0] = producer.createSingleMove(mrX, 1, 1, s1, bc1, (Ticket) getItem(mrX, BusTicket.class));
-		producer.addSubMove(s3, uc1, (Ticket) getItem(mrX, UndergroundTicket.class)); 
-		producer.addSubMove(s4, tc1, (Ticket) getItem(mrX, TaxiTicket.class));  
-		ms[2][0] = producer.createMultiMove(mrX, 2, 2, (DoubleMoveCard) getItem(mrX, DoubleMoveCard.class));
-		ms[3][0] = producer.createSingleMove(mrX, 3, 4, s1, uc1, (Ticket) getItem(mrX, UndergroundTicket.class));
+		ms[0][0] = MoveProducer.createInitialMove(mrX, s2);
+		ms[1][0] = MoveProducer.createSingleMove(mrX, 1, 1, s1, bc1, (Ticket) getItem(mrX, BusTicket.class));
+		subMoves = new SubMoves()
+				.add(s3, uc1, (Ticket) getItem(mrX, UndergroundTicket.class)) 
+				.add(s4, tc1, (Ticket) getItem(mrX, TaxiTicket.class));  
+		ms[2][0] = MoveProducer.createMultiMove(mrX, 2, 2, (DoubleMoveCard) getItem(mrX, DoubleMoveCard.class), subMoves);
+		ms[3][0] = MoveProducer.createSingleMove(mrX, 3, 4, s1, uc1, (Ticket) getItem(mrX, UndergroundTicket.class));
 		
 		
-		ms[0][1] = producer.createInitialMove(d1, s1);
-		ms[1][1] = producer.createSingleMove(d1, 1, 1, s2, uc1, (Ticket) getItem(d1, UndergroundTicket.class));
-		ms[2][1] = producer.createSingleMove(d1, 2, 2, s3, bc1, (Ticket) getItem(d1, BusTicket.class));  
-		ms[3][1] = producer.createSingleMove(d1, 3, 3, s4, tc1, (Ticket) getItem(d1, TaxiTicket.class));
+		ms[0][1] = MoveProducer.createInitialMove(d1, s1);
+		ms[1][1] = MoveProducer.createSingleMove(d1, 1, 1, s2, uc1, (Ticket) getItem(d1, UndergroundTicket.class));
+		ms[2][1] = MoveProducer.createSingleMove(d1, 2, 2, s3, bc1, (Ticket) getItem(d1, BusTicket.class));  
+		ms[3][1] = MoveProducer.createSingleMove(d1, 3, 3, s4, tc1, (Ticket) getItem(d1, TaxiTicket.class));
 		
 		
-		ms[0][2] = producer.createInitialMove(d2, s1);
-		ms[1][2] = producer.createSingleMove(d2, 1, 1, s2, tc1, (Ticket) getItem(d2, TaxiTicket.class));
-		ms[2][2] = producer.createSingleMove(d2, 2, 2, s3, uc1, (Ticket) getItem(d2, UndergroundTicket.class));  
-		ms[3][2] = producer.createSingleMove(d2, 3, 3, s4, bc1, (Ticket) getItem(d2, BusTicket.class));
+		ms[0][2] = MoveProducer.createInitialMove(d2, s1);
+		ms[1][2] = MoveProducer.createSingleMove(d2, 1, 1, s2, tc1, (Ticket) getItem(d2, TaxiTicket.class));
+		ms[2][2] = MoveProducer.createSingleMove(d2, 2, 2, s3, uc1, (Ticket) getItem(d2, UndergroundTicket.class));  
+		ms[3][2] = MoveProducer.createSingleMove(d2, 3, 3, s4, bc1, (Ticket) getItem(d2, BusTicket.class));
 		
 		int i = 0; // runde
 		for (Move[] ms1 : ms) {
@@ -185,7 +187,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// player not part of game
-					p.checkMove(g, gg, producer.createInitialMove(new MrXPlayer(), s1));
+					p.checkMove(g, gg, MoveProducer.createInitialMove(new MrXPlayer(), s1));
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
 					if (!e.getMessage().contains("not part of"))
@@ -195,7 +197,7 @@ public class TheMovePolicyTest {
 				if (pl != g.getPlayers().get(0)) {
 					try {
 						// not players turn
-						p.checkMove(g, gg, producer.createInitialMove(g.getPlayers().get(0), s1));
+						p.checkMove(g, gg, MoveProducer.createInitialMove(g.getPlayers().get(0), s1));
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
 						if (!e.getMessage().contains("turn"))
@@ -205,7 +207,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// missing station
-					p.checkMove(g, gg, producer.createInitialMove(pl, j, null));
+					p.checkMove(g, gg, MoveProducer.createInitialMove(pl, j, null));
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
 					if (!e.getMessage().contains("station"))
@@ -215,7 +217,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// wrong round number
-					p.checkMove(g, gg, producer.createInitialMove(pl, 2, s2));
+					p.checkMove(g, gg, MoveProducer.createInitialMove(pl, 2, s2));
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
 					if (!e.getMessage().contains("round number"))
@@ -225,7 +227,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// pass item in initial move
-					Move m = producer.createInitialMove(pl, j, s3);
+					Move m = MoveProducer.createInitialMove(pl, j, s3);
 					m.setItem(dmc);
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
@@ -237,7 +239,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// pass ticket in initial move
-					Move m = producer.createInitialMove(pl, j, s3);
+					Move m = MoveProducer.createInitialMove(pl, j, s3);
 					m.setItem(tt);
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
@@ -249,7 +251,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// pass connection in initial move
-					Move m = producer.createInitialMove(pl, j, s3);
+					Move m = MoveProducer.createInitialMove(pl, j, s3);
 					m.setConnection(bc1);
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
@@ -261,7 +263,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// pass move index in initial move
-					Move m = producer.createInitialMove(pl, j, s3);
+					Move m = MoveProducer.createInitialMove(pl, j, s3);
 					m.setMoveIndex(0);
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
@@ -273,7 +275,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// wrong move number in initial move
-					Move m = producer.createInitialMove(pl, j, s3);
+					Move m = MoveProducer.createInitialMove(pl, j, s3);
 					m.setMoveNumber(1);
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
@@ -285,8 +287,8 @@ public class TheMovePolicyTest {
 				
 				try {
 					// pass sub move in initial move
-					Move m = producer.createInitialMove(pl, j, s3);
-					m.getMoves().add(producer.createSingleMove(pl, 0, 0, s3, bc1, tt));
+					Move m = MoveProducer.createInitialMove(pl, j, s3);
+					m.getMoves().add(MoveProducer.createSingleMove(pl, 0, 0, s3, bc1, tt));
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
@@ -304,7 +306,7 @@ public class TheMovePolicyTest {
 		
 		for (Player pl : g.getPlayers()) {
 			g.setCurrentPlayer(pl);
-			Move m = producer.createInitialMove(pl, s1);
+			Move m = MoveProducer.createInitialMove(pl, s1);
 			p.checkMove(g, gg, m);
 			g.getMoves().add(m);
 		}
@@ -318,7 +320,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// player not part of game
-					p.checkMove(g, gg, producer.createInitialMove(new MrXPlayer(), s1));
+					p.checkMove(g, gg, MoveProducer.createInitialMove(new MrXPlayer(), s1));
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
 					if (!e.getMessage().contains("not part of"))
@@ -328,7 +330,7 @@ public class TheMovePolicyTest {
 				if (pl != g.getPlayers().get(0)) {
 					try {
 						// not players turn
-						p.checkMove(g, gg, producer.createInitialMove(g.getPlayers().get(0), s1));
+						p.checkMove(g, gg, MoveProducer.createInitialMove(g.getPlayers().get(0), s1));
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
 						if (!e.getMessage().contains("turn"))
@@ -338,7 +340,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// invalid round number
-					Move m = producer.createSingleMove(pl, j+3, j, s4, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
+					Move m = MoveProducer.createSingleMove(pl, j+3, j, s4, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
@@ -349,7 +351,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// invalid move number
-					Move m = producer.createSingleMove(pl, j, j+3, s4, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
+					Move m = MoveProducer.createSingleMove(pl, j, j+3, s4, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
@@ -359,7 +361,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// wrong move index
-					Move m = producer.createSingleMove(pl, j, j, s4, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
+					Move m = MoveProducer.createSingleMove(pl, j, j, s4, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
 					m.setMoveIndex(0);
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
@@ -370,7 +372,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// station null
-					Move m = producer.createSingleMove(pl, j, j, null, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
+					Move m = MoveProducer.createSingleMove(pl, j, j, null, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
@@ -380,7 +382,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// stolen ticket
-					Move m = producer.createSingleMove(pl, j, j, s4, bc1, bt);
+					Move m = MoveProducer.createSingleMove(pl, j, j, s4, bc1, bt);
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
@@ -391,7 +393,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// invalid ticket
-					Move m = producer.createSingleMove(pl, j, j, s4, bc1, (Ticket) ext.getItem(pl, TaxiTicket.class));
+					Move m = MoveProducer.createSingleMove(pl, j, j, s4, bc1, (Ticket) ext.getItem(pl, TaxiTicket.class));
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
@@ -401,7 +403,7 @@ public class TheMovePolicyTest {
 				
 				try {
 					// not ticket but double move card
-					Move m = producer.createSingleMove(pl, j, j, s4, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
+					Move m = MoveProducer.createSingleMove(pl, j, j, s4, bc1, (Ticket) ext.getItem(pl, BusTicket.class));
 					m.setItem(dmc);
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
@@ -411,7 +413,7 @@ public class TheMovePolicyTest {
 				}				
 				
 				// sauberen move adden, damit der test in die naechste runde gehen kann
-				g.getMoves().add(producer.createSingleMove(pl, j, j, s4, tc1, (Ticket) ext.getItem(pl, TaxiTicket.class)));
+				g.getMoves().add(MoveProducer.createSingleMove(pl, j, j, s4, tc1, (Ticket) ext.getItem(pl, TaxiTicket.class)));
 			}
 		}		
 	}
@@ -422,7 +424,7 @@ public class TheMovePolicyTest {
 		
 		for (Player pl : g.getPlayers()) {
 			g.setCurrentPlayer(pl);
-			Move m = producer.createInitialMove(pl, s1);
+			Move m = MoveProducer.createInitialMove(pl, s1);
 			p.checkMove(g, gg, m);
 			g.getMoves().add(m);
 		}
@@ -438,9 +440,10 @@ public class TheMovePolicyTest {
 				
 				try {
 					// player not part of game
-					producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-					producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-					Move m = producer.createMultiMove(new MrXPlayer(), j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+					subMoves = new SubMoves()
+							.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+							.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+					Move m = MoveProducer.createMultiMove(new MrXPlayer(), j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 					p.checkMove(g, gg, m);
 					fail("move exception expected");
 				} catch (IllegalMoveException e) {
@@ -452,9 +455,10 @@ public class TheMovePolicyTest {
 				if (pl != g.getDetectives().get(0)) {
 					try {
 						// not player's turn
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(g.getDetectives().get(0), j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(g.getDetectives().get(0), j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
@@ -466,9 +470,10 @@ public class TheMovePolicyTest {
 				if (pl instanceof DetectivePlayer) {
 					try {
 						// only mr x can
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(new MrXPlayer(), j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(new MrXPlayer(), j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
@@ -480,9 +485,10 @@ public class TheMovePolicyTest {
 				if (pl == g.getMrX()) {
 					try {
 						// players differs
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						m.getMoves().get(1).setPlayer(new MrXPlayer());
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
@@ -493,9 +499,10 @@ public class TheMovePolicyTest {
 					
 					try {
 						// round number differs
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						m.getMoves().get(1).setRoundNumber(0);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
@@ -506,9 +513,10 @@ public class TheMovePolicyTest {
 					
 					try {
 						// wrong move index in sub move
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+						.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+						.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						m.getMoves().get(1).setMoveIndex(3);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
@@ -518,9 +526,10 @@ public class TheMovePolicyTest {
 					}
 					try {
 						// wrong move number in sub move
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+						.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+						.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						m.getMoves().get(1).setMoveNumber(40);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
@@ -531,10 +540,11 @@ public class TheMovePolicyTest {
 					
 					try {
 						// triple move forbidden
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
@@ -544,8 +554,9 @@ public class TheMovePolicyTest {
 					
 					try {
 						// komischer move forbidden
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
@@ -555,10 +566,11 @@ public class TheMovePolicyTest {
 					
 					try {
 						// further sub move forbidden
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
-						m.getMoves().get(0).getMoves().add(producer.createInitialMove(new DetectivePlayer(), s4));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
+						m.getMoves().get(0).getMoves().add(MoveProducer.createInitialMove(new DetectivePlayer(), s4));
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
@@ -568,9 +580,10 @@ public class TheMovePolicyTest {
 					
 					try {
 						// no connection in sub move
-						producer.addSubMove(new Station(gg), null, (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), null, (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
@@ -580,9 +593,10 @@ public class TheMovePolicyTest {
 					
 					try {
 						// a connection in base move
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						m.setConnection(tc2);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
@@ -593,9 +607,10 @@ public class TheMovePolicyTest {
 					
 					try {
 						// stolen ticket in sub move
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						m.getMoves().get(0).setItem(new TaxiTicket());
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
@@ -606,9 +621,10 @@ public class TheMovePolicyTest {
 					
 					try {
 						// invalid ticket in sub move
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, UndergroundTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, UndergroundTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
@@ -618,9 +634,10 @@ public class TheMovePolicyTest {
 					
 					try {
 						// no correct multi move card
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						m.setItem(new TaxiTicket());
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
@@ -631,9 +648,10 @@ public class TheMovePolicyTest {
 					
 					try {
 						// no item in base move
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						m.setItem(null);
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
@@ -644,9 +662,10 @@ public class TheMovePolicyTest {
 					
 					try {
 						// stolen correct multi move card
-						producer.addSubMove(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class));
-						producer.addSubMove(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
-						Move m = producer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class));
+						subMoves = new SubMoves()
+								.add(new Station(gg), new TaxiConnection(gg), (Ticket) ext.getItem(pl, TaxiTicket.class))
+								.add(new Station(gg), new BusConnection(gg), (Ticket) ext.getItem(pl, BusTicket.class));
+						Move m = MoveProducer.createMultiMove(pl, j, j, (DoubleMoveCard) ext.getItem(pl, DoubleMoveCard.class), subMoves);
 						m.setItem(new DoubleMoveCard());
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
@@ -663,7 +682,7 @@ public class TheMovePolicyTest {
 				
 				
 				// sauberen move adden, damit der test in die naechste runde gehen kann
-				g.getMoves().add(producer.createSingleMove(pl, j, j, s4, tc1, (Ticket) ext.getItem(pl, TaxiTicket.class)));
+				g.getMoves().add(MoveProducer.createSingleMove(pl, j, j, s4, tc1, (Ticket) ext.getItem(pl, TaxiTicket.class)));
 			}
 		}
 	}
@@ -672,11 +691,12 @@ public class TheMovePolicyTest {
 	public final void testGetNextItemOwner() {
 		// mrX
 		// pos
-		Move m1 = producer.createInitialMove(mrX, s2);
-		Move m2 = producer.createSingleMove(mrX, 1, 1, s1, bc1, blt);		
-		producer.addSubMove(s3, uc1, ut);
-		producer.addSubMove(s4, tc1, tt);
-		Move m3 = producer.createMultiMove(mrX, 2, 2, dmc);  
+		Move m1 = MoveProducer.createInitialMove(mrX, s2);
+		Move m2 = MoveProducer.createSingleMove(mrX, 1, 1, s1, bc1, blt);		
+		subMoves = new SubMoves()
+				.add(s3, uc1, ut)
+				.add(s4, tc1, tt);
+		Move m3 = MoveProducer.createMultiMove(mrX, 2, 2, dmc, subMoves);  
 		
 		assertEquals(null, p.getNextItemOwner(g, m1, m1.getItem()));
 		assertEquals(null, p.getNextItemOwner(g, m2, m2.getItem()));
@@ -708,8 +728,8 @@ public class TheMovePolicyTest {
 	
 		
 		// detectives
-		m1 = producer.createInitialMove(d1, s2);
-		m2 = producer.createSingleMove(d1, 1, 1, s1, bc1, bt);
+		m1 = MoveProducer.createInitialMove(d1, s2);
+		m2 = MoveProducer.createSingleMove(d1, 1, 1, s1, bc1, bt);
 		
 		assertEquals(null, p.getNextItemOwner(g, m1, m1.getItem()));
 		assertEquals(g.getMrX(), p.getNextItemOwner(g, m2, m2.getItem()));

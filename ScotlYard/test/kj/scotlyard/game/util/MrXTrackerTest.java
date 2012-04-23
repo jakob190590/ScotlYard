@@ -30,9 +30,6 @@ public class MrXTrackerTest {
 	GameStateExtension ext;
 	MrXTracker tr;
 	
-	MoveProducer prod = MoveProducer.createInstance();
-	
-	
 	MrXPlayer mrX;
 	DetectivePlayer d1, d2, d3, d4;
 	Move[] ms = new Move[100];
@@ -59,26 +56,31 @@ public class MrXTrackerTest {
 		int j = 0;
 		for (int i = 0; i < 20; i++) {
 			for (Player p : g.getPlayers()) {
-				ms[j] = prod.createSingleMove(p, i, i,
+				ms[j] = MoveProducer.createSingleMove(p, i, i,
 						new Station(gg), new TaxiConnection(gg), new TaxiTicket());
 				j++;
 			}
 		}
+		
+		SubMoves subMoves;
 
 		// round number 1
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
-		ms[5] = prod.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		ms[5] = MoveProducer.createMultiMove(mrX, 1, 1, new DoubleMoveCard(), subMoves);
 
 		// round number 2
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
-		ms[10] = prod.createMultiMove(mrX, 2, 3, new DoubleMoveCard());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		ms[10] = MoveProducer.createMultiMove(mrX, 2, 3, new DoubleMoveCard(), subMoves);
 		
 		// round number 5
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
-		ms[25] = prod.createMultiMove(mrX, 5, 7, new DoubleMoveCard());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		ms[25] = MoveProducer.createMultiMove(mrX, 5, 7, new DoubleMoveCard(), subMoves);
 
 		// Move numbers fuer mrX neu anpassen (wegen den nachtraeglichen multi moves)
 		int n = 0;

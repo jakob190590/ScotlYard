@@ -53,8 +53,6 @@ public class InGameControllerTest {
 		initialStations = loader.getInitialStations();
 	}
 	
-	final MoveProducer mp = MoveProducer.createInstance(); // move producer
-	
 	final Rules r = new TheRules();
 	
 	Game g;
@@ -199,7 +197,7 @@ public class InGameControllerTest {
 		GameWinPolicy winPolicy = new TheGameWinPolicy();		
 		
 		for (int i = 0; i < 100; i++) {
-			Move m = mp.createNextBestSingleMove(g, gg);
+			Move m = MoveProducer.createNextBestSingleMove(g, gg);
 			Set<Item> i1 = new HashSet<>(g.getItems(m.getPlayer()));
 			
 			GameState vorher = g.copy();
