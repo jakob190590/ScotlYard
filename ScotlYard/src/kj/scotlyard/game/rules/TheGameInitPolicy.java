@@ -29,7 +29,7 @@ public class TheGameInitPolicy implements GameInitPolicy {
 				set.add(item.newInstance());			
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("Does not work for given item class", e);
+			throw new IllegalArgumentException("Does not work for given item class.", e);
 		}
 	}	
 	

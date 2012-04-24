@@ -35,18 +35,20 @@ public class ItemDealer {
 
 		return n;
 	}
-	
-	boolean addItems(Player player, int count, Class<? extends Item> itemType) {
+
+	void addItems(Player player, int count, Class<? extends Item> itemType) {
 		try {
+			
 			Set<Item> set = new HashSet<>();
 			for (int i = 0; i < count; i++) {
 				set.add(itemType.newInstance());
 			}
-			
+
 			game.getItems(player).addAll(set);
-			return true;
+
 		} catch (Exception e) {
-			return false;
+			throw new IllegalArgumentException("Does not work for given item class. " +
+					"You can create the items manually and add them via getItems.", e);
 		}
 	}
 	
