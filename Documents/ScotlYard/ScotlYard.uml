@@ -26,7 +26,7 @@
       <fontname>Dialog</fontname>
       <fontsize>12</fontsize>
       <defaultstereotypeview>0</defaultstereotypeview>
-      <activediagram>Implementation</activediagram>
+      <activediagram>Interfaces</activediagram>
     </settings>
     <searchpath href="PROJECT_DIR" />
     <members>
@@ -66,7 +66,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Apr 25 00:20:07 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Apr 25 10:29:47 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -1089,7 +1089,7 @@ to AIs (DetectiveAI and MrXAI) or the GUI.</UML:TaggedValue.dataValue>
                 <UML:Operation xmi.id = '-64--88--78-22--5a550942:135d492f461:-8000:0000000000000B56'
                   name = 'suggestInitialStation' visibility = 'public' isSpecification = 'false'
                   ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-                  isLeaf = 'false' isAbstract = 'false' specification = 'returns a unique station for each player in gameState.getPlayers().&#10;raises an exception, if there are too much players/too less stations'>
+                  isLeaf = 'false' isAbstract = 'false' specification = 'returns a unique station for each player it is called for.&#10;raises an exception, if there are too much players/too less stations.&#10;&#10;initialStations is the Set of Stations, a player can start from.&#10;it belongs to the graph rather than the rules, so it is passed&#10;as an argument.'>
                   <UML:ModelElement.taggedValue>
                     <UML:TaggedValue xmi.id = '-127--69-52--85--20670a08:135f859330d:-8000:0000000000000BC3'
                       isSpecification = 'false'>
@@ -1119,7 +1119,7 @@ to AIs (DetectiveAI and MrXAI) or the GUI.</UML:TaggedValue.dataValue>
                       </UML:Parameter.type>
                     </UML:Parameter>
                     <UML:Parameter xmi.id = '-64--88--78-22--3598f0e:13613496f80:-8000:0000000000000BE3'
-                      name = 'possibleInitialStations' isSpecification = 'false' kind = 'in'>
+                      name = 'initialStations' isSpecification = 'false' kind = 'in'>
                       <UML:Parameter.type>
                         <UML:Class xmi.idref = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C4C'/>
                       </UML:Parameter.type>
@@ -6042,7 +6042,7 @@ has access to the &quot;real&quot; Game!</text>
     </group>
   </group>
   <group name="Fig12"
-       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[1816, 352, 768, 121]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
+       description="org.argouml.uml.diagram.static_structure.ui.FigInterface[1816, 352, 710, 121]pathVisible=false;stereotypeView=0;operationsVisible=true;operationsVisible=true"
        href="-64--88--78-22--60ee30d2:135c9d63415:-8000:000000000000101A"
        fill="1"
        fillcolor="white"
@@ -6056,7 +6056,7 @@ has access to the &quot;real&quot; Game!</text>
     <rectangle name="Fig12.0"
       x="1816"
       y="352"
-      width="768"
+      width="710"
       height="121"
       fill="1"
       fillcolor="white"
@@ -6066,7 +6066,7 @@ has access to the &quot;real&quot; Game!</text>
     <text name="Fig12.1"
       x="1817"
       y="353"
-      width="766"
+      width="708"
       height="43"
       fill="0"
       fillcolor="white"
@@ -6080,7 +6080,7 @@ has access to the &quot;real&quot; Game!</text>
       justification="Center"
     >GameInitPolicy</text>
     <group name="Fig12.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1817, 353, 766, 20]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1817, 353, 708, 20]"
          href="-64--88--78-22--60ee30d2:135c9d63415:-8000:000000000000101A"
          fill="0"
          fillcolor="white"
@@ -6093,7 +6093,7 @@ has access to the &quot;real&quot; Game!</text>
       <rectangle name="Fig12.2.0"
         x="1817"
         y="353"
-        width="766"
+        width="708"
         height="20"
         fill="0"
         fillcolor="white"
@@ -6103,7 +6103,7 @@ has access to the &quot;real&quot; Game!</text>
       <text name="Fig12.2.1"
         x="1817"
         y="353"
-        width="766"
+        width="708"
         height="18"
         fill="0"
         fillcolor="white"
@@ -6120,7 +6120,7 @@ has access to the &quot;real&quot; Game!</text>
     <rectangle name="Fig12.3"
       x="1816"
       y="396"
-      width="768"
+      width="710"
       height="1"
       fill="1"
       fillcolor="black"
@@ -6128,7 +6128,7 @@ has access to the &quot;real&quot; Game!</text>
       strokecolor="black"
     />
     <group name="Fig12.4"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1817, 397, 766, 76]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1817, 397, 708, 76]"
          href="-64--88--78-22--60ee30d2:135c9d63415:-8000:000000000000101A"
          fill="0"
          fillcolor="white"
@@ -6141,7 +6141,7 @@ has access to the &quot;real&quot; Game!</text>
       <rectangle name="Fig12.4.0"
         x="1817"
         y="397"
-        width="766"
+        width="708"
         height="76"
         fill="0"
         fillcolor="white"
@@ -6151,7 +6151,7 @@ has access to the &quot;real&quot; Game!</text>
       <text name="Fig12.4.1"
         x="1817"
         y="397"
-        width="766"
+        width="708"
         height="17"
         fill="0"
         fillcolor="white"
@@ -6167,7 +6167,7 @@ has access to the &quot;real&quot; Game!</text>
       <text name="Fig12.4.2"
         x="1817"
         y="414"
-        width="766"
+        width="708"
         height="17"
         fill="0"
         fillcolor="white"
@@ -6183,7 +6183,7 @@ has access to the &quot;real&quot; Game!</text>
       <text name="Fig12.4.3"
         x="1817"
         y="431"
-        width="766"
+        width="708"
         height="17"
         fill="0"
         fillcolor="white"
@@ -6195,11 +6195,11 @@ has access to the &quot;real&quot; Game!</text>
         bold="false"
         textsize="12"
         justification="Left"
-      >suggestInitialStation(gameState : GameState,gameGraph : GameGraph,possibleInitialStations : Set&lt;StationVertex&gt;,player : Player) : Station</text>
+      >suggestInitialStation(gameState : GameState,gameGraph : GameGraph,initialStations : Set&lt;StationVertex&gt;,player : Player) : Station</text>
       <text name="Fig12.4.4"
         x="1817"
         y="448"
-        width="766"
+        width="708"
         height="23"
         fill="0"
         fillcolor="white"
@@ -14078,9 +14078,9 @@ control)!</text>
       <lineto x="798"
               y="16" />
       <lineto x="798"
-              y="39" />
+              y="40" />
       <lineto x="847"
-              y="39" />
+              y="40" />
       <lineto x="847"
               y="543" />
       <lineto x="16"
@@ -14092,7 +14092,7 @@ control)!</text>
       x="16"
       y="16"
       width="783"
-      height="24"
+      height="25"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -14129,9 +14129,9 @@ control)!</text>
     </group>
     <text name="Fig2.4"
       x="16"
-      y="39"
+      y="40"
       width="832"
-      height="505"
+      height="504"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -15901,9 +15901,9 @@ else
       <lineto x="1798"
               y="16" />
       <lineto x="1798"
-              y="39" />
+              y="40" />
       <lineto x="1847"
-              y="39" />
+              y="40" />
       <lineto x="1847"
               y="543" />
       <lineto x="872"
@@ -15915,7 +15915,7 @@ else
       x="872"
       y="16"
       width="927"
-      height="24"
+      height="25"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -15952,9 +15952,9 @@ else
     </group>
     <text name="Fig22.4"
       x="872"
-      y="39"
+      y="40"
       width="976"
-      height="505"
+      height="504"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -15968,7 +15968,7 @@ else
     ></text>
   </group>
   <group name="Fig23"
-       description="org.argouml.uml.diagram.static_structure.ui.FigClass[944, 344, 828, 101]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[944, 344, 834, 105]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
        href="-64--88--78-22-6c12df7:136626a351d:-8000:0000000000000C64"
        fill="1"
        fillcolor="white"
@@ -15982,8 +15982,8 @@ else
     <rectangle name="Fig23.0"
       x="944"
       y="344"
-      width="828"
-      height="101"
+      width="834"
+      height="105"
       fill="1"
       fillcolor="white"
       stroke="1"
@@ -15992,8 +15992,8 @@ else
     <text name="Fig23.1"
       x="945"
       y="345"
-      width="826"
-      height="22"
+      width="832"
+      height="23"
       fill="0"
       fillcolor="white"
       stroke="0"
@@ -16030,8 +16030,8 @@ else
     </group>
     <rectangle name="Fig23.3"
       x="944"
-      y="367"
-      width="828"
+      y="368"
+      width="834"
       height="1"
       fill="1"
       fillcolor="black"
@@ -16039,7 +16039,7 @@ else
       strokecolor="black"
     />
     <group name="Fig23.4"
-         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[945, 368, 826, 21]"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[945, 369, 832, 21]"
          href="-64--88--78-22-6c12df7:136626a351d:-8000:0000000000000C64"
          fill="0"
          fillcolor="white"
@@ -16051,8 +16051,8 @@ else
       
       <rectangle name="Fig23.4.0"
         x="945"
-        y="368"
-        width="826"
+        y="369"
+        width="832"
         height="21"
         fill="0"
         fillcolor="white"
@@ -16062,8 +16062,8 @@ else
     </group>
     <rectangle name="Fig23.5"
       x="944"
-      y="388"
-      width="828"
+      y="389"
+      width="834"
       height="1"
       fill="1"
       fillcolor="black"
@@ -16071,7 +16071,7 @@ else
       strokecolor="black"
     />
     <group name="Fig23.6"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[945, 389, 826, 56]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[945, 390, 832, 59]"
          href="-64--88--78-22-6c12df7:136626a351d:-8000:0000000000000C64"
          fill="0"
          fillcolor="white"
@@ -16083,9 +16083,9 @@ else
       
       <rectangle name="Fig23.6.0"
         x="945"
-        y="389"
-        width="826"
-        height="56"
+        y="390"
+        width="832"
+        height="59"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -16093,9 +16093,9 @@ else
       />
       <text name="Fig23.6.1"
         x="945"
-        y="389"
-        width="826"
-        height="16"
+        y="390"
+        width="832"
+        height="17"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -16109,9 +16109,9 @@ else
       >createInitialMove(player : Player,roundNumber : Integer = 0,station : StationVertex) : Move</text>
       <text name="Fig23.6.2"
         x="945"
-        y="405"
-        width="826"
-        height="16"
+        y="407"
+        width="832"
+        height="17"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -16125,9 +16125,9 @@ else
       >createSingleMove(player : Player,roundNumber : Integer,moveNumber : Integer,station : StationVertex,connection : ConnectionEdge,ticket : Ticket) : Move</text>
       <text name="Fig23.6.3"
         x="945"
-        y="421"
-        width="826"
-        height="22"
+        y="424"
+        width="832"
+        height="23"
         fill="0"
         fillcolor="white"
         stroke="0"
@@ -16180,7 +16180,7 @@ else
       justification="Center"
     >SubMoves</text>
     <group name="Fig24.2"
-         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[945, 209, 64, 0]"
+         description="org.argouml.uml.diagram.ui.FigStereotypesGroup[945, 209, 454, 0]"
          href="-64--88--78-22-570a2ce4:136e668fcfa:-8000:0000000000000D2E"
          fill="0"
          fillcolor="white"
@@ -16194,7 +16194,7 @@ else
       <rectangle name="Fig24.2.0"
         x="945"
         y="209"
-        width="64"
+        width="454"
         height="0"
         fill="0"
         fillcolor="white"
@@ -16411,7 +16411,7 @@ else
                         offset="49" />
     </private>
     <path name="Fig26.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"

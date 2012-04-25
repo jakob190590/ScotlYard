@@ -314,7 +314,7 @@ class NotInGameControllerState extends GameControllerState {
 		final GameInitPolicy initPolicy = rules.getGameInitPolicy();
 		final TurnPolicy turnPolicy = rules.getTurnPolicy();
 		
-		final Set<StationVertex> initialStations = getController().getInitialPositions();
+		final Set<StationVertex> initialStations = getController().getInitialStations();
 
 		final MoveProducer moveProducer = MoveProducer.createInstance();
 				
