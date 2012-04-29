@@ -32,8 +32,16 @@ public class DefaultGameState extends AbstractGameState {
 		gameState.addMoveListener(getMoveListenerInformer());
 	}
 	
+	/** 
+	 * Getter, weil abgeleitete Klassen u.a.
+	 * in copy darauf zugreifen muessen.
+	 */
+	protected GameState getGameState() {
+		return gameState;
+	}
+	
 	@Override
-	public boolean equals(Object obj) {
+ 	public boolean equals(Object obj) {
 		if (obj == this || (obj instanceof DefaultGameState 
 				&& gameState.equals(((DefaultGameState) obj).gameState))) {
 			

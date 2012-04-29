@@ -5,18 +5,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.attributes.DefaultSealable;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.model.AbstractGameState;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.DefaultGameState;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
-import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.Item;
 
@@ -195,7 +192,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		@Override
 		public boolean equals(Object obj) {
 			if (obj == this || (obj instanceof DetectivesGameState 
-					&& gameState.equals(((DetectivesGameState) obj).gameState))) {
+					&& getGameState().equals(((DetectivesGameState) obj).getGameState()))) {
 				
 				return true;
 			}
@@ -204,7 +201,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 		@Override
 		public DetectivesGameState copy() {
-			return new DetectivesGameState(gameState.copy());
+			return new DetectivesGameState(getGameState().copy());
 		}		
 
 		@Override
