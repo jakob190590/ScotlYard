@@ -19,7 +19,7 @@ import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.TheGame;
+import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.util.MoveProducer;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
@@ -60,7 +60,7 @@ public class NotInGameControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		g = new TheGame();
+		g = new DefaultGame();
 		c = new TheGameController(g, gg, initialStations, r);
 		
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));

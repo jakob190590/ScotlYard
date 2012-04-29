@@ -156,7 +156,7 @@ public class AbstractGameStateTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		g = new TheGame();
+		g = new DefaultGame();
 		
 		mrX = new MrXPlayer();
 		d1 = new DetectivePlayer();

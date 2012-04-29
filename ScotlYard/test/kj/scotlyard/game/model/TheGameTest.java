@@ -155,7 +155,7 @@ public class TheGameTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		g = new TheGame();
+		g = new DefaultGame();
 		GameGraph gg = null;
 		
 		mrX = new MrXPlayer();
