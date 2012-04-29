@@ -27,7 +27,7 @@ public class ItemDealer {
 	
 	
 	
-	int countItems(Player player, Class<? extends Item> itemType) {
+	public int countItems(Player player, Class<? extends Item> itemType) {
 		int n = 0;
 		for (Item i : game.getItems(player))
 			if (i.getClass() == itemType)
@@ -36,7 +36,7 @@ public class ItemDealer {
 		return n;
 	}
 
-	void addItems(Player player, int count, Class<? extends Item> itemType) {
+	public void addItems(Player player, int count, Class<? extends Item> itemType) {
 		
 		Set<Item> set = new HashSet<>();
 		try {			
@@ -51,7 +51,7 @@ public class ItemDealer {
 		game.getItems(player).addAll(set);
 	}
 	
-	int passItems(Player fromPlayer, Player toPlayer, int count, Class<? extends Item> itemType) {
+	public int passItems(Player fromPlayer, Player toPlayer, int count, Class<? extends Item> itemType) {
 		Set<Item> items1 = game.getItems(fromPlayer);
 		Set<Item> items2 = game.getItems(toPlayer);
 		int n = 0;
@@ -69,7 +69,7 @@ public class ItemDealer {
 		return n;
 	}
 	
-	int removeItems(Player player, int count, Class<? extends Item> itemType) {
+	public int removeItems(Player player, int count, Class<? extends Item> itemType) {
 		Set<Item> items = game.getItems(player);
 		int n = 0;
 		for (Item i : items)		
@@ -85,7 +85,7 @@ public class ItemDealer {
 		return n;
 	}
 	
-	int removeAllItems(Player player, Class<? extends Item> itemType) {
+	public int removeAllItems(Player player, Class<? extends Item> itemType) {
 		Set<Item> items = game.getItems(player);
 		int n = 0;
 		for (Item i : items)		
