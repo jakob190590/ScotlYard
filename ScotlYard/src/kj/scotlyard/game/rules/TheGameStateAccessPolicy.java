@@ -160,15 +160,10 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 	}
 
-	private class DetectivesGameState extends AbstractGameState {
-
-		private GameState gameState;
+	private class DetectivesGameState extends DefaultGameState {
 
 		public DetectivesGameState(GameState gameState) {
-			this.gameState = new DefaultGameState(gameState);
-			// wer weiss, was gameState in Wirklichkeit ist... es koennte
-			// z.B. Schreibzugriff gewaehren :o
-			// Deswegen lieber read-only wrappen
+			super(gameState);
 		}
 
 		private Move maskMove(Move move) {
@@ -210,27 +205,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		@Override
 		public DetectivesGameState copy() {
 			return new DetectivesGameState(gameState.copy());
-		}
-		
-		@Override
-		public MrXPlayer getMrX() {
-			return gameState.getMrX();
-		}
-
-		@Override
-		public List<DetectivePlayer> getDetectives() {
-			return gameState.getDetectives();
-		}
-
-		@Override
-		public List<Player> getPlayers() {
-			return gameState.getPlayers();
-		}
-
-		@Override
-		public Set<Item> getItems(Player player) {
-			return gameState.getItems(player);
-		}
+		}		
 
 		@Override
 		public List<Move> getMoves() {
@@ -246,7 +221,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 				}
 
 			};
-			for (Move m : gameState.getMoves()) {
+			for (Move m : super.getMoves()) {
 				list.add(maskMove(m));
 			}
 			return Collections.unmodifiableList(list);
@@ -254,27 +229,17 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 		@Override
 		public Move getMove(Player player, int number, MoveAccessMode accessMode) {
-			Move m = gameState.getMove(player, number, accessMode);
+			Move m = super.getMove(player, number, accessMode);
 			return maskMove(m);
 		}
 
 		@Override
 		public Move getLastMove(Player player) {
-			Move m = gameState.getLastMove(player);
+			Move m = super.getLastMove(player);
 			if (m != null) {
 				m = maskMove(m);
 			}
 			return m;
-		}
-
-		@Override
-		public int getCurrentRoundNumber() {
-			return gameState.getCurrentRoundNumber();
-		}
-
-		@Override
-		public Player getCurrentPlayer() {
-			return gameState.getCurrentPlayer();
 		}
 
 	}
