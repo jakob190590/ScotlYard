@@ -37,28 +37,29 @@ public class ItemDealer {
 	}
 
 	void addItems(Player player, int count, Class<? extends Item> itemType) {
-		try {
-			
-			Set<Item> set = new HashSet<>();
+		
+		Set<Item> set = new HashSet<>();
+		try {			
 			for (int i = 0; i < count; i++) {
 				set.add(itemType.newInstance());
 			}
-
-			game.getItems(player).addAll(set);
-
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Does not work for given item class. " +
 					"You can create the items manually and add them via getItems.", e);
 		}
+		
+		game.getItems(player).addAll(set);
 	}
 	
 	int passItems(Player fromPlayer, Player toPlayer, int count, Class<? extends Item> itemType) {
+		Set<Item> items1 = game.getItems(fromPlayer);
+		Set<Item> items2 = game.getItems(toPlayer);
 		int n = 0;
-		for (Item i : game.getItems(fromPlayer))		
+		for (Item i : items1)		
 			if (n < count) {
 				if (i.getClass() == itemType) {
-					game.getItems(fromPlayer).remove(i);
-					game.getItems(toPlayer).add(i);
+					items1.remove(i);
+					items2.add(i);
 					n++;
 				}
 			} else {
@@ -69,11 +70,12 @@ public class ItemDealer {
 	}
 	
 	int removeItems(Player player, int count, Class<? extends Item> itemType) {
+		Set<Item> items = game.getItems(player);
 		int n = 0;
-		for (Item i : game.getItems(player))		
+		for (Item i : items)		
 			if (n < count) {
 				if (i.getClass() == itemType) {
-					game.getItems(player).remove(i);
+					items.remove(i);
 					n++;
 				}
 			} else {
@@ -84,10 +86,11 @@ public class ItemDealer {
 	}
 	
 	int removeAllItems(Player player, Class<? extends Item> itemType) {
+		Set<Item> items = game.getItems(player);
 		int n = 0;
-		for (Item i : game.getItems(player))		
+		for (Item i : items)		
 			if (i.getClass() == itemType) {
-				game.getItems(player).remove(i);
+				items.remove(i);
 				n++;
 			}
 		return n;
