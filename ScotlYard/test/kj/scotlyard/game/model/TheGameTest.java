@@ -23,7 +23,7 @@ import org.junit.Test;
 
 public class TheGameTest {
 	
-	class TestStateListener implements TurnListener {
+	class TestTurnListener implements TurnListener {
 
 		GameState gs;		
 		
@@ -626,9 +626,9 @@ public class TheGameTest {
 	}
 	
 	@Test
-	public final void testStateListener() {
-		TestStateListener l = new TestStateListener();
-		g.addStateListener(l);
+	public final void testTurnListener() {
+		TestTurnListener l = new TestTurnListener();
+		g.addTurnListener(l);
 		
 		g.setCurrentPlayer(null);
 		assertEquals(null, l.newP);

@@ -26,7 +26,7 @@ public class DefaultGameState extends AbstractGameState {
 		
 		// This new listeners have to inform our own listeners
 		// and pass this GameState as argument!
-		gameState.addStateListener(getStateListenerInformer());
+		gameState.addTurnListener(getTurnListenerInformer());
 		gameState.addPlayerListener(getPlayerListenerInformer());
 		gameState.addItemListener(getItemListenerInformer());
 		gameState.addMoveListener(getMoveListenerInformer());

@@ -440,14 +440,14 @@ public class TheGame extends AbstractGameState implements Game {
 	public void setCurrentRoundNumber(int roundNumber) {
 		int old = currentRoundNumber;
 		currentRoundNumber = roundNumber;
-		getStateListenerInformer().currentRoundChanged(this, old, roundNumber);
+		getTurnListenerInformer().currentRoundChanged(this, old, roundNumber);
 	}
 
 	@Override
 	public void setCurrentPlayer(Player player) {
 		Player old = currentPlayer;
 		currentPlayer = player;
-		getStateListenerInformer().currentPlayerChanged(this, old, player);
+		getTurnListenerInformer().currentPlayerChanged(this, old, player);
 	}
 	
 }
