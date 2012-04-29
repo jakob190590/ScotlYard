@@ -9,9 +9,20 @@ import kj.scotlyard.game.model.item.Item;
 public class DefaultGameState extends AbstractGameState {
 	
 	private GameState gameState;
+	
+	private List<DetectivePlayer> detectives;
+	
+	private List<Player> players;
+	
+	private List<Move> moves;
+	
 
 	public DefaultGameState(GameState gameState) {		
 		this.gameState = gameState;
+		
+		detectives = Collections.unmodifiableList(gameState.getDetectives());
+		players = Collections.unmodifiableList(gameState.getPlayers());
+		moves = Collections.unmodifiableList(gameState.getMoves());
 		
 		// This new listeners have to inform our own listeners
 		// and pass this GameState as argument!
@@ -43,12 +54,12 @@ public class DefaultGameState extends AbstractGameState {
 
 	@Override
 	public List<DetectivePlayer> getDetectives() {
-		return Collections.unmodifiableList(gameState.getDetectives());
+		return detectives;
 	}
 
 	@Override
 	public List<Player> getPlayers() {
-		return gameState.getPlayers();
+		return players;
 	}
 
 	@Override
@@ -58,7 +69,7 @@ public class DefaultGameState extends AbstractGameState {
 
 	@Override
 	public List<Move> getMoves() {
-		return Collections.unmodifiableList(gameState.getMoves());
+		return moves;
 	}
 
 	@Override
