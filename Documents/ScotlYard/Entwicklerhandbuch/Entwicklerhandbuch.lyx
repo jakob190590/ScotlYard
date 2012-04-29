@@ -236,6 +236,145 @@ Das Model stellt -- wie bei der MVC-Architektur -- ein reines Datenmodell
 Spielzustand
 \end_layout
 
+\begin_layout Subsection
+Die Schnittstelle GameState
+\end_layout
+
+\begin_layout Subsubsection
+Copying und Gleichheit
+\end_layout
+
+\begin_layout Paragraph
+Copying
+\end_layout
+
+\begin_layout Standard
+Es ist praktisch, einen Spielzustand zu einem beliebigen Zeitpunkt festhalten
+ zu können.
+ Für die Tests der GameState-Implementierungen ist das nützlich, um 
+\begin_inset Quotes gld
+\end_inset
+
+Vorher und Nachher
+\begin_inset Quotes grd
+\end_inset
+
+ einfach vergleichen zu können.
+ Aber auch um während dem Spiel einen Snapshot anzulegen, zu dem man später
+ zurückkehren kann.
+ Oder um ein Spiel aufzuspalten (
+\begin_inset Quotes gld
+\end_inset
+
+fork
+\begin_inset Quotes grd
+\end_inset
+
+) 
+\begin_inset Formula $\dots$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Zu diesem Zweck ist in Java eigentlich das Cloneable Interface gedacht,
+ das -- wie ich es verstanden habe -- signalisiert, dass Object.clone() keine
+ CloneNotSupportedException werfen soll.
+ Allerdings ist die CloneNotSupportedException eine 
+\begin_inset Quotes gld
+\end_inset
+
+checked
+\begin_inset Quotes grd
+\end_inset
+
+ Exception, d.h.
+ ich müsste jeden Aufruf von clone mit try-catch abschirmen, oder eine throws-De
+klaration hinzufügen.
+ Beides ist mir deutlich zu blöd, da GameStates das kopieren ausdrücklich
+ unterstützen.
+\end_layout
+
+\begin_layout Standard
+Darum habe ich die Methode public GameState copy() zur Schnittstelle hinzugefügt
+, die eine Kopie des GameStates zurückliefern soll.
+ Da die meisten GameStates Proxies eines GameStates sind, sollte die Implementie
+rung im Normalfall etwa so aussehen:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public GameState copy() {
+\end_layout
+
+\begin_layout Plain Layout
+
+	return new ThisGameStateProxy(
+\end_layout
+
+\begin_layout Plain Layout
+
+			gameState.copy());
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dabei ist ThisGameStateProxy die Klasse von dessen Objekt eine Kopie erzeugt
+ werden soll, und gameState das 
+\begin_inset Quotes gld
+\end_inset
+
+RealSubject
+\begin_inset Quotes grd
+\end_inset
+
+, an das die Methodenaufrufe mehr oder weniger deligiert werden.
+\end_layout
+
+\begin_layout Standard
+Nur beim Game (ganz am Ende der Kette von Proxies), werden wirklich Daten
+ kopiert! Diese Daten sind z.B.
+ die MoveList, DetectiveList, Maps usw.
+\end_layout
+
+\begin_layout Paragraph
+Gleichheit
+\end_layout
+
+\begin_layout Standard
+Wenn kopiert werden, müssen das ursprüngliche Objekt und die Kopie natürlich
+ 
+\begin_inset Quotes gld
+\end_inset
+
+gleich
+\begin_inset Quotes grd
+\end_inset
+
+ sein.
+ Also muss die equals-Methode noch überschrieben werden.
+ Bei den Proxies sollte das so aussehen:
+\end_layout
+
+\begin_layout Subsection
+Die Schnittstelle Game
+\end_layout
+
 \begin_layout Section
 Spielgraph
 \end_layout
@@ -301,7 +440,7 @@ GameGraph als Erweiterung (extends) der original Graph-Schnittstelle des
  Toolkits.
  Dazu einen 1:1-Proxy
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Damit meine ich einen Proxy, der in jeder Methode wirklich nichts anderes
