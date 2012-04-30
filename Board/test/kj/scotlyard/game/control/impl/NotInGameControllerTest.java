@@ -55,13 +55,13 @@ public class NotInGameControllerTest {
 	final Rules r = new TheRules();
 	
 	Game g;
-	TheGameController c; // controller
+	DefaultGameController c; // controller
 	
 	@Before
 	public void setUp() throws Exception {
 		
 		g = new TheGame();
-		c = new TheGameController(g, gg, initialStations, r);
+		c = new DefaultGameController(g, gg, initialStations, r);
 		
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));

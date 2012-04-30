@@ -23,7 +23,7 @@ import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 
-public class TheGameController extends GameController {
+public class DefaultGameController extends GameController {
 	
 	@SuppressWarnings("serial")
 	protected class MoveEdit extends CompoundEdit {
@@ -122,7 +122,7 @@ public class TheGameController extends GameController {
 	
 	private GameWin win;
 	
-	public TheGameController(Game game, GameGraph gameGraph, Set<StationVertex> initialStations, Rules rules) {
+	public DefaultGameController(Game game, GameGraph gameGraph, Set<StationVertex> initialStations, Rules rules) {
 		this.game = game;
 		this.gameGraph = gameGraph;
 		this.initialStations = initialStations;

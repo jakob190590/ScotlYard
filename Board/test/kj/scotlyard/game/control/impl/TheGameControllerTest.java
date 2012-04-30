@@ -9,7 +9,7 @@ import kj.scotlyard.game.ai.AiListener;
 import kj.scotlyard.game.ai.detective.DetectiveAi;
 import kj.scotlyard.game.ai.mrx.MrXAi;
 import kj.scotlyard.game.control.GameStatus;
-import kj.scotlyard.game.control.impl.TheGameController;
+import kj.scotlyard.game.control.impl.DefaultGameController;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
@@ -29,7 +29,7 @@ public class TheGameControllerTest {
 
 	Game g;
 	GameGraph gg;
-	TheGameController ctrl;	
+	DefaultGameController ctrl;	
 	
 	GameStateExtension ext;
 	
@@ -37,7 +37,7 @@ public class TheGameControllerTest {
 	public void setUp() throws Exception {
 		r = new TheRules();
 		g = new TheGame();
-		ctrl = new TheGameController(g, gg, null, r);
+		ctrl = new DefaultGameController(g, gg, null, r);
 	}
 
 	@Test

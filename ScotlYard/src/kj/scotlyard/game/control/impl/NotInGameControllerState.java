@@ -221,7 +221,7 @@ class NotInGameControllerState extends GameControllerState {
 	
 	private final UndoManager undoManager;
 	
-	protected NotInGameControllerState(TheGameController controller) {
+	protected NotInGameControllerState(DefaultGameController controller) {
 		super(controller);
 		game = controller.getGame();
 		gameGraph = controller.getGameGraph();
