@@ -14,7 +14,7 @@ import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
-import kj.scotlyard.game.model.TheGame;
+import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
@@ -36,8 +36,8 @@ public class TheGameControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		r = new TheRules();
-		g = new TheGame();
 		ctrl = new DefaultGameController(g, gg, null, r);
+		g = new DefaultGame();
 	}
 
 	@Test

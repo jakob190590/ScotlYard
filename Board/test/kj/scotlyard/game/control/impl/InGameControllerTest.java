@@ -15,7 +15,7 @@ import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
-import kj.scotlyard.game.model.TheGame;
+import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.util.MoveProducer;
@@ -62,8 +62,8 @@ public class InGameControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		g = new TheGame();
 		c = new DefaultGameController(g, gg, initialStations, r);
+		g = new DefaultGame();
 		
 		g.setMrX(new MrXPlayer());
 		

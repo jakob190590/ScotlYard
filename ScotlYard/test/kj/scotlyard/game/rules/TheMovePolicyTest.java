@@ -14,7 +14,7 @@ import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.TheGame;
+import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.BusTicket;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
@@ -64,7 +64,7 @@ public class TheMovePolicyTest {
 		d1 = new DetectivePlayer();
 		d2 = new DetectivePlayer();
 		
-		g = new TheGame();
+		g = new DefaultGame();
 		ext = new GameStateExtension(g);
 		g.setMrX(mrX);
 		g.getDetectives().add(d1);
