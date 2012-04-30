@@ -5,18 +5,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.attributes.DefaultSealable;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.model.AbstractGameState;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.DefaultGameState;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
-import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.Item;
 
@@ -160,47 +157,16 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 	}
 
-	private class DetectivesGameState extends AbstractGameState {
-
-		private GameState gameState;
+	private class DetectivesGameState extends DefaultGameState {
 
 		public DetectivesGameState(GameState gameState) {
-			this.gameState = new DefaultGameState(gameState);
-			// wer weiss, was gameState in Wirklichkeit ist... es koennte
-			// z.B. Schreibzugriff gewaehren :o
-			// Deswegen lieber read-only wrappen
+			super(gameState);
 		}
 
-		private Move maskMove(Move move) {
-			
-			if (move.getPlayer() instanceof DetectivePlayer) {
-				return move;
-			}
-			
-			// Sonst: MrX' Move
-			if (getMrXUncoverMoveNumbers().contains(move.getMoveNumber())) { // das impliziert, dass es keine sub moves gibt.
-				// MrX is uncovered				
-				return new MrXMove(move, true);
-			}
-
-			// "undercover" Move, enventually with sub moves
-			Move[] arr = new Move[move.getMoves().size()];
-			int i = 0;
-			boolean uncovered = false;
-			for (Move m : move.getMoves()) {
-				uncovered = getMrXUncoverMoveNumbers().contains(m.getMoveNumber());
-				arr[i] = new MrXMove(m, uncovered);
-				i++;
-			}
-			
-			// uncovered je nachdem, ob letzter sub move uncovered war.
-			return new MrXMove(move, uncovered, arr);
-		}
-		
 		@Override
 		public boolean equals(Object obj) {
 			if (obj == this || (obj instanceof DetectivesGameState 
-					&& gameState.equals(((DetectivesGameState) obj).gameState))) {
+					&& getGameState().equals(((DetectivesGameState) obj).getGameState()))) {
 				
 				return true;
 			}
@@ -209,28 +175,8 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 		@Override
 		public DetectivesGameState copy() {
-			return new DetectivesGameState(gameState.copy());
-		}
-		
-		@Override
-		public MrXPlayer getMrX() {
-			return gameState.getMrX();
-		}
-
-		@Override
-		public List<DetectivePlayer> getDetectives() {
-			return gameState.getDetectives();
-		}
-
-		@Override
-		public List<Player> getPlayers() {
-			return gameState.getPlayers();
-		}
-
-		@Override
-		public Set<Item> getItems(Player player) {
-			return gameState.getItems(player);
-		}
+			return new DetectivesGameState(getGameState().copy());
+		}		
 
 		@Override
 		public List<Move> getMoves() {
@@ -246,7 +192,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 				}
 
 			};
-			for (Move m : gameState.getMoves()) {
+			for (Move m : super.getMoves()) {
 				list.add(maskMove(m));
 			}
 			return Collections.unmodifiableList(list);
@@ -254,27 +200,17 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 		@Override
 		public Move getMove(Player player, int number, MoveAccessMode accessMode) {
-			Move m = gameState.getMove(player, number, accessMode);
+			Move m = super.getMove(player, number, accessMode);
 			return maskMove(m);
 		}
 
 		@Override
 		public Move getLastMove(Player player) {
-			Move m = gameState.getLastMove(player);
+			Move m = super.getLastMove(player);
 			if (m != null) {
 				m = maskMove(m);
 			}
 			return m;
-		}
-
-		@Override
-		public int getCurrentRoundNumber() {
-			return gameState.getCurrentRoundNumber();
-		}
-
-		@Override
-		public Player getCurrentPlayer() {
-			return gameState.getCurrentPlayer();
 		}
 
 	}
@@ -287,6 +223,32 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		list.add(13);
 		list.add(18);
 		uncoverMoveNumbers = Collections.unmodifiableList(list);
+	}
+	
+	private Move maskMove(Move move) {
+		
+		if (move.getPlayer() instanceof DetectivePlayer) {
+			return move;
+		}
+		
+		// Sonst: MrX' Move
+		if (getMrXUncoverMoveNumbers().contains(move.getMoveNumber())) { // das impliziert, dass es keine sub moves gibt.
+			// MrX is uncovered				
+			return new MrXMove(move, true);
+		}
+
+		// "undercover" Move, enventually with sub moves
+		Move[] arr = new Move[move.getMoves().size()];
+		int i = 0;
+		boolean uncovered = false;
+		for (Move m : move.getMoves()) {
+			uncovered = getMrXUncoverMoveNumbers().contains(m.getMoveNumber());
+			arr[i] = new MrXMove(m, uncovered);
+			i++;
+		}
+		
+		// uncovered je nachdem, ob letzter sub move uncovered war.
+		return new MrXMove(move, uncovered, arr);
 	}
 
 	@Override

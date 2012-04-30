@@ -15,7 +15,7 @@ import java.util.Vector;
 
 import kj.scotlyard.game.model.item.Item;
 
-public class TheGame extends AbstractGameState implements Game {
+public class DefaultGame extends AbstractGameState implements Game {
 
 	private class PlayerNumberKey {
 		
@@ -86,13 +86,13 @@ public class TheGame extends AbstractGameState implements Game {
 			
 			list.add(index, element);
 			
-			getPlayerListenerInformer().detectiveAdded(TheGame.this, element, index);
+			getPlayerListenerInformer().detectiveAdded(DefaultGame.this, element, index);
 		}
 		
 		@Override
 		public DetectivePlayer remove(int index) {
 			DetectivePlayer p = list.remove(index);
-			getPlayerListenerInformer().detectiveAdded(TheGame.this, p, index);
+			getPlayerListenerInformer().detectiveAdded(DefaultGame.this, p, index);
 			return p;
 		}
 		
@@ -152,7 +152,7 @@ public class TheGame extends AbstractGameState implements Game {
 			movesByRoundNumber.put(new PlayerNumberKey(e.getPlayer(), e.getRoundNumber()), e);
 			
 			if (list.add(e)) {				
-				getMoveListenerInformer().moveDone(TheGame.this, e);
+				getMoveListenerInformer().moveDone(DefaultGame.this, e);
 				return true;
 			}
 						
@@ -169,7 +169,7 @@ public class TheGame extends AbstractGameState implements Game {
 				}
 				movesByRoundNumber.remove(new PlayerNumberKey(mv.getPlayer(), mv.getRoundNumber()));
 				
-				getMoveListenerInformer().moveUndone(TheGame.this, mv);
+				getMoveListenerInformer().moveUndone(DefaultGame.this, mv);
 				
 				return mv;
 			}
@@ -190,7 +190,7 @@ public class TheGame extends AbstractGameState implements Game {
 			movesByMoveNumber.clear();
 			movesByRoundNumber.clear();
 			
-			getMoveListenerInformer().movesCleard(TheGame.this);			
+			getMoveListenerInformer().movesCleard(DefaultGame.this);			
 		}
 		
 		
@@ -220,7 +220,7 @@ public class TheGame extends AbstractGameState implements Game {
 		@Override
 		public boolean add(Item e) {
 			boolean ret = set.add(e);
-			getItemListenerInformer().itemAdded(TheGame.this, player, e);
+			getItemListenerInformer().itemAdded(DefaultGame.this, player, e);
 			return ret;
 		}
 
@@ -235,7 +235,7 @@ public class TheGame extends AbstractGameState implements Game {
 				public void remove() {
 					it.remove();	
 					// erst it.remove() -- somit werden listeners bei Exception nicht informiert
-					getItemListenerInformer().itemRemoved(TheGame.this, player, item);
+					getItemListenerInformer().itemRemoved(DefaultGame.this, player, item);
 				}
 				
 				@Override
@@ -279,8 +279,8 @@ public class TheGame extends AbstractGameState implements Game {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof TheGame) {
-			TheGame g = (TheGame) obj;			
+		if (obj instanceof DefaultGame) {
+			DefaultGame g = (DefaultGame) obj;			
 			if ((mrX == g.mrX || mrX.equals(g.mrX)) // wg. NullPointerException
 					&& detectives.equals(g.detectives) 
 					&& items.equals(g.items)
@@ -295,8 +295,8 @@ public class TheGame extends AbstractGameState implements Game {
 	}
 
 	@Override
-	public TheGame copy() {
-		TheGame g = new TheGame();
+	public DefaultGame copy() {
+		DefaultGame g = new DefaultGame();
 		
 		g.mrX = mrX;
 		g.detectives = new DetectiveList(detectives);
@@ -440,14 +440,14 @@ public class TheGame extends AbstractGameState implements Game {
 	public void setCurrentRoundNumber(int roundNumber) {
 		int old = currentRoundNumber;
 		currentRoundNumber = roundNumber;
-		getStateListenerInformer().currentRoundChanged(this, old, roundNumber);
+		getTurnListenerInformer().currentRoundChanged(this, old, roundNumber);
 	}
 
 	@Override
 	public void setCurrentPlayer(Player player) {
 		Player old = currentPlayer;
 		currentPlayer = player;
-		getStateListenerInformer().currentPlayerChanged(this, old, player);
+		getTurnListenerInformer().currentPlayerChanged(this, old, player);
 	}
 	
 }
