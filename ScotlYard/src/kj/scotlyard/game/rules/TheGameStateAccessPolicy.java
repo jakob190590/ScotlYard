@@ -198,16 +198,6 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		}
 		
 		@Override
-		public boolean equals(Object obj) {
-			if (obj == this || (obj instanceof DetectivesGameState 
-					&& gameState.equals(((DetectivesGameState) obj).gameState))) {
-				
-				return true;
-			}
-			return false;
-		}
-
-		@Override
 		public DetectivesGameState copy() {
 			return new DetectivesGameState(gameState.copy());
 		}

@@ -22,16 +22,6 @@ public class DefaultGameState extends AbstractGameState {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == this || (obj instanceof DefaultGameState 
-				&& gameState.equals(((DefaultGameState) obj).gameState))) {
-			
-			return true;
-		}
-		return false;
-	}
-
-	@Override
 	public DefaultGameState copy() {
 		return new DefaultGameState(gameState.copy());
 	}
