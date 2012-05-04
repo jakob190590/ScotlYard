@@ -334,8 +334,8 @@ public GameState copy() {
 \end_layout
 
 \begin_layout Standard
-Dabei ist ThisGameStateProxy die Klasse von dessen Objekt eine Kopie erzeugt
- werden soll, und gameState das 
+Dabei ist ThisGameStateProxy die Klasse des Objekts, von dem eine Kopie
+ erzeugt werden soll, und gameState das 
 \begin_inset Quotes gld
 \end_inset
 
@@ -357,7 +357,7 @@ Gleichheit
 \end_layout
 
 \begin_layout Standard
-Wenn kopiert werden, müssen das ursprüngliche Objekt und die Kopie natürlich
+Wenn kopiert wird, müssen das ursprüngliche Objekt und die Kopie natürlich
  
 \begin_inset Quotes gld
 \end_inset
@@ -367,8 +367,32 @@ gleich
 \end_inset
 
  sein.
- Also muss die equals-Methode noch überschrieben werden.
- Bei den Proxies sollte das so aussehen:
+ Zu diesem Zweck wird im AbstractGameState die Methode equals so überschrieben,
+ dass sie die Werte der Getter vergleicht.
+\end_layout
+
+\begin_layout Standard
+Zu diesen Gettern gehören aber nur die Notwendigen, nämlich die, die direkt
+ Daten liefern und nicht Ergebnisse berechnen.
+ getPlayers, getMove und getLastMove zählen also nicht, weil diese fest
+ definierte Aufgaben haben und ihre Ergebnisse nur aus den Werten der übrigen
+ Getter berechnen.
+\end_layout
+
+\begin_layout Standard
+getItems braucht leider eine Sonderbehandlung.
+ Diese Methode soll direkt einen Set von Items für einen bestimmten Player
+ liefern.
+ Um das GameState Interface möglichst einfach zu gestalten (in Hinsicht
+ auf Implementierung und Nutzung) habe ich eben darauf verzichtet, die Map<Playe
+r, Set<Item>> direkt bereitzustellen.
+ Das Problem beim Vergleich ist nun, dass nicht die Map verglichen werden
+ kann, sondern nur Ergebnisse von getItems.
+ Es ist jetzt so gelöst, dass die Ergebnisse von getItems für alle Player
+ aus getPlayers() auf Gleichheit getestet werden.
+ Übrige Sets in der Map werden ignoriert, weil erstens ohne Schlüssel gar
+ nicht darauf zugegriffen werden kann und zweitens diese eigentlich sowieso
+ nichts mehr im GameState verloren haben.
 \end_layout
 
 \begin_layout Subsection
