@@ -62,8 +62,8 @@ public class InGameControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		c = new DefaultGameController(g, gg, initialStations, r);
 		g = new DefaultGame();
+		c = new DefaultGameController(g, gg, initialStations, r);
 		
 		g.setMrX(new MrXPlayer());
 		
