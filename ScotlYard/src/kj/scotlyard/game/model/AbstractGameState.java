@@ -202,4 +202,45 @@ public abstract class AbstractGameState implements GameState {
 	public void removeMoveListener(MoveListener listener) {
 		moveListeners.remove(listener);
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof GameState) {
+			GameState g = (GameState) obj;	
+			
+			if (getMrX() != g.getMrX()
+					&& (getMrX() == null
+					|| !getMrX().equals(g.getMrX())))
+				return false;
+					
+			if (!getDetectives().equals(g.getDetectives()))
+				return false;
+			
+			if (!getMoves().equals(g.getMoves()))
+				return false;
+					
+			if (getCurrentPlayer() != g.getCurrentPlayer()
+					&& (getCurrentPlayer() == null 
+					|| !getCurrentPlayer().equals(g.getCurrentPlayer())))
+				return false;
+					
+			if (getCurrentRoundNumber() != g.getCurrentRoundNumber())
+				return false;
+				
+			for (Player p : getPlayers()) {
+				Set<Item> i1 = getItems(p);
+				Set<Item> i2 = g.getItems(p);					
+				if (i1 != i2 && (i1 == null || !i1.equals(i2)))
+					return false;
+			}
+			
+			// Alle Tests bestanden
+			return true;
+		}
+		return false;
+	}
+
 }

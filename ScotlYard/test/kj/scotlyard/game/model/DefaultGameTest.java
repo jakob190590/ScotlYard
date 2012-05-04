@@ -21,7 +21,7 @@ import kj.scotlyard.game.util.MoveProducer;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TheGameTest {
+public class DefaultGameTest {
 	
 	class TestTurnListener implements TurnListener {
 
@@ -754,7 +754,7 @@ public class TheGameTest {
 	}
 	
 	@Test
-	public final void testClone() {
+	public final void testCopy() {
 		
 		/*
 		 * Hier wird getestet, ob die GameState-Kopie
@@ -792,5 +792,19 @@ public class TheGameTest {
 		assertTrue(g.getCurrentRoundNumber() == 5);
 		assertTrue(g2.getCurrentRoundNumber() == 0);
 				
+	}
+	
+	@Test
+	public final void testEquals() {
+		Game g2 = (Game) g.copy();
+		assertTrue(g.equals(g2));
+		Player p = new DetectivePlayer();
+		g2.setItems(p, new HashSet<Item>());
+		assertTrue(g.equals(g2));
+		g2.getItems(p).add(new TaxiTicket());
+		assertTrue(g.equals(g2));
+		
+		g2.getDetectives().add((DetectivePlayer) p);
+		assertTrue(!g.equals(g2));
 	}
 }
