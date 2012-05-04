@@ -5,13 +5,13 @@ import kj.scotlyard.game.rules.GameWin;
 
 abstract class GameControllerState extends GameController {
 	
-	private TheGameController controller;
+	private DefaultGameController controller;
 
-	protected GameControllerState(TheGameController controller) {
+	protected GameControllerState(DefaultGameController controller) {
 		this.controller = controller;
 	}
 	
-	protected TheGameController getController() {
+	protected DefaultGameController getController() {
 		return controller;
 	}
 

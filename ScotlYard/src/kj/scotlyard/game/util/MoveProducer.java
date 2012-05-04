@@ -84,8 +84,8 @@ public abstract class MoveProducer {
 		
 		// Wir gehen von einem konsistenten GameState aus
 		Move last = gameState.getLastMove(gameState.getCurrentPlayer());
-		Move m = new DefaultMove(gameState.getCurrentPlayer(), gameState.getCurrentRoundNumber(), 
-				last.getMoveNumber() + 1, Move.NO_MOVE_INDEX, null, null, null);
+		Move m = createSingleMove(gameState.getCurrentPlayer(), gameState.getCurrentRoundNumber(),
+				last.getMoveNumber() + 1, null, null, null);
 		
 		StationVertex station = last.getStation();
 		for (ConnectionEdge e : station.getEdges()) {

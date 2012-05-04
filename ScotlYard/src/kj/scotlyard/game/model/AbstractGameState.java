@@ -18,7 +18,7 @@ import kj.scotlyard.game.model.item.Item;
  */
 public abstract class AbstractGameState implements GameState {
 
-	private final Set<TurnListener> stateListeners = new HashSet<TurnListener>();
+	private final Set<TurnListener> turnListeners = new HashSet<TurnListener>();
 
 	private final Set<PlayerListener> playerListeners = new HashSet<PlayerListener>();
 
@@ -28,12 +28,12 @@ public abstract class AbstractGameState implements GameState {
 
 	// Informer, that informs the registered listeners
 
-	private final TurnListener stateListenerInformer = new TurnListener() {
+	private final TurnListener turnListenerInformer = new TurnListener() {
 
 		@Override
 		public void currentRoundChanged(GameState gameState,
 				int oldRoundNumber, int newRoundNumber) {
-			for (TurnListener l : stateListeners) {
+			for (TurnListener l : turnListeners) {
 				l.currentRoundChanged(AbstractGameState.this, oldRoundNumber,
 						newRoundNumber);
 			}
@@ -42,7 +42,7 @@ public abstract class AbstractGameState implements GameState {
 		@Override
 		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
 				Player newPlayer) {
-			for (TurnListener l : stateListeners) {
+			for (TurnListener l : turnListeners) {
 				l.currentPlayerChanged(AbstractGameState.this, oldPlayer,
 						newPlayer);
 			}
@@ -128,8 +128,8 @@ public abstract class AbstractGameState implements GameState {
 
 	// Access to listeners informer
 
-	protected TurnListener getStateListenerInformer() {
-		return stateListenerInformer;
+	protected TurnListener getTurnListenerInformer() {
+		return turnListenerInformer;
 	}
 
 	protected PlayerListener getPlayerListenerInformer() {
@@ -145,8 +145,8 @@ public abstract class AbstractGameState implements GameState {
 	}
 
 	// TODO sind folgende getter notwendig?
-	protected Set<TurnListener> getStateListeners() {
-		return stateListeners;
+	protected Set<TurnListener> getTurnListeners() {
+		return turnListeners;
 	}
 
 	protected Set<PlayerListener> getPlayerListeners() {
@@ -164,13 +164,13 @@ public abstract class AbstractGameState implements GameState {
 	// Listener registration
 
 	@Override
-	public void addStateListener(TurnListener listener) {
-		stateListeners.add(listener);
+	public void addTurnListener(TurnListener listener) {
+		turnListeners.add(listener);
 	}
 
 	@Override
-	public void removeStateListener(TurnListener listener) {
-		stateListeners.remove(listener);
+	public void removeTurnListener(TurnListener listener) {
+		turnListeners.remove(listener);
 	}
 
 	@Override
@@ -202,4 +202,45 @@ public abstract class AbstractGameState implements GameState {
 	public void removeMoveListener(MoveListener listener) {
 		moveListeners.remove(listener);
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof GameState) {
+			GameState g = (GameState) obj;	
+			
+			if (getMrX() != g.getMrX()
+					&& (getMrX() == null
+					|| !getMrX().equals(g.getMrX())))
+				return false;
+					
+			if (!getDetectives().equals(g.getDetectives()))
+				return false;
+			
+			if (!getMoves().equals(g.getMoves()))
+				return false;
+					
+			if (getCurrentPlayer() != g.getCurrentPlayer()
+					&& (getCurrentPlayer() == null 
+					|| !getCurrentPlayer().equals(g.getCurrentPlayer())))
+				return false;
+					
+			if (getCurrentRoundNumber() != g.getCurrentRoundNumber())
+				return false;
+				
+			for (Player p : getPlayers()) {
+				Set<Item> i1 = getItems(p);
+				Set<Item> i2 = g.getItems(p);					
+				if (i1 != i2 && (i1 == null || !i1.equals(i2)))
+					return false;
+			}
+			
+			// Alle Tests bestanden
+			return true;
+		}
+		return false;
+	}
+
 }

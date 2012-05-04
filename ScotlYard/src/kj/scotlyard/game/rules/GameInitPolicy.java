@@ -16,6 +16,6 @@ public interface GameInitPolicy {
 	
 	Set<Item> createItemSet(GameState gameState, Player player);
 	
-	StationVertex suggestInitialStation(GameState gameState, GameGraph gameGraph, Set<StationVertex> initialPositions, Player player);
+	StationVertex suggestInitialStation(GameState gameState, GameGraph gameGraph, Set<StationVertex> initialStations, Player player);
 
 }

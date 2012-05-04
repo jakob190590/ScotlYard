@@ -9,12 +9,12 @@ import kj.scotlyard.game.ai.AiListener;
 import kj.scotlyard.game.ai.detective.DetectiveAi;
 import kj.scotlyard.game.ai.mrx.MrXAi;
 import kj.scotlyard.game.control.GameStatus;
-import kj.scotlyard.game.control.impl.TheGameController;
+import kj.scotlyard.game.control.impl.DefaultGameController;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
-import kj.scotlyard.game.model.TheGame;
+import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
@@ -23,21 +23,21 @@ import kj.scotlyard.game.util.GameStateExtension;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TheGameControllerTest {
+public class DefaultGameControllerTest {
 
 	Rules r;
 
 	Game g;
 	GameGraph gg;
-	TheGameController ctrl;	
+	DefaultGameController ctrl;	
 	
 	GameStateExtension ext;
 	
 	@Before
 	public void setUp() throws Exception {
 		r = new TheRules();
-		g = new TheGame();
-		ctrl = new TheGameController(g, gg, null, r);
+		g = new DefaultGame();
+		ctrl = new DefaultGameController(g, gg, null, r);
 	}
 
 	@Test

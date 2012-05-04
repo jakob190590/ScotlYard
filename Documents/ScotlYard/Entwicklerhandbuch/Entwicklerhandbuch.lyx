@@ -236,6 +236,145 @@ Das Model stellt -- wie bei der MVC-Architektur -- ein reines Datenmodell
 Spielzustand
 \end_layout
 
+\begin_layout Subsection
+Die Schnittstelle GameState
+\end_layout
+
+\begin_layout Subsubsection
+Copying und Gleichheit
+\end_layout
+
+\begin_layout Paragraph
+Copying
+\end_layout
+
+\begin_layout Standard
+Es ist praktisch, einen Spielzustand zu einem beliebigen Zeitpunkt festhalten
+ zu können.
+ Für die Tests der GameState-Implementierungen ist das nützlich, um 
+\begin_inset Quotes gld
+\end_inset
+
+Vorher und Nachher
+\begin_inset Quotes grd
+\end_inset
+
+ einfach vergleichen zu können.
+ Aber auch um während dem Spiel einen Snapshot anzulegen, zu dem man später
+ zurückkehren kann.
+ Oder um ein Spiel aufzuspalten (
+\begin_inset Quotes gld
+\end_inset
+
+fork
+\begin_inset Quotes grd
+\end_inset
+
+) 
+\begin_inset Formula $\dots$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Zu diesem Zweck ist in Java eigentlich das Cloneable Interface gedacht,
+ das -- wie ich es verstanden habe -- signalisiert, dass Object.clone() keine
+ CloneNotSupportedException werfen soll.
+ Allerdings ist die CloneNotSupportedException eine 
+\begin_inset Quotes gld
+\end_inset
+
+checked
+\begin_inset Quotes grd
+\end_inset
+
+ Exception, d.h.
+ ich müsste jeden Aufruf von clone mit try-catch abschirmen, oder eine throws-De
+klaration hinzufügen.
+ Beides ist mir deutlich zu blöd, da GameStates das kopieren ausdrücklich
+ unterstützen.
+\end_layout
+
+\begin_layout Standard
+Darum habe ich die Methode public GameState copy() zur Schnittstelle hinzugefügt
+, die eine Kopie des GameStates zurückliefern soll.
+ Da die meisten GameStates Proxies eines GameStates sind, sollte die Implementie
+rung im Normalfall etwa so aussehen:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public GameState copy() {
+\end_layout
+
+\begin_layout Plain Layout
+
+	return new ThisGameStateProxy(
+\end_layout
+
+\begin_layout Plain Layout
+
+			gameState.copy());
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dabei ist ThisGameStateProxy die Klasse von dessen Objekt eine Kopie erzeugt
+ werden soll, und gameState das 
+\begin_inset Quotes gld
+\end_inset
+
+RealSubject
+\begin_inset Quotes grd
+\end_inset
+
+, an das die Methodenaufrufe mehr oder weniger deligiert werden.
+\end_layout
+
+\begin_layout Standard
+Nur beim Game (ganz am Ende der Kette von Proxies), werden wirklich Daten
+ kopiert! Diese Daten sind z.B.
+ die MoveList, DetectiveList, Maps usw.
+\end_layout
+
+\begin_layout Paragraph
+Gleichheit
+\end_layout
+
+\begin_layout Standard
+Wenn kopiert werden, müssen das ursprüngliche Objekt und die Kopie natürlich
+ 
+\begin_inset Quotes gld
+\end_inset
+
+gleich
+\begin_inset Quotes grd
+\end_inset
+
+ sein.
+ Also muss die equals-Methode noch überschrieben werden.
+ Bei den Proxies sollte das so aussehen:
+\end_layout
+
+\begin_layout Subsection
+Die Schnittstelle Game
+\end_layout
+
 \begin_layout Section
 Spielgraph
 \end_layout
@@ -243,7 +382,7 @@ Spielgraph
 \begin_layout Standard
 Der Graph modelliert das Spielfeld.
  Er ist nicht Teil der Regeln, sondern wird gesondert erzeugt.
- Die Regeln haben auch kaum etwas mit dem konkreten Graphen zu tun.
+ Die Regeln haben nämlich auch kaum etwas mit dem konkreten Graphen zu tun.
  Die einzige Ausnahme ist in der GameInitPolicy die Methode suggestInitialStatio
 n.
  Diese muss aus möglichen Startpositionen für den gegebenen Spieler eine
@@ -251,8 +390,163 @@ n.
  Die möglichen Startpositionen hängen aber eng mit dem konkreten Graph zusammen.
  Daher wird in diesem Ausnahmefall zusätzlich zum GameGraph noch eine Menge
  an möglichen Startpositionen übergeben (Set<StationVertex>).
- Diese möglichen Startpositionen gehören also auch zum Spielgraph und nicht
- zu den Regeln.
+ Diese möglichen Startpositionen gehören also auch eher zum Spielgraph und
+ sind nicht Teil der Regeln.
+\end_layout
+
+\begin_layout Standard
+Im folgenden werden zwei Begriffe verwendet:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes gld
+\end_inset
+
+Original Graph-Schnittstelle
+\begin_inset Quotes grd
+\end_inset
+
+ ist die Graph-Schnittstelle des verwendeten Graph-Toolkits.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes gld
+\end_inset
+
+GameGraph Schnittstelle
+\begin_inset Quotes grd
+\end_inset
+
+ ist die Graph-Schnittstelle, mit der innerhalb ScotlYard gearbeitet wird.
+\end_layout
+
+\begin_layout Subsection
+Einbindung des Graph-Toolkits
+\end_layout
+
+\begin_layout Standard
+Für die Einbindung eines Gaph-Toolkits gibt es mehrere Möglichkeiten.
+ Mir sind vier Möglichkeiten eingefallen, davon hat mir aber nur eine gefallen.
+ Die vier Möglichkeiten sind:
+\end_layout
+
+\begin_layout Enumerate
+Eine echte Bridge (siehe Bridge pattern), nicht nur bei StationVertex und
+ ConnectionEdge, sondern auch bei der GameGraph Schnittstelle.
+\end_layout
+
+\begin_layout Enumerate
+GameGraph als Erweiterung (extends) der original Graph-Schnittstelle des
+ Toolkits.
+ Dazu einen 1:1-Proxy
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Damit meine ich einen Proxy, der in jeder Methode wirklich nichts anderes
+ macht, als die selbe Methode am RealSubject aufzurufen.
+\end_layout
+
+\end_inset
+
+ (siehe Proxy pattern) als Subclass von GameGraph definieren, weil ja eine
+ Standardimplementierung der original Graph-Schnittstelle leider keine Instanz
+ der GameGraph Schnittstelle sein kann.
+\end_layout
+
+\begin_layout Enumerate
+Auf GameGraph verzichten und überall direkt die original Graph-Schnittstelle
+ verwenden.
+\end_layout
+
+\begin_layout Enumerate
+GameGraph als Wrapper class mit einer Methode getGraph, die eine Instanz
+ der original Graph-Schnittstelle zurückgibt.
+ Der 
+\begin_inset Quotes gld
+\end_inset
+
+Umschlag
+\begin_inset Quotes grd
+\end_inset
+
+ kann herumgereicht werden und der Graph wird nur da herausgeholt, wo er
+ wirklich gebraucht wird.
+\end_layout
+
+\begin_layout Standard
+Ich habe mich aus folgenden Gründen für die vierte Möglichkeit (GameGraph
+ als Wrapper class) entschieden:
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Zu
+\begin_inset space ~
+\end_inset
+
+1.
+ Entfällt, weil
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+ich dann eine vollständige eigene Graph-Schnittstelle definieren müsste,
+ aber ja gar nicht den Graph-Toolkit-Entwickler spielen möchte und
+\end_layout
+
+\begin_layout Itemize
+Vorteile durch den Einsatz eines anderen Graph-Toolkits nur genutzt werden
+ können, wenn ich meine Schnittstelle erweitere.
+\end_layout
+
+\end_deeper
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Zu
+\begin_inset space ~
+\end_inset
+
+2.
+ Entfällt, weil
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+ein 1:1-Proxy eine ziemlich stupide Programmierarbeit ist,
+\end_layout
+
+\begin_layout Itemize
+trotzdem eine weitere Möglichkeit bietet, Fehler zu machen und
+\end_layout
+
+\begin_layout Itemize
+es einfach unnötig und unschön ist.
+\end_layout
+
+\end_deeper
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Zu
+\begin_inset space ~
+\end_inset
+
+3.
+ Entfällt, weil bei Austausch des Graph-Toolkits im ganzen Projekt hunderte
+ Änderungen des Typs nötig wären, auch wenn die GameGraph Schnittstelle
+ nicht mal verwendet wird, sondern der Graph nur herumgereicht wird.
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Zu
+\begin_inset space ~
+\end_inset
+
+4.
+ Damit muss der Code bei Austausch des Toolkits nur an den Stellen geändert
+ werden, wo tatsächlich auf die original Graph-Schnittstelle zugegriffen
+ wird (und natürlich im GameGraph).
 \end_layout
 
 \begin_layout Subsection
@@ -263,6 +557,19 @@ JGraphT
 
 \begin_layout Standard
 Als Graph-Toolkit kommt JGraphT zum Einsatz.
+ JGraphT bietet mit der Schnittstelle UndirectedGraph<V, E> Zugriff auf
+ ungerichtete Graphen.
+ Als Standardimplementierung kommt MultiGraph
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ja, wirklich?
+\end_layout
+
+\end_inset
+
+<V, E> in Frage.
 \end_layout
 
 \begin_layout Subsection
@@ -275,7 +582,6 @@ Das JGraphT-Toolkit ist relativ eng mit ScotlYard gekoppelt.
  oder Schnittstellen verändern zu müssen.
  Die Anpassungen, die durchgeführt werden müssen, beschränken sich fast
  ausschließlich auf die Implementierung.
- Wer direkt die Standardimplementierung verwenden will muss diese ändern.
  Im folgenden werden Vorraussetzungen und nötige Anpassungen näher beschrieben.
 \end_layout
 
@@ -316,28 +622,28 @@ Die grundlegendsten Anpassung müssen im Package kj.scotlyard.game.graph gemacht
 \end_layout
 
 \begin_layout Enumerate
-Zunächst muss die Superklasse von GameGraph abgeändert werden zur Graph-Schnitts
-telle des verwendeten Toolkits.
+Zunächst müssen im GameGraph alle Vorkommen von
 \begin_inset Newline newline
 \end_inset
 
-public interface GameGraph extends org.jgrapht.UndirectedGraph { }
+org.jgrapht.UndirectedGraph<StationVertex, ConnectionEdge>
 \begin_inset Newline newline
 \end_inset
 
-wird damit zu
+abgeändert werden zur Graph-Schnittstelle des verwendeten Toolkits
 \begin_inset Newline newline
 \end_inset
 
-public interface GameGraph extends OtherToolkitsGraphInterface { }
+OtherToolkitsGraphInterface<StationVertex, ConnectionEdge>
 \end_layout
 
 \begin_layout Enumerate
 Außerdem definieren die Schnittstellen StationVertex und ConnectionEdge
  grundlegende Methoden, die den Zugriff auf den Graph vereinfachen und vereinhei
-tlichen.
- Die Implementierung in Station und Connection verwendet die Graph-Schnittstelle
-, und muss bei Verwendung eines anderen Toolkits natürlich anders aussehen.
+tlichen (siehe Bridge pattern).
+ Die Implementierung in Station und Connection verwendet die original Graph-Schn
+ittstelle, und muss bei Verwendung eines anderen Toolkits natürlich anders
+ aussehen.
 \end_layout
 
 \begin_layout Subsubsection
@@ -368,17 +674,17 @@ Im Controller (kj.scotlyard.game.control.*) muss ebenfalls nichts verändert
 \end_layout
 
 \begin_layout Standard
-Das Interface in kj.scotlyard.game.rules.* ändert sich überhaupt nicht.
- In der Implementierung der Regeln wird aber auf den Graphen zugegriffen,
- denn die Regeln testen zum Beispiel, ob durch einen Zug der nächste Knoten
- überhaupt erreichbar ist.
+Das Interface in kj.scotlyard.game.rules.* ändert sich ebenfalls nicht.
+ In der Implementierung der Regeln wird aber under Umständen auf den Graphen
+ zugegriffen, denn die Regeln testen zum Beispiel, ob durch einen Zug der
+ angegebene Knoten überhaupt erreichbar ist.
 \end_layout
 
 \begin_layout Standard
 Würde die Implementierung mit dem Interface von StationVertex und ConnectionEdge
  auskommen, wären auch hier keine Änderungen notwendig.
- Wird aber auf das Interface von GameGraph zurückgegriffen, müssen Anpassungen
- durchgeführt werden.
+ Wird aber auf das Interface der original Graph-Schnittstelle zurückgegriffen,
+ müssen Anpassungen durchgeführt werden.
 \end_layout
 
 \begin_layout Subsubsection

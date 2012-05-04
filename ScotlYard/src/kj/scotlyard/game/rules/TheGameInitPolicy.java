@@ -29,7 +29,7 @@ public class TheGameInitPolicy implements GameInitPolicy {
 				set.add(item.newInstance());			
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("Does not work for given item class", e);
+			throw new IllegalArgumentException("Does not work for given item class.", e);
 		}
 	}	
 	
@@ -68,7 +68,7 @@ public class TheGameInitPolicy implements GameInitPolicy {
 	
 	@Override
 	public StationVertex suggestInitialStation(GameState gameState,
-			GameGraph gameGraph, Set<StationVertex> initialPositions, Player player) {
+			GameGraph gameGraph, Set<StationVertex> initialStations, Player player) {
 		
 		// es gibt 18 startkarten, die verlost werden.
 		
@@ -76,7 +76,7 @@ public class TheGameInitPolicy implements GameInitPolicy {
 		// aber nicht zu den regeln, sondern zum Graph!
 		
 		// Possible initial positions
-		List<StationVertex> poss = new ArrayList<>(initialPositions);
+		List<StationVertex> poss = new ArrayList<>(initialStations);
 		for (Move m : new GameStateExtension(gameState).getMoves(GameState.INITIAL_ROUND_NUMBER, false)) {
 			poss.remove(m.getStation());
 		}

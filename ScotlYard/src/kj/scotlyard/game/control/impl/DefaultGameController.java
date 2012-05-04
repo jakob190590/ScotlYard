@@ -23,7 +23,7 @@ import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 
-public class TheGameController extends GameController {
+public class DefaultGameController extends GameController {
 	
 	@SuppressWarnings("serial")
 	protected class MoveEdit extends CompoundEdit {
@@ -105,7 +105,7 @@ public class TheGameController extends GameController {
 	
 	private final GameGraph gameGraph;
 	
-	private final Set<StationVertex> initialPositions;
+	private final Set<StationVertex> initialStations;
 	
 	private Rules rules;
 	
@@ -122,10 +122,10 @@ public class TheGameController extends GameController {
 	
 	private GameWin win;
 	
-	public TheGameController(Game game, GameGraph gameGraph, Set<StationVertex> initialPositions, Rules rules) {
+	public DefaultGameController(Game game, GameGraph gameGraph, Set<StationVertex> initialStations, Rules rules) {
 		this.game = game;
 		this.gameGraph = gameGraph;
-		this.initialPositions = initialPositions;
+		this.initialStations = initialStations;
 		this.rules = rules;
 		
 		notInGame = new NotInGameControllerState(this);
@@ -187,8 +187,8 @@ public class TheGameController extends GameController {
 		return game;
 	}
 	
-	protected Set<StationVertex> getInitialPositions() { // TODO public or protected? wenn getgraph public is...
-		return initialPositions;
+	protected Set<StationVertex> getInitialStations() { // TODO public or protected? wenn getgraph public is...
+		return initialStations;
 	}
 
 	public void equipGameStateRequester(GameStateRequester requester) {

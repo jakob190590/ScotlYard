@@ -75,7 +75,7 @@ class InGameControllerState extends GameControllerState {
 	
 	private final UndoManager undoManager;
 	
-	protected InGameControllerState(TheGameController controller) {
+	protected InGameControllerState(DefaultGameController controller) {
 		super(controller);
 		game = controller.getGame();
 		gameStateExtension = new GameStateExtension(game);

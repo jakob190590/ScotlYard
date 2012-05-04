@@ -19,7 +19,7 @@ import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.TheGame;
+import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.util.MoveProducer;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
@@ -53,13 +53,13 @@ public class NotInGameControllerTest {
 	final Rules r = new TheRules();
 	
 	Game g;
-	TheGameController c; // controller
+	DefaultGameController c; // controller
 	
 	@Before
 	public void setUp() throws Exception {
 		
-		g = new TheGame();
-		c = new TheGameController(g, gg, initialStations, r);
+		g = new DefaultGame();
+		c = new DefaultGameController(g, gg, initialStations, r);
 		
 		g.getMoves().add(MoveProducer.createInitialMove(new DetectivePlayer(), new Station(gg)));
 		g.getMoves().add(MoveProducer.createInitialMove(new DetectivePlayer(), new Station(gg)));
@@ -172,10 +172,10 @@ public class NotInGameControllerTest {
 				if (!gs1.getDetectives().equals(gs2.getDetectives())) {
 					
 					c.getUndoManager().undo();
-					assertEquals(gs1.getDetectives(), g.getDetectives());
+					assertEquals(gs1, g);
 					
 					c.getUndoManager().redo();
-					assertEquals(gs2.getDetectives(), g.getDetectives());
+					assertEquals(gs2, g);
 				}
 				
 			}
@@ -201,10 +201,10 @@ public class NotInGameControllerTest {
 				if (!gs1.getDetectives().equals(gs2.getDetectives())) {
 					
 					c.getUndoManager().undo();
-					assertEquals(gs1.getDetectives(), g.getDetectives());
+					assertEquals(gs1, g);
 					
 					c.getUndoManager().redo();
-					assertEquals(gs2.getDetectives(), g.getDetectives());
+					assertEquals(gs2, g);
 				}
 				
 			}

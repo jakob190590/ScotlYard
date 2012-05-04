@@ -13,7 +13,7 @@ import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.TheGame;
+import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.rules.Rules;
@@ -36,7 +36,7 @@ public class MrXTrackerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		g = new TheGame();
+		g = new DefaultGame();
 		r = new TheRules();
 		ext = new GameStateExtension(g);
 		tr = new MrXTracker(g, gg, r);

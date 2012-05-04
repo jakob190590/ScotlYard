@@ -221,7 +221,7 @@ class NotInGameControllerState extends GameControllerState {
 	
 	private final UndoManager undoManager;
 	
-	protected NotInGameControllerState(TheGameController controller) {
+	protected NotInGameControllerState(DefaultGameController controller) {
 		super(controller);
 		game = controller.getGame();
 		gameGraph = controller.getGameGraph();
@@ -314,7 +314,7 @@ class NotInGameControllerState extends GameControllerState {
 		final GameInitPolicy initPolicy = rules.getGameInitPolicy();
 		final TurnPolicy turnPolicy = rules.getTurnPolicy();
 		
-		final Set<StationVertex> initialStations = getController().getInitialPositions();
+		final Set<StationVertex> initialStations = getController().getInitialStations();
 
 		if (!game.getMoves().isEmpty()) {
 			throw new IllegalStateException("Cannot start game, while Move list is not cleared. Call newGame and try again.");
