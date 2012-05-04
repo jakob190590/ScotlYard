@@ -23,7 +23,7 @@ import kj.scotlyard.game.util.GameStateExtension;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TheGameControllerTest {
+public class DefaultGameControllerTest {
 
 	Rules r;
 

@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ InGameControllerTest.class,
-		NotInGameControllerTest.class, TheGameControllerTest.class })
+		NotInGameControllerTest.class, DefaultGameControllerTest.class })
 public class AllTests {
 
 }
