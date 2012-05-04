@@ -36,8 +36,8 @@ public class DefaultGameControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		r = new TheRules();
-		ctrl = new DefaultGameController(g, gg, null, r);
 		g = new DefaultGame();
+		ctrl = new DefaultGameController(g, gg, null, r);
 	}
 
 	@Test

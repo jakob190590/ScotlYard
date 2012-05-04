@@ -60,8 +60,8 @@ public class NotInGameControllerTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		c = new DefaultGameController(g, gg, initialStations, r);
 		g = new DefaultGame();
+		c = new DefaultGameController(g, gg, initialStations, r);
 		
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
