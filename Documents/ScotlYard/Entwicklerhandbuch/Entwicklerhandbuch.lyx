@@ -241,6 +241,155 @@ Die Schnittstelle GameState
 \end_layout
 
 \begin_layout Subsubsection
+Zugriff auf Moves
+\end_layout
+
+\begin_layout Standard
+Zum Zugriff auf die Moves gibt es folgende Methoden:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+List<Move> getMoves();
+\end_layout
+
+\begin_layout Plain Layout
+
+Move getMove(Player p, int number, MoveAccessMode accessMode);
+\end_layout
+
+\begin_layout Plain Layout
+
+Move getLastMove(Player p);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+getMoves liefert eine Liste mit Moves, die letzteren beiden sind eher convenient
+ methods.
+ Die Liste von getMoves sollte beim GameState unmodifiable sein.
+ Außerdem muss die get Methode wie folgt implementiert sein:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+@Override
+\end_layout
+
+\begin_layout Plain Layout
+
+public Move get(int index) {
+\end_layout
+
+\begin_layout Plain Layout
+
+	return super.get((index >= 0) ?
+\end_layout
+
+\begin_layout Plain Layout
+
+			index : 
+\end_layout
+
+\begin_layout Plain Layout
+
+			size() + index);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dadurch wird mit negativen Indizes von hinten her auf die Listenelemente
+ zugegriffen.
+ Zu diesem Zweck gibt es auch noch eine Konstante des GameState:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+/* public static final */ int LAST_MOVE = -1;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Somit kann also z.B.
+ folgendermaßen auf die Moves zugegriffen werden:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import static GameState.LAST_MOVE;
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+gs.getMoves().get(LAST_MOVE);     // letzter Zug
+\end_layout
+
+\begin_layout Plain Layout
+
+gs.getMoves().get(LAST_MOVE - 1); // vorletzter Zug
+\end_layout
+
+\begin_layout Plain Layout
+
+gs.getMoves().get(-2);  // ebenfalls vorletzter Zug
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mit getMove und getLastMove kann man dagegen auf einen Move eines bestimmten
+ Players zugreifen.
+ getLastMove liefert einfach den letzten Zug des angegebeen Players.
+ getMove liefert -- abhängig vom MoveAccessMode (ROUND_NUMBER/MOVE_NUMBER)
+ -- den entsprechenden Zug zu angegebenem Player und Nummer.
+\end_layout
+
+\begin_layout Subsubsection
 Copying und Gleichheit
 \end_layout
 
