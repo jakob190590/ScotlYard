@@ -397,6 +397,7 @@ getMove liefert -- abhängig vom MoveAccessMode (ROUND_NUMBER/MOVE_NUMBER)
  Für die Nummer gilt auch hier wieder, dass negative Werte von hinten zählen.
  Dazu gibt es die Konstanten LAST_ROUND_NUMBER und LAST_MOVE_NUMBER des
  GameState, die wie LAST_MOVE definiert sind und ebenso verwendet werden.
+
 \end_layout
 
 \begin_layout Subsubsection
