@@ -78,7 +78,7 @@ public class MrXTracker {
 		
 		result.add(getLastKnownMove().getStation());
 		
-		for (Move move : getMovesSince()){
+		for (Move move : getMovesSince()) {
 		
 			Ticket ticket = (Ticket) move.getItem();
 			
@@ -92,16 +92,17 @@ public class MrXTracker {
 					detectiveStationSet.add(m.getStation());
 			}
 			
-			for (StationVertex station : result){
+			for (StationVertex station : result) {
 				
-				for (ConnectionEdge connection : station.getEdges()){
+				for (ConnectionEdge connection : station.getEdges()) {
 					
 					StationVertex s = connection.getOther(station);
 					
 					if (rules.getMovePolicy().isTicketValidForConnection(ticket, connection)
-							&& !detectiveStationSet.contains(s))
+							&& !detectiveStationSet.contains(s)) {
 						
 						stationSet.add(connection.getOther(station));
+					}
 				}
 			}
 			
