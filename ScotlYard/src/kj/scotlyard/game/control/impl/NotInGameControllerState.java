@@ -2,7 +2,6 @@ package kj.scotlyard.game.control.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -314,8 +313,6 @@ class NotInGameControllerState extends GameControllerState {
 		final GameInitPolicy initPolicy = rules.getGameInitPolicy();
 		final TurnPolicy turnPolicy = rules.getTurnPolicy();
 		
-		final Set<StationVertex> initialStations = getController().getInitialStations();
-
 		final MoveProducer moveProducer = MoveProducer.createInstance();
 				
 		if (!game.getMoves().isEmpty()) {
@@ -349,7 +346,7 @@ class NotInGameControllerState extends GameControllerState {
 			game.setCurrentPlayer(player);
 			game.setItems(player, initPolicy.createItemSet(game, player));
 			
-			StationVertex initStation = initPolicy.suggestInitialStation(game, gameGraph, initialStations, player);
+			StationVertex initStation = initPolicy.suggestInitialStation(game, gameGraph, player);
 			Move initMove = moveProducer.createInitialMove(player, initStation);
 			game.getMoves().add(initMove);
 		}
