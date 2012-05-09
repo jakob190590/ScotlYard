@@ -18,19 +18,20 @@ import kj.scotlyard.game.rules.Rules;
 
 public class MrXTracker {
 
-	private GameState gameState;
+	private final GameState gameState;
 	
-	private GameGraph gameGraph;
+	@SuppressWarnings("unused")
+	private final GameGraph gameGraph;
 	
-	private Rules rules;
+	private final Rules rules;
 	
-	private GameStateExtension gameStateExtension;
+	private final GameStateExtension gameStateExtension;
 	
 	public MrXTracker(GameState gameState, GameGraph gameGraph, Rules rules) {
 		this.gameState = gameState;
 		this.gameGraph = gameGraph;
-		gameStateExtension = new GameStateExtension(gameState);
 		this.rules = rules;
+		gameStateExtension = new GameStateExtension(gameState);
 	}
 
 	public Move getLastKnownMove() {
