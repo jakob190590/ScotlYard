@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
+import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.Rules;
 
 public class MrXTracker {
@@ -73,7 +76,34 @@ public class MrXTracker {
 		
 		Set<StationVertex> result = new HashSet<>();
 		
-		// TODO implement -- korbi?		
+		result.add(getLastKnownMove().getStation());
+		
+		for (Move move : getMovesSince()){
+		
+			Ticket ticket = (Ticket) move.getItem();
+			
+			Set<StationVertex> stationSet = new HashSet<>();
+			Set<StationVertex> detectiveStationSet = new HashSet<>();
+			
+			for (DetectivePlayer d : gameState.getDetectives()) {
+				detectiveStationSet.add(gameState.getMove(d, move.getRoundNumber(), GameState.MoveAccessMode.ROUND_NUMBER).getStation());
+			}
+			
+			for (StationVertex station : result){
+				
+				for (ConnectionEdge connection : station.getEdges()){
+					
+					StationVertex s = connection.getOther(station);
+					
+					if (!detectiveStationSet.contains(s) && rules.getMovePolicy().isTicketValidForConnection(ticket, connection))
+						stationSet.add(connection.getOther(station));
+				}
+			}
+			
+			result = stationSet;
+			
+		}
+		// TODO implement -- korbi		
 		
 		return result;
 	}
