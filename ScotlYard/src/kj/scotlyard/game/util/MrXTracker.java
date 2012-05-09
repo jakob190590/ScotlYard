@@ -105,7 +105,13 @@ public class MrXTracker {
 		if (last == null) {
 			// MrX wasn't uncovered yet, so every position is possible
 			it = gameStateExtension.moveIterator(gameState.getMrX(), true);
-			result = gameGraph.getGraph().vertexSet();
+			if (it.hasNext()) {
+				it.next();
+			} else {
+				throw new IllegalStateException("MrX has no initial move yet.");
+			}
+			result = new HashSet<>(gameGraph.getInitialStations());
+			result.removeAll(gameStateExtension.getDetectivePositions(GameState.INITIAL_ROUND_NUMBER));
 		} else {
 			it = getMovesSince().iterator();
 			result = Collections.singleton(last.getStation());			
@@ -117,14 +123,8 @@ public class MrXTracker {
 			Ticket ticket = (Ticket) move.getItem();
 			
 			Set<StationVertex> stationSet = new HashSet<>();
-			Set<StationVertex> detectiveStationSet = new HashSet<>();
-			
-			for (DetectivePlayer d : gameState.getDetectives()) {
-				Move m = gameState.getMove(d, move.getRoundNumber(),
-						GameState.MoveAccessMode.ROUND_NUMBER);
-				if (m != null)
-					detectiveStationSet.add(m.getStation());
-			}
+			Set<StationVertex> detectiveStationSet = gameStateExtension
+					.getDetectivePositions(move.getRoundNumber());
 			
 			for (StationVertex station : result) {
 				
