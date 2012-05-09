@@ -88,9 +88,11 @@ public class MrXTracker {
 	}
 		
 	/**
-	 * Calculates all possible Positions of MrX on the current
-	 * GameState.
-	 * @return a Set of all possible Positions of MrX.
+	 * Calculates all possible positions of MrX on the current
+	 * GameState. There must be at least one Move (initial move)
+	 * of MrX. For a correct result, this method should not be
+	 * called after the game is won (no matter who won).
+	 * @return a Set of all possible positions (Stations) of MrX.
 	 */
 	public Set<StationVertex> getPossiblePositions() {
 		// ohne bewertung, denn das ist aufgabe der AI!
