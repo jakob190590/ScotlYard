@@ -86,7 +86,10 @@ public class MrXTracker {
 			Set<StationVertex> detectiveStationSet = new HashSet<>();
 			
 			for (DetectivePlayer d : gameState.getDetectives()) {
-				detectiveStationSet.add(gameState.getMove(d, move.getRoundNumber(), GameState.MoveAccessMode.ROUND_NUMBER).getStation());
+				Move m = gameState.getMove(d, move.getRoundNumber(),
+						GameState.MoveAccessMode.ROUND_NUMBER);
+				if (m != null)
+					detectiveStationSet.add(m.getStation());
 			}
 			
 			for (StationVertex station : result){
@@ -95,7 +98,9 @@ public class MrXTracker {
 					
 					StationVertex s = connection.getOther(station);
 					
-					if (!detectiveStationSet.contains(s) && rules.getMovePolicy().isTicketValidForConnection(ticket, connection))
+					if (rules.getMovePolicy().isTicketValidForConnection(ticket, connection)
+							&& !detectiveStationSet.contains(s))
+						
 						stationSet.add(connection.getOther(station));
 				}
 			}
@@ -103,7 +108,6 @@ public class MrXTracker {
 			result = stationSet;
 			
 		}
-		// TODO implement -- korbi		
 		
 		return result;
 	}
