@@ -35,6 +35,15 @@ public class MrXTracker {
 		gameStateExtension = new GameStateExtension(gameState);
 	}
 
+	/**
+	 * Gibt den Zug zurueck, an dem MrX
+	 * das letzte Mal aufgetaucht ist,
+	 * oder <tt>null</tt>, wenn MrX noch
+	 * nicht aufgetaucht ist.
+	 * @return MrX' last uncovered move,
+	 * or <tt>null</tt> if MrX wasn't
+	 * uncovered yet.
+	 */
 	public Move getLastKnownMove() {
 		Player mrX = gameState.getMrX();
 		Move lastMove = gameStateExtension.getLastMoveFlat(mrX);
@@ -51,6 +60,14 @@ public class MrXTracker {
 		return null;
 	}
 	
+	/**
+	 * Returns the List of MrX' Moves since his last uncovered
+	 * Move. The uncovered Move is excluded. If there was no
+	 * uncovered Move yet (<tt>getLastKnownMove() == null</tt>),
+	 * or if there was no Move since the last uncovered Move,
+	 * the List is empty.
+	 * @return the List of MrX' Moves since his last uncovered Move.
+	 */
 	public List<Move> getMovesSince() {
 		// ... Since: Last known Move (was sonst)
 		
@@ -70,6 +87,11 @@ public class MrXTracker {
 		return list;
 	}
 		
+	/**
+	 * Calculates all possible Positions of MrX on the current
+	 * GameState.
+	 * @return a Set of all possible Positions of MrX.
+	 */
 	public Set<StationVertex> getPossiblePositions() {
 		// ohne bewertung, denn das ist aufgabe der AI!
 		
