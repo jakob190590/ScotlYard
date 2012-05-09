@@ -200,6 +200,8 @@ public class MrXTrackerTest {
 	@Test
 	public final void testGetPossiblePositions() {
 		// TODO implement test
+		// Must be tested with a DetectivesGameState (GameStateAccessPolicy)!
+		// Dabei darf es keine IllegalAccessExceptions geben!!
 		fail("Not yet implemented");
 	}
 
