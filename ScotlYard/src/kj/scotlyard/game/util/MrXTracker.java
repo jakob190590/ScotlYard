@@ -1,6 +1,8 @@
 package kj.scotlyard.game.util;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -20,7 +22,6 @@ public class MrXTracker {
 
 	private final GameState gameState;
 	
-	@SuppressWarnings("unused")
 	private final GameGraph gameGraph;
 	
 	private final Rules rules;
@@ -75,12 +76,22 @@ public class MrXTracker {
 		// wenn die AI diese methode nicht nutzen will, ist mir das auch egal.
 		// die GUI kann sie auf jeden fall brauchen.
 		
-		Set<StationVertex> result = new HashSet<>();
+		Iterator<Move> it;
+		Set<StationVertex> result;
 		
-		result.add(getLastKnownMove().getStation());
+		Move last = getLastKnownMove();
+		if (last == null) {
+			// MrX wasn't uncovered yet, so every position is possible
+			it = gameStateExtension.moveIterator(gameState.getMrX(), true);
+			result = gameGraph.getGraph().vertexSet();
+		} else {
+			it = getMovesSince().iterator();
+			result = Collections.singleton(last.getStation());			
+		}
 		
-		for (Move move : getMovesSince()) {
-		
+		while (it.hasNext()) {
+
+			Move move = it.next();
 			Ticket ticket = (Ticket) move.getItem();
 			
 			Set<StationVertex> stationSet = new HashSet<>();
