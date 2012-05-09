@@ -93,8 +93,10 @@ public class MrXTracker {
 	 * of MrX. For a correct result, this method should not be
 	 * called after the game is won (no matter who won).
 	 * @return a Set of all possible positions (Stations) of MrX.
+	 * @throws IllegalStateException if there is no initial move
+	 * of MrX.
 	 */
-	public Set<StationVertex> getPossiblePositions() {
+	public Set<StationVertex> getPossiblePositions() throws IllegalStateException {
 		// ohne bewertung, denn das ist aufgabe der AI!
 		
 		// wenn die AI diese methode nicht nutzen will, ist mir das auch egal.
