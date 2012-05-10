@@ -397,7 +397,6 @@ getMove liefert -- abhängig vom MoveAccessMode (ROUND_NUMBER/MOVE_NUMBER)
  Für die Nummer gilt auch hier wieder, dass negative Werte von hinten zählen.
  Dazu gibt es die Konstanten LAST_ROUND_NUMBER und LAST_MOVE_NUMBER des
  GameState, die wie LAST_MOVE definiert sind und ebenso verwendet werden.
-
 \end_layout
 
 \begin_layout Subsubsection
@@ -564,18 +563,97 @@ Spielgraph
 \end_layout
 
 \begin_layout Standard
-Der Graph modelliert das Spielfeld.
- Er ist nicht Teil der Regeln, sondern wird gesondert erzeugt.
- Die Regeln haben nämlich auch kaum etwas mit dem konkreten Graphen zu tun.
+Der GameGraph modelliert das Spielfeld.
+ Er enthält den Graph und die Initial Stations (mögliche Startpositionen).
+ Das public-Interface sieht folgendermaßen aus:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+GraphInterface getGraph();
+\end_layout
+
+\begin_layout Plain Layout
+
+Set<StationVertex> getInitialStations();
+\end_layout
+
+\begin_layout Plain Layout
+
+void setGraph(GraphInterface graph);
+\end_layout
+
+\begin_layout Plain Layout
+
+void setInitialStations(Set<StationVertex> initialStations);
+\end_layout
+
+\begin_layout Plain Layout
+
+void seal();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Zuerst werden Graph und Initial Stations gesetzt.
+ Anschließen wird der GameGraph mit seal 
+\begin_inset Quotes gld
+\end_inset
+
+sealed & released
+\begin_inset Quotes grd
+\end_inset
+
+.
+ Das bedeutet, dass alle seine Daten werden unmodifiable gemacht werden
+ (in jeder Hinsicht) und er zur Benutzung freigegeben wird.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Diese Verkomplizierung des Interface ist leider notwendig.
+ Man könnte sich fragen 
+\begin_inset Quotes gld
+\end_inset
+
+warum werden die Werte nicht per Konstruktor übergeben, dann könnte man
+ sich das Sealable sparen
+\begin_inset Quotes grd
+\end_inset
+
+.
+ Das geht aber nicht aus folgendem Grund: Die Elemente des Graph (StationVertex/
+ConnectionEdge) erwarten im Konstruktor einen GameGraph (damit sie als einfache
+ Bridge fungieren können).
+ Das heißt, beim Erstellen des Graph muss der GameGraph schon existieren.
+ Auch die Initial Stations können erst hinzugefügt werden, wenn der Graph
+ existiert.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Der GameGraph ist nicht Teil der Regeln, sondern wird gesondert erzeugt.
+ Die Regeln haben nämlich kaum etwas mit dem konkreten Graphen zu tun.
  Die einzige Ausnahme ist in der GameInitPolicy die Methode suggestInitialStatio
 n.
  Diese muss aus möglichen Startpositionen für den gegebenen Spieler eine
  auswählen.
  Die möglichen Startpositionen hängen aber eng mit dem konkreten Graph zusammen.
- Daher wird in diesem Ausnahmefall zusätzlich zum GameGraph noch eine Menge
- an möglichen Startpositionen übergeben (Set<StationVertex>).
- Diese möglichen Startpositionen gehören also auch eher zum Spielgraph und
- sind nicht Teil der Regeln.
+ Also gehören sie zum GameGraph und sind nicht Teil der Regeln.
+ Sie werden den Regeln per GameGraph übergeben.
 \end_layout
 
 \begin_layout Standard
@@ -590,7 +668,8 @@ Original Graph-Schnittstelle
 \begin_inset Quotes grd
 \end_inset
 
- ist die Graph-Schnittstelle des verwendeten Graph-Toolkits.
+ ist die Graph-Schnittstelle des verwendeten Graph-Toolkits (z.B.
+ UndirectedGraph bei JGraphT).
 \end_layout
 
 \begin_layout Itemize
@@ -743,17 +822,8 @@ JGraphT
 Als Graph-Toolkit kommt JGraphT zum Einsatz.
  JGraphT bietet mit der Schnittstelle UndirectedGraph<V, E> Zugriff auf
  ungerichtete Graphen.
- Als Standardimplementierung kommt MultiGraph
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-ja, wirklich?
-\end_layout
-
-\end_inset
-
-<V, E> in Frage.
+ Als Standardimplementierung kommt UnmodifiableUndirectedGraph<V, E> in
+ Frage.
 \end_layout
 
 \begin_layout Subsection
@@ -765,7 +835,7 @@ Das JGraphT-Toolkit ist relativ eng mit ScotlYard gekoppelt.
  Trotzdem ist es möglich, ein anderes Toolkit zu verwenden, ohne die Architektur
  oder Schnittstellen verändern zu müssen.
  Die Anpassungen, die durchgeführt werden müssen, beschränken sich fast
- ausschließlich auf die Implementierung.
+ ausschließlich auf Teile der Implementierung.
  Im folgenden werden Vorraussetzungen und nötige Anpassungen näher beschrieben.
 \end_layout
 
