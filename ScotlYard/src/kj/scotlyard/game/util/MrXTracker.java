@@ -109,11 +109,11 @@ public class MrXTracker {
 		if (last == null) {
 			// MrX wasn't uncovered yet, so every position is possible
 			it = gameStateExtension.moveIterator(gameState.getMrX(), true);
-			if (it.hasNext()) {
-				it.next();
-			} else {
+			if (!it.hasNext()) {
 				throw new IllegalStateException("MrX has no initial move yet.");
 			}
+			// Skip initial move of MrX:
+			it.next();
 			result = new HashSet<>(gameGraph.getInitialStations());
 			result.removeAll(gameStateExtension.getDetectivePositions(GameState.INITIAL_ROUND_NUMBER));
 		} else {
