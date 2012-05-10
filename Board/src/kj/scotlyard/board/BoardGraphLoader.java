@@ -20,9 +20,9 @@ public class BoardGraphLoader {
 	private GameGraph gameGraph;
 	private Set<JComponent> visualComponents;
 	private Map<Integer, StationVertex> numberStationMap;
-	private Set<StationVertex> initialStations;
 	
 	/**
+	 * Test program
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -57,7 +57,7 @@ public class BoardGraphLoader {
 		numberStationMap = builder.getNumberStationMap();
 		
 		
-		initialStations = new HashSet<>();
+		Set<StationVertex> initialStations = new HashSet<>();
 		Scanner sc = new Scanner(new File(initialStationsFilename));
 		while (sc.hasNext()) {
 			StationVertex station = numberStationMap.get(sc.nextInt());
@@ -66,6 +66,11 @@ public class BoardGraphLoader {
 			}
 			initialStations.add(station);
 		}
+		
+		gameGraph.setInitialStations(initialStations);
+		
+		// Seal & release GameState ("make unmodifiable")
+		gameGraph.seal();
 		
 		// Erfolgreich geladen
 		loaded = true;
@@ -86,9 +91,10 @@ public class BoardGraphLoader {
 		return numberStationMap;
 	}
 	
+	@Deprecated // initial stations are now stored in GameGraph (in addition to the graph)
 	public Set<StationVertex> getInitialStations() {
 		checkLoaded();
-		return initialStations;
+		return gameGraph.getInitialStations();
 	}
 
 }

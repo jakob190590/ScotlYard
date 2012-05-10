@@ -68,7 +68,7 @@ public class TheGameInitPolicy implements GameInitPolicy {
 	
 	@Override
 	public StationVertex suggestInitialStation(GameState gameState,
-			GameGraph gameGraph, Set<StationVertex> initialStations, Player player) {
+			GameGraph gameGraph, Player player) {
 		
 		// es gibt 18 startkarten, die verlost werden.
 		
@@ -76,7 +76,7 @@ public class TheGameInitPolicy implements GameInitPolicy {
 		// aber nicht zu den regeln, sondern zum Graph!
 		
 		// Possible initial positions
-		List<StationVertex> poss = new ArrayList<>(initialStations);
+		List<StationVertex> poss = new ArrayList<>(gameGraph.getInitialStations());
 		for (Move m : new GameStateExtension(gameState).getMoves(GameState.INITIAL_ROUND_NUMBER, false)) {
 			poss.remove(m.getStation());
 		}

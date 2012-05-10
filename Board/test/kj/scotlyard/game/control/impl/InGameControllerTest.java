@@ -9,7 +9,6 @@ import java.util.Set;
 import kj.scotlyard.board.BoardGraphLoader;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
@@ -40,7 +39,6 @@ import org.junit.Test;
 public class InGameControllerTest {
 
 	final BoardGraphLoader loader = new BoardGraphLoader();
-	final Set<StationVertex> initialStations;
 	final GameGraph gg;
 	{
 		try {
@@ -49,7 +47,6 @@ public class InGameControllerTest {
 			e.printStackTrace();
 		}				
 		gg = loader.getGameGraph();
-		initialStations = loader.getInitialStations();
 	}
 	
 	final MoveProducer mp = MoveProducer.createInstance(); // move producer
@@ -63,7 +60,7 @@ public class InGameControllerTest {
 	public void setUp() throws Exception {
 		
 		g = new DefaultGame();
-		c = new DefaultGameController(g, gg, initialStations, r);
+		c = new DefaultGameController(g, gg, r);
 		
 		g.setMrX(new MrXPlayer());
 		

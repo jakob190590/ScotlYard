@@ -1,7 +1,5 @@
 package kj.scotlyard.game.control.impl;
 
-import java.util.Set;
-
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -13,7 +11,6 @@ import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.GameStateRequester;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.DefaultGameState;
 import kj.scotlyard.game.model.Game;
@@ -105,8 +102,6 @@ public class DefaultGameController extends GameController {
 	
 	private final GameGraph gameGraph;
 	
-	private final Set<StationVertex> initialStations;
-	
 	private Rules rules;
 	
 	
@@ -122,10 +117,9 @@ public class DefaultGameController extends GameController {
 	
 	private GameWin win;
 	
-	public DefaultGameController(Game game, GameGraph gameGraph, Set<StationVertex> initialStations, Rules rules) {
+	public DefaultGameController(Game game, GameGraph gameGraph, Rules rules) {
 		this.game = game;
 		this.gameGraph = gameGraph;
-		this.initialStations = initialStations;
 		this.rules = rules;
 		
 		notInGame = new NotInGameControllerState(this);
@@ -187,10 +181,6 @@ public class DefaultGameController extends GameController {
 		return game;
 	}
 	
-	protected Set<StationVertex> getInitialStations() { // TODO public or protected? wenn getgraph public is...
-		return initialStations;
-	}
-
 	public void equipGameStateRequester(GameStateRequester requester) {
 		if (requester instanceof DetectiveAi) {
 			requester.setGameState(getRules().getGameStateAccessPolicy().createGameStateForDetectives(getGame()));

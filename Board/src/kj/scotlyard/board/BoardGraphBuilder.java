@@ -7,8 +7,6 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
-import org.jgrapht.graph.UnmodifiableUndirectedGraph;
-
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
@@ -21,9 +19,6 @@ import kj.scotlyard.graphbuilder.builder.AbstractGameGraphBuilder;
 import kj.scotlyard.graphbuilder.builder.GraphBuilder;
 
 public class BoardGraphBuilder extends AbstractGameGraphBuilder implements GraphBuilder {
-	
-	/** Gibt an, ob der Graph bereits unmodifiable gemacht wurde. */
-	protected boolean unmodifiable = false;
 	
 	/** Visuelle Komponenten, die Board fuer die GUI benoetigt. */
 	protected Set<JComponent> visualComponents = new HashSet<>();
@@ -61,13 +56,7 @@ public class BoardGraphBuilder extends AbstractGameGraphBuilder implements Graph
 		
 	}
 	
-	public GameGraph getGameGraph() {
-		if (!unmodifiable) {
-			// Unmodifiable GameGraph einmalig erzeugen
-			gg = new GameGraph(new UnmodifiableUndirectedGraph<StationVertex, ConnectionEdge>(g));
-			unmodifiable = true;
-		}
-		
+	public GameGraph getGameGraph() {		
 		return gg;
 	}
 	
