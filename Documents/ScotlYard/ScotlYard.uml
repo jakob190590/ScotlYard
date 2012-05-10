@@ -66,7 +66,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Thu May 10 19:32:16 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed May 09 11:26:25 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -3215,7 +3215,7 @@ flat Move List</UML:TaggedValue.dataValue>
                 <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3B'
                   name = 'getLastKnownMove' visibility = 'public' isSpecification = 'false'
                   ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-                  isLeaf = 'false' isAbstract = 'false' specification = 'Returns null, if there is no last known Move yet!'>
+                  isLeaf = 'false' isAbstract = 'false' specification = 'Returns the last uncovered Move of MrX.&#10;Of course it is a flat (Single) Move.&#10;Returns null, if there is no last known Move yet!'>
                   <UML:BehavioralFeature.parameter>
                     <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3C'
                       name = 'return' isSpecification = 'false' kind = 'return'>
@@ -3228,7 +3228,7 @@ flat Move List</UML:TaggedValue.dataValue>
                 <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C49'
                   name = 'getMovesSince' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
                   isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
-                  isAbstract = 'false' specification = 'Flat Moves (incl. Tickets) since LastKnownPosition.&#10;Not-flat waere dumm: Wenn last known move teil eines&#10;DoubleMoves ist!&#10;Einzig sinnvolle verwendung von not-flat waere die anzahl&#10;der runden seit...&#10;Dafuer gibt es aber jetzt eine extra methode!'>
+                  isAbstract = 'false' specification = 'Flat Moves (incl. Tickets) since LastKnownPosition.&#10;Not-flat waere dumm: Wenn last known move teil eines&#10;DoubleMoves ist!&#10;Einzig sinnvolle verwendung von not-flat waere die anzahl&#10;der runden seit... aber die muss man dann halt selbst&#10;ausrechnen, wenn man&apos;s braucht.'>
                   <UML:BehavioralFeature.parameter>
                     <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C4A'
                       name = 'return' isSpecification = 'false' kind = 'return'>
@@ -3241,7 +3241,7 @@ flat Move List</UML:TaggedValue.dataValue>
                 <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3D'
                   name = 'getPossiblePositions' visibility = 'public' isSpecification = 'false'
                   ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-                  isLeaf = 'false' isAbstract = 'false'>
+                  isLeaf = 'false' isAbstract = 'false' specification = 'Returns a set of all possible MrX positions.'>
                   <UML:BehavioralFeature.parameter>
                     <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3E'
                       name = 'return' isSpecification = 'false' kind = 'return'>

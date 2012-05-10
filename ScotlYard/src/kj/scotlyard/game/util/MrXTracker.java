@@ -1,35 +1,49 @@
 package kj.scotlyard.game.util;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
+import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.Rules;
 
 public class MrXTracker {
 
-	private GameState gameState;
+	private final GameState gameState;
 	
-	private GameGraph gameGraph;
+	private final GameGraph gameGraph;
 	
-	private Rules rules;
+	private final Rules rules;
 	
-	private GameStateExtension gameStateExtension;
+	private final GameStateExtension gameStateExtension;
 	
 	public MrXTracker(GameState gameState, GameGraph gameGraph, Rules rules) {
 		this.gameState = gameState;
 		this.gameGraph = gameGraph;
-		gameStateExtension = new GameStateExtension(gameState);
 		this.rules = rules;
+		gameStateExtension = new GameStateExtension(gameState);
 	}
 
+	/**
+	 * Gibt den Zug zurueck, an dem MrX
+	 * das letzte Mal aufgetaucht ist,
+	 * oder <tt>null</tt>, wenn MrX noch
+	 * nicht aufgetaucht ist.
+	 * @return MrX' last uncovered move,
+	 * or <tt>null</tt> if MrX wasn't
+	 * uncovered yet.
+	 */
 	public Move getLastKnownMove() {
 		Player mrX = gameState.getMrX();
 		Move lastMove = gameStateExtension.getLastMoveFlat(mrX);
@@ -46,6 +60,14 @@ public class MrXTracker {
 		return null;
 	}
 	
+	/**
+	 * Returns the List of MrX' Moves since his last uncovered
+	 * Move. The uncovered Move is excluded. If there was no
+	 * uncovered Move yet (<tt>getLastKnownMove() == null</tt>),
+	 * or if there was no Move since the last uncovered Move,
+	 * the List is empty.
+	 * @return the List of MrX' Moves since his last uncovered Move.
+	 */
 	public List<Move> getMovesSince() {
 		// ... Since: Last known Move (was sonst)
 		
@@ -65,15 +87,66 @@ public class MrXTracker {
 		return list;
 	}
 		
-	public Set<StationVertex> getPossiblePositions() {
+	/**
+	 * Calculates all possible positions of MrX on the current
+	 * GameState. There must be at least one Move (initial move)
+	 * of MrX. For a correct result, this method should not be
+	 * called after the game is won (no matter who won).
+	 * @return a Set of all possible positions (Stations) of MrX.
+	 * @throws IllegalStateException if there is no initial move
+	 * of MrX.
+	 */
+	public Set<StationVertex> getPossiblePositions() throws IllegalStateException {
 		// ohne bewertung, denn das ist aufgabe der AI!
 		
 		// wenn die AI diese methode nicht nutzen will, ist mir das auch egal.
 		// die GUI kann sie auf jeden fall brauchen.
 		
-		Set<StationVertex> result = new HashSet<>();
+		Iterator<Move> it;
+		Set<StationVertex> result;
 		
-		// TODO implement -- korbi?		
+		Move last = getLastKnownMove();
+		if (last == null) {
+			// MrX wasn't uncovered yet, so every position is possible
+			it = gameStateExtension.moveIterator(gameState.getMrX(), true);
+			if (!it.hasNext()) {
+				throw new IllegalStateException("MrX has no initial move yet.");
+			}
+			// Skip initial move of MrX:
+			it.next();
+			result = new HashSet<>(gameGraph.getInitialStations());
+			result.removeAll(gameStateExtension.getDetectivePositions(GameState.INITIAL_ROUND_NUMBER));
+		} else {
+			it = getMovesSince().iterator();
+			result = Collections.singleton(last.getStation());			
+		}
+		
+		while (it.hasNext()) {
+
+			Move move = it.next();
+			Ticket ticket = (Ticket) move.getItem();
+			
+			Set<StationVertex> stationSet = new HashSet<>();
+			Set<StationVertex> detectiveStationSet = gameStateExtension
+					.getDetectivePositions(move.getRoundNumber());
+			
+			for (StationVertex station : result) {
+				
+				for (ConnectionEdge connection : station.getEdges()) {
+					
+					StationVertex s = connection.getOther(station);
+					
+					if (rules.getMovePolicy().isTicketValidForConnection(ticket, connection)
+							&& !detectiveStationSet.contains(s)) {
+						
+						stationSet.add(connection.getOther(station));
+					}
+				}
+			}
+			
+			result = stationSet;
+			
+		}
 		
 		return result;
 	}
