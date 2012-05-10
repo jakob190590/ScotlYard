@@ -40,6 +40,14 @@ public abstract class AbstractGameGraphBuilder implements GraphBuilder {
 	protected Map<Integer, StationVertex> vertexMap = new HashMap<>();
 	
 	/** Der -- den Graph enthaltende -- GameGraph. */
-	protected GameGraph gg = new GameGraph(g);
+	protected GameGraph gg = new GameGraph();
+	{
+		gg.setGraph(g);
+	}
+	
+	/** Zum Abholen des Produkts. */
+	public GameGraph getGameGraph() {
+		return gg;
+	}
 
 }
