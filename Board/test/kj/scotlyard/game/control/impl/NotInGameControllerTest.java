@@ -5,13 +5,11 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import kj.scotlyard.board.BoardGraphLoader;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
-import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DefaultMove;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
@@ -38,7 +36,6 @@ import org.junit.Test;
 public class NotInGameControllerTest {
 
 	final BoardGraphLoader loader = new BoardGraphLoader();
-	final Set<StationVertex> initialStations;
 	final GameGraph gg;
 	{
 		try {
@@ -47,7 +44,6 @@ public class NotInGameControllerTest {
 			e.printStackTrace();
 		}				
 		gg = loader.getGameGraph();
-		initialStations = loader.getInitialStations();
 	}
 	
 	final MoveProducer mp = MoveProducer.createInstance(); // move producer
@@ -61,7 +57,7 @@ public class NotInGameControllerTest {
 	public void setUp() throws Exception {
 		
 		g = new DefaultGame();
-		c = new DefaultGameController(g, gg, initialStations, r);
+		c = new DefaultGameController(g, gg, r);
 		
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
 		g.getMoves().add(mp.createInitialMove(new DetectivePlayer(), new Station(gg)));
@@ -256,7 +252,7 @@ public class NotInGameControllerTest {
 		for (Player p : g.getPlayers()) {
 			Move m = g.getMoves().get(i++);
 			assertEquals(p, m.getPlayer());	
-			assertTrue(initialStations.contains(m.getStation()));
+			assertTrue(gg.getInitialStations().contains(m.getStation()));
 		}
 		
 		assertEquals(1, g.getCurrentRoundNumber());
