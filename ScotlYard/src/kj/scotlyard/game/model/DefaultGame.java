@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import kj.scotlyard.game.model.item.Item;
 
@@ -103,16 +102,16 @@ public class DefaultGame extends AbstractGameState implements Game {
 		List<Move> list;
 		
 		public MoveList() {
-			list = new Vector<>();
+			list = new LinkedList<>();
 		}
 		
 		/** Copy constructor */
 		public MoveList(List<Move> moves) {
-			list = new Vector<>(moves);
+			list = new LinkedList<>(moves);
 		}
 		
 		private List<Move> getMovesWithMoveNumber(Move move) {
-			List<Move> mvs = new Vector<>();
+			List<Move> mvs = new LinkedList<>();
 			if (move.getMoveNumber() != Move.NO_MOVE_NUMBER) {
 				mvs.add(move);
 			}
