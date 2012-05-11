@@ -301,6 +301,24 @@ public class GameStateExtension {
 		
 		return result;
 	}
+	
+	/**
+	 * Gibt die jeweils letzten Stationen (Positions)
+	 * der Detectives zurueck.
+	 * @return Set with positions of the detectives.
+	 */
+	public Set<StationVertex> getDetectivePositions() {
+		Set<StationVertex> result = new HashSet<>();
+		
+		for (DetectivePlayer d : gameState.getDetectives()) {
+			Move m = gameState.getLastMove(d);
+			if (m != null) {
+				result.add(m.getStation());
+			}
+		}
+		
+		return result;
+	}
 		
 	public Item getItem(Player player, Class<? extends Item> itemType) {
 		for (Item item : gameState.getItems(player)) {
