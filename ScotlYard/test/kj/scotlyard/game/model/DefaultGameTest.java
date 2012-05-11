@@ -17,6 +17,7 @@ import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.model.item.UndergroundTicket;
 import kj.scotlyard.game.util.MoveProducer;
+import kj.scotlyard.game.util.SubMoves;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -147,11 +148,12 @@ public class DefaultGameTest {
 	}
 
 	Game g;
-	MoveProducer prod = MoveProducer.createInstance();
 	MrXPlayer mrX;
 	DetectivePlayer d1, d2, d3, d4;
 	Move[] ms = new Move[100];
 	Move m1, m2;
+	
+	SubMoves subMoves;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -173,23 +175,21 @@ public class DefaultGameTest {
 		int j = 0;
 		for (int i = 0; i < 20; i++) {
 			for (Player p : g.getPlayers()) {
-				ms[j] = prod.createSingleMove(p, i, i,
+				ms[j] = MoveProducer.createSingleMove(p, i, i,
 						new Station(gg), new TaxiConnection(gg), new TaxiTicket());
 				j++;
 			}
 		}
 
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		ms[5] = prod.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		ms[5] = MoveProducer.createMultiMove(mrX, 1, 1, new DoubleMoveCard(), subMoves);
 
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		ms[15] = prod.createMultiMove(mrX, 3, 4, new DoubleMoveCard());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		ms[15] = MoveProducer.createMultiMove(mrX, 3, 4, new DoubleMoveCard(), subMoves);
 
 		int n = 0;
 		for (Move m : ms) {

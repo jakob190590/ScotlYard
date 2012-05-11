@@ -14,6 +14,7 @@ import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.util.MoveProducer;
+import kj.scotlyard.game.util.SubMoves;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,9 +30,9 @@ public class TheGameStateAccessPolicyTest {
 	DetectivePlayer d1, d2, d3, d4;
 	Move[] ms = new Move[100];
 	Move m1, m2;
-	
-	MoveProducer producer = MoveProducer.createInstance();
 
+	SubMoves subMoves;
+	
 	@Before
 	public void setUp() throws Exception {
 		TheRules rules = new TheRules();
@@ -54,25 +55,23 @@ public class TheGameStateAccessPolicyTest {
 		int j = 0;
 		for (int i = 0; i < 20; i++) {
 			for (Player p : g.getPlayers()) {
-				ms[j] = producer.createSingleMove(p, i, i,
+				ms[j] = MoveProducer.createSingleMove(p, i, i,
 						new Station(gg), new TaxiConnection(gg), new TaxiTicket());
 				j++;
 			}
 		}
 
-		producer.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		producer.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		m2 = ms[5] = producer.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		m2 = ms[5] = MoveProducer.createMultiMove(mrX, 1, 1, new DoubleMoveCard(), subMoves);
 		m1 = m2.getMoves().get(0);
 		m2 = m2.getMoves().get(1);
 
-		producer.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		producer.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		m2 = ms[15] = producer.createMultiMove(mrX, 3, 4, new DoubleMoveCard());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		m2 = ms[15] = MoveProducer.createMultiMove(mrX, 3, 4, new DoubleMoveCard(), subMoves);
 		m1 = m2.getMoves().get(0);
 		m2 = m2.getMoves().get(1);
 
@@ -421,12 +420,11 @@ public class TheGameStateAccessPolicyTest {
 		// double moves testen
 		g.getMoves().clear();
 
-		producer.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		producer.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
 		g.getMoves().add(
-				m2 = producer.createMultiMove(mrX, 1, 1, new DoubleMoveCard()));
+				m2 = MoveProducer.createMultiMove(mrX, 1, 1, new DoubleMoveCard(), subMoves));
 		m1 = m2.getMoves().get(0);
 		m2 = m2.getMoves().get(1);
 		
@@ -468,11 +466,10 @@ public class TheGameStateAccessPolicyTest {
 		} catch (IllegalAccessException e) {
 		}
 
-		producer.addSubMove(new Station(gg), new TaxiConnection(gg), 
-				new TaxiTicket());
-		producer.addSubMove(new Station(gg), new TaxiConnection(gg), 
-				new TaxiTicket());
-		g.getMoves().add(m2 = producer.createMultiMove(mrX, 3, 3, new DoubleMoveCard()));
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		g.getMoves().add(m2 = MoveProducer.createMultiMove(mrX, 3, 3, new DoubleMoveCard(), subMoves));
 		m1 = m2.getMoves().get(0);
 		m2 = m2.getMoves().get(1);
 
@@ -517,11 +514,10 @@ public class TheGameStateAccessPolicyTest {
 		}
 
 		
-		producer.addSubMove(new Station(gg), new TaxiConnection(gg), 
-				new TaxiTicket());
-		producer.addSubMove(new Station(gg), new TaxiConnection(gg), 
-				new TaxiTicket());
-		g.getMoves().add(m2 = producer.createMultiMove(mrX, 3, 2, new DoubleMoveCard()));
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		g.getMoves().add(m2 = MoveProducer.createMultiMove(mrX, 3, 2, new DoubleMoveCard(), subMoves));
 		m1 = m2.getMoves().get(0);
 		m2 = m2.getMoves().get(1);
 		

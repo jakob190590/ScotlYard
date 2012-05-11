@@ -34,12 +34,11 @@ public class GameStateExtensionTest {
 	GameStateExtension ext;
 	GameGraph gg = null;
 	
-	MoveProducer prod = MoveProducer.createInstance();
-	
-	
 	MrXPlayer mrX;
 	DetectivePlayer d1, d2, d3, d4;
 	Move[] ms = new Move[100];
+	
+	SubMoves subMoves;
 
 	@Before
 	public void setUp() throws Exception {
@@ -63,25 +62,23 @@ public class GameStateExtensionTest {
 		int j = 0;
 		for (int i = 0; i < 20; i++) {
 			for (Player p : g.getPlayers()) {
-				ms[j] = prod.createSingleMove(p, i, i,
+				ms[j] = MoveProducer.createSingleMove(p, i, i,
 						new Station(gg), new TaxiConnection(gg), new TaxiTicket());
 				j++;
 			}
 		}
 
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		m2 = ms[5] = prod.createMultiMove(mrX, 1, 1, new DoubleMoveCard());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		m2 = ms[5] = MoveProducer.createMultiMove(mrX, 1, 1, new DoubleMoveCard(), subMoves);
 		m2.getMoves().get(0);
 		m2 = m2.getMoves().get(1);
 
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg),
-				new TaxiTicket());
-		m2 = ms[15] = prod.createMultiMove(mrX, 3, 4, new DoubleMoveCard());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		m2 = ms[15] = MoveProducer.createMultiMove(mrX, 3, 4, new DoubleMoveCard(), subMoves);
 		m2.getMoves().get(0);
 		m2 = m2.getMoves().get(1);
 
@@ -302,15 +299,17 @@ public class GameStateExtensionTest {
 	public final void testGetLastMoveFlat() {
 		Move m1, m2, m3;
 		
-		prod.addSubMove(new Station(gg), new BusConnection(gg), new BusTicket());
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
-		g.getMoves().add(m1 = prod.createMultiMove(mrX, 20, 22, new DoubleMoveCard()));
+		subMoves = new SubMoves()
+				.add(new Station(gg), new BusConnection(gg), new BusTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		g.getMoves().add(m1 = MoveProducer.createMultiMove(mrX, 20, 22, new DoubleMoveCard(), subMoves));
 		
-		prod.addSubMove(new Station(gg), new BusConnection(gg), new BusTicket());
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
-		g.getMoves().add(m2 = prod.createMultiMove(d1, 20, 20, new DoubleMoveCard()));
+		subMoves = new SubMoves()
+				.add(new Station(gg), new BusConnection(gg), new BusTicket())
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
+		g.getMoves().add(m2 = MoveProducer.createMultiMove(d1, 20, 20, new DoubleMoveCard(), subMoves));
 		
-		g.getMoves().add(m3 = prod.createSingleMove(d2, 20, 20, new Station(gg), new UndergroundConnection(gg), new UndergroundTicket()));
+		g.getMoves().add(m3 = MoveProducer.createSingleMove(d2, 20, 20, new Station(gg), new UndergroundConnection(gg), new UndergroundTicket()));
 		
 		assertEquals(m1.getMoves().get(1), ext.getLastMoveFlat(mrX));
 		assertEquals(m2.getMoves().get(1), ext.getLastMoveFlat(d1));
@@ -320,10 +319,11 @@ public class GameStateExtensionTest {
 	@Test
 	public final void testFlattenMove() { 
 		
-		prod.addSubMove(new Station(gg), new TaxiConnection(gg), new TaxiTicket());
-		prod.addSubMove(new Station(gg), new BusConnection(gg), new BusTicket());
-		prod.addSubMove(new Station(gg), new UndergroundConnection(gg), new UndergroundTicket());
-		Move m = prod.createMultiMove(new MrXPlayer(), 4, 4, new DoubleMoveCard());
+		subMoves = new SubMoves()
+				.add(new Station(gg), new TaxiConnection(gg), new TaxiTicket())
+				.add(new Station(gg), new BusConnection(gg), new BusTicket())
+				.add(new Station(gg), new UndergroundConnection(gg), new UndergroundTicket());
+		Move m = MoveProducer.createMultiMove(new MrXPlayer(), 4, 4, new DoubleMoveCard(), subMoves);
 		
 		List<Move> ms;
 		
@@ -344,14 +344,14 @@ public class GameStateExtensionTest {
 		Ticket t = new TaxiTicket();
 		Connection c = new TaxiConnection(gg);
 		
-		Move m00 = prod.createInitialMove(p, s);
-		Move m01 = prod.createInitialMove(p, s);
+		Move m00 = MoveProducer.createInitialMove(p, s);
+		Move m01 = MoveProducer.createInitialMove(p, s);
 		Move m0 = new DefaultMove(p, 0, 0, 0, s, c, t, m00, m01); 
 		
-		Move m1 = prod.createInitialMove(p, s);
+		Move m1 = MoveProducer.createInitialMove(p, s);
 		
-		Move m20 = prod.createInitialMove(p, s);
-		Move m21 = prod.createInitialMove(p, s);
+		Move m20 = MoveProducer.createInitialMove(p, s);
+		Move m21 = MoveProducer.createInitialMove(p, s);
 		Move m2 = new DefaultMove(p, 0, 0, 0, s, c, t, m20, m21);
 		
 		m = new DefaultMove(p, 0, 0, 0, s, c, t, m0, m1, m2);

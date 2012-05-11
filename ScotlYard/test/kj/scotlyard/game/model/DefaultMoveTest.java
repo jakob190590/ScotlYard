@@ -9,13 +9,10 @@ import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.Item;
-import kj.scotlyard.game.util.MoveProducer;
 
 import org.junit.Test;
 
 public class DefaultMoveTest {
-	
-	MoveProducer prod = MoveProducer.createInstance();
 	
 	GameGraph gg = null;
 	
