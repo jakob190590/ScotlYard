@@ -293,9 +293,31 @@ public class GameStateExtension {
 	public Set<StationVertex> getDetectivePositions(int roundNumber) {		
 		Set<StationVertex> result = new HashSet<>();
 		
-		for (Move m : getMoves(roundNumber, false)) {
-			if (m.getPlayer() instanceof DetectivePlayer) {
-				result.add(m.getStation());
+		for (DetectivePlayer d : gameState.getDetectives()) {
+			// Gibt's zufaellig nen Move zur roundNumber?
+			Move move = gameState.getMove(d, roundNumber,
+					GameState.MoveAccessMode.ROUND_NUMBER);
+			
+			// Nein?
+			if (move == null) {
+	
+				boolean stop = false;
+				ListIterator<Move> it = moveIterator(d, false);
+				
+				while (it.hasNext() && !stop) {
+					Move m = it.next();
+					
+					// Eigentlich sollte < reichen, weil == oben schon abgehandelt ist.
+					if (m.getRoundNumber() <= roundNumber) {						
+						move = m;
+					} else {
+						stop = true;
+					}
+				}
+			}
+			
+			if (move != null) {
+				result.add(move.getStation());
 			}
 		}
 		
