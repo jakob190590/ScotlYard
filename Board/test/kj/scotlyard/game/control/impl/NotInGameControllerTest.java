@@ -77,16 +77,22 @@ public class NotInGameControllerTest {
 
 	@Test
 	public final void testNewGame() {
-		List<Move> ms = new ArrayList<>(g.getMoves());
+		GameState old = g.copy();
 		
 		c.newGame();
 		assertTrue(g.getMoves().isEmpty());
+		assertEquals(null, g.getCurrentPlayer());
+		assertEquals(0, g.getCurrentRoundNumber());
 		
 		c.getUndoManager().undo();
-		assertEquals(ms, g.getMoves());
+		assertEquals(old.getMoves(), g.getMoves());
+		assertEquals(old.getCurrentPlayer(), g.getCurrentPlayer());
+		assertEquals(old.getCurrentRoundNumber(), g.getCurrentRoundNumber());
 		
 		c.getUndoManager().redo();
 		assertTrue(g.getMoves().isEmpty());
+		assertEquals(null, g.getCurrentPlayer());
+		assertEquals(0, g.getCurrentRoundNumber());
 	}
 
 	@Test

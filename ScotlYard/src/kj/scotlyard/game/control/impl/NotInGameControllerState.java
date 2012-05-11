@@ -165,20 +165,31 @@ class NotInGameControllerState extends GameControllerState {
 		
 		private List<Move> oldMoves;
 		
-		public NewGameEdit(List<Move> oldMoves) {
+		private Player oldCurrentPlayer;
+		
+		private int oldCurrentRoundNumber;
+		
+		public NewGameEdit(List<Move> oldMoves, Player oldCurrentPlayer,
+				int oldCurrentRoundNumber) {
 			this.oldMoves = new ArrayList<>(oldMoves);
+			this.oldCurrentPlayer = oldCurrentPlayer;
+			this.oldCurrentRoundNumber = oldCurrentRoundNumber;
 		}
 
 		@Override
 		public void undo() throws CannotUndoException {
 			super.undo();
 			game.getMoves().addAll(oldMoves);
+			game.setCurrentPlayer(oldCurrentPlayer);
+			game.setCurrentRoundNumber(oldCurrentRoundNumber);
 		}
 		
 		@Override
 		public void redo() throws CannotRedoException {
 			super.redo();			
 			game.getMoves().clear();
+			game.setCurrentPlayer(null);
+			game.setCurrentRoundNumber(0);
 		}
 		
 	}
@@ -239,11 +250,12 @@ class NotInGameControllerState extends GameControllerState {
 
 	@Override
 	public void newGame() {
-		UndoableEdit edit = new NewGameEdit(game.getMoves());
+		UndoableEdit edit = new NewGameEdit(game.getMoves(),
+				game.getCurrentPlayer(), game.getCurrentRoundNumber());
+		
 		game.getMoves().clear();
-		// Das reicht schon aus.
-		// Andere Werte werden bei Initialisierung (start) ueberschrieben.
-		// current player und round werden durch Rules festgelegt.
+		game.setCurrentPlayer(null);
+		game.setCurrentRoundNumber(0); // Einfach der default Wert -- hat nichts mit INITIAL_ROUND_NUMBER zu tun.
 		
 		undoManager.addEdit(edit);
 	}
