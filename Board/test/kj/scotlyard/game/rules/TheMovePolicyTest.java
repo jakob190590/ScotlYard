@@ -738,6 +738,20 @@ public class TheMovePolicyTest {
 	
 	@Test
 	public void testCanMove() {
+		
+		// GameGraph muss geladen werden
+		
+		// Phase 1: Test if exception come on illegal state
+		for (Player p : g.getPlayers()) {
+			try {
+				r.getMovePolicy().canMove(g, gg, p);
+				fail("IllegalStateException fail to appear");
+			} catch (IllegalStateException e) { }
+			MoveProducer.createInitialMove(p, r.getGameInitPolicy().suggestInitialStation(g, gg, p));			
+		}
+		// so, jetzt haben alle player initial moves
+		
+		// Phase 2: 
 		fail("not yet implemented");
 	}
 	
