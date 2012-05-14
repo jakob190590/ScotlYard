@@ -11,6 +11,8 @@ import kj.scotlyard.game.model.Player;
 
 public class TheGameWinPolicy implements GameWinPolicy {	
 
+	private static final MovePolicy movePolicy = new TheMovePolicy();
+	
 	@Override
 	public GameWin isGameWon(GameState gameState, GameGraph gameGraph) {
 		
@@ -18,8 +20,6 @@ public class TheGameWinPolicy implements GameWinPolicy {
 		List<Move> allMoves = gameState.getMoves();
 		
 		Move mrXLastMove = gameState.getLastMove(mrX);
-		MovePolicy movePolicy = new TheMovePolicy();
-		
 		
 		if (mrXLastMove != null) {
 			

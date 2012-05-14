@@ -9,7 +9,7 @@ import kj.scotlyard.game.model.Player;
 
 public class TheTurnPolicy implements TurnPolicy {
 	
-	private final MovePolicy movePolicy = new TheMovePolicy();
+	private static final MovePolicy movePolicy = new TheMovePolicy();
 
 	@Override
 	public Turn getNextTurn(GameState gameState, GameGraph gameGraph) {
