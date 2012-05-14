@@ -2,9 +2,13 @@ package kj.scotlyard.game.rules;
 
 import static org.junit.Assert.*;
 
+import java.util.Map;
+
+import kj.scotlyard.board.BoardGraphLoader;
 import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
@@ -23,6 +27,7 @@ import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.model.item.UndergroundTicket;
 import kj.scotlyard.game.util.GameStateExtension;
+import kj.scotlyard.game.util.ItemDealer;
 import kj.scotlyard.game.util.MoveProducer;
 import kj.scotlyard.game.util.SubMoves;
 
@@ -37,7 +42,9 @@ public class TheMovePolicyTest {
 	MovePolicy p;
 	
 	Game g;
-	GameGraph gg;
+	GameGraph gg;	
+	Map<Integer, StationVertex> nsm;
+	
 	GameStateExtension ext;
 	MrXPlayer mrX;
 	DetectivePlayer d1, d2;
@@ -53,6 +60,11 @@ public class TheMovePolicyTest {
 	public void setUp() throws Exception {
 		r = new TheRules();
 		p = r.getMovePolicy();
+		
+		BoardGraphLoader loader = new BoardGraphLoader();
+		loader.load("graph-description", "initial-stations");
+		gg = loader.getGameGraph();
+		nsm = loader.getNumberStationMap();
 		
 		tt = new TaxiTicket();
 		ut = new UndergroundTicket();
@@ -739,20 +751,118 @@ public class TheMovePolicyTest {
 	@Test
 	public void testCanMove() {
 		
-		// GameGraph muss geladen werden
+		g.getMoves().clear();
+		DetectivePlayer d3 = new DetectivePlayer();
+		DetectivePlayer d4 = new DetectivePlayer();
+		g.getDetectives().add(d3);
+		g.getDetectives().add(d4);
+		
+		for (Player p : g.getPlayers()) {
+			g.setItems(p, r.getGameInitPolicy().createItemSet(g, p));
+		}
 		
 		// Phase 1: Test if exception come on illegal state
 		for (Player p : g.getPlayers()) {
 			try {
-				r.getMovePolicy().canMove(g, gg, p);
+				this.p.canMove(g, gg, p);
 				fail("IllegalStateException fail to appear");
 			} catch (IllegalStateException e) { }
-			MoveProducer.createInitialMove(p, r.getGameInitPolicy().suggestInitialStation(g, gg, p));			
+			g.getMoves().add(MoveProducer.createInitialMove(p,
+					r.getGameInitPolicy().suggestInitialStation(g, gg, p)));			
 		}
 		// so, jetzt haben alle player initial moves
 		
-		// Phase 2: 
-		fail("not yet implemented");
+		// Phase 2: Wenn jeder einen Initial Move hat,
+		// 		    sollte canMove fuer jeden true sein
+		for (Player p : g.getPlayers()) {
+			assertTrue(this.p.canMove(g, gg, p));
+		}
+		
+		// Phase 3: Ohne gueltige Tickets
+		ItemDealer dealer = new ItemDealer(g);
+		for (Player p : g.getPlayers()) {
+			dealer.removeAllItems(p, TaxiTicket.class);
+			dealer.removeAllItems(p, BusTicket.class);
+			dealer.removeAllItems(p, UndergroundTicket.class);
+			
+			if (p instanceof MrXPlayer)
+				dealer.removeAllItems(p, BlackTicket.class);
+			
+			assertTrue(!this.p.canMove(g, gg, p));
+		}
+		
+		// Phase 4: Player ist wirklich umzingelt
+		// (siehe original Spielplan)
+		
+		for (Player p : g.getPlayers()) { // die wurden vorher ja geloescht...
+			g.setItems(p, r.getGameInitPolicy().createItemSet(g, p));
+		}
+		
+		// MrX umzingelt
+		g.getMoves().add(MoveProducer.createInitialMove(
+				mrX, nsm.get(166)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d1, nsm.get(153)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d2, nsm.get(151)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d3, nsm.get(181)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d4, nsm.get(183)));		
+		assertTrue(!p.canMove(g, gg, mrX));
+		for (Player pl : g.getDetectives()) {
+			assertTrue(p.canMove(g, gg, pl));
+		}
+		
+		// MrX umzingelt, aber mit Fernverkehranschluss
+		g.getMoves().add(MoveProducer.createInitialMove(
+				mrX, nsm.get(34)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d1, nsm.get(47)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d2, nsm.get(22)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d3, nsm.get(48)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d4, nsm.get(10)));		
+		assertTrue(p.canMove(g, gg, mrX));
+		for (Player pl : g.getDetectives()) {
+			assertTrue(p.canMove(g, gg, pl));
+		}
+		
+		// d1 umzingelt, aber u.a. von mrX
+		g.getMoves().add(MoveProducer.createInitialMove(
+				mrX, nsm.get(153)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d1, nsm.get(166)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d2, nsm.get(151)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d3, nsm.get(181)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d4, nsm.get(183)));
+
+		for (Player pl : g.getPlayers()) {
+			assertTrue(p.canMove(g, gg, pl));
+		}
+		
+		// d1 umzingelt von anderen detectives
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d1, nsm.get(96)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d2, nsm.get(77)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d3, nsm.get(109)));
+		g.getMoves().add(MoveProducer.createInitialMove(
+				d4, nsm.get(97)));
+		
+		for (Player pl : g.getPlayers()) {
+			if (pl == d1)
+				assertTrue(!p.canMove(g, gg, pl));
+			else
+				assertTrue(p.canMove(g, gg, pl));
+		}
+		
 	}
 	
 
