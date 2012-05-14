@@ -62,30 +62,29 @@ public class TheMovePolicy implements MovePolicy {
 		// fuer jede anliegende edge pruefen, ob ticket da is
 		// wenn ticket da is, pruefen, ob benachbarte station frei is (kein anderer detektiv)
 		
-		// TODO review, korbi?
-		
 		Move lastMove = gameState.getLastMove(player);
 		if (lastMove == null) {
-			throw new IllegalStateException("Player has not moved yet.");
-			// TODO hm, was soll ich machen hier?
-//			return false;
+			throw new IllegalStateException("The player has no initial move yet.");
 		}
 		StationVertex currentStation = lastMove.getStation();
 		
 		Set<Item> items = gameState.getItems(player);
-		Set<StationVertex> detectivePositions = new GameStateExtension(gameState).getDetectivePositions(lastMove.getRoundNumber());
+		Set<StationVertex> detectivePositions = new GameStateExtension(gameState)
+				.getDetectivePositions(lastMove.getRoundNumber());
 		
 		for (ConnectionEdge connection : currentStation.getEdges()) {
 			
 			boolean ticketFound = false;
 			for (Item item : items) {
-				if (item instanceof Ticket && isTicketValidForConnection((Ticket) item, connection)) {
+				if (item instanceof Ticket && isTicketValidForConnection(
+						(Ticket) item, connection)) {
 					ticketFound = true;
 					break;
 				}
 			}
 			
-			if (ticketFound && !detectivePositions.contains(connection.getOther(currentStation))) {
+			if (ticketFound && !detectivePositions.contains(
+					connection.getOther(currentStation))) {
 				return true;
 			}
 		}
