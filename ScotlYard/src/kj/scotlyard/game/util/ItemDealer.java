@@ -1,6 +1,7 @@
 package kj.scotlyard.game.util;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import kj.scotlyard.game.model.Game;
@@ -55,44 +56,51 @@ public class ItemDealer {
 		Set<Item> items1 = game.getItems(fromPlayer);
 		Set<Item> items2 = game.getItems(toPlayer);
 		int n = 0;
-		for (Item i : items1)		
+		Iterator<Item> it = items1.iterator();
+		while (it.hasNext()) {
+			Item i = it.next();	
 			if (n < count) {
 				if (i.getClass() == itemType) {
-					items1.remove(i);
+					it.remove();
 					items2.add(i);
 					n++;
 				}
 			} else {
 				break;
 			}
+		}
 
 		return n;
 	}
 	
 	public int removeItems(Player player, int count, Class<? extends Item> itemType) {
-		Set<Item> items = game.getItems(player);
 		int n = 0;
-		for (Item i : items)		
+		Iterator<Item> it = game.getItems(player).iterator();
+		while (it.hasNext()) {
+			Item i = it.next();
 			if (n < count) {
 				if (i.getClass() == itemType) {
-					items.remove(i);
+					it.remove();
 					n++;
 				}
 			} else {
 				break;
 			}
+		}
 
 		return n;
 	}
 	
 	public int removeAllItems(Player player, Class<? extends Item> itemType) {
-		Set<Item> items = game.getItems(player);
 		int n = 0;
-		for (Item i : items)		
+		Iterator<Item> it =  game.getItems(player).iterator();
+		while (it.hasNext()) {
+			Item i = it.next();		
 			if (i.getClass() == itemType) {
-				items.remove(i);
+				it.remove();
 				n++;
 			}
+		}
 		return n;
 	}
 
