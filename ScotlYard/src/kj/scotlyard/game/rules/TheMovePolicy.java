@@ -22,11 +22,9 @@ import kj.scotlyard.game.util.GameStateExtension;
 
 public class TheMovePolicy implements MovePolicy {
 		
-	private void throwIllegalMove(boolean doRaiseException, String message) {
-		// TODO evtl move als argument, und hinter message anhaengen.
-		// ist aber kritisch, weil dadurch der move vllt in die falschen "haende" geraten koennt
+	private void throwIllegalMove(boolean doRaiseException, String message, Move move) {
 		if (doRaiseException) {
-			throw new IllegalMoveException(message);
+			throw new IllegalMoveException(message, move);
 		}
 	}
 	
@@ -34,10 +32,10 @@ public class TheMovePolicy implements MovePolicy {
 			throws IllegalMoveException {
 		
 		throwIllegalMove(move.getMoveNumber() != (previousMove.getMoveNumber() + 1), 
-				"The move number must be the previous move number plus one.");
+				"The move number must be the previous move number plus one.", move);
 	
 		throwIllegalMove(move.getStation() == null, 
-				"You must specify the target station.");
+				"You must specify the target station.", move);
 		
 		// TODO korbi ?
 		// - ist move.station direkter nachbar von previousMove.station ?
@@ -45,15 +43,15 @@ public class TheMovePolicy implements MovePolicy {
 		// und throwIllegalMove  Exception, so wie hier sonst ueberall...
 		
 		throwIllegalMove(!(move.getItem() instanceof Ticket), 
-				"You must provide a ticket for this move.");
+				"You must provide a ticket for this move.", move);
 		
 		Ticket t = (Ticket) move.getItem();
 		
 		throwIllegalMove(!isTicketValidForConnection(t, move.getConnection()), 
-				"Your ticket is not valid for your connection.");
+				"Your ticket is not valid for your connection.", move);
 		
 		throwIllegalMove(!gameState.getItems(move.getPlayer()).contains(t), 
-				"The ticket you are providing is not your's. You must have stolen it.");
+				"The ticket you are providing is not your's. You must have stolen it.", move);
 		
 	}
 
@@ -128,28 +126,28 @@ public class TheMovePolicy implements MovePolicy {
 		Move previous = new GameStateExtension(gameState).getLastMoveFlat(move.getPlayer());
 
 		throwIllegalMove(!gameState.getPlayers().contains(move.getPlayer()), 
-				"The specified player is not part of this game.");
+				"The specified player is not part of this game.", move);
 		
 		throwIllegalMove(move.getPlayer() != gameState.getCurrentPlayer(),  
-				"It is not your player's turn.");
+				"It is not your player's turn.", move);
 	
 		throwIllegalMove(move.getRoundNumber() != gameState.getCurrentRoundNumber(), 
-				"The specified round number is not the current one.");
+				"The specified round number is not the current one.", move);
 		
 		throwIllegalMove(move.getMoveIndex() != Move.NO_MOVE_INDEX,
 				"This move must not have a move index. Only sub moves may and must " +
-				"have one. Use Move.NO_MOVE_INDEX here.");
+				"have one. Use Move.NO_MOVE_INDEX here.", move);
 		
 		
 		if (previous == null) {
 			// Initial Move
 			
 			throwIllegalMove(move.getMoveNumber() != GameState.INITIAL_MOVE_NUMBER, 
-					"The specified move number must be the initial move number.");
+					"The specified move number must be the initial move number.", move);
 			
 			// station wird auch in checkSingleMove ueberprueft
 			throwIllegalMove(move.getStation() == null, 
-					"You must specify the initial station.");
+					"You must specify the initial station.", move);
 			
 			// TODO Station ueberpruefen
 			// - dass da kein anderer detective steht!
@@ -157,57 +155,57 @@ public class TheMovePolicy implements MovePolicy {
 			// und passende fehlermeldung wenn nicht
 			
 			throwIllegalMove(move.getConnection() != null, 
-					"You cannot attach a connection to the initial move.");
+					"You cannot attach a connection to the initial move.", move);
 			
 			throwIllegalMove(move.getItem() != null, 
-					"You cannot attach an item in the initial move.");
+					"You cannot attach an item in the initial move.", move);
 			
 			throwIllegalMove(subMoves, 
-					"You cannot carry out a multi move in the initial round.");
+					"You cannot carry out a multi move in the initial round.", move);
 			
 			
 		} else if (subMoves) {
 			// Multi Move
 		
 			throwIllegalMove(move.getPlayer() != gameState.getMrX(),
-					"Only MrX can carry out a multi move.");
+					"Only MrX can carry out a multi move.", move);
 			
 			throwIllegalMove(move.getMoveNumber() != Move.NO_MOVE_NUMBER,
 					"A multi move cannot have a move number, since it's sub moves " +
-					"already have one. Use Move.NO_MOVE_NUMBER.");
+					"already have one. Use Move.NO_MOVE_NUMBER.", move);
 			
 			throwIllegalMove(move.getStation() == null,
-					"You must specify the final station.");
+					"You must specify the final station.", move);
 			
 			throwIllegalMove(move.getConnection() != null, 
-					"You cannot attach a connection to a multi move.");
+					"You cannot attach a connection to a multi move.", move);
 			
 			throwIllegalMove(!(move.getItem() instanceof DoubleMoveCard), 
-					"You must provide a double move card for this move.");
+					"You must provide a double move card for this move.", move);
 			
 			throwIllegalMove(move.getMoves().size() != 2, 
 					"Multi moves have only one manifestation: a double move. " +
-					"You have to attach exactly two sub moves.");
+					"You have to attach exactly two sub moves.", move);
 			
 			throwIllegalMove(!gameState.getItems(move.getPlayer()).contains(move.getItem()), 
-					"The card you are providing is not your's. You must have stolen it.");
+					"The card you are providing is not your's. You must have stolen it.", move);
 			
 			int i = 0;
 			for (Move m : move.getMoves()) {
 				
 				throwIllegalMove(m.getPlayer() != move.getPlayer(), 
 						"The player must be consistent within the multi move. " +
-						"(The player of at least one sub move differs from the one of the base move.)");
+						"(The player of at least one sub move differs from the one of the base move.)", move);
 				
 				throwIllegalMove(m.getRoundNumber() != move.getRoundNumber(), 
 						"The round number must be consistent within the multi move. " +
-						"(The round number of at least one sub move differs from the one of the base move.)");
+						"(The round number of at least one sub move differs from the one of the base move.)", move);
 				
 				throwIllegalMove(m.getMoveIndex() != i, 
-						"The move index of a sub move is " + m.getMoveIndex() + " but must be: " + i);
+						"The move index of a sub move is " + m.getMoveIndex() + " but must be: " + i, move);
 				
 				throwIllegalMove(!m.getMoves().isEmpty(), 
-						"A sub move must not have further sub moves.");
+						"A sub move must not have further sub moves.", move);
 				
 				checkSingleMove(gameState, gameGraph, m, previous);
 				
@@ -217,7 +215,7 @@ public class TheMovePolicy implements MovePolicy {
 			
 			throwIllegalMove(move.getStation() != move.getMoves().get(1).getStation(),
 					"The station you are traveling to must be consistent within this multi move. " +
-					"(The station of the base move and it's last sub move must be the same.)");
+					"(The station of the base move and it's last sub move must be the same.)", move);
 			
 		} else {
 			// Single Move
@@ -230,8 +228,7 @@ public class TheMovePolicy implements MovePolicy {
 	@Override
 	public Player getNextItemOwner(GameState gameState, Move move, Item item) {
 		
-		// TODO gueltigkeitstest doch weglassen? wo fang ich an, wo hoer ich auf...
-		// Grundlegende Gueltigkeitstests
+		// Grundlegender Gueltigkeitstest
 		boolean itemInMove = false;
 		for (Move m : new GameStateExtension(gameState).flattenMove(move, true)) {
 			if (m.getItem() == item) {
@@ -240,7 +237,8 @@ public class TheMovePolicy implements MovePolicy {
 			}
 		}
 		if (!itemInMove) {
-			throw new IllegalMoveException("The specified item is not attached to the specified move.");
+			throw new IllegalMoveException("The specified item is " +
+					"not attached to the specified move.", move);
 		}
 		
 		
