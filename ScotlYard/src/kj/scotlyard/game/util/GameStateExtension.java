@@ -290,7 +290,12 @@ public class GameStateExtension {
 		return flattenMove(move, false);
 	}
 	
-	public Set<StationVertex> getDetectivePositions(int roundNumber) {		
+	public Set<StationVertex> getDetectivePositions(int roundNumber) {
+		
+		if (roundNumber < 0) {
+			throw new IllegalArgumentException("roundNumber must be greater or equal 0, but is: " + roundNumber);
+		}
+		
 		Set<StationVertex> result = new HashSet<>();
 		
 		for (DetectivePlayer d : gameState.getDetectives()) {
