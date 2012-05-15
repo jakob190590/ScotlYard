@@ -15,10 +15,10 @@ import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.Ticket;
+import kj.scotlyard.game.rules.MovePolicy;
 import kj.scotlyard.game.rules.Rules;
 
 import static kj.scotlyard.game.model.GameState.MoveAccessMode.MOVE_NUMBER;
-import static kj.scotlyard.game.model.GameState.INITIAL_ROUND_NUMBER;
 
 public class MrXTracker {
 
@@ -91,8 +91,9 @@ public class MrXTracker {
 	/**
 	 * Calculates all possible positions of MrX on the current
 	 * GameState. There must be at least one Move (initial move)
-	 * of MrX. For a correct result, this method should not be
-	 * called after the game is won (no matter who won).
+	 * of MrX. This method must not be called after the game is
+	 * won, in particular not, if MrX and detective(s) were on
+	 * the same station at the same time.
 	 * @return a Set of all possible positions (Stations) of MrX.
 	 * @throws IllegalStateException if there is no initial move
 	 * of MrX.
@@ -108,7 +109,7 @@ public class MrXTracker {
 		
 		Move last = getLastKnownMove();
 		if (last == null) {
-			// MrX wasn't uncovered yet, so every position is possible
+			// MrX wasn't uncovered yet, so more positions are possible
 			it = gameStateExtension.moveIterator(gameState.getMrX(), true);
 			if (!it.hasNext()) {
 				throw new IllegalStateException("MrX has no initial move yet.");
@@ -116,19 +117,29 @@ public class MrXTracker {
 			// Skip initial move of MrX:
 			it.next();
 			result = new HashSet<>(gameGraph.getInitialStations());
-			result.removeAll(gameStateExtension.getDetectivePositions(INITIAL_ROUND_NUMBER));
+			result.removeAll(gameStateExtension.getDetectivePositions(
+					GameState.INITIAL_ROUND_NUMBER));
 		} else {
 			it = getMovesSince().iterator();
-			result = Collections.singleton(last.getStation());			
+			result = Collections.singleton(last.getStation());
 		}
+		
+		final MovePolicy movePolicy = rules.getMovePolicy();
+		
+		// Input for the algorithm:
+		// - result: contains last known position(s) of MrX
+		// - it: is an iterator over MrX' moves, starting
+		//   directly after the last known position(s)
 		
 		while (it.hasNext()) {
 
 			Move move = it.next();
 			Ticket ticket = (Ticket) move.getItem();
 			
-			Set<StationVertex> stationSet = new HashSet<>();
-			Set<StationVertex> detectiveStationSet = gameStateExtension
+			Set<StationVertex> stations = new HashSet<>();
+			Set<StationVertex> detectivesInPrevRound = gameStateExtension
+					.getDetectivePositions(move.getRoundNumber() - 1);
+			Set<StationVertex> detectivesInCurrRound = gameStateExtension
 					.getDetectivePositions(move.getRoundNumber());
 			
 			for (StationVertex station : result) {
@@ -137,15 +148,16 @@ public class MrXTracker {
 					
 					StationVertex s = connection.getOther(station);
 					
-					if (rules.getMovePolicy().isTicketValidForConnection(ticket, connection)
-							&& !detectiveStationSet.contains(s)) {
+					if (movePolicy.isTicketValidForConnection(ticket, connection)
+							&& !detectivesInPrevRound.contains(s)
+							&& !detectivesInCurrRound.contains(s)) {
 						
-						stationSet.add(connection.getOther(station));
+						stations.add(s);
 					}
 				}
 			}
 			
-			result = stationSet;
+			result = stations;
 			
 		}
 		
