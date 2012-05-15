@@ -3,12 +3,15 @@ package kj.scotlyard.game.util;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import kj.scotlyard.board.BoardGraphLoader;
 import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.impl.DefaultGameController;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
@@ -17,8 +20,10 @@ import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.DefaultGame;
+import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.TaxiTicket;
+import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
 
@@ -33,6 +38,7 @@ public class MrXTrackerTest {
 	GameStateExtension ext;
 	GameState dgs;
 	MrXTracker tr;
+	Map<Integer, StationVertex> nsm;
 	
 	MrXPlayer mrX;
 	DetectivePlayer d1, d2, d3, d4;
@@ -44,6 +50,7 @@ public class MrXTrackerTest {
 		BoardGraphLoader loader = new BoardGraphLoader();
 		loader.load("graph-description", "initial-stations");
 		gg = loader.getGameGraph();
+		nsm = loader.getNumberStationMap();
 		
 		g = new DefaultGame();
 		r = new TheRules();
@@ -228,28 +235,109 @@ public class MrXTrackerTest {
 		// move list clear, not yet uncovered, just uncovered, normal 
 		
 		GameController ctrl = new DefaultGameController(g, gg, r);
+		MrXTracker tr2 = new MrXTracker(dgs, gg, r);
+		Set<StationVertex> poss;
 		
+		// -------------------------------------------
 		// MoveList clear
 		ctrl.newGame();
 		try {
 			tr.getPossiblePositions();
 			fail("exception failed to appear");
 		} catch (IllegalStateException e) { }
+		try {
+			tr2.getPossiblePositions();
+			fail("exception failed to appear");
+		} catch (IllegalStateException e) { }
 		
 
 		// only initial moves (not yet uncovered)
 		ctrl.start();
-		for (Player pl : g.getPlayers()) {
-			assertTrue(gg.getInitialStations().contains(g.getMove(pl, GameState.INITIAL_ROUND_NUMBER,
-					GameState.MoveAccessMode.ROUND_NUMBER).getStation()));
+		poss = tr.getPossiblePositions();
+		assertEquals(gg.getInitialStations().size() - g.getDetectives().size(), poss.size());
+//		assertEquals(new HashSet<>(gg.getInitialStations()).removeAll(ext.getDetectivePositions()), poss); // scheitert; vllt wg. der reihenfolge
+		for (StationVertex s : poss) {
+			assertTrue(gg.getInitialStations().contains(s));
+		}
+		poss = tr2.getPossiblePositions();
+		assertEquals(gg.getInitialStations().size() - g.getDetectives().size(), poss.size());
+//		assertEquals(new HashSet<>(gg.getInitialStations()).removeAll(ext.getDetectivePositions()), poss); // scheitert; vllt wg. der reihenfolge
+		for (StationVertex s : poss) {
+			assertTrue(gg.getInitialStations().contains(s));
 		}
 		
+		// -------------------------------------------
 		// just uncovered
-		fail("Not yet implemented"); // TODO impl, wenn Bug 141 geklaert ist!
+		while (ctrl.getWin() == GameWin.NO) {
+			ctrl.move(MoveProducer.createNextBestSingleMove(g, gg));
+			
+			Move lastMrXMove = g.getLastMove(mrX);
+			if (r.getGameStateAccessPolicy().getMrXUncoverMoveNumbers()
+					.contains(lastMrXMove.getMoveNumber())) {
+				
+				poss = tr.getPossiblePositions();
+				assertEquals(1, poss.size());
+				assertEquals(g.getLastMove(mrX).getStation(), poss.iterator().next());
+			}
+		}
 		
+		// -------------------------------------------
 		// one moves after uncover
+		ctrl.newGame();
 		
+		for (int i = 0; i < 3; i++) { // zwei runden iwelche moves adden
+			for (Player pl : g.getPlayers()) {
+				g.getMoves().add(MoveProducer.createInitialMove(pl, i, nsm.get(11)));
+			}
+		}
+
+		// jetzt kommt mrx uncover move und gleich noch einer:
+		g.getMoves().add(MoveProducer.createMultiMove(
+				mrX, 3, 3, new DoubleMoveCard(), new SubMoves()
+						.add(nsm.get(112), null, new TaxiTicket()) // uncover move
+						.add(nsm.get(111), null, new TaxiTicket()))); // naechster move
+		
+		// Die Detectives setzen wir jetzt wo ganz woanders hin:
+		g.getMoves().add(MoveProducer.createInitialMove(d1, 3, nsm.get(1)));
+		g.getMoves().add(MoveProducer.createInitialMove(d1, 3, nsm.get(2)));
+		g.getMoves().add(MoveProducer.createInitialMove(d1, 3, nsm.get(3)));
+		g.getMoves().add(MoveProducer.createInitialMove(d1, 3, nsm.get(4)));
+		
+		poss = tr.getPossiblePositions();
+		assertTrue(poss.contains(nsm.get(111)));
+		assertTrue(poss.contains(nsm.get(99)));
+		assertTrue(poss.contains(nsm.get(125)));
+		assertTrue(poss.contains(nsm.get(100)));
+		assertEquals(4, poss.size());
+			
+		// -------------------------------------------
 		// two moves after uncover
+		g.getMoves().add(MoveProducer.createSingleMove(mrX,
+				4, 5, nsm.get(124), null, new BlackTicket()));
+		poss = tr.getPossiblePositions();
+		// von 111 aus
+		assertTrue(poss.contains(nsm.get(110)));
+		assertTrue(poss.contains(nsm.get(79)));
+		assertTrue(poss.contains(nsm.get(124)));
+		assertTrue(poss.contains(nsm.get(112)));
+		assertTrue(poss.contains(nsm.get(163)));
+		assertTrue(poss.contains(nsm.get(153)));
+		assertTrue(poss.contains(nsm.get(67)));
+		assertTrue(poss.contains(nsm.get(100)));
+		// von 99 aus
+		assertTrue(poss.contains(nsm.get(80)));
+		assertTrue(poss.contains(nsm.get(98)));
+		// von 100 aus
+		assertTrue(poss.contains(nsm.get(111)));
+		assertTrue(poss.contains(nsm.get(113)));
+		assertTrue(poss.contains(nsm.get(81)));
+		assertTrue(poss.contains(nsm.get(101)));
+		assertTrue(poss.contains(nsm.get(82)));
+		assertTrue(poss.contains(nsm.get(63)));
+		// von 125 aus
+		assertTrue(poss.contains(nsm.get(131)));
+		
+		assertEquals(17, poss.size());
 	}
 
 }
