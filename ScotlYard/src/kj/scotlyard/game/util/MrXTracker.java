@@ -17,6 +17,9 @@ import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.Rules;
 
+import static kj.scotlyard.game.model.GameState.MoveAccessMode.MOVE_NUMBER;
+import static kj.scotlyard.game.model.GameState.INITIAL_ROUND_NUMBER;
+
 public class MrXTracker {
 
 	private final GameState gameState;
@@ -35,24 +38,23 @@ public class MrXTracker {
 	}
 
 	/**
-	 * Gibt den Zug zurueck, an dem MrX
-	 * das letzte Mal aufgetaucht ist,
-	 * oder <tt>null</tt>, wenn MrX noch
-	 * nicht aufgetaucht ist.
-	 * @return MrX' last uncovered move,
-	 * or <tt>null</tt> if MrX wasn't
-	 * uncovered yet.
+	 * Gibt den Zug zurueck, mit dem MrX das letzte Mal aufgetaucht
+	 * ist, oder <tt>null</tt>, wenn MrX noch nicht aufgetaucht ist.
+	 * @return MrX' last uncovered move, or <tt>null</tt> if MrX
+	 * wasn't uncovered yet.
 	 */
 	public Move getLastKnownMove() {
 		Player mrX = gameState.getMrX();
 		Move lastMove = gameStateExtension.getLastMoveFlat(mrX);
-		
-		List<Integer> uncover = rules.getGameStateAccessPolicy().getMrXUncoverMoveNumbers();
-		ListIterator<Integer> it = uncover.listIterator(uncover.size());
-		while (it.hasPrevious()) {
-			int n = it.previous();
-			if (lastMove.getMoveNumber() >= n) {
-				return gameState.getMove(mrX, n, GameState.MoveAccessMode.MOVE_NUMBER);
+		if (lastMove != null) {
+			
+			List<Integer> uncover = rules.getGameStateAccessPolicy().getMrXUncoverMoveNumbers();
+			ListIterator<Integer> it = uncover.listIterator(uncover.size());
+			while (it.hasPrevious()) {
+				int n = it.previous();
+				if (lastMove.getMoveNumber() >= n) {
+					return gameState.getMove(mrX, n, MOVE_NUMBER);
+				}
 			}
 		}
 		
@@ -114,7 +116,7 @@ public class MrXTracker {
 			// Skip initial move of MrX:
 			it.next();
 			result = new HashSet<>(gameGraph.getInitialStations());
-			result.removeAll(gameStateExtension.getDetectivePositions(GameState.INITIAL_ROUND_NUMBER));
+			result.removeAll(gameStateExtension.getDetectivePositions(INITIAL_ROUND_NUMBER));
 		} else {
 			it = getMovesSince().iterator();
 			result = Collections.singleton(last.getStation());			
