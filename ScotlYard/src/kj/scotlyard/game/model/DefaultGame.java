@@ -363,10 +363,6 @@ public class DefaultGame extends AbstractGameState implements Game {
 			throw new IllegalArgumentException("MoveAccessMode must not be null.");
 		}
 		
-		if (result == null) {
-			throw new IllegalArgumentException("There is no Move for the specified number: " + number);
-		}
-		
 		return result;
 	}
 

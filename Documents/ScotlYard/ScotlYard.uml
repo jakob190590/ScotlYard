@@ -66,7 +66,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed May 09 11:26:25 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Tue May 15 10:18:32 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -2284,7 +2284,7 @@ implements Sealable</UML:TaggedValue.dataValue>
                   <UML:ModelElement.taggedValue>
                     <UML:TaggedValue xmi.id = '-64--88--78-22-1d291ea2:13602acbfc3:-8000:0000000000000BD5'
                       isSpecification = 'false'>
-                      <UML:TaggedValue.dataValue>Nur push, add (ohne Argumente), pull und clear werden zum verändern der Liste unterstützt! add (mit Index) und remove werden nicht unterstützt. Dadurch kann die Move History nicht durch unerlaubtes löschen/einfügen in einen inkonsistenten Zustand gebracht werden.</UML:TaggedValue.dataValue>
+                      <UML:TaggedValue.dataValue>Nur add (ohne Index), remove(-1) und clear werden zum verändern der Liste unterstützt! add (mit Index) und remove werden nicht unterstützt. Dadurch kann die Move History nicht durch unerlaubtes löschen/einfügen in einen inkonsistenten Zustand gebracht werden.</UML:TaggedValue.dataValue>
                       <UML:TaggedValue.type>
                         <UML:TagDefinition xmi.idref = '-64--88--78-22--16c460d9:135bfa2bae8:-8000:0000000000000E63'/>
                       </UML:TaggedValue.type>
@@ -2302,14 +2302,14 @@ implements Sealable</UML:TaggedValue.dataValue>
                 <UML:Operation xmi.id = '-64--88--22-1--1d5cccdd:134dc26a78a:-8000:0000000000000ADC'
                   name = 'getMove' visibility = 'public' isSpecification = 'false' ownerScope = 'instance'
                   isQuery = 'false' concurrency = 'sequential' isRoot = 'false' isLeaf = 'false'
-                  isAbstract = 'false'>
+                  isAbstract = 'false' specification = 'Durch negative number wird von hinten begonnen: -1 heisst letzter Zug, -2 heisst Vorletzter usw.&#10;Wenn kein Move mit round/move number exisitiert, wird null zurueckgegeben (wie bei Map get).'>
                   <UML:ModelElement.comment>
                     <UML:Comment xmi.idref = '-64--88--22-1--5b2fb4c9:134e08e2f49:-8000:0000000000000AEF'/>
                   </UML:ModelElement.comment>
                   <UML:ModelElement.taggedValue>
                     <UML:TaggedValue xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C31'
                       isSpecification = 'false'>
-                      <UML:TaggedValue.dataValue>Durch negative number wird von hinten begonnen: -1 heisst letzter Zug, -2 heisst Vorletzter usw.</UML:TaggedValue.dataValue>
+                      <UML:TaggedValue.dataValue></UML:TaggedValue.dataValue>
                       <UML:TaggedValue.type>
                         <UML:TagDefinition xmi.idref = '-64--88--78-22--16c460d9:135bfa2bae8:-8000:0000000000000E63'/>
                       </UML:TaggedValue.type>
