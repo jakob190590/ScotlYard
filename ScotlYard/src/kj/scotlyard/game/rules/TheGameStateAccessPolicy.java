@@ -191,7 +191,10 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		@Override
 		public Move getMove(Player player, int number, MoveAccessMode accessMode) {
 			Move m = super.getMove(player, number, accessMode);
-			return maskMove(m);
+			if (m != null) {
+				m = maskMove(m);
+			}
+			return m;
 		}
 
 		@Override
