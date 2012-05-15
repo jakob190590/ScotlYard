@@ -4,6 +4,9 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import kj.scotlyard.board.BoardGraphLoader;
+import kj.scotlyard.game.control.GameController;
+import kj.scotlyard.game.control.impl.DefaultGameController;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
@@ -28,6 +31,7 @@ public class MrXTrackerTest {
 	GameGraph gg;
 	Rules r;
 	GameStateExtension ext;
+	GameState dgs;
 	MrXTracker tr;
 	
 	MrXPlayer mrX;
@@ -36,9 +40,15 @@ public class MrXTrackerTest {
 
 	@Before
 	public void setUp() throws Exception {
+		
+		BoardGraphLoader loader = new BoardGraphLoader();
+		loader.load("graph-description", "initial-stations");
+		gg = loader.getGameGraph();
+		
 		g = new DefaultGame();
 		r = new TheRules();
 		ext = new GameStateExtension(g);
+		dgs = r.getGameStateAccessPolicy().createGameStateForDetectives(g);
 		tr = new MrXTracker(g, gg, r);
 				
 		mrX = new MrXPlayer();
@@ -109,6 +119,9 @@ public class MrXTrackerTest {
 //			System.out.println(m.getRoundNumber() + "    " + m.getMoveNumber() + "     " + m.getMoveIndex());
 //		}
 		
+		// Tracker sollte auch mit DetectivesGameState funktionieren!
+		MrXTracker tr2 = new MrXTracker(dgs, gg, r);
+		
 		while (!g.getMoves().isEmpty()) {
 			
 			int moveNumber = ext.getLastMoveFlat(mrX).getMoveNumber();
@@ -131,10 +144,16 @@ public class MrXTrackerTest {
 			
 			if (moveNumber < 3) {
 				assertEquals(null, tr.getLastKnownMove());
+				assertEquals(null, tr2.getLastKnownMove());
+				
 			} else {
 				assertEquals(mrX, m.getPlayer());
 				assertEquals(uncover, m.getMoveNumber());
 				assertEquals(m, tr.getLastKnownMove());
+				
+				// MrXTracker mit Detective's GameState
+				assertEquals(m.getStation(), tr2.getLastKnownMove().getStation());
+				assertEquals(m.getItem(), tr2.getLastKnownMove().getItem());
 			}
 			
 			g.getMoves().remove(GameState.LAST_MOVE);
@@ -206,8 +225,31 @@ public class MrXTrackerTest {
 		// Dabei darf es keine IllegalAccessExceptions geben!!
 		
 		// Testfaelle:
-		// not yet uncovered, just uncovered, normal 
-		fail("Not yet implemented");
+		// move list clear, not yet uncovered, just uncovered, normal 
+		
+		GameController ctrl = new DefaultGameController(g, gg, r);
+		
+		// MoveList clear
+		ctrl.newGame();
+		try {
+			tr.getPossiblePositions();
+			fail("exception failed to appear");
+		} catch (IllegalStateException e) { }
+		
+
+		// only initial moves (not yet uncovered)
+		ctrl.start();
+		for (Player pl : g.getPlayers()) {
+			assertTrue(gg.getInitialStations().contains(g.getMove(pl, GameState.INITIAL_ROUND_NUMBER,
+					GameState.MoveAccessMode.ROUND_NUMBER).getStation()));
+		}
+		
+		// just uncovered
+		fail("Not yet implemented"); // TODO impl, wenn Bug 141 geklaert ist!
+		
+		// one moves after uncover
+		
+		// two moves after uncover
 	}
 
 }
