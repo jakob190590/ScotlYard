@@ -4,10 +4,12 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.UndergroundConnection;
@@ -367,5 +369,111 @@ public class GameStateExtensionTest {
 
 	@Test
 	public final void testGetItem() { }
+	
+	@Test
+	public final void testGetDetectivePositionsInt() {
+		
+		for (int i = -3; i < 0; i++)
+			try {
+				ext.getDetectivePositions(i);
+				fail("exception failed to appear");
+			} catch (IllegalArgumentException e) { }
+		
+		StationVertex[] s = {
+				new Station(gg),
+				new Station(gg),
+				new Station(gg),
+				new Station(gg),
+				new Station(gg),
+				new Station(gg),
+				new Station(gg),
+				new Station(gg) };
+		
+		// Alle Detectives haben letzte Runde gezogen
+		int rNbr = g.getLastMove(d4).getRoundNumber() + 1;
+		int i = 0;
+		for (Player pl : g.getPlayers()) {
+			g.getMoves().add(MoveProducer.createInitialMove(pl, rNbr, s[i++]));
+		}
+		
+		Set<StationVertex> detectivePositions = ext.getDetectivePositions(rNbr);
+		assertEquals(g.getDetectives().size(), detectivePositions.size());
+		for (i = 1; i <= 4; i++) {
+			assertTrue(detectivePositions.contains(s[i]));
+		}
+		
+		// Detectives haben unterschiedlich weit gezogen
+		rNbr++;
+		i = 5;
+		for (Player pl : g.getPlayers()) {
+			g.getMoves().add(MoveProducer.createInitialMove(pl, rNbr, s[i++]));
+			if (i > 7)
+				break;
+		}
+		
+		detectivePositions = ext.getDetectivePositions(rNbr);
+		assertEquals(g.getDetectives().size(), detectivePositions.size());
+		for (i = 3; i < 8; i++) {
+			if (i != 5) // mrx auslassen
+				assertTrue(detectivePositions.contains(s[i++]));
+		}
+		
+		// Ein Detective weniger im Spiel
+		g.getDetectives().remove(2);
+		assertEquals(g.getDetectives().size(), ext.getDetectivePositions(rNbr).size());
+		
+		// Kein einziger hat gezogen
+		g.getMoves().clear();
+		assertTrue(ext.getDetectivePositions(1).isEmpty());
+	}
+	
+	@Test
+	public final void testGetDetectivePositions() {
+		
+		StationVertex[] s = {
+				new Station(gg),
+				new Station(gg),
+				new Station(gg),
+				new Station(gg),
+				new Station(gg),
+				new Station(gg),
+				new Station(gg),
+				new Station(gg) };
+		
+		// Alle Detectives haben letzte Runde gezogen
+		int i = 0;
+		for (Player pl : g.getPlayers()) {
+			g.getMoves().add(MoveProducer.createInitialMove(pl, s[i++]));
+		}
+		
+		Set<StationVertex> detectivePositions = ext.getDetectivePositions();
+		assertEquals(g.getDetectives().size(), detectivePositions.size());
+		for (i = 1; i <= 4; i++) {
+			assertTrue(detectivePositions.contains(s[i]));
+		}
+		
+		// Detectives haben unterschiedlich weit gezogen
+		i = 5;
+		for (Player pl : g.getPlayers()) {
+			g.getMoves().add(MoveProducer.createInitialMove(pl, s[i++]));
+			if (i > 7)
+				break;
+		}
+		
+		detectivePositions = ext.getDetectivePositions();
+		assertEquals(g.getDetectives().size(), detectivePositions.size());
+		for (i = 3; i < 8; i++) {
+			if (i != 5) // mrx auslassen
+				assertTrue(detectivePositions.contains(s[i++]));
+		}
+		
+		// Ein Detective weniger im Spiel
+		g.getDetectives().remove(2);
+		assertEquals(g.getDetectives().size(), ext.getDetectivePositions().size());
+		
+		// Kein einziger hat gezogen
+		g.getMoves().clear();
+		assertTrue(ext.getDetectivePositions().isEmpty());
+	}
 
 }
