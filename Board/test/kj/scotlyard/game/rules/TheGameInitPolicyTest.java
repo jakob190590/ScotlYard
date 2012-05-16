@@ -27,6 +27,11 @@ public class TheGameInitPolicyTest {
 	@Test
 	public final void testSuggestInitialStation() {
 		// fast trivial
+//		Game g = new DefaultGame();
+//		for (Player pl : g.getPlayers()) {
+//			assertTrue(gg.getInitialStations().contains(g.getMove(pl, GameState.INITIAL_ROUND_NUMBER,
+//					GameState.MoveAccessMode.ROUND_NUMBER).getStation()));
+//		}
 	}
 
 }
