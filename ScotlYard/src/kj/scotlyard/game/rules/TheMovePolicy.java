@@ -28,6 +28,21 @@ public class TheMovePolicy implements MovePolicy {
 		}
 	}
 	
+	private void checkSingleMoveGenerally(GameState gameState, GameGraph gameGraph, Move move)
+			throws IllegalMoveException {
+		
+		GameStateExtension ext = new GameStateExtension(gameState);
+		StationVertex station = move.getStation();
+		
+		// Vertex element von Graph? 
+		throwIllegalMove(gameGraph.getGraph().vertexSet().contains(station),
+				"The specified station is not part of the game graph.", move);
+		
+		throwIllegalMove(ext.getDetectivePositions().contains(station),
+				"The specified station is occupied by another detective.", move);
+		
+	}
+	
 	private void checkSingleMove(GameState gameState, GameGraph gameGraph, Move move, Move previousMove)
 			throws IllegalMoveException {
 		
@@ -37,10 +52,26 @@ public class TheMovePolicy implements MovePolicy {
 		throwIllegalMove(move.getStation() == null, 
 				"You must specify the target station.", move);
 		
-		// TODO korbi ?
+		// general single move check
+		checkSingleMoveGenerally(gameState, gameGraph, move);
+
+		// Fortbewegung im Graph ueberpruefen
 		// - ist move.station direkter nachbar von previousMove.station ?
-		// - liegt move.connection dazwischen ?
-		// und throwIllegalMove  Exception, so wie hier sonst ueberall...
+		// - liegt move.connection dazwischen ?		
+		boolean connExists = false;
+		for (ConnectionEdge connection : previousMove.getStation().getEdges()) {
+			// Innerhalb des Graphs wird mit Identitaet gearbeitet, nicht mit equals!
+			if (connection == move.getConnection()) {
+				connExists = true;				
+				throwIllegalMove(connection.getOther(previousMove.getStation())
+						!= move.getStation(),
+						"Target station is not approachable by the specified connection.", move);
+				break;
+			}
+		}
+		throwIllegalMove(!connExists,
+				"The specified connection do not come from the previous station.", move);
+		
 		
 		throwIllegalMove(!(move.getItem() instanceof Ticket), 
 				"You must provide a ticket for this move.", move);
@@ -119,7 +150,6 @@ public class TheMovePolicy implements MovePolicy {
 	public void checkMove(GameState gameState, GameGraph gameGraph, Move move)
 			throws IllegalMoveException {
 		
-		
 		// Allgemein
 		boolean subMoves = !move.getMoves().isEmpty(); // there are sub moves
 		Move previous = new GameStateExtension(gameState).getLastMoveFlat(move.getPlayer());
@@ -148,10 +178,12 @@ public class TheMovePolicy implements MovePolicy {
 			throwIllegalMove(move.getStation() == null, 
 					"You must specify the initial station.", move);
 			
-			// TODO Station ueberpruefen
-			// - dass da kein anderer detective steht!
-			// - und vertex element von Graph ist (graph.vertexSet().contains(...))
-			// und passende fehlermeldung wenn nicht
+			// general single move check
+			checkSingleMoveGenerally(gameState, gameGraph, move);
+			
+			// Vertex element von Initial Stations?
+			throwIllegalMove(gameGraph.getInitialStations().contains(move.getStation()),
+					"The specified station is not an initial station.", move);
 			
 			throwIllegalMove(move.getConnection() != null, 
 					"You cannot attach a connection to the initial move.", move);
