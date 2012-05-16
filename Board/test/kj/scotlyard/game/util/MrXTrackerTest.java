@@ -226,8 +226,7 @@ public class MrXTrackerTest {
 	}
 
 	@Test
-	public final void testGetPossiblePositions() {
-		// TODO implement test
+	public final void testGetPossiblePositions1() {
 		// Must be tested with a DetectivesGameState (GameStateAccessPolicy)!
 		// Dabei darf es keine IllegalAccessExceptions geben!!
 		
@@ -299,11 +298,12 @@ public class MrXTrackerTest {
 		
 		// Die Detectives setzen wir jetzt wo ganz woanders hin:
 		g.getMoves().add(MoveProducer.createInitialMove(d1, 3, nsm.get(1)));
-		g.getMoves().add(MoveProducer.createInitialMove(d1, 3, nsm.get(2)));
-		g.getMoves().add(MoveProducer.createInitialMove(d1, 3, nsm.get(3)));
-		g.getMoves().add(MoveProducer.createInitialMove(d1, 3, nsm.get(4)));
+		g.getMoves().add(MoveProducer.createInitialMove(d2, 3, nsm.get(2)));
+		g.getMoves().add(MoveProducer.createInitialMove(d3, 3, nsm.get(3)));
+		g.getMoves().add(MoveProducer.createInitialMove(d4, 3, nsm.get(4)));
 		
 		poss = tr.getPossiblePositions();
+		tr2.getPossiblePositions();
 		assertTrue(poss.contains(nsm.get(111)));
 		assertTrue(poss.contains(nsm.get(99)));
 		assertTrue(poss.contains(nsm.get(125)));
@@ -315,6 +315,7 @@ public class MrXTrackerTest {
 		g.getMoves().add(MoveProducer.createSingleMove(mrX,
 				4, 5, nsm.get(124), null, new BlackTicket()));
 		poss = tr.getPossiblePositions();
+		tr2.getPossiblePositions();
 		// von 111 aus
 		assertTrue(poss.contains(nsm.get(110)));
 		assertTrue(poss.contains(nsm.get(79)));
@@ -338,6 +339,96 @@ public class MrXTrackerTest {
 		assertTrue(poss.contains(nsm.get(131)));
 		
 		assertEquals(17, poss.size());
+	}
+	
+	/**
+	 * Dieser Test blockiert bestimmte Stationen in
+	 * bestimmenten Runden mit Detectives. Ansonsnten
+	 * das gleiche Szenario wie in Test 1. 
+	 */
+	@Test
+	public final void testGetPossiblePositions2() {
+
+		MrXTracker tr2 = new MrXTracker(dgs, gg, r);
+		Set<StationVertex> poss;
+		g.getMoves().clear();
+		
+		// -------------------------------------------
+		// one moves after uncover
+		
+		for (int i = 0; i < 2; i++) { // zwei runden iwelche moves adden
+			for (Player pl : g.getPlayers()) {
+				g.getMoves().add(MoveProducer.createInitialMove(pl, i, nsm.get(11)));
+			}
+		}
+		
+		g.getMoves().add(MoveProducer.createInitialMove(mrX, 2, nsm.get(99)));
+		g.getMoves().add(MoveProducer.createInitialMove(d1, 2, nsm.get(100))); // der blockiert 100
+		g.getMoves().add(MoveProducer.createInitialMove(d2, 2, nsm.get(131)));
+		g.getMoves().add(MoveProducer.createInitialMove(d3, 2, nsm.get(3)));
+		g.getMoves().add(MoveProducer.createInitialMove(d4, 2, nsm.get(4)));
+
+		// jetzt kommt mrx uncover move und gleich noch einer:
+		g.getMoves().add(MoveProducer.createMultiMove(
+				mrX, 3, 3, new DoubleMoveCard(), new SubMoves()
+						.add(nsm.get(112), null, new TaxiTicket()) // uncover move
+						.add(nsm.get(111), null, new TaxiTicket()))); // naechster move
+		
+		poss = tr.getPossiblePositions();
+		tr2.getPossiblePositions();
+		assertTrue(poss.contains(nsm.get(111)));
+		assertTrue(poss.contains(nsm.get(99)));
+		assertTrue(poss.contains(nsm.get(125)));
+		assertEquals(3, poss.size());
+
+		// det. moves
+		g.getMoves().add(MoveProducer.createInitialMove(d1, 3, nsm.get(81)));
+		g.getMoves().add(MoveProducer.createInitialMove(d2, 3, nsm.get(125)));
+		g.getMoves().add(MoveProducer.createInitialMove(d3, 3, nsm.get(3)));
+		g.getMoves().add(MoveProducer.createInitialMove(d4, 3, nsm.get(4)));
+		
+		poss = tr.getPossiblePositions();
+		tr2.getPossiblePositions();
+		assertTrue(poss.contains(nsm.get(111)));
+		assertTrue(poss.contains(nsm.get(99)));
+		assertEquals(2, poss.size());
+			
+		// -------------------------------------------
+		// two moves after uncover
+		g.getMoves().add(MoveProducer.createSingleMove(mrX,
+				4, 5, nsm.get(124), null, new BlackTicket()));
+		poss = tr.getPossiblePositions();
+		tr2.getPossiblePositions();
+		// von 111 aus
+		assertTrue(poss.contains(nsm.get(110)));
+		assertTrue(poss.contains(nsm.get(79)));
+		assertTrue(poss.contains(nsm.get(124)));
+		assertTrue(poss.contains(nsm.get(112)));
+		assertTrue(poss.contains(nsm.get(163)));
+		assertTrue(poss.contains(nsm.get(153)));
+		assertTrue(poss.contains(nsm.get(67)));
+		assertTrue(poss.contains(nsm.get(100)));
+		// von 99 aus
+		assertTrue(poss.contains(nsm.get(80)));
+		assertTrue(poss.contains(nsm.get(98)));
+		
+		assertEquals(10, poss.size());
+		
+		/*
+		 * Bugfixed:
+		 * 131 u. 113 waren iwie nicht dabei
+		 * d2 pos (125) in round 3 wurde nicht honoriert wenn mrx erneut gezogen hat
+		 */
+		printStationNumbers(poss, nsm);
+	}
+
+	private void printStationNumbers(Set<StationVertex> stations, Map<Integer, StationVertex> map) {
+		for (StationVertex s : stations) {
+			for (Map.Entry<Integer, StationVertex> e : map.entrySet()) {
+				if (e.getValue().equals(s))
+					System.out.println(e.getKey());
+			}
+		}
 	}
 
 }
