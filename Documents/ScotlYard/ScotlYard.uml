@@ -66,7 +66,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Tue May 15 10:18:32 CEST 2012'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed May 16 10:09:49 CEST 2012'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -3241,7 +3241,7 @@ flat Move List</UML:TaggedValue.dataValue>
                 <UML:Operation xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3D'
                   name = 'getPossiblePositions' visibility = 'public' isSpecification = 'false'
                   ownerScope = 'instance' isQuery = 'false' concurrency = 'sequential' isRoot = 'false'
-                  isLeaf = 'false' isAbstract = 'false' specification = 'Returns a set of all possible MrX positions.'>
+                  isLeaf = 'false' isAbstract = 'false' specification = 'Returns a set of all possible MrX positions.&#10;Darf nur aufgerufen werden, solange das Spiel&#10;noch nicht gewonnen ist, insbesondere nicht, wenn&#10;Detective(s) und MrX zur selben Zeit auf dem selben&#10;Feld standen oder stehen.'>
                   <UML:BehavioralFeature.parameter>
                     <UML:Parameter xmi.id = '-127--69-118--41-151ccf5d:13650517770:-8000:0000000000000C3E'
                       name = 'return' isSpecification = 'false' kind = 'return'>
