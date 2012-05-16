@@ -237,6 +237,118 @@ Spielzustand
 \end_layout
 
 \begin_layout Subsection
+Move
+\end_layout
+
+\begin_layout Standard
+Ein Move stellt den Zug eines Spielers dar.
+ Wir unterscheiden zwischen:
+\end_layout
+
+\begin_layout Itemize
+SingleMove
+\begin_inset Newline newline
+\end_inset
+
+Diese Art hat keine weiteren SubMoves und ist bei Scotland Yard der Normalfall
+ für Detektive.
+\end_layout
+
+\begin_layout Itemize
+MultiMove
+\begin_inset Newline newline
+\end_inset
+
+Diese Art besitzt weitere SubMoves; Bei Scotland Yard genau zwei: Ein Doppelzug
+ des Mr.
+ X.
+\end_layout
+
+\begin_layout Itemize
+BaseMove
+\begin_inset Newline newline
+\end_inset
+
+Bezeichnet allein den MultiMove, ohne seine SubMoves.
+\end_layout
+
+\begin_layout Itemize
+SubMove
+\begin_inset Newline newline
+\end_inset
+
+Diese Art beschreibt Moves, die in einen MultiMove eingebettet sind.
+ Bei Scotland Yard müssen SubMoves immer auch SingleMoves sein.
+ Eine Hierarchie tiefer als zwei gibt es dort nicht.
+\end_layout
+
+\begin_layout Standard
+Zur Identifikation eines Moves gibt es drei Zahlenwerte.
+ Alle drei Zahlen beginnen jeweils bei 0
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Für 1.
+ und 2.
+ festgelegt durch die Konstanten INITIAL_MOVE_NUMBER und INITIAL_ROUND_NUMBER
+ in GameState.
+ Für 3.
+ durch das Wort 
+\begin_inset Quotes gld
+\end_inset
+
+Index
+\begin_inset Quotes grd
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+MoveNumber
+\begin_inset Newline newline
+\end_inset
+
+Die MoveNumber nummeriert alle SingleMoves eines Spielers durch.
+ Bei Moves, die keine SingleMoves sind (d.h.
+ z.B.
+ der BaseMove eines MultiMoves), gibt es keine MoveNumber; Der Wert ist
+ dann GameState.NO_MOVE_NUMBER (-1).
+\end_layout
+
+\begin_layout Enumerate
+RoundNumber
+\begin_inset Newline newline
+\end_inset
+
+Die RoundNumber (Rundennummer) ist für alle Moves einer Runde gleich (z.B.
+ MultiMove und alle seine SubMoves).
+\end_layout
+
+\begin_layout Enumerate
+MoveIndex
+\begin_inset Newline newline
+\end_inset
+
+Der MoveIndex ist nur bei MultiMoves von Bedeutung.
+ Er nummieriert die SubMoves durch.
+ Bei BaseMoves oder bei SingleMoves, die keine SubMoves sind, ist der MoveIndex
+ GameState.NO_MOVE_INDEX (-1).
+\end_layout
+
+\begin_layout Standard
+Zur komfortablen Erzeugung von Moves stehen die Util-Klassen MoveProducer
+ (Factory) und SubMoves (Builder, der dann der Factory-Methode des MoveProducers
+ als Argument übergeben wird) zur Verfügung.
+\end_layout
+
+\begin_layout Subsection
 Die Schnittstelle GameState
 \end_layout
 
