@@ -420,90 +420,30 @@ public class DefaultGameTest {
 		
 		// ungueltige Move accesses von mrX
 		// by move number
-		try {
-			g.getMove(mrX, -7, MoveAccessMode.MOVE_NUMBER);
-			fail("no exception");
-		} catch (Exception e) { }
-		
-		try {
-			g.getMove(mrX, -8, MoveAccessMode.MOVE_NUMBER);
-			fail("no exception");
-		} catch (Exception e) { }
-		
-		try {
-			g.getMove(mrX, 6, MoveAccessMode.MOVE_NUMBER);
-			fail("no exception");
-		} catch (Exception e) { }
-		
-		try {
-			g.getMove(mrX, 7, MoveAccessMode.MOVE_NUMBER);
-			fail("no exception");
-		} catch (Exception e) { }
-		
+		assertEquals(null, g.getMove(mrX, -7, MoveAccessMode.MOVE_NUMBER));
+		assertEquals(null, g.getMove(mrX, -8, MoveAccessMode.MOVE_NUMBER));
+		assertEquals(null, g.getMove(mrX, 6, MoveAccessMode.MOVE_NUMBER));
+		assertEquals(null, g.getMove(mrX, 7, MoveAccessMode.MOVE_NUMBER));
+				
 		// by round number
-		try {
-			g.getMove(mrX, -5, MoveAccessMode.ROUND_NUMBER);
-			fail("no exception");
-		} catch (Exception e) { }
-		
-		try {
-			g.getMove(mrX, -6, MoveAccessMode.ROUND_NUMBER);
-			fail("no exception");
-		} catch (Exception e) { }
-		
-		try {
-			g.getMove(mrX, 4, MoveAccessMode.ROUND_NUMBER);
-			fail("no exception");
-		} catch (Exception e) { }
-		
-		try {
-			g.getMove(mrX, 5, MoveAccessMode.ROUND_NUMBER);
-			fail("no exception");
-		} catch (Exception e) { }
+		assertEquals(null, g.getMove(mrX, -5, MoveAccessMode.ROUND_NUMBER));
+		assertEquals(null, g.getMove(mrX, -6, MoveAccessMode.ROUND_NUMBER));
+		assertEquals(null, g.getMove(mrX, 4, MoveAccessMode.ROUND_NUMBER));
+		assertEquals(null, g.getMove(mrX, 5, MoveAccessMode.ROUND_NUMBER));
 		
 		// ungueltige Move accesses von detectives
 		for (DetectivePlayer d : g.getDetectives()) {
 			// by move number
-			try {
-				g.getMove(d, -5, MoveAccessMode.MOVE_NUMBER);
-				fail("no exception");
-			} catch (Exception e) { }
-			
-			try {
-				g.getMove(d, -6, MoveAccessMode.MOVE_NUMBER);
-				fail("no exception");
-			} catch (Exception e) { }
-			
-			try {
-				g.getMove(d, 4, MoveAccessMode.MOVE_NUMBER);
-				fail("no exception");
-			} catch (Exception e) { }
-			
-			try {
-				g.getMove(d, 5, MoveAccessMode.MOVE_NUMBER);
-				fail("no exception");
-			} catch (Exception e) { }
+			assertEquals(null, g.getMove(d, -5, MoveAccessMode.MOVE_NUMBER));
+			assertEquals(null, g.getMove(d, -6, MoveAccessMode.MOVE_NUMBER));
+			assertEquals(null, g.getMove(d, 4, MoveAccessMode.MOVE_NUMBER));
+			assertEquals(null, g.getMove(d, 5, MoveAccessMode.MOVE_NUMBER));
 						
 			// by round number
-			try {
-				g.getMove(d, -5, MoveAccessMode.ROUND_NUMBER);
-				fail("no exception");
-			} catch (Exception e) { }
-			
-			try {
-				g.getMove(d, -6, MoveAccessMode.ROUND_NUMBER);
-				fail("no exception");
-			} catch (Exception e) { }
-			
-			try {
-				g.getMove(d, 4, MoveAccessMode.ROUND_NUMBER);
-				fail("no exception");
-			} catch (Exception e) { }
-			
-			try {
-				g.getMove(d, 5, MoveAccessMode.ROUND_NUMBER);
-				fail("no exception");
-			} catch (Exception e) { }
+			assertEquals(null, g.getMove(d, -5, MoveAccessMode.ROUND_NUMBER));
+			assertEquals(null, g.getMove(d, -6, MoveAccessMode.ROUND_NUMBER));
+			assertEquals(null, g.getMove(d, 4, MoveAccessMode.ROUND_NUMBER));
+			assertEquals(null, g.getMove(d, 5, MoveAccessMode.ROUND_NUMBER));
 		}
 		
 		
