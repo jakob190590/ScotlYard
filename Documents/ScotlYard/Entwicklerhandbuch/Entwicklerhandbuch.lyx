@@ -769,7 +769,7 @@ n.
 \end_layout
 
 \begin_layout Standard
-Im folgenden werden zwei Begriffe verwendet:
+Im Folgenden werden zwei Begriffe verwendet:
 \end_layout
 
 \begin_layout Itemize
@@ -793,6 +793,96 @@ GameGraph Schnittstelle
 \end_inset
 
  ist die Graph-Schnittstelle, mit der innerhalb ScotlYard gearbeitet wird.
+\end_layout
+
+\begin_layout Subsection
+Erzeugung des GameGraph
+\end_layout
+
+\begin_layout Standard
+Zur Erzeugung des GameGraph stehen im Projekt GraphBuilder und Board entsprechen
+de Builder zur Verfügung.
+ Die Builder-Schnittstelle ist durch das Interface GraphBuilder vorgegeben.
+ Das Erzeugen des GameGraph läuft folgendermaßen ab (siehe auch Builder
+ Pattern):
+\end_layout
+
+\begin_layout Enumerate
+Der Director lässt den Builder den GameGraph bauen.
+\end_layout
+
+\begin_layout Enumerate
+Der Client holt das Erzeugnis dann vom Builder ab (per getGameGraph).
+ Der GameGraph ist noch modifiable, da die Initial Stations noch fehlen.
+\end_layout
+
+\begin_layout Enumerate
+Der Client stellt den GameGraph fertig, d.h.
+ er setzt die Initial Stations.
+\end_layout
+
+\begin_layout Enumerate
+Der Client ruft die Methode seal auf, um den Graphen, die Initial Stations
+ und den GameGraph selbst zu versiegeln (
+\begin_inset Quotes gld
+\end_inset
+
+seal & release
+\begin_inset Quotes grd
+\end_inset
+
+).
+ Der GameGraph ist nun fertig.
+\end_layout
+
+\begin_layout Standard
+Als Director steht die Klasse kj.scotlyard.graphbuilder.builder.Director zur
+ Verfügung, die anhand der Graph Description (Datei) dem Builder Anweisungen
+ gibt.
+ Ein Client ist im Projekt Board der BoardGraphLoader, der als konkreten
+ Builder den BoardGraphBuilder verwendet.
+ Als Director verwendet der BoardGraphLoader intern den eben vorgestellten
+ Director.
+\end_layout
+
+\begin_layout Standard
+Gespeichert ist der GameGraph in einfachen Textdateien.
+ Der Graph in der sogenannten Graph Description, die Initial Stations in
+ einer zweiten Datei.
+ Die Graph Description besteht aus Zeilen.
+ Jede Zeile stellt entweder einen Knoten (Vertex) oder eine Kante (Edge)
+ dar.
+ Am Anfang steht V oder E zur Unterscheidung, gefolgt vom vollständigen
+ Klassennamen.
+ Bei Knoten folgen Vertex-Nummer und normierte x/y-Koordinaten (von links
+ oben).
+ Bei Kanten folgenden die Vertex-Nummern der Knoten, die sie verbindet (bei
+ gerichteten Graphen von der ersten Vertex-Nummer zur zweiten Vertex-Nummer).
+ Ein Auszug zur Veranschaulichung:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+V kj.scotlyard.game.graph.Station 181 0.33534743202416917 0.8195488721804511
+\end_layout
+
+\begin_layout Plain Layout
+
+E kj.scotlyard.game.graph.connection.BusConnection 161 135
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die Initial Stations-Datei beinhaltet die Vertex-Nummern der Startpositionen,
+ durch Whitespace getrennt.
 \end_layout
 
 \begin_layout Subsection
@@ -910,11 +1000,7 @@ Zu
  Entfällt, weil bei Austausch des Graph-Toolkits im ganzen Projekt hunderte
  Änderungen des Typs nötig wären, auch wenn die GameGraph Schnittstelle
  nicht mal verwendet wird, sondern der Graph nur herumgereicht wird.
-\end_layout
-
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-Zu
+ Zu
 \begin_inset space ~
 \end_inset
 
@@ -1093,8 +1179,37 @@ Grundprinzipien
 \end_layout
 
 \begin_layout Standard
-Es muss wenige Grundprinzipien im Spiel geben, damit Regeln überhaupt sinn
+Es muss wenige Grundprinzipien im Spiel geben, damit Regeln überhaupt Sinn
  machen und die Abtrennung vom Rest funktioniert.
+ Diese Grundregeln sind (mindestens) Folgende:
+\end_layout
+
+\begin_layout Itemize
+Mr.
+ X muss existieren
+\end_layout
+
+\begin_layout Itemize
+Player werden 
+\emph on
+vor
+\emph default
+ Spielbeginn festgelegt (Ausnahmen sind (Implementierungs-)Sache des Controllers
+)
+\end_layout
+
+\begin_layout Itemize
+Player müssen ziehen, wenn sie dran sind
+\end_layout
+
+\begin_layout Itemize
+Beim Move eingesetzte Items müssen (evtl.) weitergegeben werden
+\end_layout
+
+\begin_layout Standard
+Alles andere sollten die Regeln unmissverständlich regeln.
+ Die Referenzimplementierung zur richtigen Anwendung der Rules findet sich
+ im GameController.
 \end_layout
 
 \begin_layout Subsection
