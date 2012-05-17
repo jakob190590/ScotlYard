@@ -35,7 +35,7 @@ public class TheMovePolicy implements MovePolicy {
 		StationVertex station = move.getStation();
 		
 		// Vertex element von Graph? 
-		throwIllegalMove(gameGraph.getGraph().vertexSet().contains(station),
+		throwIllegalMove(!gameGraph.getGraph().vertexSet().contains(station),
 				"The specified station is not part of the game graph.", move);
 		
 		throwIllegalMove(ext.getDetectivePositions().contains(station),
@@ -182,7 +182,7 @@ public class TheMovePolicy implements MovePolicy {
 			checkSingleMoveGenerally(gameState, gameGraph, move);
 			
 			// Vertex element von Initial Stations?
-			throwIllegalMove(gameGraph.getInitialStations().contains(move.getStation()),
+			throwIllegalMove(!gameGraph.getInitialStations().contains(move.getStation()),
 					"The specified station is not an initial station.", move);
 			
 			throwIllegalMove(move.getConnection() != null, 
