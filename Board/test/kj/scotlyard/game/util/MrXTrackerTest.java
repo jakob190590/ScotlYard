@@ -419,10 +419,10 @@ public class MrXTrackerTest {
 		 * 131 u. 113 waren iwie nicht dabei
 		 * d2 pos (125) in round 3 wurde nicht honoriert wenn mrx erneut gezogen hat
 		 */
-		printStationNumbers(poss, nsm);
+//		printStationNumbers(poss, nsm);
 	}
 
-	private void printStationNumbers(Set<StationVertex> stations, Map<Integer, StationVertex> map) {
+	public static void printStationNumbers(Set<StationVertex> stations, Map<Integer, StationVertex> map) {
 		for (StationVertex s : stations) {
 			for (Map.Entry<Integer, StationVertex> e : map.entrySet()) {
 				if (e.getValue().equals(s))

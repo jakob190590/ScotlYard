@@ -250,7 +250,7 @@ public class InGameControllerTest {
 			*/			
 			assertEquals(win, c.getWin());
 			if (win != GameWin.NO) {
-				System.out.println(win);
+//				System.out.println(win);
 				assertEquals(GameStatus.NOT_IN_GAME, c.getStatus());
 				break;
 			}			
