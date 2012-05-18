@@ -111,7 +111,7 @@ public class TheGameWinPolicyTest {
 			g.getMoves().add(MoveProducer.createInitialMove(d2, i, s(20)));
 			g.getMoves().add(MoveProducer.createInitialMove(d3, i, s(10)));
 			g.getMoves().add(MoveProducer.createInitialMove(d4, i, s(33)));
-			System.out.println(i);
+//			System.out.println(i);
 			if (i >= 22)
 				assertEquals(GameWin.MRX_WINS, p.isGameWon(g, gg));
 			else
