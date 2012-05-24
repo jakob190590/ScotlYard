@@ -16,8 +16,3 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package kj.scotlyard.game.model.item;
-
-public class TaxiTicket extends Ticket {
-
-}
