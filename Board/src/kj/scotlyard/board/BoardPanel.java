@@ -21,17 +21,21 @@ package kj.scotlyard.board;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JPanel;
 
 import kj.scotlyard.game.graph.GameGraph;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
+import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.rules.Rules;
 
@@ -83,9 +87,13 @@ public class BoardPanel extends JPanel {
 	}
 	
 	private void calculatePieceLocations() {
-		for (Piece p : pieces.values()) {
-			p.setLocation((int) (boardImageRect.getWidth() * .5 - boardImageRect.getX()),
-					(int) (boardImageRect.getHeight() * .5 - boardImageRect.getY()));
+		for (Piece pp : pieces.values()) { // for each playing piece
+			Move m = gameState.getLastMove(pp.getPlayer());
+			if (m != null) {
+				Point2D.Double p = map.get(m.getStation()); // TODO map fuer stations einfuegen. soll enthalten: coords, isIniStation, StationComponent
+				p.setLocation((int) (boardImageRect.getWidth() * p.x - boardImageRect.getX()),
+						(int) (boardImageRect.getHeight() * p.y - boardImageRect.getY()));				
+			}
 		}
 	}
 	
