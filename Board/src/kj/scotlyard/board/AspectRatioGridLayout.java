@@ -64,7 +64,7 @@ public class AspectRatioGridLayout extends GridLayout {
 			component.setBounds(x + (w - nw) / 2, y, nw, h);
 		}
 
-		// component.setBounds(x, y, w, h);
+//		component.setBounds(x, y, w, h);
 
 	}
 	
@@ -78,40 +78,40 @@ public class AspectRatioGridLayout extends GridLayout {
 		// Aber was soll ich machen? Ich brauch' ja genau den gleichen Algo ...
 		synchronized (parent.getTreeLock()) {			
 			Insets insets = parent.getInsets();
-			int ncomponents = parent.getComponentCount();
-			int nrows = getRows();
-			int ncols = getColumns();
+			int componentCount = parent.getComponentCount();
+			int rowCount = getRows();
+			int colCount = getColumns();
 			boolean ltr = parent.getComponentOrientation().isLeftToRight();
 
-			if (ncomponents != 0) {
+			if (componentCount != 0) {
 
-				if (nrows > 0) {
-					ncols = (ncomponents + nrows - 1) / nrows;
+				if (rowCount > 0) {
+					colCount = (componentCount + rowCount - 1) / rowCount;
 				} else {
-					nrows = (ncomponents + ncols - 1) / ncols;
+					rowCount = (componentCount + colCount - 1) / colCount;
 				}
 
-				int totalGapsWidth = (ncols - 1) * hgap;
-				int widthWOInsets = parent.getWidth()
+				int totalGapsWidth = (colCount - 1) * hgap;
+				int widthMinusInsets = parent.getWidth()
 						- (insets.left + insets.right);
-				int widthOnComponent = (widthWOInsets - totalGapsWidth) / ncols;
-				int extraWidthAvailable = (widthWOInsets - (widthOnComponent
-						* ncols + totalGapsWidth)) / 2;
+				int widthOnComponent = (widthMinusInsets - totalGapsWidth) / colCount;
+				int extraWidthAvailable = (widthMinusInsets - (widthOnComponent
+						* colCount + totalGapsWidth)) / 2;
 
-				int totalGapsHeight = (nrows - 1) * vgap;
-				int heightWOInsets = parent.getHeight()
+				int totalGapsHeight = (rowCount - 1) * vgap;
+				int heightMinusInsets = parent.getHeight()
 						- (insets.top + insets.bottom);
-				int heightOnComponent = (heightWOInsets - totalGapsHeight)
-						/ nrows;
-				int extraHeightAvailable = (heightWOInsets - (heightOnComponent
-						* nrows + totalGapsHeight)) / 2;
+				int heightOnComponent = (heightMinusInsets - totalGapsHeight)
+						/ rowCount;
+				int extraHeightAvailable = (heightMinusInsets - (heightOnComponent
+						* rowCount + totalGapsHeight)) / 2;
 				if (ltr) {
-					for (int c = 0, x = insets.left + extraWidthAvailable; c < ncols; c++, x += widthOnComponent
+					for (int c = 0, x = insets.left + extraWidthAvailable; c < colCount; c++, x += widthOnComponent
 							+ hgap) {
-						for (int r = 0, y = insets.top + extraHeightAvailable; r < nrows; r++, y += heightOnComponent
+						for (int r = 0, y = insets.top + extraHeightAvailable; r < rowCount; r++, y += heightOnComponent
 								+ vgap) {
-							int i = r * ncols + c;
-							if (i < ncomponents) {
+							int i = r * colCount + c;
+							if (i < componentCount) {
 								setAspectRatioBounds(parent.getComponent(i), x,
 										y, widthOnComponent, heightOnComponent);
 							}
@@ -119,12 +119,12 @@ public class AspectRatioGridLayout extends GridLayout {
 					}
 				} else {
 					for (int c = 0, x = (parent.getWidth() - insets.right - widthOnComponent)
-							- extraWidthAvailable; c < ncols; c++, x -= widthOnComponent
+							- extraWidthAvailable; c < colCount; c++, x -= widthOnComponent
 							+ hgap) {
-						for (int r = 0, y = insets.top + extraHeightAvailable; r < nrows; r++, y += heightOnComponent
+						for (int r = 0, y = insets.top + extraHeightAvailable; r < rowCount; r++, y += heightOnComponent
 								+ vgap) {
-							int i = r * ncols + c;
-							if (i < ncomponents) {
+							int i = r * colCount + c;
+							if (i < componentCount) {
 								setAspectRatioBounds(parent.getComponent(i), x,
 										y, widthOnComponent, heightOnComponent);
 							}
