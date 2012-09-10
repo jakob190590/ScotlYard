@@ -20,7 +20,11 @@ package kj.scotlyard.board;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -60,6 +64,49 @@ public class Board extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		
+		JPanel boardPanelContainer = new JPanel(new AspectRatioGridLayout());
+		BoardPanel board = new BoardPanel();
+		
+		Image img = null;
+		// Variante 1
+		try {
+			img = ImageIO.read(new File("original-scotland-yard-board.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		// Variante 2 (ungefaehr)
+//		img = Toolkit.getDefaultToolkit().getImage("original-scotland-yard-board.png");
+//		private final ImageObserver imageSizeObserver = new ImageObserver() {
+//			@Override
+//			public boolean imageUpdate(Image img, int infoflags, int x, int y,
+//					int width, int height) {
+//				// width und height koennten einzeln oder gleichzeitig ankommen
+//				if ((infoflags & WIDTH) != 0) {				
+//					imageWidth = width;
+//				}
+//				if ((infoflags & HEIGHT) != 0) {				
+//					imageHeight = height;
+//				}
+//				if ((imageWidth >= 0) && (imageHeight >= 0)) {
+//					preferredSize = new Dimension(imageWidth, imageHeight);
+//					return false; // required information has been acquired
+//				}
+//				return true; // further updates are needed
+//			}
+//		};
+//		imageWidth = image.getWidth(imageSizeObserver);
+//		imageHeight = image.getHeight(imageSizeObserver);
+//		if ((imageWidth >= 0) && (imageHeight >= 0)) {
+//			preferredSize = new Dimension(imageWidth, imageHeight);
+//		}		
+		board.setImage(img);		
+		boardPanelContainer.add(board);
+		
+		contentPane.add(boardPanelContainer, BorderLayout.CENTER);
+		
+		
+//		pack();
 	}
 
 }

@@ -25,6 +25,13 @@ import java.awt.Image;
 
 import javax.swing.JPanel;
 
+import kj.scotlyard.game.model.DetectivePlayer;
+import kj.scotlyard.game.model.GameState;
+import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.MoveListener;
+import kj.scotlyard.game.model.MrXPlayer;
+import kj.scotlyard.game.model.PlayerListener;
+
 /**
  * Stellt das Spielbrett mit Stationen und Spielfiguren dar.
  * Dazu wird ein <code>Image</code> angezeigt, das erst 
@@ -39,17 +46,91 @@ public class BoardPanel extends JPanel {
 	
 	private Dimension preferredSize = new Dimension();
 	
+	private GameState gameState;
+	
+	private final PlayerListener playerListener = new PlayerListener() {
+		
+		@Override
+		public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void detectiveRemoved(GameState gameState,
+				DetectivePlayer detective, int atIndex) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void detectiveAdded(GameState gameState, DetectivePlayer detective,
+				int atIndex) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	
+	private final MoveListener moveListener = new MoveListener() {
+		
+		@Override
+		public void movesCleard(GameState gameState) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void moveUndone(GameState gameState, Move move) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void moveDone(GameState gameState, Move move) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	
+	// Mehr als Move- und PlayerListener brauchen wir fuer's erste nicht:
+	// Kleine Indicator Turn oder Item betreffend, sollen Player-Objekte 
+	// selbst anzeigen, das ist nicht Aufgabe des BoardPanels.
+	
+	
+	
+	public BoardPanel() {
+		super(new PercentalLayout());
+	}
+	
 	@Override
 	protected void paintComponent(Graphics g) {		
 		super.paintComponent(g);
-		Graphics2D g2D = (Graphics2D) g;
-		
 		if (image != null) {
+			Graphics2D g2D = (Graphics2D) g;
 			g2D.drawImage(image, 0, 0, getWidth(), getHeight(), this);			
 		}		
 	}
-	
-	
+
+	public GameState getGameState() {
+		return gameState;
+	}
+
+	public void setGameState(GameState gameState) {
+		if (this.gameState != gameState) {
+			if (this.gameState != null) {
+				// Unregister listeners from old GameState
+				this.gameState.removePlayerListener(playerListener);
+				this.gameState.removeMoveListener(moveListener);
+			}
+			this.gameState = gameState;
+			if (gameState != null) {
+				// Register listeners at new GameState
+				gameState.addPlayerListener(playerListener);
+				gameState.addMoveListener(moveListener);
+			}
+		}
+	}
+
 	public Image getImage() {
 		return image;
 	}
