@@ -37,8 +37,8 @@ public class DetectivePiece extends Piece {
 		Graphics2D g2D = (Graphics2D) g;
 		
 		g.setColor(Color.WHITE);
-		g2D.drawOval(getX() - getHalfWidth(), getY() - getHalfHeight(),
-				getHalfWidth(), getHalfHeight());
+		g2D.drawOval(getX(), getY(),
+				getWidth(), getHeight());
 	}
 
 }

@@ -18,34 +18,24 @@
 
 package kj.scotlyard.board;
 
+import java.awt.Dimension;
+import java.awt.geom.Point2D.Double;
+
 import javax.swing.JComponent;
 
 import kj.scotlyard.game.model.Player;
 
 @SuppressWarnings("serial")
-public abstract class Piece extends JComponent {
+public abstract class Piece extends JComponent implements PercentalBounds {
 
 	private Player player;
 	
 	private String playerName;
-
+	
 	public Piece(Player player, String playerName) {
 		this.player = player;
 		this.playerName = playerName;
 	}
-	
-	
-	
-	// TODO Optimierung: Nur berechnen on setWidth/Height
-	protected int getHalfWidth() {
-		return getWidth() / 2;
-	}
-	
-	protected int getHalfHeight() {
-		return getHeight() / 2;
-	}
-	
-	
 
 	public Player getPlayer() {
 		return player;
@@ -61,6 +51,60 @@ public abstract class Piece extends JComponent {
 
 	public void setPlayerName(String playerName) {
 		this.playerName = playerName;
+	}
+	
+	public VisualStation getVisualStation() {
+		return null; // TODO return visual station
+	}
+	
+	@Override
+	public Double getLocation2() {
+		return getVisualStation().getLocation2();
+	}
+
+	@Override
+	public void setLocation2(double x, double y) {
+		raiseSetterUnsuppExc();
+	}
+
+	@Override
+	public void setLocation2(Double p) {
+		raiseSetterUnsuppExc();		
+	}
+
+	@Override
+	public Dimension getSize2() {
+		return getVisualStation().getSize2();
+	}
+
+	@Override
+	public void setSize2(double width, double height) {
+		raiseSetterUnsuppExc();
+	}
+
+	@Override
+	public void setSize2(Dimension d) {
+		raiseSetterUnsuppExc();
+	}
+
+	@Override
+	public java.awt.geom.Rectangle2D.Double getBounds2() {
+		return getVisualStation().getBounds2();
+	}
+
+	@Override
+	public void setBounds2(double x, double y, double width, double height) {
+		raiseSetterUnsuppExc();
+	}
+
+	@Override
+	public void setBounds2(java.awt.geom.Rectangle2D.Double r) {
+		raiseSetterUnsuppExc();
+	}
+	
+	private void raiseSetterUnsuppExc() {
+		throw new UnsupportedOperationException("Setter not supported; " +
+				"value is obtained from the VisualStation.");
 	}
 	
 }
