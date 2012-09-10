@@ -51,7 +51,11 @@ public class BoardGraphBuilder extends AbstractGameGraphBuilder implements Graph
 		StationVertex v = new Station(gg);
 		vertexMap.put(number, v);
 		g.addVertex(v);
-		
+		// TODO add a new Visual Station to visualComponents
+		VisualStation vs = new VisualStation(v, number);
+//		vs.setLocation2(x, y);
+//		vs.setSize2(width, height);
+		visualComponents.add(vs);
 	}
 
 	@Override
