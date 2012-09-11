@@ -19,7 +19,7 @@
 package kj.scotlyard.board;
 
 import java.awt.Dimension;
-import java.awt.geom.Point2D.Double;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JComponent;
@@ -59,7 +59,7 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 	}
 	
 	@Override
-	public Double getLocation2() {
+	public Point2D.Double getLocation2() {
 		if (getVisualStation() == null)
 			return new Point2D.Double();
 		return getVisualStation().getLocation2();
@@ -71,7 +71,7 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 	}
 
 	@Override
-	public void setLocation2(Double p) {
+	public void setLocation2(Point2D.Double p) {
 		raiseSetterUnsuppExc();		
 	}
 
