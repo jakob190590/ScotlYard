@@ -1,6 +1,6 @@
 /*
  * ScotlYard -- A software implementation of the Scotland Yard board game
- * Copyright (C) 2012  Jakob Schöttl
+ * Copyright (C) 2012  Jakob Schï¿½ttl
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package kj.scotlyard.board;
 
 import java.awt.Dimension;
 import java.awt.geom.Point2D.Double;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.JComponent;
 
@@ -59,6 +60,8 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 	
 	@Override
 	public Double getLocation2() {
+		if (getVisualStation() == null)
+			return new Point2D.Double();
 		return getVisualStation().getLocation2();
 	}
 
@@ -74,6 +77,8 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 
 	@Override
 	public Dimension getSize2() {
+		if (getVisualStation() == null)
+			return new Dimension();
 		return getVisualStation().getSize2();
 	}
 
@@ -88,7 +93,9 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 	}
 
 	@Override
-	public java.awt.geom.Rectangle2D.Double getBounds2() {
+	public Rectangle2D.Double getBounds2() {
+		if (getVisualStation() == null)
+			return new Rectangle2D.Double();
 		return getVisualStation().getBounds2();
 	}
 
@@ -98,7 +105,7 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 	}
 
 	@Override
-	public void setBounds2(java.awt.geom.Rectangle2D.Double r) {
+	public void setBounds2(Rectangle2D.Double r) {
 		raiseSetterUnsuppExc();
 	}
 	
