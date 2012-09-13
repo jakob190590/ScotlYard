@@ -35,7 +35,7 @@ import kj.scotlyard.game.model.PlayerListener;
 /**
  * Stellt das Spielbrett mit Stationen und Spielfiguren dar.
  * Dazu wird ein <code>Image</code> angezeigt, das erst 
- * gesetzt werden darf, wenn es vollst‰ndig geladen ist.
+ * gesetzt werden darf, wenn es vollst√§ndig geladen ist.
  * @author jakob190590
  *
  */
