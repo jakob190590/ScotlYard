@@ -27,8 +27,8 @@ import kj.scotlyard.game.model.DetectivePlayer;
 @SuppressWarnings("serial")
 public class DetectivePiece extends Piece {
 
-	public DetectivePiece(DetectivePlayer player, String playerName) {
-		super(player, playerName);
+	public DetectivePiece(DetectivePlayer player) {
+		super(player);
 	}
 	
 	@Override

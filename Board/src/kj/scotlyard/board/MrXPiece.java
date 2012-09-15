@@ -27,8 +27,8 @@ import kj.scotlyard.game.model.MrXPlayer;
 @SuppressWarnings("serial")
 public class MrXPiece extends Piece {
 
-	public MrXPiece(MrXPlayer player, String playerName) {
-		super(player, playerName);
+	public MrXPiece(MrXPlayer player) {
+		super(player);
 	}
 
 	@Override

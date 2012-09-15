@@ -31,11 +31,10 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 
 	private Player player;
 	
-	private String playerName;
+	private VisualStation visualStation;
 	
-	public Piece(Player player, String playerName) {
+	public Piece(Player player) {
 		this.player = player;
-		this.playerName = playerName;
 	}
 
 	public Player getPlayer() {
@@ -46,18 +45,14 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 		this.player = player;
 	}
 
-	public String getPlayerName() {
-		return playerName;
+	public VisualStation getVisualStation() {
+		return visualStation;
 	}
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
+	public void setVisualStation(VisualStation visualStation) {
+		this.visualStation = visualStation;
 	}
-	
-	public VisualStation getVisualStation() {
-		return null; // TODO return visual station
-	}
-	
+
 	@Override
 	public Point2D.Double getLocation2() {
 		if (getVisualStation() == null)
