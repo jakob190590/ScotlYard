@@ -1,6 +1,6 @@
 /*
  * ScotlYard -- A software implementation of the Scotland Yard board game
- * Copyright (C) 2012  Jakob Schöttl
+ * Copyright (C) 2012  Jakob Schöttl, Korbinian Eckstein
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,16 @@
 
 package kj.scotlyard.board;
 
+import java.awt.AWTEvent;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JComponent;
 
 import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.model.Player;
 
 @SuppressWarnings("serial")
 public class VisualStation extends JComponent implements PercentalBounds {
@@ -38,6 +41,20 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	private double width2;
 	private double height2;
 
+	// Types of marking
+	
+	/** Mark type for possible positions of MrX */
+	public static final int POSSIBLE_POSITION = 0;
+	
+	/** Mark type for the designated next station in an upcoming move */
+	public static final int DESIGNATED_NEXT_STATION = 1;
+	
+	/** Mark type for a possible next station in an upcoming move */
+	public static final int POSSIBLE_NEXT_STATION = 2;
+	
+	/** Mark type for an impossible next station in an upcoming move */
+	public static final int IMPOSSIBLE_NEXT_STATION = 3;
+	
 	public VisualStation() {
 		this(null, 0);
 	}
@@ -50,11 +67,29 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	
 	// TODO override paintComponent
 	
-	// TODO override the "event dispatcher method", that informs mouse listeners -> circle
+	@Override
+	public boolean contains(int x, int y) {
+		// TODO Korbi, x, y innerhalb oder auf kreis mit durchmesser d
+		// kreis liegt im quadrat d^2, ursprung ist links oben; x, y positiv nach rechts unten
+		return super.contains(x, y);
+	}
+
+	@Override
+	protected void processEvent(AWTEvent e) {
+		if (e instanceof MouseEvent 
+				&& !contains(((MouseEvent) e).getX(), ((MouseEvent) e).getY())) {
+			// TODO braucht's das ueberhaupt, oder wird das eh automatisch gemacht bei MouseEvents?
+			// Mausereignis ausserhalb des Umrisses der Station
+			// -> Ereignis nicht bearbeiten (TODO hoffentlich wird's dann dem parent uebergeben?)
+			return;
+		}
+		super.processEvent(e);
+	}
 
 	public StationVertex getStation() {
 		return station;
 	}
+
 
 	public void setStation(StationVertex station) {
 		this.station = station;
@@ -125,4 +160,14 @@ public class VisualStation extends JComponent implements PercentalBounds {
 		height2 = r.height;
 	}
 
+	
+	public void enableMarking(int type, Player player) {
+		// TODO let's draw marking
+		// vllt doch lieber show und hide?
+	}
+	
+	public void disableMarking(int type, Player player) {
+		// TODO don't draw marking
+	}
+	
 }
