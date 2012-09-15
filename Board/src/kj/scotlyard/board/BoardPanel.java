@@ -18,6 +18,7 @@
 
 package kj.scotlyard.board;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -164,6 +165,7 @@ public class BoardPanel extends JPanel {
 		super(new PercentalLayout());
 	}
 	
+
 	@Override
 	protected void paintComponent(Graphics g) {		
 		super.paintComponent(g);
@@ -173,6 +175,22 @@ public class BoardPanel extends JPanel {
 		}		
 	}
 
+	/**
+	 * Builds the <code>visualStations</code> <code>Map</code>, which
+	 * maps a <code>StationVertex</code> to it's <code>VisualStation</code>.
+	 * This method must be called after <code>VisualStation</code>s
+	 * are added to or removed from this Container. 
+	 */
+	public void buildVisualStationMap() {
+		visualStations.clear();
+		for (Component c : getComponents()) {
+			if (c instanceof VisualStation) {
+				VisualStation vs = (VisualStation) c;
+				visualStations.put(vs.getStation(), vs);
+			}
+		}
+	}
+	
 	public GameState getGameState() {
 		return gameState;
 	}
