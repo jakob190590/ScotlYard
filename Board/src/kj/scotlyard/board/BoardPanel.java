@@ -212,6 +212,7 @@ public class BoardPanel extends JPanel {
 				// Register listeners at new GameState
 				gameState.addPlayerListener(playerListener);
 				gameState.addMoveListener(moveListener);
+				// TODO Alle Pieces adden, an die richtige VisualStation setzen und Sichtbarkeit
 			}
 		}
 	}
@@ -220,9 +221,26 @@ public class BoardPanel extends JPanel {
 		return image;
 	}
 
-	public void setImage(Image boardImage) {
-		image = boardImage;
-		preferredSize = new Dimension(image.getWidth(null), image.getHeight(null));
+	/**
+	 * Sets the image for this BoardPanel. The image must be loaded
+	 * completely before it can be passed as an argument. This is
+	 * because we instantly need the dimension of the image.
+	 * The param can be <code>null</code>, if no image should be used.
+	 * @param image a completely loaded <code>Image</code> object
+	 */
+	public void setImage(Image image) {
+		int w = 0;
+		int h = 0;
+		if (image != null) {
+			w = image.getWidth(null);
+			h = image.getHeight(null);
+			if (w < 0 || h < 0) {
+				throw new IllegalArgumentException("The image seems to be not loaded " +
+						"completely: Cannot determine image's width and/or height.");
+			}
+		}
+		this.image = image;
+		preferredSize = new Dimension(w, h);
 //		System.out.println(preferredSize);
 	}
 
