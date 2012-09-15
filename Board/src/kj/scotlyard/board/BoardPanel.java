@@ -22,14 +22,18 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MoveListener;
 import kj.scotlyard.game.model.MrXPlayer;
+import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.PlayerListener;
 
 /**
@@ -48,52 +52,110 @@ public class BoardPanel extends JPanel {
 	
 	private GameState gameState;
 	
+	private Map<Player, Piece> pieces = new HashMap<>();
+	
+	private Map<StationVertex, VisualStation> visualStations = new HashMap<>();
+	
+	/**
+	 * Dieser PlayerListener laesst das BoardPanel reagieren, wenn
+	 * Player hinzugefuegt oder entfernt werden. Hier koennen 
+	 * <code>NullPointerException</code>s auftreten, wenn die Daten
+	 * im BoardPanel corrupted sind.
+	 */
 	private final PlayerListener playerListener = new PlayerListener() {
-		
+		// TODO testen: wird der layoutmgr automatisch aufgerufen ?
 		@Override
 		public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
-			// TODO Auto-generated method stub
+			Piece piece;
+
+			// Alten MrX (wenn nicht null) entfernen aus Map und Container
+			if (oldMrX != null) {
+				piece = pieces.remove(oldMrX);
+				remove(piece);
+			}
 			
+			// Neuen MrX (wenn nicht null) Map und Container hinzufuegen
+			if (newMrX != null) {
+				piece = new MrXPiece(newMrX);
+				piece.setVisible(false);
+				pieces.put(newMrX, piece);
+				add(piece);
+			}
 		}
 		
 		@Override
 		public void detectiveRemoved(GameState gameState,
 				DetectivePlayer detective, int atIndex) {
-			// TODO Auto-generated method stub
-			
+			// Piece aus Map und Container entfernen
+			Piece piece = pieces.remove(detective);
+			remove(piece);
 		}
 		
 		@Override
 		public void detectiveAdded(GameState gameState, DetectivePlayer detective,
 				int atIndex) {
-			// TODO Auto-generated method stub
-			
+			// Piece Map und Container hinzufuegen
+			Piece piece = new DetectivePiece(detective);
+			if (gameState.getLastMove(detective) == null) {
+				/*
+				 * This happens when a detective is shifted up or
+				 * down in the list: It will be removed and then 
+				 * inserted at an other index in the list.
+				 * I think that's the only case; provided that you
+				 * use the GameController!
+				 */
+				piece.setVisible(false);
+			}
+			pieces.put(detective, piece);
+			add(piece);
 		}
 	};
 	
+	/**
+	 * Dieser MoveListener laesst das BoardPanel auf Move-Ereignisse
+	 * reagieren. Hier koennen <code>NullPointerException</code>s auftreten,
+	 * wenn die Daten im BoardPanel corrupted sind.
+	 */
 	private final MoveListener moveListener = new MoveListener() {
 		
 		@Override
 		public void movesCleard(GameState gameState) {
-			// TODO Auto-generated method stub
-			
+			for (Piece p : pieces.values()) {
+				p.setVisible(false);
+			}
+			// TODO evtl. markings von stationen disablen
 		}
 		
 		@Override
 		public void moveUndone(GameState gameState, Move move) {
-			// TODO Auto-generated method stub
-			
+			// VisualStation des Pieces entsprechend setzen
+			// Falls der GameState hier ungueltige Params liefert,
+			// oder das BoardPanel corrupted ist, gibt's Exception!
+			Player p = move.getPlayer();
+			Move m = gameState.getLastMove(p);
+			if (m == null) {
+				pieces.get(p).setVisible(false);
+			} else {
+				pieces.get(p).setVisualStation(visualStations.get(m.getStation()));				
+			}
+			// TODO evtl. markings von stationen disablen
 		}
 		
 		@Override
 		public void moveDone(GameState gameState, Move move) {
-			// TODO Auto-generated method stub
+			// VisualStation des Pieces entsprechend setzen
+			// Falls der GameState hier ungueltige Params liefert,
+			// oder das BoardPanel corrupted ist, gibt's Exception!
+			Piece p = pieces.get(move.getPlayer());
+			p.setVisualStation(visualStations.get(move.getStation()));
+			p.setVisible(true); // falls es initial move ist
 			
+			// TODO evtl. markings von stationen disablen
 		}
 	};
 	
 	// Mehr als Move- und PlayerListener brauchen wir fuer's erste nicht:
-	// Kleine Indicator Turn oder Item betreffend, sollen Player-Objekte 
+	// Kleine Indicator Turn oder Item betreffend, sollen Pieces 
 	// selbst anzeigen, das ist nicht Aufgabe des BoardPanels.
 	
 	
@@ -121,6 +183,11 @@ public class BoardPanel extends JPanel {
 				// Unregister listeners from old GameState
 				this.gameState.removePlayerListener(playerListener);
 				this.gameState.removeMoveListener(moveListener);
+				// Alle Pieces loeschen
+				for (Piece p : pieces.values()) {
+					remove(p);
+				}
+				pieces.clear();
 			}
 			this.gameState = gameState;
 			if (gameState != null) {
