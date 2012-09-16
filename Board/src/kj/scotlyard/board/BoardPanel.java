@@ -212,7 +212,31 @@ public class BoardPanel extends JPanel {
 				// Register listeners at new GameState
 				gameState.addPlayerListener(playerListener);
 				gameState.addMoveListener(moveListener);
-				// TODO Alle Pieces adden, an die richtige VisualStation setzen und Sichtbarkeit
+				
+				// Alte Pieces loeschen 
+				for (Piece p : pieces.values()) {
+					remove(p);
+				}
+				pieces.clear();
+				
+				// Neue Pieces adden und Visibility/Station setzen
+				MrXPlayer mrX = gameState.getMrX(); 
+				if (mrX != null) {
+					pieces.put(mrX, new MrXPiece(mrX));
+				}
+				for (DetectivePlayer p : gameState.getDetectives()) {
+					pieces.put(p, new DetectivePiece(p));
+				}
+				for (Map.Entry<Player, Piece> e : pieces.entrySet()) {
+					Piece p = e.getValue();
+					add(p);
+					Move m = gameState.getLastMove(e.getKey());
+					if (m == null) {
+						p.setVisible(false);
+					} else {
+						p.setVisualStation(visualStations.get(m.getStation()));
+					}
+				}
 			}
 		}
 	}
