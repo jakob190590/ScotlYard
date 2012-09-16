@@ -19,6 +19,7 @@
 package kj.scotlyard.board;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -94,7 +95,6 @@ public class Board extends JFrame {
 		for (JComponent c : bgl.getVisualComponents()) {
 			board.add(c);
 			c.addMouseListener(ml);
-			System.out.println(((PercentalBounds) c).getBounds2());
 		}
 		
 		Image img = null;
@@ -129,7 +129,16 @@ public class Board extends JFrame {
 //		if ((imageWidth >= 0) && (imageHeight >= 0)) {
 //			preferredSize = new Dimension(imageWidth, imageHeight);
 //		}		
-		board.setImage(img);		
+		
+		int w = img.getWidth(null);
+		int h = img.getHeight(null);
+		if (w < 0 || h < 0) {
+			throw new IllegalArgumentException("The image seems to be not loaded " +
+					"completely: Cannot determine image's width and/or height.");
+		}
+		board.setImage(img);	
+		board.setPreferredSize(new Dimension(w, h));
+		
 		boardPanelContainer.add(board);
 		
 		contentPane.add(boardPanelContainer, BorderLayout.CENTER);

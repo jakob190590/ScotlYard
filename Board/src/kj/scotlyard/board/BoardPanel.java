@@ -251,19 +251,7 @@ public class BoardPanel extends JPanel {
 	 * @param image a completely loaded <code>Image</code> object
 	 */
 	public void setImage(Image image) {
-		int w = 0;
-		int h = 0;
-		if (image != null) {
-			w = image.getWidth(null);
-			h = image.getHeight(null);
-			if (w < 0 || h < 0) {
-				throw new IllegalArgumentException("The image seems to be not loaded " +
-						"completely: Cannot determine image's width and/or height.");
-			}
-		}
 		this.image = image;
-		setPreferredSize(new Dimension(w, h));
-//		System.out.println(preferredSize);
 	}
 
 }
