@@ -367,7 +367,7 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				Move move = null;
-				move = MoveProducer.createNextBestSingleMove(g, gg);
+				move = MoveProducer.createRandomSingleMove(g, gg);
 				gc.move(move);
 			} catch (Exception e2) {
 				JOptionPane.showMessageDialog(Board.this, e2.getMessage(), 

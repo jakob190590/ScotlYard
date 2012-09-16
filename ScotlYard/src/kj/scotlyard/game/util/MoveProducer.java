@@ -18,7 +18,10 @@
 
 package kj.scotlyard.game.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
@@ -126,6 +129,52 @@ public abstract class MoveProducer {
 					}
 				}
 			}
+		}
+		
+		throw new IllegalStateException("Current player cannot move.");
+	}
+	
+	
+	// Random Single Move
+	
+	public static Move createRandomSingleMove(GameState gameState, GameGraph gameGraph) {
+		
+		MovePolicy movePolicy = new TheMovePolicy();
+		
+		// Wir gehen von einem konsistenten GameState aus
+		Move last = gameState.getLastMove(gameState.getCurrentPlayer());
+		Move m = createSingleMove(gameState.getCurrentPlayer(), gameState.getCurrentRoundNumber(),
+				last.getMoveNumber() + 1, null, null, null);
+		
+		StationVertex station = last.getStation();
+		List<Move> possibleMoves = new ArrayList<>(); // nur zum speichern der moeglichen station, connection und item
+		for (ConnectionEdge e : station.getEdges()) {
+			for (Item i : gameState.getItems(gameState.getCurrentPlayer())) {
+				if (i instanceof Ticket && movePolicy.isTicketValidForConnection((Ticket) i, e)) {
+					
+					StationVertex oStation = e.getOther(station);
+					boolean vacant = true;
+					for (Player p : gameState.getPlayers()) {
+						if (p != last.getPlayer() && gameState.getLastMove(p).getStation() == oStation) {
+							vacant = false;
+							break;
+						}
+					}
+					if (vacant) {
+						// Add to a list
+						possibleMoves.add(new DefaultMove(null, 0, 0, 0, oStation, e, i, (Move) null));
+					}
+				}
+			}
+		}
+		
+		if (!possibleMoves.isEmpty()) {
+			Random rand = new Random();
+			Move m1 = possibleMoves.get(rand.nextInt(possibleMoves.size()));
+			m.setItem(m1.getItem());
+			m.setConnection(m1.getConnection());
+			m.setStation(m1.getStation());
+			return m;
 		}
 		
 		throw new IllegalStateException("Current player cannot move.");
