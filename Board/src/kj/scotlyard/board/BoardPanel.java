@@ -49,8 +49,6 @@ public class BoardPanel extends JPanel {
 	
 	private Image image;
 	
-	private Dimension preferredSize = new Dimension();
-	
 	private GameState gameState;
 	
 	private Map<Player, Piece> pieces = new HashMap<>();
@@ -264,19 +262,8 @@ public class BoardPanel extends JPanel {
 			}
 		}
 		this.image = image;
-		preferredSize = new Dimension(w, h);
+		setPreferredSize(new Dimension(w, h));
 //		System.out.println(preferredSize);
 	}
 
-
-	@Override
-	public Dimension getPreferredSize() {		
-		return preferredSize;	
-	}
-
-	@Override
-	public void setPreferredSize(Dimension preferredSize) {
-		this.preferredSize = preferredSize;
-	}
-	
 }
