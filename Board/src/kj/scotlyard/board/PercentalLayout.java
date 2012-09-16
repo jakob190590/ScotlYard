@@ -27,7 +27,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * A layout manager that behaves like the <code>null</code> layout
  * for normal components, but lays out <code>PercentalBounds</code>
- * objects according to it's location and size hints.
+ * objects according to it's percental location and size hints.
  * @author jakob190590
  *
  */
@@ -53,7 +53,6 @@ public class PercentalLayout implements LayoutManager {
 
 	@Override
 	public void layoutContainer(Container parent) {
-		// TODO Auto-generated method stub
 		for (Component c : parent.getComponents()) {
 			if (c instanceof PercentalBounds) {
 				PercentalBounds pb = (PercentalBounds) c;
@@ -62,8 +61,9 @@ public class PercentalLayout implements LayoutManager {
 				int h = parent.getHeight();
 				c.setBounds((int) (w * bounds.x), (int) (h * bounds.y), 
 						(int) (w * bounds.width), (int) (h * bounds.height));
+//				System.out.println(c.getBounds());
 			}
-			// "normal" components will be ignored
+			// "normal" components will not be laid out
 		}
 	}
 

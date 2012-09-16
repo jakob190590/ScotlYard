@@ -75,7 +75,7 @@ public final class Director {
 	 * Liest aus der angegebenen Description Datei, und sagt den angegebenen Buildern,
 	 * was zu tun ist.
 	 * @param graphDescriptionFilename Pfad zur Description Datei. Der Aufbau der Datei wird
-	 * im <tt>GraphDescriptionBuilder</tt> festgelegt!
+	 * im <code>GraphDescriptionBuilder</code> festgelegt!
 	 * @param builders die Builder, denen der Director die Anweisungen geben soll.
 	 * @throws IOException bei I/O-Fehler oder ungueltigem Aufbau der Datei.
 	 */

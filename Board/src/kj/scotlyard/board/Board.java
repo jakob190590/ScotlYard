@@ -21,11 +21,16 @@ package kj.scotlyard.board;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JMenuBar;
@@ -65,8 +70,32 @@ public class Board extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
+		// Board laden
+		BoardGraphLoader bgl = new BoardGraphLoader();
+		try {
+			bgl.load("graph-description", "initial-stations");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
 		JPanel boardPanelContainer = new JPanel(new AspectRatioGridLayout());
 		BoardPanel board = new BoardPanel();
+		
+		MouseListener ml = new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				JOptionPane.showMessageDialog(Board.this, "Klick auf VisualStation: " + e.getSource());
+			}
+		};
+//		board.addMouseListener(ml);
+		for (JComponent c : bgl.getVisualComponents()) {
+			board.add(c);
+			c.addMouseListener(ml);
+			System.out.println(((PercentalBounds) c).getBounds2());
+		}
 		
 		Image img = null;
 		// Variante 1

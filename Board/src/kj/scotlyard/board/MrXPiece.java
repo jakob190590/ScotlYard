@@ -37,7 +37,7 @@ public class MrXPiece extends Piece {
 		Graphics2D g2D = (Graphics2D) g;
 		
 		g.setColor(Color.BLACK);
-		g2D.drawOval(getX(), getY(),
+		g2D.fillOval(getX(), getY(),
 				getWidth(), getHeight());
 	}
 	

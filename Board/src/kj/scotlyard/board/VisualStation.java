@@ -19,7 +19,10 @@
 package kj.scotlyard.board;
 
 import java.awt.AWTEvent;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -66,6 +69,14 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	}
 	
 	// TODO override paintComponent
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Graphics2D g2D = (Graphics2D) g;
+		
+		g.setColor(Color.BLACK);
+		g2D.drawOval(0, 0, getWidth(), getHeight());
+	}
 	
 	@Override
 	public boolean contains(int x, int y) {
@@ -76,11 +87,13 @@ public class VisualStation extends JComponent implements PercentalBounds {
 
 	@Override
 	protected void processEvent(AWTEvent e) {
+//		if (e instanceof MouseEvent) System.out.println("MouseEvent auf VisualStation.");
 		if (e instanceof MouseEvent 
 				&& !contains(((MouseEvent) e).getX(), ((MouseEvent) e).getY())) {
 			// TODO braucht's das ueberhaupt, oder wird das eh automatisch gemacht bei MouseEvents?
 			// Mausereignis ausserhalb des Umrisses der Station
 			// -> Ereignis nicht bearbeiten (TODO hoffentlich wird's dann dem parent uebergeben?)
+//			System.out.println("MouseEvent ausserhalb des Umrisses der VisualStation.");
 			return;
 		}
 		super.processEvent(e);
@@ -168,6 +181,11 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	
 	public void disableMarking(int type, Player player) {
 		// TODO don't draw marking
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + "[number=" + number + "]";
 	}
 	
 }
