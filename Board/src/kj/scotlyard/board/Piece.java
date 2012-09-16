@@ -1,6 +1,6 @@
 /*
  * ScotlYard -- A software implementation of the Scotland Yard board game
- * Copyright (C) 2012  Jakob Schöttl
+ * Copyright (C) 2012  Jakob SchÃ¶ttl
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,34 +18,24 @@
 
 package kj.scotlyard.board;
 
+import java.awt.Dimension;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
 import javax.swing.JComponent;
 
 import kj.scotlyard.game.model.Player;
 
 @SuppressWarnings("serial")
-public abstract class Piece extends JComponent {
+public abstract class Piece extends JComponent implements PercentalBounds {
 
 	private Player player;
 	
-	private String playerName;
-
-	public Piece(Player player, String playerName) {
+	private VisualStation visualStation;
+	
+	public Piece(Player player) {
 		this.player = player;
-		this.playerName = playerName;
 	}
-	
-	
-	
-	// TODO Optimierung: Nur berechnen on setWidth/Height
-	protected int getHalfWidth() {
-		return getWidth() / 2;
-	}
-	
-	protected int getHalfHeight() {
-		return getHeight() / 2;
-	}
-	
-	
 
 	public Player getPlayer() {
 		return player;
@@ -55,12 +45,68 @@ public abstract class Piece extends JComponent {
 		this.player = player;
 	}
 
-	public String getPlayerName() {
-		return playerName;
+	public VisualStation getVisualStation() {
+		return visualStation;
 	}
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
+	public void setVisualStation(VisualStation visualStation) {
+		this.visualStation = visualStation;
+	}
+
+	@Override
+	public Point2D.Double getLocation2() {
+		if (getVisualStation() == null)
+			return new Point2D.Double();
+		return getVisualStation().getLocation2();
+	}
+
+	@Override
+	public void setLocation2(double x, double y) {
+		raiseSetterUnsuppExc();
+	}
+
+	@Override
+	public void setLocation2(Point2D.Double p) {
+		raiseSetterUnsuppExc();		
+	}
+
+	@Override
+	public Dimension getSize2() {
+		if (getVisualStation() == null)
+			return new Dimension();
+		return getVisualStation().getSize2();
+	}
+
+	@Override
+	public void setSize2(double width, double height) {
+		raiseSetterUnsuppExc();
+	}
+
+	@Override
+	public void setSize2(Dimension d) {
+		raiseSetterUnsuppExc();
+	}
+
+	@Override
+	public Rectangle2D.Double getBounds2() {
+		if (getVisualStation() == null)
+			return new Rectangle2D.Double();
+		return getVisualStation().getBounds2();
+	}
+
+	@Override
+	public void setBounds2(double x, double y, double width, double height) {
+		raiseSetterUnsuppExc();
+	}
+
+	@Override
+	public void setBounds2(Rectangle2D.Double r) {
+		raiseSetterUnsuppExc();
+	}
+	
+	private void raiseSetterUnsuppExc() {
+		throw new UnsupportedOperationException("Setter not supported; " +
+				"value is obtained from the VisualStation.");
 	}
 	
 }

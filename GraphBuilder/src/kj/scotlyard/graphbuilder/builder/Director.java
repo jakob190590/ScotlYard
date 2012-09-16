@@ -29,6 +29,7 @@ import kj.scotlyard.game.graph.StationVertex;
 
 /**
  * Dies ist ein Director, der dem Builder die Arbeitsanweisungen gibt.
+ * Die Anweisungen entnimmt er der Description Datei.
  * Es ist natuerlich nicht der einzig wahre Director; Das BuilderTool
  * ist z.B. auch einer.
  * @author jakob190590
@@ -74,7 +75,7 @@ public final class Director {
 	 * Liest aus der angegebenen Description Datei, und sagt den angegebenen Buildern,
 	 * was zu tun ist.
 	 * @param graphDescriptionFilename Pfad zur Description Datei. Der Aufbau der Datei wird
-	 * im <tt>GraphDescriptionBuilder</tt> festgelegt!
+	 * im <code>GraphDescriptionBuilder</code> festgelegt!
 	 * @param builders die Builder, denen der Director die Anweisungen geben soll.
 	 * @throws IOException bei I/O-Fehler oder ungueltigem Aufbau der Datei.
 	 */

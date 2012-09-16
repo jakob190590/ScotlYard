@@ -1,6 +1,6 @@
 /*
  * ScotlYard -- A software implementation of the Scotland Yard board game
- * Copyright (C) 2012  Jakob Schöttl
+ * Copyright (C) 2012  Jakob SchÃ¶ttl
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ import kj.scotlyard.game.model.DetectivePlayer;
 @SuppressWarnings("serial")
 public class DetectivePiece extends Piece {
 
-	public DetectivePiece(DetectivePlayer player, String playerName) {
-		super(player, playerName);
+	public DetectivePiece(DetectivePlayer player) {
+		super(player);
 	}
 	
 	@Override
@@ -36,9 +36,8 @@ public class DetectivePiece extends Piece {
 		super.paintComponent(g);
 		Graphics2D g2D = (Graphics2D) g;
 		
-		g.setColor(Color.WHITE);
-		g2D.drawOval(getX() - getHalfWidth(), getY() - getHalfHeight(),
-				getHalfWidth(), getHalfHeight());
+		g.setColor(Color.GREEN); // gruen, wie die polizei
+		g2D.fillOval(0, 0, getWidth(), getHeight());
 	}
 
 }

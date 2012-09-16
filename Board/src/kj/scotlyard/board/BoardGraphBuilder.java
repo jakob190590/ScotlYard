@@ -1,6 +1,6 @@
 /*
  * ScotlYard -- A software implementation of the Scotland Yard board game
- * Copyright (C) 2012  Jakob Schöttl
+ * Copyright (C) 2012  Jakob SchÃ¶ttl
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,11 @@ public class BoardGraphBuilder extends AbstractGameGraphBuilder implements Graph
 		StationVertex v = new Station(gg);
 		vertexMap.put(number, v);
 		g.addVertex(v);
-		
+		// TODO add a new Visual Station to visualComponents
+		VisualStation vs = new VisualStation(v, number);
+		vs.setLocation2(position.x - 0.008066, position.y - 0.010709);
+		vs.setSize2(0.016132, 0.021418);
+		visualComponents.add(vs);
 	}
 
 	@Override

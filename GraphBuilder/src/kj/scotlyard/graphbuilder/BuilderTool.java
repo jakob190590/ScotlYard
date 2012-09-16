@@ -1,6 +1,6 @@
 /*
  * ScotlYard -- A software implementation of the Scotland Yard board game
- * Copyright (C) 2012  Jakob Schöttl
+ * Copyright (C) 2012  Jakob SchÃ¶ttl
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -313,7 +313,7 @@ public class BuilderTool extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				endEdging();
 				JOptionPane.showMessageDialog(BuilderTool.this,
-						"BuilderTool\nCopyright 2012 Jakob Schöttl\n\n" +
+						"BuilderTool\nCopyright 2012 Jakob SchÃ¶ttl\n\n" +
 						"With this BuilderTool, you can create and edit\n" +
 						"Graph-Toolkit-independent Description files for graphs.\n\n" +
 						"Load an image as background, then mark the vertices\n" +

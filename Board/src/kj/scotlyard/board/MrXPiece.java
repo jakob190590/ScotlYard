@@ -1,6 +1,6 @@
 /*
  * ScotlYard -- A software implementation of the Scotland Yard board game
- * Copyright (C) 2012  Jakob Schöttl
+ * Copyright (C) 2012  Jakob SchÃ¶ttl
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ import kj.scotlyard.game.model.MrXPlayer;
 @SuppressWarnings("serial")
 public class MrXPiece extends Piece {
 
-	public MrXPiece(MrXPlayer player, String playerName) {
-		super(player, playerName);
+	public MrXPiece(MrXPlayer player) {
+		super(player);
 	}
 
 	@Override
@@ -37,8 +37,7 @@ public class MrXPiece extends Piece {
 		Graphics2D g2D = (Graphics2D) g;
 		
 		g.setColor(Color.BLACK);
-		g2D.drawOval(getX() - getHalfWidth(), getY() - getHalfHeight(),
-				getHalfWidth(), getHalfHeight());
+		g2D.fillOval(0, 0, getWidth(), getHeight());
 	}
 	
 }
