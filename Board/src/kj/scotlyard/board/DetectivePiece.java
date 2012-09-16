@@ -36,9 +36,8 @@ public class DetectivePiece extends Piece {
 		super.paintComponent(g);
 		Graphics2D g2D = (Graphics2D) g;
 		
-		g.setColor(Color.WHITE);
-		g2D.fillOval(getX(), getY(),
-				getWidth(), getHeight());
+		g.setColor(Color.GREEN); // gruen, wie die polizei
+		g2D.fillOval(0, 0, getWidth(), getHeight());
 	}
 
 }
