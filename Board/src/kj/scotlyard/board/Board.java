@@ -367,7 +367,9 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				Move move = null;
-				move = MoveProducer.createRandomSingleMove(g, gg);
+				if (gc.getStatus() == GameStatus.IN_GAME) {
+					move = MoveProducer.createRandomSingleMove(g, gg);
+				}
 				gc.move(move);
 			} catch (Exception e2) {
 				JOptionPane.showMessageDialog(Board.this, e2.getMessage(), 
