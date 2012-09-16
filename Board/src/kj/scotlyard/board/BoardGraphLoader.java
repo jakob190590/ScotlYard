@@ -1,6 +1,6 @@
 /*
  * ScotlYard -- A software implementation of the Scotland Yard board game
- * Copyright (C) 2012  Jakob Schöttl
+ * Copyright (C) 2012  Jakob SchÃ¶ttl
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,10 +80,12 @@ public class BoardGraphLoader {
 		while (sc.hasNext()) {
 			StationVertex station = numberStationMap.get(sc.nextInt());
 			if (station == null) {
+				sc.close();
 				throw new RuntimeException("Initial Stations file contains numbers, that are not in the graph."); // TODO
 			}
 			initialStations.add(station);
 		}
+		sc.close();
 		
 		gameGraph.setInitialStations(initialStations);
 		
