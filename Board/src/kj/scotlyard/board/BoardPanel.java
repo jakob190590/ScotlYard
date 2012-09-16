@@ -19,7 +19,6 @@
 package kj.scotlyard.board;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -79,6 +78,7 @@ public class BoardPanel extends JPanel {
 				piece.setVisible(false);
 				pieces.put(newMrX, piece);
 				add(piece);
+//				System.out.println("mrX set");
 			}
 		}
 		
@@ -107,6 +107,7 @@ public class BoardPanel extends JPanel {
 			}
 			pieces.put(detective, piece);
 			add(piece);
+//			System.out.println("detective added");
 		}
 	};
 	
@@ -138,6 +139,8 @@ public class BoardPanel extends JPanel {
 				pieces.get(p).setVisualStation(visualStations.get(m.getStation()));				
 			}
 			// TODO evtl. markings von stationen disablen
+			
+			revalidate();
 		}
 		
 		@Override
@@ -149,7 +152,12 @@ public class BoardPanel extends JPanel {
 			p.setVisualStation(visualStations.get(move.getStation()));
 			p.setVisible(true); // falls es initial move ist
 			
+//			System.out.println(String.format("move done\nPiece=%s\n" +
+//					"VisualStation=%s", p, p.getVisualStation()));
+			
 			// TODO evtl. markings von stationen disablen
+			
+			revalidate();
 		}
 	};
 	
