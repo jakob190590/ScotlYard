@@ -394,6 +394,19 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
 		}
 		public void actionPerformed(ActionEvent e) {
+			String s = "0";
+			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
+				try {
+					gc.removeDetective(g.getDetectives().get(Integer.parseInt(s)));
+					break;
+				} catch (Exception e2) {
+					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
+							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
+							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
+						break;
+					}
+				}
+			}
 		}
 	}
 	private class ShiftDetectiveUpAction extends AbstractAction {
@@ -403,6 +416,19 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_U);
 		}
 		public void actionPerformed(ActionEvent e) {
+			String s = "0";
+			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
+				try {
+					gc.shiftUpDetective(g.getDetectives().get(Integer.parseInt(s)));
+					break;
+				} catch (Exception e2) {
+					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
+							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
+							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
+						break;
+					}
+				}
+			}
 		}
 	}
 	private class ShiftDetectiveDownAction extends AbstractAction {
@@ -413,6 +439,19 @@ public class Board extends JFrame {
 			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 16);
 		}
 		public void actionPerformed(ActionEvent e) {
+			String s = "0";
+			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
+				try {
+					gc.shiftDownDetective(g.getDetectives().get(Integer.parseInt(s)));
+					break;
+				} catch (Exception e2) {
+					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
+							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
+							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
+						break;
+					}
+				}
+			}
 		}
 	}
 	private class NewGameWithPlayerAction extends AbstractAction {
