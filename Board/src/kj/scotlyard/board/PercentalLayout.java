@@ -41,14 +41,33 @@ public class PercentalLayout implements LayoutManager {
 
 	@Override
 	public Dimension preferredLayoutSize(Container parent) {
-		// TODO Auto-generated method stub
-		return null;
+		// Greatest coordinates of non-PercentalBounds objects
+		int x = 0;
+		int y = 0;
+		for (Component c : parent.getComponents()) {
+			// Jedes "normale" Objekt wird nicht gelayouted
+			// Und preferred size wird so berechnet, dass diese noch reinpassen!
+			if (!(c instanceof PercentalBounds)) {
+				int cx = c.getLocation().x + c.getWidth();
+				int cy = c.getLocation().y + c.getHeight();
+				if (cx > x) x = cx;
+				if (cy > y) y = cy;
+			}
+		}
+		// TODO Aber muss man den Rand beruecksichtigen?
+		
+		// TODO Was, wenn keine non-PercentalBounds objects da sind?
+		// Standardgroesse? 0?
+		if (x == 0 || y == 0) {
+			x = y = 200;
+		}
+		
+		return new Dimension(x, y);
 	}
 
 	@Override
 	public Dimension minimumLayoutSize(Container parent) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Dimension();
 	}
 
 	@Override
