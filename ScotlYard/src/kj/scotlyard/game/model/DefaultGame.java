@@ -109,7 +109,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 		@Override
 		public DetectivePlayer remove(int index) {
 			DetectivePlayer p = list.remove(index);
-			getPlayerListenerInformer().detectiveAdded(DefaultGame.this, p, index);
+			getPlayerListenerInformer().detectiveRemoved(DefaultGame.this, p, index);
 			return p;
 		}
 		
