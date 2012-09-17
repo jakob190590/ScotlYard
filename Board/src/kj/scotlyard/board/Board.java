@@ -269,8 +269,10 @@ public class Board extends JFrame {
 			public void update(Observable o, Object arg) {
 				GameController c = (GameController) o;
 				showGameStatusAndWin(c.getStatus(), c.getWin());
+				setGameControllerActionsEnabled(c.getGameStatus());
 			}
 		});
+		setGameControllerActionsEnabled(gc.getGameStatus());
 		board.setGameState(g);
 		
 		boardPanelContainer.add(board);
@@ -486,5 +488,20 @@ public class Board extends JFrame {
 	private void showGameStatusAndWin(GameStatus status, GameWin win) {
 		JOptionPane.showMessageDialog(Board.this, String.format(
 				"Status: %s\nWin: %s", status, win));
+	}
+	private void setGameControllerActionsEnabled(GameStatus status) {
+		boolean inGame = (status == GameStatus.IN_GAME);
+		newGameAction.setEnabled(!inGame);
+		//clearPlayersAction.setEnabled(inGame);
+		//newMrXAction.setEnabled(inGame);
+		//newDetectiveAction.setEnabled(inGame);
+		startAction.setEnabled(!inGame);
+		abortAction.setEnabled(inGame);
+		moveAction.setEnabled(inGame);
+		
+		//removeDetectiveAction.setEnabled(inGame);
+		//shiftDetectiveUpAction.setEnabled(inGame);
+		//shiftDetectiveDownAction.setEnabled(inGame);
+		newGameWithPlayersAction.setEnabled(!inGame);
 	}
 }
