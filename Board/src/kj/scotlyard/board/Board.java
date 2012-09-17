@@ -44,6 +44,7 @@ import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.control.impl.DefaultGameController;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.DefaultGame;
+import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.rules.GameWin;
@@ -269,10 +270,10 @@ public class Board extends JFrame {
 			public void update(Observable o, Object arg) {
 				GameController c = (GameController) o;
 				showGameStatusAndWin(c.getStatus(), c.getWin());
-				setGameControllerActionsEnabled(c.getGameStatus());
+				setGameControllerActionsEnabled(c.getStatus());
 			}
 		});
-		setGameControllerActionsEnabled(gc.getGameStatus());
+		setGameControllerActionsEnabled(gc.getStatus());
 		board.setGameState(g);
 		
 		boardPanelContainer.add(board);
@@ -286,7 +287,7 @@ public class Board extends JFrame {
 		panel.add(lblGamecontroller);
 		
 		JButton btnNewGameWithPlayers = new JButton("New Game with Players");
-		btnNewGameWithPlayers.setAction(newGameActionWithPlayers);
+		btnNewGameWithPlayers.setAction(newGameWithPlayersAction);
 		panel.add(btnNewGameWithPlayers);
 		
 		JButton btnStart = new JButton("Start");
@@ -523,7 +524,7 @@ public class Board extends JFrame {
 		newGameWithPlayersAction.setEnabled(!inGame);
 	}
 	private void showErrorMessage(Exception e) {
-		JOptionPane.showMessageDialog(this, e2.getMessage(), e2.getClass()
+		JOptionPane.showMessageDialog(this, e.getMessage(), e.getClass()
 				.getSimpleName(), JOptionPane.ERROR_MESSAGE);
 	}
 }
