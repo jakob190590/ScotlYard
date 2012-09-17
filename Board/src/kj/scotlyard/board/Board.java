@@ -359,8 +359,7 @@ public class Board extends JFrame {
 			try {
 				gc.start();
 			} catch (Exception e2) {
-				JOptionPane.showMessageDialog(Board.this, e2.getMessage(), 
-						e2.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+				showErrorMessage(e2);
 			}
 		}
 	}
@@ -388,8 +387,7 @@ public class Board extends JFrame {
 				}
 				gc.move(move);
 			} catch (Exception e2) {
-				JOptionPane.showMessageDialog(Board.this, e2.getMessage(), 
-						e2.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+				showErrorMessage(e2);
 			}
 		}
 	}
@@ -412,16 +410,24 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			String s = "0";
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
+				DetectivePlayer d = null;
 				try {
-					gc.removeDetective(g.getDetectives().get(Integer.parseInt(s)));
-					break;
+					d = g.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
 					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
 							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
 							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
 						break;
 					}
+					continue;
 				}
+				try {
+					gc.removeDetective(d);
+				} catch (Exception e2) {
+					showErrorMessage(e2);					
+				}
+				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
+				break;
 			}
 		}
 	}
@@ -434,16 +440,24 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			String s = "0";
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
+				DetectivePlayer d = null;
 				try {
-					gc.shiftUpDetective(g.getDetectives().get(Integer.parseInt(s)));
-					break;
+					d = g.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
 					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
 							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
 							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
 						break;
 					}
+					continue;
 				}
+				try {
+					gc.shiftUpDetective(d);
+				} catch (Exception e2) {
+					showErrorMessage(e2);					
+				}
+				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
+				break;
 			}
 		}
 	}
@@ -457,16 +471,24 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			String s = "0";
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
+				DetectivePlayer d = null;
 				try {
-					gc.shiftDownDetective(g.getDetectives().get(Integer.parseInt(s)));
-					break;
+					d = g.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
 					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
 							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
 							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
 						break;
 					}
+					continue;
 				}
+				try {
+					gc.shiftDownDetective(d);
+				} catch (Exception e2) {
+					showErrorMessage(e2);					
+				}
+				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
+				break;
 			}
 		}
 	}
@@ -503,5 +525,9 @@ public class Board extends JFrame {
 		//shiftDetectiveUpAction.setEnabled(inGame);
 		//shiftDetectiveDownAction.setEnabled(inGame);
 		newGameWithPlayersAction.setEnabled(!inGame);
+	}
+	private void showErrorMessage(Exception e) {
+		JOptionPane.showMessageDialog(this, e2.getMessage(), e2.getClass()
+				.getSimpleName(), JOptionPane.ERROR_MESSAGE);
 	}
 }
