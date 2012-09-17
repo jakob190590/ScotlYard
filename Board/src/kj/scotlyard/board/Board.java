@@ -312,7 +312,7 @@ public class Board extends JFrame {
 	private class NewGameAction extends AbstractAction {
 		public NewGameAction() {
 			putValue(NAME, "New Game");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Create a new game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_N);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -322,7 +322,7 @@ public class Board extends JFrame {
 	private class ClearPlayersAction extends AbstractAction {
 		public ClearPlayersAction() {
 			putValue(NAME, "Clear Players");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Clear all players");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_C);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -332,7 +332,7 @@ public class Board extends JFrame {
 	private class NewMrXAction extends AbstractAction {
 		public NewMrXAction() {
 			putValue(NAME, "New MrX");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Set new Mr. X");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_X);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -342,7 +342,7 @@ public class Board extends JFrame {
 	private class NewDetectiveAction extends AbstractAction {
 		public NewDetectiveAction() {
 			putValue(NAME, "New Detective");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Add a new detective");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_D);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -352,7 +352,7 @@ public class Board extends JFrame {
 	private class StartAction extends AbstractAction {
 		public StartAction() {
 			putValue(NAME, "Start");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Start the game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_S);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -366,7 +366,7 @@ public class Board extends JFrame {
 	private class AbortAction extends AbstractAction {
 		public AbortAction() {
 			putValue(NAME, "Abort");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Abort the game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_A);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -376,7 +376,7 @@ public class Board extends JFrame {
 	private class MoveAction extends AbstractAction {
 		public MoveAction() {
 			putValue(NAME, "Move...");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Make a move");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -394,7 +394,7 @@ public class Board extends JFrame {
 	private class GameStatusWinAction extends AbstractAction {
 		public GameStatusWinAction() {
 			putValue(NAME, "Game Status and Win...");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Show the game status and win");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_I); // i as information
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -404,7 +404,7 @@ public class Board extends JFrame {
 	private class RemoveDetectiveAction extends AbstractAction {
 		public RemoveDetectiveAction() {
 			putValue(NAME, "Remove Detective...");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Remove a detective");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -434,7 +434,7 @@ public class Board extends JFrame {
 	private class ShiftDetectiveUpAction extends AbstractAction {
 		public ShiftDetectiveUpAction() {
 			putValue(NAME, "Shift Detective Up...");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Shift up a detective in the list");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_U);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -464,7 +464,7 @@ public class Board extends JFrame {
 	private class ShiftDetectiveDownAction extends AbstractAction {
 		public ShiftDetectiveDownAction() {
 			putValue(NAME, "Shift Detective Down...");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Shift down a detective in the list");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_D);
 			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 16);
 		}
@@ -495,7 +495,7 @@ public class Board extends JFrame {
 	private class NewGameWithPlayersAction extends AbstractAction {
 		public NewGameWithPlayersAction() {
 			putValue(NAME, "New Game with Players");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Create a new game with new players");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_W);
 		}
 		public void actionPerformed(ActionEvent e) {
