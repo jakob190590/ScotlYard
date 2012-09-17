@@ -124,6 +124,8 @@ public class BoardPanel extends JPanel {
 				p.setVisible(false);
 			}
 			// TODO evtl. markings von stationen disablen
+			
+			repaint();
 		}
 		
 		@Override

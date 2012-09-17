@@ -181,9 +181,11 @@ public class Board extends JFrame {
 		
 		// Um zu ueberpruefen, ob das neu setzen waehrend dem Spiel funktioniert
 		JMenuItem mntmSetGameStateNull = new JMenuItem("Set GameState to null");
+		mntmSetGameStateNull.setMnemonic('n');
 		mnBoardPanel.add(mntmSetGameStateNull);
 		
 		JMenuItem mntmSetGameState = new JMenuItem("Set GameState");
+		mntmSetGameState.setMnemonic('g');
 		mnBoardPanel.add(mntmSetGameState);
 		
 		
@@ -269,8 +271,8 @@ public class Board extends JFrame {
 			@Override
 			public void update(Observable o, Object arg) {
 				GameController c = (GameController) o;
-				showGameStatusAndWin(c.getStatus(), c.getWin());
 				setGameControllerActionsEnabled(c.getStatus());
+				showGameStatusAndWin(c.getStatus(), c.getWin());
 			}
 		});
 		setGameControllerActionsEnabled(gc.getStatus());
