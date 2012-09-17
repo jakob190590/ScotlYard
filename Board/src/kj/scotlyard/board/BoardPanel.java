@@ -27,6 +27,8 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
+
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
@@ -46,6 +48,8 @@ import kj.scotlyard.game.model.PlayerListener;
 @SuppressWarnings("serial")
 public class BoardPanel extends JPanel {
 	
+	private static Logger logger = Logger.getLogger(Board.class);
+	
 	private Image image;
 	
 	private GameState gameState;
@@ -64,6 +68,8 @@ public class BoardPanel extends JPanel {
 		// TODO testen: wird der layoutmgr automatisch aufgerufen ?
 		@Override
 		public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
+			logger.debug(String.format("Old MrX <%s> replaced by new MrX <%s>", oldMrX, newMrX));
+			
 			Piece piece;
 
 			// Alten MrX (wenn nicht null) entfernen aus Map und Container
@@ -78,21 +84,24 @@ public class BoardPanel extends JPanel {
 				piece.setVisible(false);
 				pieces.put(newMrX, piece);
 				add(piece);
-//				System.out.println("mrX set");
 			}
 		}
 		
 		@Override
 		public void detectiveRemoved(GameState gameState,
 				DetectivePlayer detective, int atIndex) {
+			logger.debug("Detective removed: " + detective);
 			// Piece aus Map und Container entfernen
 			Piece piece = pieces.remove(detective);
 			remove(piece);
+			
+			repaint();
 		}
 		
 		@Override
 		public void detectiveAdded(GameState gameState, DetectivePlayer detective,
 				int atIndex) {
+			logger.debug("Detective added: " + detective);
 			// Piece Map und Container hinzufuegen
 			Piece piece = new DetectivePiece(detective);
 			if (gameState.getLastMove(detective) == null) {
@@ -107,7 +116,6 @@ public class BoardPanel extends JPanel {
 			}
 			pieces.put(detective, piece);
 			add(piece);
-//			System.out.println("detective added");
 		}
 	};
 	
@@ -120,16 +128,17 @@ public class BoardPanel extends JPanel {
 		
 		@Override
 		public void movesCleard(GameState gameState) {
+			logger.debug("Moves cleared, making player invisible");
 			for (Piece p : pieces.values()) {
 				p.setVisible(false);
 			}
 			// TODO evtl. markings von stationen disablen
 			
-			repaint();
 		}
 		
 		@Override
 		public void moveUndone(GameState gameState, Move move) {
+			logger.debug("Moves undone");
 			// VisualStation des Pieces entsprechend setzen
 			// Falls der GameState hier ungueltige Params liefert,
 			// oder das BoardPanel corrupted ist, gibt's Exception!
@@ -147,6 +156,7 @@ public class BoardPanel extends JPanel {
 		
 		@Override
 		public void moveDone(GameState gameState, Move move) {
+			logger.debug("Moves done");
 			// VisualStation des Pieces entsprechend setzen
 			// Falls der GameState hier ungueltige Params liefert,
 			// oder das BoardPanel corrupted ist, gibt's Exception!
