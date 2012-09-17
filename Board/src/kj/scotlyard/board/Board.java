@@ -172,6 +172,20 @@ public class Board extends JFrame {
 		JMenuItem mntmGameStatusAnd = new JMenuItem("Game Status and Win...");
 		mntmGameStatusAnd.setAction(gameStatusWinAction);
 		mnGameController.add(mntmGameStatusAnd);
+		
+		
+		JMenu mnBoardPanel = new JMenu("BoardPanel");
+		mnBoardPanel.setMnemonic('b');
+		menuBar.add(mnBoardPanel);
+		
+		// Um zu ueberpruefen, ob das neu setzen waehrend dem Spiel funktioniert
+		JMenuItem mntmSetGameStateNull = new JMenuItem("Set GameState to null");
+		mnBoardPanel.add(mntmSetGameStateNull);
+		
+		JMenuItem mntmSetGameState = new JMenuItem("Set GameState");
+		mnBoardPanel.add(mntmSetGameState);
+		
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
