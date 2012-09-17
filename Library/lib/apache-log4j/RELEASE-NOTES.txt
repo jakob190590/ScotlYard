@@ -1,0 +1,33 @@
+
+              Apache Log4j 2.0-alpha2 RELEASE NOTES
+
+The Apache Log4j 2 team is pleased to announce the Log4j 2.0-alpha2 release!
+
+Apache Log4j 2.0-alpha2 requires a minimum of Java 5 to build and run. Basic compatibility with
+Log4j 1.x is provided through the log4j12-api component, however it does not implement some of the
+very implementation specific classes and methods. The package names and Maven groupId have been changed to
+org.apache.logging.log4j to avoid any conflicts with log4j 1.x.
+
+Bug fixes and minor enhancements
+
+Changes in this version include:
+
+New features:
+o LOG4J2-70:  Add getLogger(Class) to LogManager. 
+o LOG4J2-69:  Allow Flume agents to be embedded into the Flume Appender. 
+o LOG4J2-68:  Add support for formatting using String.format(). 
+o LOG4J2-67:  Allow components besides core to create a PluginMap for faster plugin loading and not
+        having to specify the plugin package in the configuration. 
+
+Fixed Bugs:
+o LOG4J2-64:  Fix compilation problems in Java 7. 
+o LOG4J2-65:  Allow variable substitution on the configuration attributes and on the root log level. 
+
+
+
+For complete information on Apache Log4j 2, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Apache Log4j 2 website:
+
+http://logging.apache.org/log4j/2.x/
+
+
