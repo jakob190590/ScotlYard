@@ -285,13 +285,9 @@ public class Board extends JFrame {
 		JLabel lblGamecontroller = new JLabel("GameController");
 		panel.add(lblGamecontroller);
 		
-		JButton btnNewGame = new JButton("New Game");
-		btnNewGame.setAction(newGameAction);
-		panel.add(btnNewGame);
-		
-		JButton btnClearplayers = new JButton("ClearPlayers");
-		btnClearplayers.setAction(clearPlayersAction);
-		panel.add(btnClearplayers);
+		JButton btnNewGameWithPlayers = new JButton("New Game with Players");
+		btnNewGameWithPlayers.setAction(newGameActionWithPlayers);
+		panel.add(btnNewGameWithPlayers);
 		
 		JButton btnStart = new JButton("Start");
 		btnStart.setAction(startAction);
