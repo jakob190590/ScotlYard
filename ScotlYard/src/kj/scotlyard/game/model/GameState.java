@@ -27,9 +27,9 @@ import kj.scotlyard.game.model.item.Item;
 public interface GameState {
 	
 	enum MoveAccessMode {
-        ROUND_NUMBER,
-        MOVE_NUMBER
-    }
+		ROUND_NUMBER,
+		MOVE_NUMBER
+	}
 	
 	int INITIAL_ROUND_NUMBER = 0;
 	
@@ -39,7 +39,7 @@ public interface GameState {
 	
 	int LAST_MOVE_NUMBER = -1;
 	
-	/** Speziell fuer <tt>getMoves().remove/get(LAST_MOVE)</tt>. */
+	/** Speziell fuer <code>getMoves().remove/get(LAST_MOVE)</code>. */
 	int LAST_MOVE = -1;
 	
 	
