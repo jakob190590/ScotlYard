@@ -78,7 +78,7 @@ public class Board extends JFrame {
 	private final Action removeDetectiveAction = new RemoveDetectiveAction();
 	private final Action shiftDetectiveUpAction = new ShiftDetectiveUpAction();
 	private final Action shiftDetectiveDownAction = new ShiftDetectiveDownAction();
-	private final Action newGameWithPlayerAction = new NewGameWithPlayerAction();
+	private final Action newGameWithPlayersAction = new NewGameWithPlayersAction();
 
 
 	/**
@@ -116,7 +116,7 @@ public class Board extends JFrame {
 		mnGameController.add(mntmNewGame);
 		
 		JMenuItem mntmNewGameWith = new JMenuItem("New Game with Player");
-		mntmNewGameWith.setAction(newGameWithPlayerAction);
+		mntmNewGameWith.setAction(newGameWithPlayersAction);
 		mnGameController.add(mntmNewGameWith);
 		
 		mnGameController.addSeparator();
@@ -454,9 +454,9 @@ public class Board extends JFrame {
 			}
 		}
 	}
-	private class NewGameWithPlayerAction extends AbstractAction {
-		public NewGameWithPlayerAction() {
-			putValue(NAME, "New Game with Player");
+	private class NewGameWithPlayersAction extends AbstractAction {
+		public NewGameWithPlayersAction() {
+			putValue(NAME, "New Game with Players");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_W);
 		}
