@@ -21,6 +21,7 @@ package kj.scotlyard.board;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.geom.Rectangle2D;
 
@@ -41,49 +42,27 @@ public class PercentalLayout implements LayoutManager {
 
 	@Override
 	public Dimension preferredLayoutSize(Container parent) {
-		// Greatest coordinates of non-PercentalBounds objects
-		int x = 0;
-		int y = 0;
-		for (Component c : parent.getComponents()) {
-			// Jedes "normale" Objekt wird nicht gelayouted
-			// Und preferred size wird so berechnet, dass diese noch reinpassen!
-			if (!(c instanceof PercentalBounds)) {
-				int cx = c.getLocation().x + c.getWidth();
-				int cy = c.getLocation().y + c.getHeight();
-				if (cx > x) x = cx;
-				if (cy > y) y = cy;
-			}
-		}		
-		// Insets addieren (siehe http://docs.oracle.com/javase/tutorial/uiswing/layout/custom.html)
-		Insets insets = parent.getInsets();
-		x += insets.left + insets.right;
-		y += insets.top + insets.bottom;
-		
-		// TODO Was, wenn keine non-PercentalBounds objects da sind?
-		// Standardgroesse? 0?
-		if (x == 0 || y == 0) {
-			x = y = 200;
-		}
-		
-		return new Dimension(x, y);
+		return parent.getPreferredSize();
 	}
 
 	@Override
 	public Dimension minimumLayoutSize(Container parent) {
-		return new Dimension();
+		Insets insets = parent.getInsets();
+		return new Dimension(insets.left + insets.right, 
+				insets.top + insets.bottom);
 	}
 
 	@Override
 	public void layoutContainer(Container parent) {
+		Insets insets = parent.getInsets();
 		for (Component c : parent.getComponents()) {
 			if (c instanceof PercentalBounds) {
-				PercentalBounds pb = (PercentalBounds) c;
+				PercentalBounds pb = (PercentalBounds) c;				
 				Rectangle2D.Double bounds = pb.getBounds2();
-				int w = parent.getWidth();
-				int h = parent.getHeight();
+				int w = parent.getWidth() - insets.left - insets.right;
+				int h = parent.getHeight() - insets.top - insets.bottom;
 				c.setBounds((int) (w * bounds.x), (int) (h * bounds.y), 
 						(int) (w * bounds.width), (int) (h * bounds.height));
-//				System.out.println(c.getBounds());
 			}
 			// "normal" components will not be laid out
 		}
