@@ -61,7 +61,7 @@ public class PercentalLayout implements LayoutManager {
 				Rectangle2D.Double bounds = pb.getBounds2();
 				int w = parent.getWidth() - insets.left - insets.right;
 				int h = parent.getHeight() - insets.top - insets.bottom;
-				c.setBounds((int) (w * bounds.x), (int) (h * bounds.y), 
+				c.setBounds((int) (w * bounds.x) + insets.left, (int) (h * bounds.y) + insets.top, 
 						(int) (w * bounds.width), (int) (h * bounds.height));
 			}
 			// "normal" components will not be laid out

@@ -22,6 +22,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Insets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -189,7 +190,10 @@ public class BoardPanel extends JPanel {
 		super.paintComponent(g);
 		if (image != null) {
 			Graphics2D g2D = (Graphics2D) g;
-			g2D.drawImage(image, 0, 0, getWidth(), getHeight(), this);			
+			Insets insets = getInsets();
+			g2D.drawImage(image, insets.left, insets.top, 
+					getWidth() - insets.left - insets.right, 
+					getHeight() - insets.top - insets.bottom, this);			
 		}		
 	}
 
