@@ -64,8 +64,7 @@ public class BoardPanel extends JPanel {
 	 * <code>NullPointerException</code>s auftreten, wenn die Daten
 	 * im BoardPanel corrupted sind.
 	 */
-	private final PlayerListener playerListener = new PlayerListener() {
-		// TODO testen: wird der layoutmgr automatisch aufgerufen ?
+	private final PlayerListener playerListener = new PlayerListener() {		
 		@Override
 		public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
 			logger.debug(String.format("Old MrX <%s> replaced by new MrX <%s>", oldMrX, newMrX));
@@ -76,6 +75,7 @@ public class BoardPanel extends JPanel {
 			if (oldMrX != null) {
 				piece = pieces.remove(oldMrX);
 				remove(piece);
+				repaint();
 			}
 			
 			// Neuen MrX (wenn nicht null) Map und Container hinzufuegen
@@ -115,7 +115,7 @@ public class BoardPanel extends JPanel {
 				piece.setVisible(false);
 			}
 			pieces.put(detective, piece);
-			add(piece);
+			add(piece); // TODO sollte revalidate und repaint ausloesen (wenn piece zum ersten mal sichtbar wird)
 		}
 	};
 	
