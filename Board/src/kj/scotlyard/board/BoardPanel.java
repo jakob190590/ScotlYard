@@ -226,6 +226,7 @@ public class BoardPanel extends JPanel {
 				remove(p);
 			}
 			pieces.clear();
+			logger.debug("setGameState: All pieces removed");
 			
 			this.gameState = gameState;
 			if (gameState != null) {
@@ -256,6 +257,8 @@ public class BoardPanel extends JPanel {
 			}
 			
 			repaint();
+			
+			logger.debug("BoardPanel repainted");
 		}
 	}
 
@@ -272,6 +275,7 @@ public class BoardPanel extends JPanel {
 	 */
 	public void setImage(Image image) {
 		this.image = image;
+		repaint();
 	}
 
 }
