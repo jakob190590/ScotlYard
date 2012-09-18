@@ -132,7 +132,7 @@ public class BoardPanel extends JPanel {
 			for (Piece p : pieces.values()) {
 				p.setVisible(false);
 			}
-			// TODO evtl. markings von stationen disablen
+			// TODO evtl. markings von stationen disablen + repaint
 			
 		}
 		
@@ -148,10 +148,10 @@ public class BoardPanel extends JPanel {
 				pieces.get(p).setVisible(false);
 			} else {
 				pieces.get(p).setVisualStation(visualStations.get(m.getStation()));				
+				revalidate();
+				
 			}
-			// TODO evtl. markings von stationen disablen
-			
-			revalidate();
+			// TODO evtl. markings von stationen disablen + repaint
 		}
 		
 		@Override
@@ -169,7 +169,7 @@ public class BoardPanel extends JPanel {
 			
 			// TODO evtl. markings von stationen disablen
 			
-			revalidate();
+			revalidate(); // warum wird eigentlich repainted?
 		}
 	};
 	
