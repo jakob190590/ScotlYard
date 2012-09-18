@@ -53,8 +53,11 @@ public class PercentalLayout implements LayoutManager {
 				if (cx > x) x = cx;
 				if (cy > y) y = cy;
 			}
-		}
-		// TODO Aber muss man den Rand beruecksichtigen?
+		}		
+		// Insets addieren (siehe http://docs.oracle.com/javase/tutorial/uiswing/layout/custom.html)
+		Insets insets = parent.getInsets();
+		x += insets.left + insets.right;
+		y += insets.top + insets.bottom;
 		
 		// TODO Was, wenn keine non-PercentalBounds objects da sind?
 		// Standardgroesse? 0?
