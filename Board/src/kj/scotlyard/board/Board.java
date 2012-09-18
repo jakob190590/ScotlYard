@@ -59,7 +59,7 @@ import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import javax.swing.Action;
 
-import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame {
@@ -98,7 +98,7 @@ public class Board extends JFrame {
 				}
 			}
 		});
-		BasicConfigurator.configure();
+		PropertyConfigurator.configure("log4j.properties");
 	}
 
 	/**
