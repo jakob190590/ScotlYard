@@ -46,17 +46,23 @@ public class VisualStation extends JComponent implements PercentalBounds {
 
 	// Types of marking
 	
+	/** Constant for no markings */
+	public static final int NO_MARKINGS = 0;
+	
 	/** Mark type for possible positions of MrX */
-	public static final int POSSIBLE_POSITION = 0;
+	public static final int POSSIBLE_POSITION = 1;
 	
 	/** Mark type for the designated next station in an upcoming move */
-	public static final int DESIGNATED_NEXT_STATION = 1;
+	public static final int DESIGNATED_NEXT_STATION = 2;
+	
+	/** Mark type for the designated second station in an upcoming double move */
+	public static final int DESIGNATED_NEXT_STATION2 = 4;
 	
 	/** Mark type for a possible next station in an upcoming move */
-	public static final int POSSIBLE_NEXT_STATION = 2;
+	public static final int POSSIBLE_NEXT_STATION = 8;
 	
 	/** Mark type for an impossible next station in an upcoming move */
-	public static final int IMPOSSIBLE_NEXT_STATION = 3;
+	public static final int IMPOSSIBLE_NEXT_STATION = 16;
 	
 	public VisualStation() {
 		this(null, 0);
