@@ -218,26 +218,22 @@ public class BoardPanel extends JPanel {
 			if (this.gameState != null) {
 				// Unregister listeners from old GameState
 				this.gameState.removePlayerListener(playerListener);
-				this.gameState.removeMoveListener(moveListener);
-				// Alle Pieces loeschen
-				for (Piece p : pieces.values()) {
-					remove(p);
-				}
-				pieces.clear();
+				this.gameState.removeMoveListener(moveListener);				
 			}
+			
+			// Alle Pieces loeschen
+			for (Piece p : pieces.values()) {
+				remove(p);
+			}
+			pieces.clear();
+			
 			this.gameState = gameState;
 			if (gameState != null) {
 				// Register listeners at new GameState
 				gameState.addPlayerListener(playerListener);
 				gameState.addMoveListener(moveListener);
-				
-				// Alte Pieces loeschen 
-				for (Piece p : pieces.values()) {
-					remove(p);
-				}
-				pieces.clear();
-				
-				// Neue Pieces adden und Visibility/Station setzen
+
+				// Add new pieces and set visibility/VisualStation
 				MrXPlayer mrX = gameState.getMrX(); 
 				if (mrX != null) {
 					pieces.put(mrX, new MrXPiece(mrX));
@@ -255,7 +251,11 @@ public class BoardPanel extends JPanel {
 						p.setVisualStation(visualStations.get(m.getStation()));
 					}
 				}
+				
+				revalidate();
 			}
+			
+			repaint();
 		}
 	}
 
