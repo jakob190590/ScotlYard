@@ -60,11 +60,16 @@ import java.awt.event.ActionEvent;
 import javax.swing.Action;
 
 import org.apache.log4j.PropertyConfigurator;
+import java.awt.event.ActionListener;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame {
 
 	private JPanel contentPane;
+	
+	private BoardPanel boardPanel;
+	
+	private Image img;
 	
 	GameController gc;
 	Game g;
@@ -184,12 +189,42 @@ public class Board extends JFrame {
 		
 		// Um zu ueberpruefen, ob das neu setzen waehrend dem Spiel funktioniert
 		JMenuItem mntmSetGameStateNull = new JMenuItem("Set GameState to null");
+		mntmSetGameStateNull.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setGameState(null);
+			}
+		});
 		mntmSetGameStateNull.setMnemonic('n');
 		mnBoardPanel.add(mntmSetGameStateNull);
 		
 		JMenuItem mntmSetGameState = new JMenuItem("Set GameState");
+		mntmSetGameState.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setGameState(g);
+			}
+		});
 		mntmSetGameState.setMnemonic('g');
 		mnBoardPanel.add(mntmSetGameState);
+		
+		mnBoardPanel.addSeparator();
+		
+		JMenuItem mntmSetImageToNull = new JMenuItem("Set Image to null");
+		mntmSetImageToNull.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setImage(null);
+			}
+		});
+		mntmSetImageToNull.setMnemonic('u');
+		mnBoardPanel.add(mntmSetImageToNull);
+		
+		JMenuItem mntmSetImage = new JMenuItem("Set Image");
+		mntmSetImage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setImage(img);
+			}
+		});
+		mntmSetImage.setMnemonic('i');
+		mnBoardPanel.add(mntmSetImage);
 		
 		
 		contentPane = new JPanel();
@@ -208,7 +243,7 @@ public class Board extends JFrame {
 		
 		
 		JPanel boardPanelContainer = new JPanel(new AspectRatioGridLayout());
-		BoardPanel board = new BoardPanel();
+		boardPanel = new BoardPanel();
 		
 		MouseListener ml = new MouseAdapter() {
 			@Override
@@ -219,12 +254,12 @@ public class Board extends JFrame {
 		};
 //		board.addMouseListener(ml);
 		for (JComponent c : bgl.getVisualComponents()) {
-			board.add(c);
+			boardPanel.add(c);
 			c.addMouseListener(ml);
 		}
-		board.buildVisualStationMap();
+		boardPanel.buildVisualStationMap();
 		
-		Image img = null;
+		img = null;
 		// Variante 1
 		try {
 			img = ImageIO.read(new File("original-scotland-yard-board.png"));
@@ -263,8 +298,8 @@ public class Board extends JFrame {
 			throw new IllegalArgumentException("The image seems to be not loaded " +
 					"completely: Cannot determine image's width and/or height.");
 		}
-		board.setImage(img);	
-		board.setPreferredSize(new Dimension(w, h));
+		boardPanel.setImage(img);	
+		boardPanel.setPreferredSize(new Dimension(w, h));
 		
 		// GameState
 		g = new DefaultGame();
@@ -275,13 +310,14 @@ public class Board extends JFrame {
 			public void update(Observable o, Object arg) {
 				GameController c = (GameController) o;
 				setGameControllerActionsEnabled(c.getStatus());
-				showGameStatusAndWin(c.getStatus(), c.getWin());
+				if (c.getStatus() != GameStatus.IN_GAME)
+					showGameStatusAndWin(c.getStatus(), c.getWin());
 			}
 		});
 		setGameControllerActionsEnabled(gc.getStatus());
-		board.setGameState(g);
+		boardPanel.setGameState(g);
 		
-		boardPanelContainer.add(board);
+		boardPanelContainer.add(boardPanel);
 		
 		contentPane.add(boardPanelContainer, BorderLayout.CENTER);
 		
