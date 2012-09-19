@@ -22,15 +22,39 @@ import java.util.Set;
 
 import kj.scotlyard.game.model.item.Item;
 
+/**
+ * The Game interface extends the GameState, to 
+ * allow modifying state, players, move history
+ * and items.
+ * @author jakob190590
+ *
+ */
 public interface Game extends GameState {
 	
 	void setMrX(MrXPlayer player);
 	
+	/**
+	 * Set an item set for the specified player.
+	 * For each player the item set must be attached
+	 * manually with this method.
+	 * @param player
+	 * @param items
+	 */
 	void setItems(Player player, Set<Item> items);
 	
-	
+	/**
+	 * Set the current round number. roundNumber must be // TODO grenzen wie bei gameState!
+	 * @param roundNumber
+	 */
 	void setCurrentRoundNumber(int roundNumber);
 	
+	/**
+	 * Set the player whose turn it is. The parameter
+	 * can be <code>null</code> to indicate, that it's
+	 * no player's turn (when the game has not started
+	 * or has ended). 
+	 * @param player
+	 */
 	void setCurrentPlayer(Player player);
 	
 }
