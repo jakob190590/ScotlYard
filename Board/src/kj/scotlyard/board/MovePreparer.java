@@ -16,22 +16,17 @@ public class MovePreparer {
 	private GameGraph gg;
 	
 	private Move move = null;
-	
-	protected static class ConnectionAndTicket {
-		// TODO generate default constructor and constructor from both fields!
-		public ConnectionEdge connection;
-		public Ticket ticket;
-	}
-	
-	// Template method for algorithm in nextStation
-	// Returning null means 'cancel'
-	protected abstract ConnectionAndTicket selectConnectionAndTicket(Set<ConnectionEdge> connections);
-	
+
 	// Reset move preparation
 	public void reset() {
 		move = null;
 	}
 	
+	
+	// Template method for algorithm in nextStation
+	// Returning null means 'cancel'
+	protected abstract ConnectionEdge selectConnection(Set<ConnectionEdge> connections);
+
 	// Algorithm for preparing the move
 	public void nextStation(StationVertex station) {
 		Move lm = g.getLastMove(g.getCurrentPlayer); // last move
@@ -42,17 +37,27 @@ public class MovePreparer {
 		// Calculate all connections from current station to station
 		Set<ConnectionEdge> connections = gg.getGraph().getAllEdges(lm.getStation(), station);
 		
-		ConnectionAndTicket connAndTicket = selectConnectionAndTicket(connections);
+		ConnectionEdge conn = selectConnection(connections);
 		
-		if (connAndTicket != null) {
+		if (conn != null) {
 			// D.h. nicht abgebrochen
-			m.setConnection(connAndTicket.connection);
-			m.setItem(connAndTicket.ticket);
+			if (!connections.contains(conn)) {
+				throw new RuntimeException("Template method falsch implementiert: Rueckgabewert muss element des Arguments oder null sein!");
+			}
+			m.setConnection(conn);
+			m.setItem(); // TODO Item selbst raussuchen, passend zur conn! wie auch immer
 			
 			// Publish m as/in move
 			if (move == null) {
 				move = m;
-			} else {
+			} else {				
+				if (move.getMoves().isEmpty()) {
+					// move ist noch kein Multi Move
+					// -> move neuem Move als Sub Move adden
+					Move n = new DefaultMove();
+					n.getMoves().add(move);
+					move = n;
+				}
 				move.getMoves().add(m);
 			}
 		}
