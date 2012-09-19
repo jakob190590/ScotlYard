@@ -21,12 +21,30 @@ package kj.scotlyard.game.ai;
 import kj.scotlyard.game.control.GameStateRequester;
 import kj.scotlyard.game.model.Move;
 
+/**
+ * Interface for any AI that calculates moves for player(s).
+ * The AI calculation is guided by GameState listeners, 
+ * especially MoveListener. But the AI does not carry out
+ * a move, it only provides the calculated move, see 
+ * <code>move()</code>.
+ * @author jakob190590
+ *
+ */
 public interface Ai extends GameStateRequester {
 
+	/**
+	 * Returns the calculated AI move for the current player.
+	 * @return the AI move for the current player
+	 */
 	Move move();
 	
 	boolean isReady();
 	
+	/**
+	 * Suggests the calculation process, to come to an end.
+	 * Note that also in this case the AI must provide a move,
+	 * even it is a bad one.
+	 */
 	void decideNow(); // oder determineNow
 	
 	int getTimeLeft(); // estimated, in millis
