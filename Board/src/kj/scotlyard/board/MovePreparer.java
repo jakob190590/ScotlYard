@@ -1,40 +1,69 @@
 package kj.scotlyard.board;
 
+import java.util.HashSet;
 import java.util.Set;
 
+import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.ConnectionEdge;
+import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DefaultMove;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.item.DoubleMoveCard;
+import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.Ticket;
+import kj.scotlyard.game.util.GameStateExtension;
+import kj.scotlyard.game.util.MoveHelper;
+import kj.scotlyard.game.util.MoveProducer;
+import kj.scotlyard.game.util.SubMoves;
 
 // Template method pattern
-public class MovePreparer {
+public abstract class MovePreparer {
 	
 	private GameState gs;
 	
 	private GameGraph gg;
 	
-	// Roher Datenbehaelter; aus einigen seiner Felder wird bei getMove() der resultierende Move erzeugt!
+	/**
+	 *  Roher Datenbehaelter; aus einigen seiner Felder wird bei 
+	 *  <code>getMove()</code> der resultierende Move erzeugt!
+	 */
 	private Move move = null;
 
-	// Reset move preparation
+	/**
+	 * Resets current move preparation.
+	 */
 	public void reset() {
 		move = null;
 	}
 	
 	
-	// Template method for algorithm in nextStation	
-	protected abstract void errorImpossibleNextStation(StationVertex station);
+	protected abstract void errorImpossibleNextStation(StationVertex station); // TODO reason: occupied or unreachable or ... ?
 
-	// Template method for algorithm in nextStation
-	// Returning null means 'cancel'
+	/**
+	 * Selects one ticket of the set and returns that ticket. The method may
+	 * return <code>null</code> to cancel the move preparation. But this would 
+	 * be not equivalent to <code>reset</code>: If there is a multi move
+	 * is in preparation, only the new sub move would be discarded.
+	 * 
+	 * This method will be called by <code>nextStation</code>. Implementations
+	 * can ask the user to select one ticket.
+	 * @param tickets a set of possible tickets
+	 * @return one of the passed tickets or <code>null</code>
+	 */
 	protected abstract Ticket selectTicket(Set<Ticket> tickets);
 
-	// Algorithm for preparing the move
+	
+	/**
+	 * A template method for building a Move.
+	 * This algorithm uses the <code>protected abstract</code> methods.
+	 * This way the user interaction can be customized.
+	 * @param station
+	 */
 	public void nextStation(StationVertex station) {
-		Move lm = g.getLastMove(g.getCurrentPlayer); // last move
-		StationVertex lastStation = lm.getStation;
+		Move lm = gs.getLastMove(gs.getCurrentPlayer()); // last move
+		StationVertex lastStation = lm.getStation();
 		
 		Move m = new DefaultMove();
 		m.setStation(station);
@@ -45,13 +74,17 @@ public class MovePreparer {
 		if (connections.isEmpty()) {
 			errorImpossibleNextStation(station);
 		}
-		Set<Ticket> tickets = ;
+		
+		Set<Ticket> tickets = new HashSet<>();
+		for (ConnectionEdge c : connections) {
+			// TODO addAll...
+		}
 				
 		Ticket ticket = selectTicket(tickets);
 		
 		if (ticket != null) {		
 			// D.h. nicht abgebrochen
-			Connection conn = MoveHelper.suggestConnection(lastStation, station, ticket);
+			ConnectionEdge conn = MoveHelper.suggestConnection(lastStation, station, ticket);
 			m.setConnection(conn);
 			m.setItem(ticket);
 			
@@ -71,6 +104,11 @@ public class MovePreparer {
 		}
 	}
 		
+	/**
+	 * Crafts a turnkey Move from the preceding input (builder instructions). 
+	 * This Move can be passed to the GameController.
+	 * @return a turnkey Move
+	 */
 	public Move getMove() {		
 		Move result = null;
 		if (move != null) {
@@ -83,10 +121,10 @@ public class MovePreparer {
 			} else {
 				// Multi Move
 				GameStateExtension gsx = new GameStateExtension(gs);
-				Item doubleMoveCard = gsx.getItem(gs.getCurrentPlayer(), DoubleMoveCard.class)
+				DoubleMoveCard doubleMoveCard = (DoubleMoveCard) gsx.getItem(gs.getCurrentPlayer(), DoubleMoveCard.class);
 				SubMoves sms = new SubMoves();
 				for (Move m : move.getMoves()) {
-					sms.add(m);
+					sms.add(m.getStation(), m.getConnection(), (Ticket) m.getItem());
 				}
 				result = MoveProducer.createMultiMove(gs.getCurrentPlayer(), gs.getCurrentRoundNumber(),
 						moveNumber, doubleMoveCard, sms);
