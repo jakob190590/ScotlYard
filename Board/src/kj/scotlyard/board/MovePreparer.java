@@ -15,6 +15,7 @@ public class MovePreparer {
 	
 	private GameGraph gg;
 	
+	// Roher Datenbehaelter; aus einigen seiner Felder wird bei getMove() der resultierende Move erzeugt!
 	private Move move = null;
 
 	// Reset move preparation
@@ -23,26 +24,36 @@ public class MovePreparer {
 	}
 	
 	
+	// Template method for algorithm in nextStation	
+	protected abstract void errorImpossibleNextStation(StationVertex station);
+
 	// Template method for algorithm in nextStation
 	// Returning null means 'cancel'
-	protected abstract ConnectionEdge selectConnection(Set<ConnectionEdge> connections);
+	protected abstract Ticket selectTicket(Set<Ticket> tickets);
 
 	// Algorithm for preparing the move
 	public void nextStation(StationVertex station) {
 		Move lm = g.getLastMove(g.getCurrentPlayer); // last move
+		StationVertex lastStation = lm.getStation;
 		
-		Move m = new DefaultMove(); // oder mit MoveProducer erzeugen
+		Move m = new DefaultMove();
 		m.setStation(station);
 		
 		// Calculate all connections from current station to station
-		Set<ConnectionEdge> connections = gg.getGraph().getAllEdges(lm.getStation(), station);
+		Set<ConnectionEdge> connections = gg.getGraph().getAllEdges(lastStation, station);
+		// TODO next station muss auch noch anderweitig geprueft werden (besetzt, kein ticket, ...?)
+		if (connections.isEmpty()) {
+			errorImpossibleNextStation(station);
+		}
+		Set<Ticket> tickets = ;
+				
+		Ticket ticket = selectTicket(tickets);
 		
-		ConnectionEdge conn = selectConnection(connections);
-		
-		if (conn != null) {
+		if (ticket != null) {		
 			// D.h. nicht abgebrochen
+			Connection conn = MoveHelper.suggestConnection(lastStation, station, ticket);
 			m.setConnection(conn);
-			m.setItem(); // TODO Item selbst raussuchen, passend zur conn! wie auch immer
+			m.setItem(ticket);
 			
 			// Publish m as/in move
 			if (move == null) {
