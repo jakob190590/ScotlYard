@@ -18,12 +18,10 @@
 
 package kj.scotlyard.board;
 
-import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
@@ -31,6 +29,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.JComponent;
+
+import org.apache.log4j.Logger;
 
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.Player;
@@ -87,6 +87,9 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	}
 	
 	
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger(VisualStation.class);
+	
 	private StationVertex station;
 	
 	private Set<Marking> markings = new HashSet<>();
@@ -127,29 +130,15 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	
 	@Override
 	public boolean contains(int x, int y) {
-		// TODO Korbi, x, y innerhalb oder auf kreis mit durchmesser d
-		// kreis liegt im quadrat d^2, ursprung ist links oben; x, y positiv nach rechts unten
+		// TODO Korbi, x, y innerhalb oder auf oval mit breite w u. hoehe h
+		// (ursprung links oben)
+//		return (x >= 0) && (x < getWidth() / 2) && (y >= 0) && (y < getHeight() / 2);
 		return super.contains(x, y);
-	}
-
-	@Override
-	protected void processEvent(AWTEvent e) {
-//		if (e instanceof MouseEvent) System.out.println("MouseEvent auf VisualStation.");
-		if (e instanceof MouseEvent 
-				&& !contains(((MouseEvent) e).getX(), ((MouseEvent) e).getY())) {
-			// TODO braucht's das ueberhaupt, oder wird das eh automatisch gemacht bei MouseEvents?
-			// Mausereignis ausserhalb des Umrisses der Station
-			// -> Ereignis nicht bearbeiten (TODO hoffentlich wird's dann dem parent uebergeben?)
-//			System.out.println("MouseEvent ausserhalb des Umrisses der VisualStation.");
-			return;
-		}
-		super.processEvent(e);
 	}
 
 	public StationVertex getStation() {
 		return station;
 	}
-
 
 	public void setStation(StationVertex station) {
 		this.station = station;

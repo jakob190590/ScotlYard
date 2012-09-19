@@ -23,6 +23,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -182,6 +184,12 @@ public class BoardPanel extends JPanel {
 	
 	public BoardPanel() {
 		super(new PercentalLayout());
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				logger.debug("klick auf BoardPanel");
+			}
+		});
 	}
 	
 
