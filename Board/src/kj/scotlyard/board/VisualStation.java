@@ -123,8 +123,7 @@ public class VisualStation extends JComponent implements PercentalBounds {
 		
 		for (Marking m : markings) {
 			// TODO draw markings
-			// aber Reihenfolge der mark types waere eigentl. auch wichtig!
-			// hoeher priore ueber die anderen zeichnen
+//			for each geht auch fuer enums, also koennte ich die werte nach prioritaet aufsteigend sortieren, und so zeichnen!
 		}
 	}
 	
