@@ -41,9 +41,6 @@ public class MovePreparer {
 		
 		if (conn != null) {
 			// D.h. nicht abgebrochen
-			if (!connections.contains(conn)) {
-				throw new RuntimeException("Template method falsch implementiert: Rueckgabewert muss element des Arguments oder null sein!");
-			}
 			m.setConnection(conn);
 			m.setItem(); // TODO Item selbst raussuchen, passend zur conn! wie auch immer
 			
@@ -81,9 +78,7 @@ public class MovePreparer {
 					sms.add(m);
 				}
 				result = MoveProducer.createMultiMove(gs.getCurrentPlayer(), gs.getCurrentRoundNumber(),
-						moveNumber,
-						doubleMoveCard, // woher nehmen? einen getter, der null liefern kann, dann kommt der fehler bei der movepolicy, das ist zu spaet!
-						sms);
+						moveNumber, doubleMoveCard, sms);
 			}
 		}		
 		return result;
