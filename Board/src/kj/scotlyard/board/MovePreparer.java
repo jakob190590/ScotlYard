@@ -3,7 +3,6 @@ package kj.scotlyard.board;
 import java.util.HashSet;
 import java.util.Set;
 
-import kj.scotlyard.game.graph.Connection;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
@@ -11,29 +10,66 @@ import kj.scotlyard.game.model.DefaultMove;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
-import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.util.GameStateExtension;
 import kj.scotlyard.game.util.MoveHelper;
 import kj.scotlyard.game.util.MoveProducer;
 import kj.scotlyard.game.util.SubMoves;
 
-// Template method pattern
+/**
+ * This class defines the algorithm for "manual" move preparation.
+ * This is the steps, the user make, to carry out a move:
+ * <ol>
+ * <li>Select the next station</li>
+ * <li>Select the ticket to use (callback)</li>
+ * <li>Ready or go to 1. again for a multi move</li>
+ * </ol>
+ * When done, the turnkey move can be obtained via <code>getMove</code>.
+ * 
+ * @author jakob190590
+ *
+ */
 public abstract class MovePreparer {
 	
-	private GameState gs;
+	private GameState gameState;
 	
-	private GameGraph gg;
+	private GameGraph gameGraph;
 	
 	/**
 	 *  Roher Datenbehaelter; aus einigen seiner Felder wird bei 
 	 *  <code>getMove()</code> der resultierende Move erzeugt!
 	 */
 	private Move move = null;
+	
+	
+	public MovePreparer(GameState gameState, GameGraph gameGraph) {
+		this.gameState = gameState;
+		this.gameGraph = gameGraph;
+	}
+	
+	public MovePreparer() {
+		this(null, null);
+	}
 
-	/**
-	 * Resets current move preparation.
-	 */
+	
+	public GameState getGameState() {
+		return gameState;
+	}
+
+	public void setGameState(GameState gameState) {
+		this.gameState = gameState;
+	}
+
+	public GameGraph getGameGraph() {
+		return gameGraph;
+	}
+
+	public void setGameGraph(GameGraph gameGraph) {
+		this.gameGraph = gameGraph;
+	}
+
+	
+	/** Resets current move preparation. */
 	public void reset() {
 		move = null;
 	}
@@ -62,14 +98,14 @@ public abstract class MovePreparer {
 	 * @param station
 	 */
 	public void nextStation(StationVertex station) {
-		Move lm = gs.getLastMove(gs.getCurrentPlayer()); // last move
+		Move lm = gameState.getLastMove(gameState.getCurrentPlayer()); // last move
 		StationVertex lastStation = lm.getStation();
 		
 		Move m = new DefaultMove();
 		m.setStation(station);
 		
 		// Calculate all connections from current station to station
-		Set<ConnectionEdge> connections = gg.getGraph().getAllEdges(lastStation, station);
+		Set<ConnectionEdge> connections = gameGraph.getGraph().getAllEdges(lastStation, station);
 		// TODO next station muss auch noch anderweitig geprueft werden (besetzt, kein ticket, ...?)
 		if (connections.isEmpty()) {
 			errorImpossibleNextStation(station);
@@ -112,21 +148,21 @@ public abstract class MovePreparer {
 	public Move getMove() {		
 		Move result = null;
 		if (move != null) {
-			int moveNumber = gs.getLastMove(gs.getCurrentPlayer()).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
+			int moveNumber = gameState.getLastMove(gameState.getCurrentPlayer()).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
 			if (move.getMoves().isEmpty()) {
 				// Single Move
-				result = MoveProducer.createSingleMove(gs.getCurrentPlayer(), gs.getCurrentRoundNumber(), 
+				result = MoveProducer.createSingleMove(gameState.getCurrentPlayer(), gameState.getCurrentRoundNumber(), 
 						moveNumber,
 						move.getStation(), move.getConnection(), (Ticket) move.getItem());
 			} else {
 				// Multi Move
-				GameStateExtension gsx = new GameStateExtension(gs);
-				DoubleMoveCard doubleMoveCard = (DoubleMoveCard) gsx.getItem(gs.getCurrentPlayer(), DoubleMoveCard.class);
+				GameStateExtension gsx = new GameStateExtension(gameState);
+				DoubleMoveCard doubleMoveCard = (DoubleMoveCard) gsx.getItem(gameState.getCurrentPlayer(), DoubleMoveCard.class);
 				SubMoves sms = new SubMoves();
 				for (Move m : move.getMoves()) {
 					sms.add(m.getStation(), m.getConnection(), (Ticket) m.getItem());
 				}
-				result = MoveProducer.createMultiMove(gs.getCurrentPlayer(), gs.getCurrentRoundNumber(),
+				result = MoveProducer.createMultiMove(gameState.getCurrentPlayer(), gameState.getCurrentRoundNumber(),
 						moveNumber, doubleMoveCard, sms);
 			}
 		}		
