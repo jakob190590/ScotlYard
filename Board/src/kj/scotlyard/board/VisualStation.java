@@ -26,6 +26,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JComponent;
@@ -44,19 +46,19 @@ public class VisualStation extends JComponent implements PercentalBounds {
 		/** Mark type for possible positions of MrX */
 		POSSIBLE_POSITION,
 		
+		/** Mark type for a possible next station in an upcoming move */
+		POSSIBLE_NEXT_STATION,
+		
+		/** Mark type for an impossible next station in an upcoming move */
+		IMPOSSIBLE_NEXT_STATION,		
+		
 		/** Mark type for the designated next station in an upcoming move */
 		DESIGNATED_NEXT_STATION,
 		
 		/** Mark type for the designated second station in an upcoming double move */
 		DESIGNATED_NEXT_STATION2,
-		
-		/** Mark type for a possible next station in an upcoming move */
-		POSSIBLE_NEXT_STATION,
-		
-		/** Mark type for an impossible next station in an upcoming move */
-		IMPOSSIBLE_NEXT_STATION;		
 	}
-	
+	private Map<MarkType, List<Player>> markings2; // TODO besser :s ?
 	private static final class Marking {
 		public final MarkType type;
 		public final Player player;
@@ -121,9 +123,23 @@ public class VisualStation extends JComponent implements PercentalBounds {
 		g.setColor(Color.BLACK);
 		g2D.drawOval(0, 0, getWidth(), getHeight());
 		
-		for (Marking m : markings) {
-			// TODO draw markings
-//			for each geht auch fuer enums, also koennte ich die werte nach prioritaet aufsteigend sortieren, und so zeichnen!
+		// MarkTypes sind aufsteigend nach Prioritaet sortiert
+		// Auf diese Weise werden niedere Markings durch hoehere
+		// uebermalt -- leider kein gerade effizienter Algo.
+		for (MarkType type : MarkType.values()) {
+			for (Marking m : markings) {
+				if (m.type == type) {
+					// TODO draw markings
+					switch (type) {
+					case POSSIBLE_POSITION:
+						
+						break;
+
+					default:
+						break;
+					}
+				}
+			}
 		}
 	}
 	
