@@ -38,9 +38,9 @@ public interface GameState {
 	 * it's sub moves have different move numbers.
 	 */
 	enum MoveAccessMode {
-        ROUND_NUMBER,
-        MOVE_NUMBER
-    }
+		ROUND_NUMBER,
+		MOVE_NUMBER
+	}
 	
 	int INITIAL_ROUND_NUMBER = 0;
 	
