@@ -116,7 +116,9 @@ public interface GameState {
 	Move getLastMove(Player player);
 	
 	/**
-	 * Returns the current round number. // TODO grenzen (nur >= 0?)
+	 * Returns the current round number. The round 
+	 * number must be greater than or equal to
+	 * <code>INITIAL_ROUND_NUMBER</code>.
 	 * @return the current round number
 	 */
 	int getCurrentRoundNumber();
