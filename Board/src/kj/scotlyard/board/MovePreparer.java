@@ -141,7 +141,8 @@ public abstract class MovePreparer extends Observable {
 			
 			notifyObservers(getMove()); // TODO Dann wird aber getMove u.U. zwei mal berechnet ...
 		}
-		// TODO auch else notifyObservers(); wenn abgebrochen??
+		// TODO Falls es doch noch jemanden interessiert, wenn abgebrochen wird:
+		// else notifyObservers(); // arg = null
 	}
 		
 	/**
