@@ -1,6 +1,7 @@
 package kj.scotlyard.board;
 
 import java.util.HashSet;
+import java.util.Observable;
 import java.util.Set;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
@@ -29,7 +30,7 @@ import kj.scotlyard.game.util.SubMoves;
  * @author jakob190590
  *
  */
-public abstract class MovePreparer {
+public abstract class MovePreparer extends Observable {
 	
 	private GameState gameState;
 	
@@ -137,7 +138,10 @@ public abstract class MovePreparer {
 				}
 				move.getMoves().add(m);
 			}
+			
+			notifyObservers(getMove()); // TODO Dann wird aber getMove u.U. zwei mal berechnet ...
 		}
+		// TODO auch else notifyObservers(); wenn abgebrochen??
 	}
 		
 	/**
