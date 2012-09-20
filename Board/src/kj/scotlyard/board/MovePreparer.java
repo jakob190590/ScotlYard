@@ -42,6 +42,7 @@ public abstract class MovePreparer extends Observable {
 	 */
 	private Move move = null;
 	
+	private Move result = null;
 	
 	public MovePreparer(GameState gameState, GameGraph gameGraph) {
 		this.gameState = gameState;
@@ -72,6 +73,7 @@ public abstract class MovePreparer extends Observable {
 	
 	/** Resets current move preparation. */
 	public void reset() {
+		result = null;
 		move = null;
 	}
 	
@@ -121,6 +123,8 @@ public abstract class MovePreparer extends Observable {
 		
 		if (ticket != null) {		
 			// D.h. nicht abgebrochen
+			result = null;
+			
 			ConnectionEdge conn = MoveHelper.suggestConnection(lastStation, station, ticket);
 			m.setConnection(conn);
 			m.setItem(ticket);
@@ -150,9 +154,8 @@ public abstract class MovePreparer extends Observable {
 	 * This Move can be passed to the GameController.
 	 * @return a turnkey Move
 	 */
-	public Move getMove() {		
-		Move result = null;
-		if (move != null) {
+	public Move getMove() {
+		if (result == null && move != null) {
 			int moveNumber = gameState.getLastMove(gameState.getCurrentPlayer()).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
 			if (move.getMoves().isEmpty()) {
 				// Single Move
