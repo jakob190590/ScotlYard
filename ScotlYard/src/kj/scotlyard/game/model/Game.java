@@ -43,7 +43,9 @@ public interface Game extends GameState {
 	void setItems(Player player, Set<Item> items);
 	
 	/**
-	 * Set the current round number. roundNumber must be // TODO grenzen wie bei gameState!
+	 * Set the current round number. The number must be 
+	 * greater than or equal to 
+	 * <code>GameState.INITIAL_ROUND_NUMBER</code>.
 	 * @param roundNumber
 	 */
 	void setCurrentRoundNumber(int roundNumber);
