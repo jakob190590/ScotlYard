@@ -18,16 +18,21 @@
 
 package kj.scotlyard.board;
 
-import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JComponent;
+
+import org.apache.log4j.Logger;
 
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.Player;
@@ -35,7 +40,61 @@ import kj.scotlyard.game.model.Player;
 @SuppressWarnings("serial")
 public class VisualStation extends JComponent implements PercentalBounds {
 	
+	// Types of marking
+	
+	public static enum MarkType {
+		/** Mark type for possible positions of MrX */
+		POSSIBLE_POSITION,
+		
+		/** Mark type for a possible next station in an upcoming move */
+		POSSIBLE_NEXT_STATION,
+		
+		/** Mark type for an impossible next station in an upcoming move */
+		IMPOSSIBLE_NEXT_STATION,		
+		
+		/** Mark type for the designated next station in an upcoming move */
+		DESIGNATED_NEXT_STATION,
+		
+		/** Mark type for the designated second station in an upcoming double move */
+		DESIGNATED_NEXT_STATION2,
+	}
+	private Map<MarkType, List<Player>> markings2; // TODO besser :s ?
+	private static final class Marking {
+		public final MarkType type;
+		public final Player player;
+		public Marking(MarkType type, Player player) {
+			this.type = type;
+			this.player = player;
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((player == null) ? 0 : player.hashCode());
+			result = prime * result + ((type == null) ? 0 : type.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj instanceof Marking) {				
+				Marking other = (Marking) obj;
+				if (type == other.type && player == other.player)
+					return true;
+			}
+			return false;
+		}
+	}
+	
+	
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger(VisualStation.class);
+	
 	private StationVertex station;
+	
+	private Set<Marking> markings = new HashSet<>();
 	
 	private int number;
 
@@ -44,19 +103,6 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	private double width2;
 	private double height2;
 
-	// Types of marking
-	
-	/** Mark type for possible positions of MrX */
-	public static final int POSSIBLE_POSITION = 0;
-	
-	/** Mark type for the designated next station in an upcoming move */
-	public static final int DESIGNATED_NEXT_STATION = 1;
-	
-	/** Mark type for a possible next station in an upcoming move */
-	public static final int POSSIBLE_NEXT_STATION = 2;
-	
-	/** Mark type for an impossible next station in an upcoming move */
-	public static final int IMPOSSIBLE_NEXT_STATION = 3;
 	
 	public VisualStation() {
 		this(null, 0);
@@ -76,33 +122,38 @@ public class VisualStation extends JComponent implements PercentalBounds {
 		
 		g.setColor(Color.BLACK);
 		g2D.drawOval(0, 0, getWidth(), getHeight());
+		
+		// MarkTypes sind aufsteigend nach Prioritaet sortiert
+		// Auf diese Weise werden niedere Markings durch hoehere
+		// uebermalt -- leider kein gerade effizienter Algo.
+		for (MarkType type : MarkType.values()) {
+			for (Marking m : markings) {
+				if (m.type == type) {
+					// TODO draw markings
+					switch (type) {
+					case POSSIBLE_POSITION:
+						
+						break;
+
+					default:
+						break;
+					}
+				}
+			}
+		}
 	}
 	
 	@Override
 	public boolean contains(int x, int y) {
-		// TODO Korbi, x, y innerhalb oder auf kreis mit durchmesser d
-		// kreis liegt im quadrat d^2, ursprung ist links oben; x, y positiv nach rechts unten
+		// TODO Korbi, x, y innerhalb oder auf oval mit breite w u. hoehe h
+		// (ursprung links oben)
+//		return (x >= 0) && (x < getWidth() / 2) && (y >= 0) && (y < getHeight() / 2);
 		return super.contains(x, y);
-	}
-
-	@Override
-	protected void processEvent(AWTEvent e) {
-//		if (e instanceof MouseEvent) System.out.println("MouseEvent auf VisualStation.");
-		if (e instanceof MouseEvent 
-				&& !contains(((MouseEvent) e).getX(), ((MouseEvent) e).getY())) {
-			// TODO braucht's das ueberhaupt, oder wird das eh automatisch gemacht bei MouseEvents?
-			// Mausereignis ausserhalb des Umrisses der Station
-			// -> Ereignis nicht bearbeiten (TODO hoffentlich wird's dann dem parent uebergeben?)
-//			System.out.println("MouseEvent ausserhalb des Umrisses der VisualStation.");
-			return;
-		}
-		super.processEvent(e);
 	}
 
 	public StationVertex getStation() {
 		return station;
 	}
-
 
 	public void setStation(StationVertex station) {
 		this.station = station;
@@ -172,20 +223,68 @@ public class VisualStation extends JComponent implements PercentalBounds {
 		width2 = r.width;
 		height2 = r.height;
 	}
-
 	
-	public void enableMarking(int type, Player player) {
-		// TODO let's draw marking
-		// vllt doch lieber show und hide?
+	// Markings sind NICHT kombinierbar (Zweierpotenzen mit bitweisem ODER |)!
+	// Grund: Verbindung mit Player
+	// Dadurch wuerde das Interface nur unverstaendlicher.
+	
+	/**
+	 * Enable specified marking.
+	 * @param type the mark type
+	 * @param player the player for which the marking is
+	 */
+	public void enableMarking(MarkType type, Player player) {
+		markings.add(new Marking(type, player));
+		repaint();
 	}
 	
-	public void disableMarking(int type, Player player) {
-		// TODO don't draw marking
+	/**
+	 * Disable specified marking.
+	 * @param type the mark type
+	 * @param player the player for which the marking is
+	 */
+	public void disableMarking(MarkType type, Player player) {
+		markings.remove(new Marking(type, player));
+		repaint();
+	}
+	
+	/**
+	 * Disable all markings of the specified type.
+	 * @param type the mark type
+	 */
+	public void disableAllMarkings(MarkType type) { // TODO vllt noch umbenennen: All weg.
+		Iterator<Marking> it = markings.iterator();
+		while (it.hasNext()) {
+			if (it.next().type == type) {
+				it.remove();
+			}
+		}
+		repaint();
+	}
+	
+	/**
+	 * Disable all markings of the specified player.
+	 * @param player the player for which the marking is
+	 */
+	public void disableAllMarkings(Player player) {
+		Iterator<Marking> it = markings.iterator();
+		while (it.hasNext()) {
+			if (it.next().player == player) {
+				it.remove();
+			}
+		}
+		repaint();
+	}
+	
+	/** Disable all markings. */
+	public void disableAllMarkings() {
+		markings.clear();
+		repaint();
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getName() + "[number=" + number + "]";
+		return getClass() + "[number=" + number + "]";
 	}
 	
 }

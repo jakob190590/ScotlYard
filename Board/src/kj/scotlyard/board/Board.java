@@ -28,8 +28,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -43,9 +46,17 @@ import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.control.impl.DefaultGameController;
 import kj.scotlyard.game.graph.GameGraph;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DefaultGame;
+import kj.scotlyard.game.model.DefaultGameState;
+import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.MrXPlayer;
+import kj.scotlyard.game.model.Player;
+import kj.scotlyard.game.model.PlayerListener;
+import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.TheRules;
 import kj.scotlyard.game.util.MoveProducer;
@@ -58,14 +69,31 @@ import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import javax.swing.Action;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import java.awt.event.ActionListener;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+
 @SuppressWarnings("serial")
 public class Board extends JFrame {
+	
+	private static Logger logger = Logger.getLogger(Board.class);
 
 	private JPanel contentPane;
 	
+	private BoardPanel boardPanel;
+	
+	private Image img;
+	
 	GameController gc;
 	Game g;
+	GameState gs;
 	GameGraph gg;
+	MovePreparer mPrep;
+	Map<Integer, StationVertex> nsm; // Number Station Map
+	
 	
 	private final Action newGameAction = new NewGameAction();
 	private final Action clearPlayersAction = new ClearPlayersAction();
@@ -78,7 +106,17 @@ public class Board extends JFrame {
 	private final Action removeDetectiveAction = new RemoveDetectiveAction();
 	private final Action shiftDetectiveUpAction = new ShiftDetectiveUpAction();
 	private final Action shiftDetectiveDownAction = new ShiftDetectiveDownAction();
-	private final Action newGameWithPlayerAction = new NewGameWithPlayerAction();
+	private final Action newGameWithPlayersAction = new NewGameWithPlayersAction();
+	private final Action undoAction = new UndoAction();
+	private final Action redoAction = new RedoAction();
+	private final Action suggestMoveAction = new SuggestMoveAction();
+	private final Action moveNowAction = new MoveNowAction();
+	private final Action submitStationNumberAction = new SubmitStationNumberAction();
+	private final Action resetAction = new ResetAction();
+	
+	private JComboBox<Player> cbMovePrepPlayer;
+	private JFormattedTextField ftfMovePrepStationNumber;
+
 
 
 	/**
@@ -95,6 +133,7 @@ public class Board extends JFrame {
 				}
 			}
 		});
+		PropertyConfigurator.configure("log4j.properties");
 	}
 
 	/**
@@ -116,7 +155,7 @@ public class Board extends JFrame {
 		mnGameController.add(mntmNewGame);
 		
 		JMenuItem mntmNewGameWith = new JMenuItem("New Game with Player");
-		mntmNewGameWith.setAction(newGameWithPlayerAction);
+		mntmNewGameWith.setAction(newGameWithPlayersAction);
 		mnGameController.add(mntmNewGameWith);
 		
 		mnGameController.addSeparator();
@@ -169,9 +208,69 @@ public class Board extends JFrame {
 		
 		mnGameController.addSeparator();
 		
+		JMenu mnUndoRedo = new JMenu("Undo/Redo");
+		mnUndoRedo.setMnemonic('u');
+		mnGameController.add(mnUndoRedo);
+		
+		JMenuItem mntmUndo = new JMenuItem("Undo");
+		mntmUndo.setAction(undoAction);
+		mnUndoRedo.add(mntmUndo);
+		
+		JMenuItem mntmRedo = new JMenuItem("Redo");
+		mntmRedo.setAction(redoAction);
+		mnUndoRedo.add(mntmRedo);
+		
+		mnGameController.addSeparator();
+		
 		JMenuItem mntmGameStatusAnd = new JMenuItem("Game Status and Win...");
 		mntmGameStatusAnd.setAction(gameStatusWinAction);
 		mnGameController.add(mntmGameStatusAnd);
+		
+		
+		JMenu mnBoardPanel = new JMenu("BoardPanel");
+		mnBoardPanel.setMnemonic('b');
+		menuBar.add(mnBoardPanel);
+		
+		// Um zu ueberpruefen, ob das neu setzen waehrend dem Spiel funktioniert
+		JMenuItem mntmSetGameStateNull = new JMenuItem("Set GameState to null");
+		mntmSetGameStateNull.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setGameState(null);
+			}
+		});
+		mntmSetGameStateNull.setMnemonic('n');
+		mnBoardPanel.add(mntmSetGameStateNull);
+		
+		JMenuItem mntmSetGameState = new JMenuItem("Set GameState");
+		mntmSetGameState.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setGameState(gs);
+			}
+		});
+		mntmSetGameState.setMnemonic('g');
+		mnBoardPanel.add(mntmSetGameState);
+		
+		mnBoardPanel.addSeparator();
+		
+		JMenuItem mntmSetImageToNull = new JMenuItem("Set Image to null");
+		mntmSetImageToNull.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setImage(null);
+			}
+		});
+		mntmSetImageToNull.setMnemonic('u');
+		mnBoardPanel.add(mntmSetImageToNull);
+		
+		JMenuItem mntmSetImage = new JMenuItem("Set Image");
+		mntmSetImage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setImage(img);
+			}
+		});
+		mntmSetImage.setMnemonic('i');
+		mnBoardPanel.add(mntmSetImage);
+		
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -188,7 +287,7 @@ public class Board extends JFrame {
 		
 		
 		JPanel boardPanelContainer = new JPanel(new AspectRatioGridLayout());
-		BoardPanel board = new BoardPanel();
+		boardPanel = new BoardPanel();
 		
 		MouseListener ml = new MouseAdapter() {
 			@Override
@@ -199,12 +298,16 @@ public class Board extends JFrame {
 		};
 //		board.addMouseListener(ml);
 		for (JComponent c : bgl.getVisualComponents()) {
-			board.add(c);
+			boardPanel.add(c);
 			c.addMouseListener(ml);
 		}
-		board.buildVisualStationMap();
+		boardPanel.buildVisualStationMap();
+		nsm = bgl.getNumberStationMap();
 		
-		Image img = null;
+		
+		
+		
+		img = null;
 		// Variante 1
 		try {
 			img = ImageIO.read(new File("original-scotland-yard-board.png"));
@@ -243,51 +346,126 @@ public class Board extends JFrame {
 			throw new IllegalArgumentException("The image seems to be not loaded " +
 					"completely: Cannot determine image's width and/or height.");
 		}
-		board.setImage(img);	
-		board.setPreferredSize(new Dimension(w, h));
+		boardPanel.setImage(img);	
+		boardPanel.setPreferredSize(new Dimension(w, h));
 		
 		// GameState
 		g = new DefaultGame();
+		gs = new DefaultGameState(g);
 		gg = bgl.getGameGraph();
 		gc = new DefaultGameController(g, gg, new TheRules());
 		gc.addObserver(new Observer() {
 			@Override
 			public void update(Observable o, Object arg) {
 				GameController c = (GameController) o;
-				showGameStatusAndWin(c.getStatus(), c.getWin());
+				setGameControllerActionsEnabled(c.getStatus());
+				if (c.getStatus() != GameStatus.IN_GAME)
+					showGameStatusAndWin(c.getStatus(), c.getWin());
 			}
 		});
-		board.setGameState(g);
+		mPrep = new MovePreparer(gs, gg) {
+			@Override
+			protected void errorImpossibleNextStation(StationVertex station,
+					Player player) {
+			}
+
+			@Override
+			protected Ticket selectTicket(Set<Ticket> tickets, Player player) {
+				return tickets.iterator().next(); // gleich das erste
+			}
+		};
+		setGameControllerActionsEnabled(gc.getStatus());
+		boardPanel.setGameState(gs);
 		
-		boardPanelContainer.add(board);
+		boardPanelContainer.add(boardPanel);
 		
 		contentPane.add(boardPanelContainer, BorderLayout.CENTER);
 		
+		JPanel ToolbarContainer = new JPanel();
+		contentPane.add(ToolbarContainer, BorderLayout.NORTH);
+		ToolbarContainer.setLayout(new BoxLayout(ToolbarContainer, BoxLayout.Y_AXIS));
+		
 		JPanel panel = new JPanel();
-		contentPane.add(panel, BorderLayout.NORTH);
+		ToolbarContainer.add(panel);
 		
-		JLabel lblGamecontroller = new JLabel("GameController");
-		panel.add(lblGamecontroller);
+		JLabel label = new JLabel("GameController");
+		panel.add(label);
 		
-		JButton btnNewGame = new JButton("New Game");
-		btnNewGame.setAction(newGameAction);
-		panel.add(btnNewGame);
+		JButton button = new JButton("New Game with Players");
+		button.setAction(newGameWithPlayersAction);
+		panel.add(button);
 		
-		JButton btnClearplayers = new JButton("ClearPlayers");
-		btnClearplayers.setAction(clearPlayersAction);
-		panel.add(btnClearplayers);
+		JButton button_1 = new JButton("Start");
+		button_1.setAction(startAction);
+		panel.add(button_1);
 		
-		JButton btnStart = new JButton("Start");
-		btnStart.setAction(startAction);
-		panel.add(btnStart);
+		JButton button_2 = new JButton("Abort");
+		button_2.setAction(abortAction);
+		panel.add(button_2);
 		
-		JButton btnAbort = new JButton("Abort");
-		btnAbort.setAction(abortAction);
-		panel.add(btnAbort);
+		JButton button_3 = new JButton("Move...");
+		button_3.setAction(moveAction);
+		panel.add(button_3);
 		
-		JButton btnMove = new JButton("Move...");
-		btnMove.setAction(moveAction);
-		panel.add(btnMove);
+		JPanel MovePreperationBar = new JPanel();
+		ToolbarContainer.add(MovePreperationBar);
+		MovePreperationBar.setLayout(new BoxLayout(MovePreperationBar, BoxLayout.X_AXIS));
+		
+		final Vector<Player> players = new Vector<>(gs.getPlayers());
+		cbMovePrepPlayer = new JComboBox<>(players);
+		// TODO cbMovePrepPlayer.setRenderer(aRenderer); // Implement ListCellRenderer: http://docs.oracle.com/javase/tutorial/uiswing/components/combobox.html#renderer
+		cbMovePrepPlayer.setPreferredSize(new Dimension(250, 20));
+		gs.addPlayerListener(new PlayerListener() {
+			@Override
+			public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
+				logger.debug("combobox player list update; items: " + gs.getPlayers().size());
+				players.clear();
+				players.addAll(gs.getPlayers());
+				logger.debug("combobox player list updated; items: " + players.size());
+			}
+			@Override
+			public void detectiveRemoved(GameState gameState,
+					DetectivePlayer detective, int atIndex) {
+				logger.debug("combobox player list update; items: " + gs.getPlayers().size());
+				players.clear();
+				players.addAll(gs.getPlayers());
+				logger.debug("combobox player list updated; items: " + players.size());
+			}
+			@Override
+			public void detectiveAdded(GameState gameState, DetectivePlayer detective,
+					int atIndex) {
+				logger.debug("combobox player list update; items: " + gs.getPlayers().size());
+				players.clear();
+				players.addAll(gs.getPlayers());
+				logger.debug("combobox player list updated; items: " + players.size());
+//				if (!players.isEmpty() && players.get(0) instanceof MrXPlayer)
+//					atIndex++;
+//				players.add(atIndex, detective);
+			}
+		});
+		MovePreperationBar.add(cbMovePrepPlayer);
+		
+		ftfMovePrepStationNumber = new JFormattedTextField();
+		MovePreperationBar.add(ftfMovePrepStationNumber);
+		
+		JButton btnMovePrepOk = new JButton("OK");
+		btnMovePrepOk.setAction(submitStationNumberAction);
+		MovePreperationBar.add(btnMovePrepOk);
+		
+		JButton btnMovePrepReset = new JButton("Reset");
+		btnMovePrepReset.setAction(resetAction);
+		MovePreperationBar.add(btnMovePrepReset);
+		
+		JPanel MoveControlBar = new JPanel();
+		ToolbarContainer.add(MoveControlBar);
+		
+		JButton btnMove = new JButton("Move!");
+		btnMove.setAction(moveNowAction);
+		MoveControlBar.add(btnMove);
+		
+		JButton btnSuggestMove = new JButton("Suggest Move");
+		btnSuggestMove.setAction(suggestMoveAction);
+		MoveControlBar.add(btnSuggestMove);
 		
 		
 //		pack();
@@ -296,7 +474,7 @@ public class Board extends JFrame {
 	private class NewGameAction extends AbstractAction {
 		public NewGameAction() {
 			putValue(NAME, "New Game");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Create a new game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_N);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -306,7 +484,7 @@ public class Board extends JFrame {
 	private class ClearPlayersAction extends AbstractAction {
 		public ClearPlayersAction() {
 			putValue(NAME, "Clear Players");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Clear all players");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_C);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -316,7 +494,7 @@ public class Board extends JFrame {
 	private class NewMrXAction extends AbstractAction {
 		public NewMrXAction() {
 			putValue(NAME, "New MrX");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Set new Mr. X");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_X);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -326,7 +504,7 @@ public class Board extends JFrame {
 	private class NewDetectiveAction extends AbstractAction {
 		public NewDetectiveAction() {
 			putValue(NAME, "New Detective");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Add a new detective");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_D);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -336,22 +514,21 @@ public class Board extends JFrame {
 	private class StartAction extends AbstractAction {
 		public StartAction() {
 			putValue(NAME, "Start");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Start the game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_S);
 		}
 		public void actionPerformed(ActionEvent e) {
 			try {
 				gc.start();
 			} catch (Exception e2) {
-				JOptionPane.showMessageDialog(Board.this, e2.getMessage(), 
-						e2.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+				showErrorMessage(e2);
 			}
 		}
 	}
 	private class AbortAction extends AbstractAction {
 		public AbortAction() {
 			putValue(NAME, "Abort");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Abort the game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_A);
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -361,24 +538,25 @@ public class Board extends JFrame {
 	private class MoveAction extends AbstractAction {
 		public MoveAction() {
 			putValue(NAME, "Move...");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Make a move");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
 		}
 		public void actionPerformed(ActionEvent e) {
 			try {
 				Move move = null;
-				move = MoveProducer.createRandomSingleMove(g, gg);
+				if (gc.getStatus() == GameStatus.IN_GAME) {
+					move = MoveProducer.createRandomSingleMove(gs, gg);
+				}
 				gc.move(move);
 			} catch (Exception e2) {
-				JOptionPane.showMessageDialog(Board.this, e2.getMessage(), 
-						e2.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+				showErrorMessage(e2);
 			}
 		}
 	}
 	private class GameStatusWinAction extends AbstractAction {
 		public GameStatusWinAction() {
 			putValue(NAME, "Game Status and Win...");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Show the game status and win");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_I); // i as information
 		}
 		public void actionPerformed(ActionEvent e) {
@@ -388,38 +566,102 @@ public class Board extends JFrame {
 	private class RemoveDetectiveAction extends AbstractAction {
 		public RemoveDetectiveAction() {
 			putValue(NAME, "Remove Detective...");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Remove a detective");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
 		}
 		public void actionPerformed(ActionEvent e) {
+			String s = "0";
+			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
+				DetectivePlayer d = null;
+				try {
+					d = g.getDetectives().get(Integer.parseInt(s));
+				} catch (Exception e2) {
+					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
+							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
+							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
+						break;
+					}
+					continue;
+				}
+				try {
+					gc.removeDetective(d);
+				} catch (Exception e2) {
+					showErrorMessage(e2);					
+				}
+				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
+				break;
+			}
 		}
 	}
 	private class ShiftDetectiveUpAction extends AbstractAction {
 		public ShiftDetectiveUpAction() {
 			putValue(NAME, "Shift Detective Up...");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Shift up a detective in the list");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_U);
 		}
 		public void actionPerformed(ActionEvent e) {
+			String s = "0";
+			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
+				DetectivePlayer d = null;
+				try {
+					d = g.getDetectives().get(Integer.parseInt(s));
+				} catch (Exception e2) {
+					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
+							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
+							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
+						break;
+					}
+					continue;
+				}
+				try {
+					gc.shiftUpDetective(d);
+				} catch (Exception e2) {
+					showErrorMessage(e2);					
+				}
+				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
+				break;
+			}
 		}
 	}
 	private class ShiftDetectiveDownAction extends AbstractAction {
 		public ShiftDetectiveDownAction() {
 			putValue(NAME, "Shift Detective Down...");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Shift down a detective in the list");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_D);
 			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 16);
 		}
 		public void actionPerformed(ActionEvent e) {
+			String s = "0";
+			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
+				DetectivePlayer d = null;
+				try {
+					d = g.getDetectives().get(Integer.parseInt(s));
+				} catch (Exception e2) {
+					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
+							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
+							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
+						break;
+					}
+					continue;
+				}
+				try {
+					gc.shiftDownDetective(d);
+				} catch (Exception e2) {
+					showErrorMessage(e2);					
+				}
+				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
+				break;
+			}
 		}
 	}
-	private class NewGameWithPlayerAction extends AbstractAction {
-		public NewGameWithPlayerAction() {
-			putValue(NAME, "New Game with Player");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+	private class NewGameWithPlayersAction extends AbstractAction {
+		public NewGameWithPlayersAction() {
+			putValue(NAME, "New Game with Players");
+			putValue(SHORT_DESCRIPTION, "Create a new game with new players");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_W);
 		}
 		public void actionPerformed(ActionEvent e) {
+			logger.info("new game with players");
 			gc.clearPlayers();
 			gc.newMrX();
 			for (int i = 0; i < 4; i++)
@@ -431,5 +673,94 @@ public class Board extends JFrame {
 	private void showGameStatusAndWin(GameStatus status, GameWin win) {
 		JOptionPane.showMessageDialog(Board.this, String.format(
 				"Status: %s\nWin: %s", status, win));
+	}
+	private void setGameControllerActionsEnabled(GameStatus status) {
+		boolean inGame = (status == GameStatus.IN_GAME);
+		newGameAction.setEnabled(!inGame);
+		//clearPlayersAction.setEnabled(inGame);
+		//newMrXAction.setEnabled(inGame);
+		//newDetectiveAction.setEnabled(inGame);
+		startAction.setEnabled(!inGame);
+		abortAction.setEnabled(inGame);
+		moveAction.setEnabled(inGame);
+		
+		//removeDetectiveAction.setEnabled(inGame);
+		//shiftDetectiveUpAction.setEnabled(inGame);
+		//shiftDetectiveDownAction.setEnabled(inGame);
+		newGameWithPlayersAction.setEnabled(!inGame);
+	}
+	private void showErrorMessage(Exception e) {
+		JOptionPane.showMessageDialog(this, e.getMessage(), e.getClass()
+				.getSimpleName(), JOptionPane.ERROR_MESSAGE);
+	}
+	private class UndoAction extends AbstractAction {
+		public UndoAction() {
+			putValue(NAME, "Undo");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_U);
+		}
+		public void actionPerformed(ActionEvent e) {
+			((DefaultGameController) gc).getUndoManager().undo();
+			setEnabled(((DefaultGameController) gc).getUndoManager().canUndo()); // TODO das kanns doch nicht sein: ueberall, wo UndoManger veraendert werden koennte, muesste sowas stehn! wir brauchen nen listener!!
+			setEnabled(((DefaultGameController) gc).getUndoManager().canRedo());
+		}
+	}
+	private class RedoAction extends AbstractAction {
+		public RedoAction() {
+			putValue(NAME, "Redo");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
+		}
+		public void actionPerformed(ActionEvent e) {
+			((DefaultGameController) gc).getUndoManager().redo();
+			setEnabled(((DefaultGameController) gc).getUndoManager().canUndo()); // TODO das kanns doch nicht sein: ueberall, wo UndoManger veraendert werden koennte, muesste sowas stehn! wir brauchen nen listener!!
+		    setEnabled(((DefaultGameController) gc).getUndoManager().canRedo());
+		}
+	}
+	private class SuggestMoveAction extends AbstractAction {
+		public SuggestMoveAction() {
+			putValue(NAME, "Suggest move");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_S);
+			setEnabled(false);
+		}
+		public void actionPerformed(ActionEvent e) {
+			// Suggest an AI move!
+		}
+	}
+	private class MoveNowAction extends AbstractAction {
+		public MoveNowAction() {
+			putValue(NAME, "Move!"); // or "Move now"
+			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
+		}
+		public void actionPerformed(ActionEvent e) {
+			gc.move(mPrep.getMove());
+		}
+	}
+	private class SubmitStationNumberAction extends AbstractAction {
+		public SubmitStationNumberAction() {
+			putValue(NAME, "OK");
+			putValue(SHORT_DESCRIPTION, "Submit station number");
+		}
+		public void actionPerformed(ActionEvent e) {
+			mPrep.nextStation(nsm.get(Integer.parseInt(ftfMovePrepStationNumber.getText())), 
+					gs.getPlayers().get(cbMovePrepPlayer.getSelectedIndex()));
+		}
+	}
+	private class ResetAction extends AbstractAction {
+		public ResetAction() {
+			putValue(NAME, "Reset");
+			putValue(SHORT_DESCRIPTION, "Reset move preparation");
+		}
+		public void actionPerformed(ActionEvent e) {
+			mPrep.reset(gs.getPlayers().get(cbMovePrepPlayer.getSelectedIndex()));
+		}
+	}
+	protected JComboBox<Player> getCbMovePrepPlayer() {
+		return cbMovePrepPlayer;
+	}
+	protected JFormattedTextField getFtfMovePrepStationNumber() {
+		return ftfMovePrepStationNumber;
 	}
 }

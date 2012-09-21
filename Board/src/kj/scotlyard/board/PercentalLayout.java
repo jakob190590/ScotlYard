@@ -21,6 +21,7 @@ package kj.scotlyard.board;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.geom.Rectangle2D;
 
@@ -41,27 +42,27 @@ public class PercentalLayout implements LayoutManager {
 
 	@Override
 	public Dimension preferredLayoutSize(Container parent) {
-		// TODO Auto-generated method stub
-		return null;
+		return parent.getPreferredSize();
 	}
 
 	@Override
 	public Dimension minimumLayoutSize(Container parent) {
-		// TODO Auto-generated method stub
-		return null;
+		Insets insets = parent.getInsets();
+		return new Dimension(insets.left + insets.right, 
+				insets.top + insets.bottom);
 	}
 
 	@Override
 	public void layoutContainer(Container parent) {
+		Insets insets = parent.getInsets();
 		for (Component c : parent.getComponents()) {
 			if (c instanceof PercentalBounds) {
-				PercentalBounds pb = (PercentalBounds) c;
+				PercentalBounds pb = (PercentalBounds) c;				
 				Rectangle2D.Double bounds = pb.getBounds2();
-				int w = parent.getWidth();
-				int h = parent.getHeight();
-				c.setBounds((int) (w * bounds.x), (int) (h * bounds.y), 
+				int w = parent.getWidth() - insets.left - insets.right;
+				int h = parent.getHeight() - insets.top - insets.bottom;
+				c.setBounds((int) (w * bounds.x) + insets.left, (int) (h * bounds.y) + insets.top, 
 						(int) (w * bounds.width), (int) (h * bounds.height));
-//				System.out.println(c.getBounds());
 			}
 			// "normal" components will not be laid out
 		}

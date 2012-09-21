@@ -22,10 +22,15 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JPanel;
+
+import org.apache.log4j.Logger;
 
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
@@ -46,6 +51,8 @@ import kj.scotlyard.game.model.PlayerListener;
 @SuppressWarnings("serial")
 public class BoardPanel extends JPanel {
 	
+	private static Logger logger = Logger.getLogger(Board.class);
+	
 	private Image image;
 	
 	private GameState gameState;
@@ -60,16 +67,18 @@ public class BoardPanel extends JPanel {
 	 * <code>NullPointerException</code>s auftreten, wenn die Daten
 	 * im BoardPanel corrupted sind.
 	 */
-	private final PlayerListener playerListener = new PlayerListener() {
-		// TODO testen: wird der layoutmgr automatisch aufgerufen ?
+	private final PlayerListener playerListener = new PlayerListener() {		
 		@Override
 		public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
+			logger.debug(String.format("Old MrX <%s> replaced by new MrX <%s>", oldMrX, newMrX));
+			
 			Piece piece;
 
 			// Alten MrX (wenn nicht null) entfernen aus Map und Container
 			if (oldMrX != null) {
 				piece = pieces.remove(oldMrX);
 				remove(piece);
+				repaint();
 			}
 			
 			// Neuen MrX (wenn nicht null) Map und Container hinzufuegen
@@ -78,21 +87,24 @@ public class BoardPanel extends JPanel {
 				piece.setVisible(false);
 				pieces.put(newMrX, piece);
 				add(piece);
-//				System.out.println("mrX set");
 			}
 		}
 		
 		@Override
 		public void detectiveRemoved(GameState gameState,
 				DetectivePlayer detective, int atIndex) {
+			logger.debug("Detective removed: " + detective);
 			// Piece aus Map und Container entfernen
 			Piece piece = pieces.remove(detective);
 			remove(piece);
+			
+			repaint();
 		}
 		
 		@Override
 		public void detectiveAdded(GameState gameState, DetectivePlayer detective,
 				int atIndex) {
+			logger.debug("Detective added: " + detective);
 			// Piece Map und Container hinzufuegen
 			Piece piece = new DetectivePiece(detective);
 			if (gameState.getLastMove(detective) == null) {
@@ -106,8 +118,7 @@ public class BoardPanel extends JPanel {
 				piece.setVisible(false);
 			}
 			pieces.put(detective, piece);
-			add(piece);
-//			System.out.println("detective added");
+			add(piece); // TODO sollte revalidate und repaint ausloesen (wenn piece zum ersten mal sichtbar wird)
 		}
 	};
 	
@@ -120,14 +131,17 @@ public class BoardPanel extends JPanel {
 		
 		@Override
 		public void movesCleard(GameState gameState) {
+			logger.debug("Moves cleared, making player invisible");
 			for (Piece p : pieces.values()) {
 				p.setVisible(false);
 			}
-			// TODO evtl. markings von stationen disablen
+			// TODO evtl. markings von stationen disablen + repaint
+			
 		}
 		
 		@Override
 		public void moveUndone(GameState gameState, Move move) {
+			logger.debug("Moves undone");
 			// VisualStation des Pieces entsprechend setzen
 			// Falls der GameState hier ungueltige Params liefert,
 			// oder das BoardPanel corrupted ist, gibt's Exception!
@@ -137,14 +151,15 @@ public class BoardPanel extends JPanel {
 				pieces.get(p).setVisible(false);
 			} else {
 				pieces.get(p).setVisualStation(visualStations.get(m.getStation()));				
+				revalidate();
+				
 			}
-			// TODO evtl. markings von stationen disablen
-			
-			revalidate();
+			// TODO evtl. markings von stationen disablen + repaint
 		}
 		
 		@Override
 		public void moveDone(GameState gameState, Move move) {
+			logger.debug("Moves done");
 			// VisualStation des Pieces entsprechend setzen
 			// Falls der GameState hier ungueltige Params liefert,
 			// oder das BoardPanel corrupted ist, gibt's Exception!
@@ -157,7 +172,7 @@ public class BoardPanel extends JPanel {
 			
 			// TODO evtl. markings von stationen disablen
 			
-			revalidate();
+			revalidate(); // warum wird eigentlich repainted?
 		}
 	};
 	
@@ -169,6 +184,12 @@ public class BoardPanel extends JPanel {
 	
 	public BoardPanel() {
 		super(new PercentalLayout());
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				logger.debug("klick auf BoardPanel");
+			}
+		});
 	}
 	
 
@@ -177,7 +198,10 @@ public class BoardPanel extends JPanel {
 		super.paintComponent(g);
 		if (image != null) {
 			Graphics2D g2D = (Graphics2D) g;
-			g2D.drawImage(image, 0, 0, getWidth(), getHeight(), this);			
+			Insets insets = getInsets();
+			g2D.drawImage(image, insets.left, insets.top, 
+					getWidth() - insets.left - insets.right, 
+					getHeight() - insets.top - insets.bottom, this);			
 		}		
 	}
 
@@ -206,26 +230,23 @@ public class BoardPanel extends JPanel {
 			if (this.gameState != null) {
 				// Unregister listeners from old GameState
 				this.gameState.removePlayerListener(playerListener);
-				this.gameState.removeMoveListener(moveListener);
-				// Alle Pieces loeschen
-				for (Piece p : pieces.values()) {
-					remove(p);
-				}
-				pieces.clear();
+				this.gameState.removeMoveListener(moveListener);				
 			}
+			
+			// Alle Pieces loeschen
+			for (Piece p : pieces.values()) {
+				remove(p);
+			}
+			pieces.clear();
+			logger.debug("setGameState: All pieces removed");
+			
 			this.gameState = gameState;
 			if (gameState != null) {
 				// Register listeners at new GameState
 				gameState.addPlayerListener(playerListener);
 				gameState.addMoveListener(moveListener);
-				
-				// Alte Pieces loeschen 
-				for (Piece p : pieces.values()) {
-					remove(p);
-				}
-				pieces.clear();
-				
-				// Neue Pieces adden und Visibility/Station setzen
+
+				// Add new pieces and set visibility/VisualStation
 				MrXPlayer mrX = gameState.getMrX(); 
 				if (mrX != null) {
 					pieces.put(mrX, new MrXPiece(mrX));
@@ -243,7 +264,13 @@ public class BoardPanel extends JPanel {
 						p.setVisualStation(visualStations.get(m.getStation()));
 					}
 				}
+				
+				revalidate();
 			}
+			
+			repaint();
+			
+			logger.debug("BoardPanel repainted");
 		}
 	}
 
@@ -260,6 +287,7 @@ public class BoardPanel extends JPanel {
 	 */
 	public void setImage(Image image) {
 		this.image = image;
+		repaint();
 	}
 
 }

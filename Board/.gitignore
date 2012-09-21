@@ -1,2 +1,4 @@
 /bin
+*.log
+*.log.*
 original-scotland-yard-board.png

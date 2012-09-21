@@ -29,12 +29,15 @@ import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.item.Ticket;
 
 /**
- * Builder interface for a Sub Move.
+ * This is a builder interface for sub moves.
+ * A new <code>SubMoves</code> object is just an empty
+ * list for <code>Move</code> objects. Only by call the
+ * <code>add</code> method the list will be filled.
  * An instance should be passed to MoveProducer's 
  * method createMultiMove as parameter.
  * 
  * This builder is designed for simple use like this:
- * <tt>SubMoves sm = new SubMoves().add(...).add(...);</tt>
+ * <code>SubMoves sm = new SubMoves().add(...).add(...);</code>
  * 
  * @author jakob190590
  *
