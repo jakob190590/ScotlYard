@@ -70,9 +70,10 @@ public interface GameState {
 	
 	/**
 	 * Returns an unmodifiable List with all players.
-	 * MrX is the first one, followed by the detectives
-	 * in the same order as in the detective list, see
-	 * <code>getDetectives()</code>.
+	 * If MrX is not <code>null</code>, it is the first
+	 * player in the list, otherwise it is not in the list.
+	 * This is followed by the detectives in the same order 
+	 * as in the detective list, see <code>getDetectives()</code>.
 	 * @return an unmodifiable list with all players
 	 */
 	List<Player> getPlayers();
