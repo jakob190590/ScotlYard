@@ -30,8 +30,6 @@ public class DefaultGameState extends AbstractGameState {
 	
 	private List<DetectivePlayer> detectives;
 	
-	private List<Player> players;
-	
 	private List<Move> moves;
 	
 
@@ -39,7 +37,6 @@ public class DefaultGameState extends AbstractGameState {
 		this.gameState = gameState;
 		
 		detectives = Collections.unmodifiableList(gameState.getDetectives());
-		players = Collections.unmodifiableList(gameState.getPlayers());
 		moves = Collections.unmodifiableList(gameState.getMoves());
 		
 		// This new listeners have to inform our own listeners
@@ -75,7 +72,7 @@ public class DefaultGameState extends AbstractGameState {
 
 	@Override
 	public List<Player> getPlayers() {
-		return players;
+		return gameState.getPlayers();
 	}
 
 	@Override
