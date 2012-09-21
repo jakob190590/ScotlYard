@@ -28,8 +28,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -43,11 +46,17 @@ import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.control.impl.DefaultGameController;
 import kj.scotlyard.game.graph.GameGraph;
+import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DefaultGame;
+import kj.scotlyard.game.model.DefaultGameState;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.MrXPlayer;
+import kj.scotlyard.game.model.Player;
+import kj.scotlyard.game.model.PlayerListener;
+import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.TheRules;
 import kj.scotlyard.game.util.MoveProducer;
@@ -60,11 +69,17 @@ import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import javax.swing.Action;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import java.awt.event.ActionListener;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame {
+	
+	private static Logger logger = Logger.getLogger(Board.class);
 
 	private JPanel contentPane;
 	
@@ -76,6 +91,9 @@ public class Board extends JFrame {
 	Game g;
 	GameState gs;
 	GameGraph gg;
+	MovePreparer mPrep;
+	Map<Integer, StationVertex> nsm; // Number Station Map
+	
 	
 	private final Action newGameAction = new NewGameAction();
 	private final Action clearPlayersAction = new ClearPlayersAction();
@@ -89,6 +107,16 @@ public class Board extends JFrame {
 	private final Action shiftDetectiveUpAction = new ShiftDetectiveUpAction();
 	private final Action shiftDetectiveDownAction = new ShiftDetectiveDownAction();
 	private final Action newGameWithPlayersAction = new NewGameWithPlayersAction();
+	private final Action undoAction = new UndoAction();
+	private final Action redoAction = new RedoAction();
+	private final Action suggestMoveAction = new SuggestMoveAction();
+	private final Action moveNowAction = new MoveNowAction();
+	private final Action submitStationNumberAction = new SubmitStationNumberAction();
+	private final Action resetAction = new ResetAction();
+	
+	private JComboBox<Player> cbMovePrepPlayer;
+	private JFormattedTextField ftfMovePrepStationNumber;
+
 
 
 	/**
@@ -180,6 +208,20 @@ public class Board extends JFrame {
 		
 		mnGameController.addSeparator();
 		
+		JMenu mnUndoRedo = new JMenu("Undo/Redo");
+		mnUndoRedo.setMnemonic('u');
+		mnGameController.add(mnUndoRedo);
+		
+		JMenuItem mntmUndo = new JMenuItem("Undo");
+		mntmUndo.setAction(undoAction);
+		mnUndoRedo.add(mntmUndo);
+		
+		JMenuItem mntmRedo = new JMenuItem("Redo");
+		mntmRedo.setAction(redoAction);
+		mnUndoRedo.add(mntmRedo);
+		
+		mnGameController.addSeparator();
+		
 		JMenuItem mntmGameStatusAnd = new JMenuItem("Game Status and Win...");
 		mntmGameStatusAnd.setAction(gameStatusWinAction);
 		mnGameController.add(mntmGameStatusAnd);
@@ -202,7 +244,7 @@ public class Board extends JFrame {
 		JMenuItem mntmSetGameState = new JMenuItem("Set GameState");
 		mntmSetGameState.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				boardPanel.setGameState(g);
+				boardPanel.setGameState(gs);
 			}
 		});
 		mntmSetGameState.setMnemonic('g');
@@ -260,6 +302,10 @@ public class Board extends JFrame {
 			c.addMouseListener(ml);
 		}
 		boardPanel.buildVisualStationMap();
+		nsm = bgl.getNumberStationMap();
+		
+		
+		
 		
 		img = null;
 		// Variante 1
@@ -305,6 +351,7 @@ public class Board extends JFrame {
 		
 		// GameState
 		g = new DefaultGame();
+		gs = new DefaultGameState(g);
 		gg = bgl.getGameGraph();
 		gc = new DefaultGameController(g, gg, new TheRules());
 		gc.addObserver(new Observer() {
@@ -316,34 +363,109 @@ public class Board extends JFrame {
 					showGameStatusAndWin(c.getStatus(), c.getWin());
 			}
 		});
+		mPrep = new MovePreparer(gs, gg) {
+			@Override
+			protected void errorImpossibleNextStation(StationVertex station,
+					Player player) {
+			}
+
+			@Override
+			protected Ticket selectTicket(Set<Ticket> tickets, Player player) {
+				return tickets.iterator().next(); // gleich das erste
+			}
+		};
 		setGameControllerActionsEnabled(gc.getStatus());
-		boardPanel.setGameState(g);
+		boardPanel.setGameState(gs);
 		
 		boardPanelContainer.add(boardPanel);
 		
 		contentPane.add(boardPanelContainer, BorderLayout.CENTER);
 		
+		JPanel ToolbarContainer = new JPanel();
+		contentPane.add(ToolbarContainer, BorderLayout.NORTH);
+		ToolbarContainer.setLayout(new BoxLayout(ToolbarContainer, BoxLayout.Y_AXIS));
+		
 		JPanel panel = new JPanel();
-		contentPane.add(panel, BorderLayout.NORTH);
+		ToolbarContainer.add(panel);
 		
-		JLabel lblGamecontroller = new JLabel("GameController");
-		panel.add(lblGamecontroller);
+		JLabel label = new JLabel("GameController");
+		panel.add(label);
 		
-		JButton btnNewGameWithPlayers = new JButton("New Game with Players");
-		btnNewGameWithPlayers.setAction(newGameWithPlayersAction);
-		panel.add(btnNewGameWithPlayers);
+		JButton button = new JButton("New Game with Players");
+		button.setAction(newGameWithPlayersAction);
+		panel.add(button);
 		
-		JButton btnStart = new JButton("Start");
-		btnStart.setAction(startAction);
-		panel.add(btnStart);
+		JButton button_1 = new JButton("Start");
+		button_1.setAction(startAction);
+		panel.add(button_1);
 		
-		JButton btnAbort = new JButton("Abort");
-		btnAbort.setAction(abortAction);
-		panel.add(btnAbort);
+		JButton button_2 = new JButton("Abort");
+		button_2.setAction(abortAction);
+		panel.add(button_2);
 		
-		JButton btnMove = new JButton("Move...");
-		btnMove.setAction(moveAction);
-		panel.add(btnMove);
+		JButton button_3 = new JButton("Move...");
+		button_3.setAction(moveAction);
+		panel.add(button_3);
+		
+		JPanel MovePreperationBar = new JPanel();
+		ToolbarContainer.add(MovePreperationBar);
+		MovePreperationBar.setLayout(new BoxLayout(MovePreperationBar, BoxLayout.X_AXIS));
+		
+		final Vector<Player> players = new Vector<>(gs.getPlayers());
+		cbMovePrepPlayer = new JComboBox<>(players);
+		// TODO cbMovePrepPlayer.setRenderer(aRenderer); // Implement ListCellRenderer: http://docs.oracle.com/javase/tutorial/uiswing/components/combobox.html#renderer
+		cbMovePrepPlayer.setPreferredSize(new Dimension(250, 20));
+		gs.addPlayerListener(new PlayerListener() {
+			@Override
+			public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
+				logger.debug("combobox player list update; items: " + gs.getPlayers().size());
+				players.clear();
+				players.addAll(gs.getPlayers());
+				logger.debug("combobox player list updated; items: " + players.size());
+			}
+			@Override
+			public void detectiveRemoved(GameState gameState,
+					DetectivePlayer detective, int atIndex) {
+				logger.debug("combobox player list update; items: " + gs.getPlayers().size());
+				players.clear();
+				players.addAll(gs.getPlayers());
+				logger.debug("combobox player list updated; items: " + players.size());
+			}
+			@Override
+			public void detectiveAdded(GameState gameState, DetectivePlayer detective,
+					int atIndex) {
+				logger.debug("combobox player list update; items: " + gs.getPlayers().size());
+				players.clear();
+				players.addAll(gs.getPlayers());
+				logger.debug("combobox player list updated; items: " + players.size());
+//				if (!players.isEmpty() && players.get(0) instanceof MrXPlayer)
+//					atIndex++;
+//				players.add(atIndex, detective);
+			}
+		});
+		MovePreperationBar.add(cbMovePrepPlayer);
+		
+		ftfMovePrepStationNumber = new JFormattedTextField();
+		MovePreperationBar.add(ftfMovePrepStationNumber);
+		
+		JButton btnMovePrepOk = new JButton("OK");
+		btnMovePrepOk.setAction(submitStationNumberAction);
+		MovePreperationBar.add(btnMovePrepOk);
+		
+		JButton btnMovePrepReset = new JButton("Reset");
+		btnMovePrepReset.setAction(resetAction);
+		MovePreperationBar.add(btnMovePrepReset);
+		
+		JPanel MoveControlBar = new JPanel();
+		ToolbarContainer.add(MoveControlBar);
+		
+		JButton btnMove = new JButton("Move!");
+		btnMove.setAction(moveNowAction);
+		MoveControlBar.add(btnMove);
+		
+		JButton btnSuggestMove = new JButton("Suggest Move");
+		btnSuggestMove.setAction(suggestMoveAction);
+		MoveControlBar.add(btnSuggestMove);
 		
 		
 //		pack();
@@ -423,7 +545,7 @@ public class Board extends JFrame {
 			try {
 				Move move = null;
 				if (gc.getStatus() == GameStatus.IN_GAME) {
-					move = MoveProducer.createRandomSingleMove(g, gg);
+					move = MoveProducer.createRandomSingleMove(gs, gg);
 				}
 				gc.move(move);
 			} catch (Exception e2) {
@@ -539,6 +661,7 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_W);
 		}
 		public void actionPerformed(ActionEvent e) {
+			logger.info("new game with players");
 			gc.clearPlayers();
 			gc.newMrX();
 			for (int i = 0; i < 4; i++)
@@ -569,5 +692,75 @@ public class Board extends JFrame {
 	private void showErrorMessage(Exception e) {
 		JOptionPane.showMessageDialog(this, e.getMessage(), e.getClass()
 				.getSimpleName(), JOptionPane.ERROR_MESSAGE);
+	}
+	private class UndoAction extends AbstractAction {
+		public UndoAction() {
+			putValue(NAME, "Undo");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_U);
+		}
+		public void actionPerformed(ActionEvent e) {
+			((DefaultGameController) gc).getUndoManager().undo();
+			setEnabled(((DefaultGameController) gc).getUndoManager().canUndo()); // TODO das kanns doch nicht sein: ueberall, wo UndoManger veraendert werden koennte, muesste sowas stehn! wir brauchen nen listener!!
+			setEnabled(((DefaultGameController) gc).getUndoManager().canRedo());
+		}
+	}
+	private class RedoAction extends AbstractAction {
+		public RedoAction() {
+			putValue(NAME, "Redo");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
+		}
+		public void actionPerformed(ActionEvent e) {
+			((DefaultGameController) gc).getUndoManager().redo();
+			setEnabled(((DefaultGameController) gc).getUndoManager().canUndo()); // TODO das kanns doch nicht sein: ueberall, wo UndoManger veraendert werden koennte, muesste sowas stehn! wir brauchen nen listener!!
+		    setEnabled(((DefaultGameController) gc).getUndoManager().canRedo());
+		}
+	}
+	private class SuggestMoveAction extends AbstractAction {
+		public SuggestMoveAction() {
+			putValue(NAME, "Suggest move");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_S);
+			setEnabled(false);
+		}
+		public void actionPerformed(ActionEvent e) {
+			// Suggest an AI move!
+		}
+	}
+	private class MoveNowAction extends AbstractAction {
+		public MoveNowAction() {
+			putValue(NAME, "Move!"); // or "Move now"
+			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
+		}
+		public void actionPerformed(ActionEvent e) {
+			gc.move(mPrep.getMove());
+		}
+	}
+	private class SubmitStationNumberAction extends AbstractAction {
+		public SubmitStationNumberAction() {
+			putValue(NAME, "OK");
+			putValue(SHORT_DESCRIPTION, "Submit station number");
+		}
+		public void actionPerformed(ActionEvent e) {
+			mPrep.nextStation(nsm.get(Integer.parseInt(ftfMovePrepStationNumber.getText())), 
+					gs.getPlayers().get(cbMovePrepPlayer.getSelectedIndex()));
+		}
+	}
+	private class ResetAction extends AbstractAction {
+		public ResetAction() {
+			putValue(NAME, "Reset");
+			putValue(SHORT_DESCRIPTION, "Reset move preparation");
+		}
+		public void actionPerformed(ActionEvent e) {
+			mPrep.reset(gs.getPlayers().get(cbMovePrepPlayer.getSelectedIndex()));
+		}
+	}
+	protected JComboBox<Player> getCbMovePrepPlayer() {
+		return cbMovePrepPlayer;
+	}
+	protected JFormattedTextField getFtfMovePrepStationNumber() {
+		return ftfMovePrepStationNumber;
 	}
 }
