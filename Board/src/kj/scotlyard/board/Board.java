@@ -46,6 +46,7 @@ import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.TheRules;
@@ -73,6 +74,7 @@ public class Board extends JFrame {
 	
 	GameController gc;
 	Game g;
+	GameState gs;
 	GameGraph gg;
 	
 	private final Action newGameAction = new NewGameAction();
