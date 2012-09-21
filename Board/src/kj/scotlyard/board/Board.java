@@ -53,6 +53,7 @@ import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
+import kj.scotlyard.game.model.TurnListener;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.TheRules;
@@ -106,6 +107,8 @@ public class Board extends JFrame {
 	private final Action redoAction = new RedoAction();
 	private final Action suggestMoveAction = new SuggestMoveAction();
 	private final Action moveNowAction = new MoveNowAction();
+	private JLabel lblCurrentplayerVal;
+	private MovePreparationBar movePreparationBar;
 
 
 
@@ -346,6 +349,8 @@ public class Board extends JFrame {
 			@Override
 			public void update(Observable o, Object arg) {
 				GameController c = (GameController) o;
+				
+				movePreparationBar.setEnabled(c.getStatus() == GameStatus.IN_GAME);
 				setGameControllerActionsEnabled(c.getStatus());
 				if (c.getStatus() != GameStatus.IN_GAME)
 					showGameStatusAndWin(c.getStatus(), c.getWin());
@@ -395,11 +400,28 @@ public class Board extends JFrame {
 		button_3.setAction(moveAction);
 		panel.add(button_3);
 		
-		MovePreparationBar movePreparationBar = new MovePreparationBar(gs, mPrep, nsm);
+		movePreparationBar = new MovePreparationBar(gs, mPrep, nsm);
+		movePreparationBar.setEnabled(false);
 		toolbarContainer.add(movePreparationBar);
 		
 		JPanel MoveControlBar = new JPanel();
 		toolbarContainer.add(MoveControlBar);
+		
+		JLabel lblCurrentPlayer = new JLabel("CurrentPlayer:");
+		MoveControlBar.add(lblCurrentPlayer);
+		
+		lblCurrentplayerVal = new JLabel("CurrentPlayerVal");
+		gs.addTurnListener(new TurnListener() {
+			@Override
+			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
+					int newRoundNumber) { }
+			@Override
+			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
+					Player newPlayer) {
+				lblCurrentplayerVal.setText((newPlayer == null) ? "<null>" : newPlayer.toString());
+			}
+		});
+		MoveControlBar.add(lblCurrentplayerVal);
 		
 		JButton btnMove = new JButton("Move!");
 		btnMove.setAction(moveNowAction);
@@ -679,5 +701,11 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			gc.move(mPrep.getMove());
 		}
+	}
+	protected JLabel getLblCurrentplayerVal() {
+		return lblCurrentplayerVal;
+	}
+	protected MovePreparationBar getMovePreparationBar() {
+		return movePreparationBar;
 	}
 }
