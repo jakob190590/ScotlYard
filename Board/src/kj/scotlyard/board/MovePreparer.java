@@ -1,6 +1,8 @@
 package kj.scotlyard.board;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
@@ -10,6 +12,7 @@ import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DefaultMove;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.util.GameStateExtension;
@@ -35,12 +38,6 @@ public abstract class MovePreparer extends Observable {
 	private GameState gameState;
 	
 	private GameGraph gameGraph;
-	
-	/**
-	 *  Roher Datenbehaelter; aus einigen seiner Felder wird bei 
-	 *  <code>getMove()</code> der resultierende Move erzeugt!
-	 */
-	private Move move = null;
 	
 	private Map<Player, Move> moves = new HashMap<>();
 
@@ -76,7 +73,7 @@ public abstract class MovePreparer extends Observable {
 	}
 	
 	public void reset() {
-		moves.remove(gameState.getCurrentPlayer());
+		reset(gameState.getCurrentPlayer());
 	}
 	
 	public void resetAll() {
@@ -90,11 +87,12 @@ public abstract class MovePreparer extends Observable {
 	 * Selects one ticket of the set and returns that ticket. The method may
 	 * return <code>null</code> to cancel the move preparation. But this would 
 	 * be not equivalent to <code>reset</code>: If there is a multi move
-	 * is in preparation, only the new sub move would be discarded.
+	 * in preparation, only the new sub move would be discarded.
 	 * 
 	 * This method will be called by <code>nextStation</code>. Implementations
 	 * can ask the user to select one ticket.
 	 * @param tickets a set of possible tickets
+	 * @param player
 	 * @return one of the passed tickets or <code>null</code>
 	 */
 	protected abstract Ticket selectTicket(final Set<Ticket> tickets, final Player player);
@@ -105,6 +103,7 @@ public abstract class MovePreparer extends Observable {
 	 * This algorithm uses the <code>protected abstract</code> methods.
 	 * This way the user interaction can be customized.
 	 * @param station
+	 * @param player
 	 */
 	public void nextStation(final StationVertex station, final Player player) {
 		Move move = moves.get(player);
@@ -119,7 +118,7 @@ public abstract class MovePreparer extends Observable {
 		Set<ConnectionEdge> connections = gameGraph.getGraph().getAllEdges(lastStation, station);
 		// TODO next station muss auch noch anderweitig geprueft werden (besetzt, kein ticket, ...?)
 		if (connections.isEmpty()) {
-			errorImpossibleNextStation(station);
+			errorImpossibleNextStation(station, player);
 		}
 		
 		Set<Ticket> tickets = new HashSet<>();
@@ -157,7 +156,7 @@ public abstract class MovePreparer extends Observable {
 	}
 	
 	public void nextStation(final StationVertex station) {
-		nextStation(gameState.getCurrentPlayer(), station);
+		nextStation(station, gameState.getCurrentPlayer());
 	}
 		
 	public Move getMove(Player player) {
