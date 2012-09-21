@@ -7,9 +7,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
-import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.PlayerListener;
 
@@ -26,6 +24,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class MovePreparationBar extends JPanel {
 	
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(MovePreparationBar.class);
 	
 	private GameState gs;	
@@ -33,29 +32,12 @@ public class MovePreparationBar extends JPanel {
 	private Map<Integer, StationVertex> nsm; // Number Station Map
 	
 	private Vector<Player> players;
-	private final PlayerListener playerListener = new PlayerListener() {
+	private final PlayerListener playerListener = new PlayerListenerAdapter() {
 		@Override
-		public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
-			logger.debug("combobox player list update; items: " + gs.getPlayers().size());
+		public void playerListChanged(GameState gameState) {
 			players.clear();
 			players.addAll(gs.getPlayers());
-			logger.debug("combobox player list updated; items: " + players.size());
-		}
-		@Override
-		public void detectiveRemoved(GameState gameState,
-				DetectivePlayer detective, int atIndex) {
-			logger.debug("combobox player list update; items: " + gs.getPlayers().size());
-			players.clear();
-			players.addAll(gs.getPlayers());
-			logger.debug("combobox player list updated; items: " + players.size());
-		}
-		@Override
-		public void detectiveAdded(GameState gameState, DetectivePlayer detective,
-				int atIndex) {
-			logger.debug("combobox player list update; items: " + gs.getPlayers().size());
-			players.clear();
-			players.addAll(gs.getPlayers());
-			logger.debug("combobox player list updated; items: " + players.size());
+			cbPlayer.updateUI();
 		}
 	};
 	
