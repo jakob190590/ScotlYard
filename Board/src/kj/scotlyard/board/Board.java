@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -53,9 +52,7 @@ import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
-import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.PlayerListener;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.TheRules;
@@ -73,8 +70,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
-import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame {
@@ -111,11 +106,6 @@ public class Board extends JFrame {
 	private final Action redoAction = new RedoAction();
 	private final Action suggestMoveAction = new SuggestMoveAction();
 	private final Action moveNowAction = new MoveNowAction();
-	private final Action submitStationNumberAction = new SubmitStationNumberAction();
-	private final Action resetAction = new ResetAction();
-	
-	private JComboBox<Player> cbMovePrepPlayer;
-	private JFormattedTextField ftfMovePrepStationNumber;
 
 
 
@@ -205,8 +195,6 @@ public class Board extends JFrame {
 		JMenuItem mntmMove = new JMenuItem("Move...");
 		mntmMove.setAction(moveAction);
 		mnGameController.add(mntmMove);
-		
-		mnGameController.addSeparator();
 		
 		JMenu mnUndoRedo = new JMenu("Undo/Redo");
 		mnUndoRedo.setMnemonic('u');
@@ -381,12 +369,12 @@ public class Board extends JFrame {
 		
 		contentPane.add(boardPanelContainer, BorderLayout.CENTER);
 		
-		JPanel ToolbarContainer = new JPanel();
-		contentPane.add(ToolbarContainer, BorderLayout.NORTH);
-		ToolbarContainer.setLayout(new BoxLayout(ToolbarContainer, BoxLayout.Y_AXIS));
+		JPanel toolbarContainer = new JPanel();
+		contentPane.add(toolbarContainer, BorderLayout.NORTH);
+		toolbarContainer.setLayout(new BoxLayout(toolbarContainer, BoxLayout.Y_AXIS));
 		
 		JPanel panel = new JPanel();
-		ToolbarContainer.add(panel);
+		toolbarContainer.add(panel);
 		
 		JLabel label = new JLabel("GameController");
 		panel.add(label);
@@ -407,57 +395,11 @@ public class Board extends JFrame {
 		button_3.setAction(moveAction);
 		panel.add(button_3);
 		
-		JPanel MovePreperationBar = new JPanel();
-		ToolbarContainer.add(MovePreperationBar);
-		MovePreperationBar.setLayout(new BoxLayout(MovePreperationBar, BoxLayout.X_AXIS));
-		
-		final Vector<Player> players = new Vector<>(gs.getPlayers());
-		cbMovePrepPlayer = new JComboBox<>(players);
-		// TODO cbMovePrepPlayer.setRenderer(aRenderer); // Implement ListCellRenderer: http://docs.oracle.com/javase/tutorial/uiswing/components/combobox.html#renderer
-		cbMovePrepPlayer.setPreferredSize(new Dimension(250, 20));
-		gs.addPlayerListener(new PlayerListener() {
-			@Override
-			public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
-				logger.debug("combobox player list update; items: " + gs.getPlayers().size());
-				players.clear();
-				players.addAll(gs.getPlayers());
-				logger.debug("combobox player list updated; items: " + players.size());
-			}
-			@Override
-			public void detectiveRemoved(GameState gameState,
-					DetectivePlayer detective, int atIndex) {
-				logger.debug("combobox player list update; items: " + gs.getPlayers().size());
-				players.clear();
-				players.addAll(gs.getPlayers());
-				logger.debug("combobox player list updated; items: " + players.size());
-			}
-			@Override
-			public void detectiveAdded(GameState gameState, DetectivePlayer detective,
-					int atIndex) {
-				logger.debug("combobox player list update; items: " + gs.getPlayers().size());
-				players.clear();
-				players.addAll(gs.getPlayers());
-				logger.debug("combobox player list updated; items: " + players.size());
-//				if (!players.isEmpty() && players.get(0) instanceof MrXPlayer)
-//					atIndex++;
-//				players.add(atIndex, detective);
-			}
-		});
-		MovePreperationBar.add(cbMovePrepPlayer);
-		
-		ftfMovePrepStationNumber = new JFormattedTextField();
-		MovePreperationBar.add(ftfMovePrepStationNumber);
-		
-		JButton btnMovePrepOk = new JButton("OK");
-		btnMovePrepOk.setAction(submitStationNumberAction);
-		MovePreperationBar.add(btnMovePrepOk);
-		
-		JButton btnMovePrepReset = new JButton("Reset");
-		btnMovePrepReset.setAction(resetAction);
-		MovePreperationBar.add(btnMovePrepReset);
+		MovePreparationBar movePreparationBar = new MovePreparationBar(gs, mPrep, nsm);
+		toolbarContainer.add(movePreparationBar);
 		
 		JPanel MoveControlBar = new JPanel();
-		ToolbarContainer.add(MoveControlBar);
+		toolbarContainer.add(MoveControlBar);
 		
 		JButton btnMove = new JButton("Move!");
 		btnMove.setAction(moveNowAction);
@@ -737,30 +679,5 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			gc.move(mPrep.getMove());
 		}
-	}
-	private class SubmitStationNumberAction extends AbstractAction {
-		public SubmitStationNumberAction() {
-			putValue(NAME, "OK");
-			putValue(SHORT_DESCRIPTION, "Submit station number");
-		}
-		public void actionPerformed(ActionEvent e) {
-			mPrep.nextStation(nsm.get(Integer.parseInt(ftfMovePrepStationNumber.getText())), 
-					gs.getPlayers().get(cbMovePrepPlayer.getSelectedIndex()));
-		}
-	}
-	private class ResetAction extends AbstractAction {
-		public ResetAction() {
-			putValue(NAME, "Reset");
-			putValue(SHORT_DESCRIPTION, "Reset move preparation");
-		}
-		public void actionPerformed(ActionEvent e) {
-			mPrep.reset(gs.getPlayers().get(cbMovePrepPlayer.getSelectedIndex()));
-		}
-	}
-	protected JComboBox<Player> getCbMovePrepPlayer() {
-		return cbMovePrepPlayer;
-	}
-	protected JFormattedTextField getFtfMovePrepStationNumber() {
-		return ftfMovePrepStationNumber;
 	}
 }
