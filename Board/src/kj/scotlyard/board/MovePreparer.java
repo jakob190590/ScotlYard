@@ -42,8 +42,8 @@ public abstract class MovePreparer extends Observable {
 	 */
 	private Move move = null;
 	
-	private Move result = null;
-	
+	private Map<Player, Move> moves = new HashMap<>();
+
 	public MovePreparer(GameState gameState, GameGraph gameGraph) {
 		this.gameState = gameState;
 		this.gameGraph = gameGraph;
@@ -71,14 +71,20 @@ public abstract class MovePreparer extends Observable {
 	}
 
 	
-	/** Resets current move preparation. */
+	public void reset(Player player) {
+		moves.remove(player);
+	}
+	
 	public void reset() {
-		result = null;
-		move = null;
+		moves.remove(gameState.getCurrentPlayer());
+	}
+	
+	public void resetAll() {
+		moves.clear();
 	}
 	
 	
-	protected abstract void errorImpossibleNextStation(StationVertex station); // TODO reason: occupied or unreachable or ... ?
+	protected abstract void errorImpossibleNextStation(final StationVertex station, final Player player); // TODO reason: occupied or unreachable or ... ?
 
 	/**
 	 * Selects one ticket of the set and returns that ticket. The method may
@@ -91,7 +97,7 @@ public abstract class MovePreparer extends Observable {
 	 * @param tickets a set of possible tickets
 	 * @return one of the passed tickets or <code>null</code>
 	 */
-	protected abstract Ticket selectTicket(Set<Ticket> tickets);
+	protected abstract Ticket selectTicket(final Set<Ticket> tickets, final Player player);
 
 	
 	/**
@@ -100,8 +106,10 @@ public abstract class MovePreparer extends Observable {
 	 * This way the user interaction can be customized.
 	 * @param station
 	 */
-	public void nextStation(StationVertex station) {
-		Move lm = gameState.getLastMove(gameState.getCurrentPlayer()); // last move
+	public void nextStation(final StationVertex station, final Player player) {
+		Move move = moves.get(player);
+		
+		Move lm = gameState.getLastMove(player); // last move
 		StationVertex lastStation = lm.getStation();
 		
 		Move m = new DefaultMove();
@@ -119,12 +127,10 @@ public abstract class MovePreparer extends Observable {
 			// TODO addAll...
 		}
 				
-		Ticket ticket = selectTicket(tickets);
+		Ticket ticket = selectTicket(tickets, player);
 		
 		if (ticket != null) {		
 			// D.h. nicht abgebrochen
-			result = null;
-			
 			ConnectionEdge conn = MoveHelper.suggestConnection(lastStation, station, ticket);
 			m.setConnection(conn);
 			m.setItem(ticket);
@@ -143,38 +149,46 @@ public abstract class MovePreparer extends Observable {
 				move.getMoves().add(m);
 			}
 			
+			moves.put(player, move);
 			notifyObservers(getMove()); // TODO Dann wird aber getMove u.U. zwei mal berechnet ...
 		}
 		// TODO Falls es doch noch jemanden interessiert, wenn abgebrochen wird:
 		// else notifyObservers(); // arg = null
 	}
+	
+	public void nextStation(final StationVertex station) {
+		nextStation(gameState.getCurrentPlayer(), station);
+	}
 		
-	/**
-	 * Crafts a turnkey Move from the preceding input (builder instructions). 
-	 * This Move can be passed to the GameController.
-	 * @return a turnkey Move
-	 */
-	public Move getMove() {
-		if (result == null && move != null) {
-			int moveNumber = gameState.getLastMove(gameState.getCurrentPlayer()).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
+	public Move getMove(Player player) {
+		Move move = moves.get(player);
+		
+		Move result = null;
+		if (move != null) {
+			// TODO Move number (und evtl. round number) nur setzen, wenn player == currentPlayer
+			int moveNumber = gameState.getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
 			if (move.getMoves().isEmpty()) {
 				// Single Move
-				result = MoveProducer.createSingleMove(gameState.getCurrentPlayer(), gameState.getCurrentRoundNumber(), 
+				result = MoveProducer.createSingleMove(player, gameState.getCurrentRoundNumber(), 
 						moveNumber,
 						move.getStation(), move.getConnection(), (Ticket) move.getItem());
 			} else {
 				// Multi Move
 				GameStateExtension gsx = new GameStateExtension(gameState);
-				DoubleMoveCard doubleMoveCard = (DoubleMoveCard) gsx.getItem(gameState.getCurrentPlayer(), DoubleMoveCard.class);
+				DoubleMoveCard doubleMoveCard = (DoubleMoveCard) gsx.getItem(player, DoubleMoveCard.class);
 				SubMoves sms = new SubMoves();
 				for (Move m : move.getMoves()) {
 					sms.add(m.getStation(), m.getConnection(), (Ticket) m.getItem());
 				}
-				result = MoveProducer.createMultiMove(gameState.getCurrentPlayer(), gameState.getCurrentRoundNumber(),
+				result = MoveProducer.createMultiMove(player, gameState.getCurrentRoundNumber(),
 						moveNumber, doubleMoveCard, sms);
 			}
 		}		
 		return result;
+	}
+	
+	public Move getMove() {
+		return getMove(gameState.getCurrentPlayer());
 	}
 
 }
