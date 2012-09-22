@@ -20,8 +20,26 @@ package kj.scotlyard.game.model;
 
 public interface TurnListener {
 
+	/**
+	 * Is called by a Game when the turn comes from oldPlayer to newPlayer,
+	 * provided that <code>oldPlayer != newPlayer</code>!
+	 * Either oldPlayer or newPlayer may be <code>null</code> (normally only
+	 * when <code>GameStatus.NOT_IN_GAME</code>).
+	 * @param gameState
+	 * @param oldPlayer
+	 * @param newPlayer
+	 */
 	void currentPlayerChanged(GameState gameState, Player oldPlayer, Player newPlayer);
 	
+	/**
+	 * Is called by a Game when the round comes from oldRoundNumber to newRoundNumber,
+	 * provided that <code>oldRoundNumber != newRoundNumber</code>!
+	 * Normally when <code>GameStatus.IN_GAME</code> the round number will 
+	 * be incremented.
+	 * @param gameState
+	 * @param oldRoundNumber
+	 * @param newRoundNumber
+	 */
 	void currentRoundChanged(GameState gameState, int oldRoundNumber, int newRoundNumber);
 	
 }
