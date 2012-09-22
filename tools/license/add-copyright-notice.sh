@@ -1,6 +1,6 @@
 #!/bin/bash
 # add-cpright -- adds a copyright notice to a file
-# Author: Jakob Schöttl
+# Author: Jakob SchÃ¶ttl
 # 1th param: copyright-notice file
 # 2nd param: file
 # Example:
