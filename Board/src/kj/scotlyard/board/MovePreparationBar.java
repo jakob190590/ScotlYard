@@ -76,6 +76,7 @@ public class MovePreparationBar extends JPanel {
 	
 	private final Action submitStationNumberAction = new SubmitStationNumberAction();
 	private final Action resetAction = new ResetAction();
+	private final Action selectPlayerAction = new SelectPlayerAction();
 	
 	
 	/**
@@ -93,6 +94,7 @@ public class MovePreparationBar extends JPanel {
 		
 		players = new Vector<>(gs.getPlayers());
 		cbPlayer = new JComboBox<>(players);
+		cbPlayer.setAction(selectPlayerAction);
 		// TODO cbMovePrepPlayer.setRenderer(aRenderer); // Implement ListCellRenderer: http://docs.oracle.com/javase/tutorial/uiswing/components/combobox.html#renderer
 		cbPlayer.setPreferredSize(new Dimension(330, 20));
 		gs.addPlayerListener(playerListener);
@@ -100,6 +102,7 @@ public class MovePreparationBar extends JPanel {
 		add(cbPlayer);
 		
 		ftfStationNumber = new JFormattedTextField();
+		ftfStationNumber.setAction(submitStationNumberAction);
 		add(ftfStationNumber);
 		
 		JButton btnMovePrepOk = new JButton("OK");
@@ -115,7 +118,7 @@ public class MovePreparationBar extends JPanel {
 	private class SubmitStationNumberAction extends AbstractAction {
 		public SubmitStationNumberAction() {
 			putValue(NAME, "OK");
-			putValue(SHORT_DESCRIPTION, "Submit station number");
+			putValue(SHORT_DESCRIPTION, "Submit the station number");
 		}
 		public void actionPerformed(ActionEvent e) {
 			mPrep.nextStation(nsm.get(Integer.parseInt(ftfStationNumber.getText())), // TODO vllt spaeter ftfStationNumber.getValue()
@@ -130,6 +133,13 @@ public class MovePreparationBar extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			mPrep.reset(getSelectedPlayer());
 		}
+	}
+	private class SelectPlayerAction extends AbstractAction {
+		public SelectPlayerAction() {
+			putValue(NAME, "Select Player");
+			putValue(SHORT_DESCRIPTION, "Select the player to prepare a move");
+		}
+		public void actionPerformed(ActionEvent e) { }
 	}
 	
 	public Player getSelectedPlayer() {

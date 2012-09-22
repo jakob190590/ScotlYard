@@ -14,7 +14,10 @@ import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
+import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.Ticket;
+import kj.scotlyard.game.rules.MovePolicy;
+import kj.scotlyard.game.rules.TheMovePolicy;
 import kj.scotlyard.game.util.GameStateExtension;
 import kj.scotlyard.game.util.MoveHelper;
 import kj.scotlyard.game.util.MoveProducer;
@@ -98,6 +101,12 @@ public abstract class MovePreparer extends Observable {
 	protected abstract Ticket selectTicket(final Set<Ticket> tickets, final Player player);
 
 	
+	// uebergibt im gegensatz zu nextStation gleich den kompletten zug! (verwendung bei suggest move von ai)
+	public void nextMove(Move move) {
+		moves.put(move.getPlayer(), move);
+		notifyObservers(getMove());
+	}
+	
 	/**
 	 * A template method for building a Move.
 	 * This algorithm uses the <code>protected abstract</code> methods.
@@ -122,8 +131,14 @@ public abstract class MovePreparer extends Observable {
 		}
 		
 		Set<Ticket> tickets = new HashSet<>();
+		Set<Item> allItems = gameState.getItems(player);
+		MovePolicy mp = new TheMovePolicy();
 		for (ConnectionEdge c : connections) {
-			// TODO addAll...
+			for (Item i : allItems) {
+				if (i instanceof Ticket && mp.isTicketValidForConnection((Ticket) i, c)) {
+					tickets.add((Ticket) i);
+				}
+			}			
 		}
 				
 		Ticket ticket = selectTicket(tickets, player);
@@ -149,7 +164,7 @@ public abstract class MovePreparer extends Observable {
 			}
 			
 			moves.put(player, move);
-			notifyObservers(getMove()); // TODO Dann wird aber getMove u.U. zwei mal berechnet ...
+			notifyObservers(getMove());
 		}
 		// TODO Falls es doch noch jemanden interessiert, wenn abgebrochen wird:
 		// else notifyObservers(); // arg = null

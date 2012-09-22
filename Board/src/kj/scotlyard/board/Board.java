@@ -52,6 +52,7 @@ import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.MoveListener;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TurnListener;
 import kj.scotlyard.game.model.item.Ticket;
@@ -360,13 +361,43 @@ public class Board extends JFrame {
 			@Override
 			protected void errorImpossibleNextStation(StationVertex station,
 					Player player) {
+				System.out.println("impossible next station");
 			}
 
 			@Override
 			protected Ticket selectTicket(Set<Ticket> tickets, Player player) {
-				return tickets.iterator().next(); // gleich das erste
+				TicketSelectionDialog tsd = new TicketSelectionDialog(Board.this);
+				return tsd.show(tickets, player);
+//				return tickets.iterator().next(); // gleich das erste
 			}
 		};
+		
+		gs.addMoveListener(new MoveListener() {
+			@Override
+			public void movesCleard(GameState gameState) {
+				mPrep.resetAll();
+			}
+			@Override
+			public void moveUndone(GameState gameState, Move move) {
+				mPrep.reset(move.getPlayer());				
+			}
+			@Override
+			public void moveDone(GameState gameState, Move move) {
+				mPrep.reset(move.getPlayer());
+			}
+		});
+		gs.addTurnListener(new TurnListener() {
+			@Override
+			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
+					int newRoundNumber) {
+				mPrep.resetAll();
+			}
+			@Override
+			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
+					Player newPlayer) {
+			}
+		});
+		
 		setGameControllerActionsEnabled(gc.getStatus());
 		boardPanel.setGameState(gs);
 		
@@ -686,10 +717,14 @@ public class Board extends JFrame {
 			putValue(NAME, "Suggest move");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_S);
-			setEnabled(false);
 		}
 		public void actionPerformed(ActionEvent e) {
 			// Suggest an AI move!
+			if (gc.getStatus() == GameStatus.IN_GAME) {
+				Move move = MoveProducer.createRandomSingleMove(gs, gg);
+				// ... not yet
+				mPrep.nextMove(move);
+			}
 		}
 	}
 	private class MoveNowAction extends AbstractAction {
