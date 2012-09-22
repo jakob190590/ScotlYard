@@ -418,15 +418,17 @@ public class DefaultGame extends AbstractGameState implements Game {
 	}
 
 	@Override
-	public void setItems(Player player, Set<Item> items) {		
-		Set<Item> old = this.items.get(player);
-		
-		// Kein Item Set (null) ist auch erlaubt!
-		// Klasse ItemSet ist besonderer Set, der eben die listener informiert, wenn sich was aendert.
-		Set<Item> set = (items == null) ? null : new ItemSet(player, items);
-		this.items.put(player, set);
-		
-		getItemListenerInformer().itemSetChanged(this, player, old, set);
+	public void setItems(Player player, Set<Item> items) {	
+		if (items != this.items) {
+			Set<Item> old = this.items.get(player);
+			
+			// Kein Item Set (null) ist auch erlaubt!
+			// Klasse ItemSet ist besonderer Set, der eben die listener informiert, wenn sich was aendert.
+			Set<Item> set = (items == null) ? null : new ItemSet(player, items);
+			this.items.put(player, set);
+			
+			getItemListenerInformer().itemSetChanged(this, player, old, set);
+		}
 	}
 
 	@Override
