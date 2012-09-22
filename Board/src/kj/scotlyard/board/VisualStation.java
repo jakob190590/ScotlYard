@@ -34,6 +34,7 @@ import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
 
+import kj.scotlyard.board.layout.PercentalBounds;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.Player;
 

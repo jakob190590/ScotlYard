@@ -24,6 +24,7 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.JComponent;
 
+import kj.scotlyard.board.layout.PercentalBounds;
 import kj.scotlyard.game.model.Player;
 
 @SuppressWarnings("serial")

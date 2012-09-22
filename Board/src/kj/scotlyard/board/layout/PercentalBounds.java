@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package kj.scotlyard.board;
+package kj.scotlyard.board.layout;
 
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
@@ -28,7 +28,7 @@ import java.awt.geom.Rectangle2D;
  * @author jakob190590
  *
  */
-interface PercentalBounds {
+public interface PercentalBounds {
 	
 	// TODO rename all methods with suffix '2' or 'Percental'
 

@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
+import kj.scotlyard.board.layout.PercentalLayout;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;

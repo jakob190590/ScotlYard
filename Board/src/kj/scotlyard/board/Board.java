@@ -41,6 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JMenuBar;
 
+import kj.scotlyard.board.layout.AspectRatioGridLayout;
 import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.control.impl.DefaultGameController;
@@ -390,6 +391,7 @@ public class Board extends JFrame {
 			@Override
 			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
 					int newRoundNumber) {
+				// Beim Wechsel in naechste Runde
 				mPrep.resetAll();
 			}
 			@Override
