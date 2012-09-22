@@ -25,14 +25,17 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
+import org.jgrapht.alg.BellmanFordShortestPath;
 
 import kj.scotlyard.board.layout.PercentalLayout;
+import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
@@ -58,9 +61,44 @@ public class BoardPanel extends JPanel {
 	
 	private GameState gameState;
 	
+	private GameGraph gameGraph;
+	
 	private Map<Player, Piece> pieces = new HashMap<>();
 	
 	private Map<StationVertex, VisualStation> visualStations = new HashMap<>();
+	
+	private MovePreparer movePreparer;
+	
+	private final MouseListener visualStationMouseListener = new MouseAdapter() {
+		@Override
+		public void mouseClicked(MouseEvent e) {			
+			logger.debug("mouse clicked on " + e.getSource());
+			super.mouseClicked(e);
+			StationVertex s = ((VisualStation) e.getSource()).getStation();
+			for (Player p : gameState.getPlayers()) {
+				if (s == gameState.getLastMove(p).getStation())
+					return;				
+			}
+			
+			Player p = unambigousPlayer(gameState, gameGraph, s);
+			if (p == null) {
+				// nicht eindeutig -> nimm' momentan ausgeaehlten player
+				p = movePreparer.getPlayer();
+			}
+			movePreparer.nextStation(s, p);
+		}
+	};
+	private final MouseListener pieceMouseListener = new MouseAdapter() {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// Mouse Pressed statt Click wegen Drag & Drop
+			super.mousePressed(e);
+			Piece p = (Piece) e.getSource();
+			movePreparer.selectPlayer(p.getPlayer());
+			logger.debug("mouse pressed on " + p.getPlayer());
+		}
+		
+	};
 	
 	/**
 	 * Dieser PlayerListener laesst das BoardPanel reagieren, wenn
@@ -78,6 +116,7 @@ public class BoardPanel extends JPanel {
 			// Alten MrX (wenn nicht null) entfernen aus Map und Container
 			if (oldMrX != null) {
 				piece = pieces.remove(oldMrX);
+				piece.removeMouseListener(pieceMouseListener);
 				remove(piece);
 				repaint();
 			}
@@ -86,8 +125,9 @@ public class BoardPanel extends JPanel {
 			if (newMrX != null) {
 				piece = new MrXPiece(newMrX);
 				piece.setVisible(false);
+				piece.addMouseListener(pieceMouseListener);
 				pieces.put(newMrX, piece);
-				add(piece);
+				add(piece, 0);
 			}
 		}
 		
@@ -97,6 +137,7 @@ public class BoardPanel extends JPanel {
 			logger.debug("Detective removed: " + detective);
 			// Piece aus Map und Container entfernen
 			Piece piece = pieces.remove(detective);
+			piece.removeMouseListener(pieceMouseListener);
 			remove(piece);
 			
 			repaint();
@@ -118,8 +159,9 @@ public class BoardPanel extends JPanel {
 				 */
 				piece.setVisible(false);
 			}
-			pieces.put(detective, piece);
-			add(piece); // TODO sollte revalidate und repaint ausloesen (wenn piece zum ersten mal sichtbar wird)
+			piece.addMouseListener(pieceMouseListener);
+			pieces.put(detective, piece);			
+			add(piece, 0); // TODO sollte revalidate und repaint ausloesen (wenn piece zum ersten mal sichtbar wird)
 		}
 	};
 	
@@ -194,6 +236,52 @@ public class BoardPanel extends JPanel {
 	}
 	
 
+	/**
+	 * Liefert den Spieler, der auf die angegebene Station fahren kann. Dabei
+	 * werden keine Regeln beachtet, sondern nur geprüft, ob der Abstand im
+	 * Graph genau eins ist!
+	 * Wenn die Situation nicht eindeutig ist, ist das Ergebnis <code>null</code>.
+	 * Die Situation ist nicht eindeutig, wenn andere Spieler zu nahe an der
+	 * Station sind (d.h. der Abstand im Graph zu gering ist).
+	 * 
+	 * Algorithmus: Eindeutig, welcher Spieler gemeint ist, wenn
+	 * <ol>
+	 * <li>Station nur durch ihn erreichbar ist (Distanz == 1)</li>
+	 * <li>Distanz zwischen Station und allen anderen Spielern größer als N mit N >= 1 (Distanz > N)</li>
+	 * </ol>
+	 * @param gameState
+	 * @param gameGraph
+	 * @param station Station, zu der wir einen eindeutigen Spieler suchen
+	 * @return unambigous player or <code>null</code>
+	 */
+	private Player unambigousPlayer(GameState gameState, GameGraph gameGraph, StationVertex station) {
+		// Bis einschliesslich N zaehlen Distanzen als "gering" (smallDistance)
+		final int N = 3; // N >= 1
+		
+		Player player = null;
+		int smallDistance = 0; // Zaehler fuer Faelle, in denen ein Player eine geringe Distanz zu station hat
+		for (Player p : gameState.getPlayers()) {
+			int d = BellmanFordShortestPath.findPathBetween(gameGraph.getGraph(), 
+					station, gameState.getLastMove(p).getStation()).size();
+			if (d <= N) {
+				// Geringe Distanz
+				smallDistance++;
+				if (d == 1) {
+					player = p;
+				}
+			}
+		}
+		
+		// Mehr als ein Player mit geringer Distanz zu station
+		if (smallDistance > 1) {
+			// nicht eindeutig
+			return null;
+		}
+		
+		return player;
+	}
+
+
 	@Override
 	protected void paintComponent(Graphics g) {		
 		super.paintComponent(g);
@@ -212,11 +300,20 @@ public class BoardPanel extends JPanel {
 	 * This method must be called after <code>VisualStation</code>s
 	 * are added to or removed from this Container. 
 	 */
+	// Must be called, after all VisualComponents of a Graph are added to the component
 	public void buildVisualStationMap() {
-		visualStations.clear();
 		for (Component c : getComponents()) {
 			if (c instanceof VisualStation) {
 				VisualStation vs = (VisualStation) c;
+				vs.removeMouseListener(visualStationMouseListener);
+			}
+		}
+		visualStations.clear();
+		
+		for (Component c : getComponents()) {
+			if (c instanceof VisualStation) {
+				VisualStation vs = (VisualStation) c;
+				vs.addMouseListener(visualStationMouseListener);
 				visualStations.put(vs.getStation(), vs);
 			}
 		}
@@ -236,6 +333,7 @@ public class BoardPanel extends JPanel {
 			
 			// Alle Pieces loeschen
 			for (Piece p : pieces.values()) {
+				p.removeMouseListener(pieceMouseListener);
 				remove(p);
 			}
 			pieces.clear();
@@ -257,7 +355,8 @@ public class BoardPanel extends JPanel {
 				}
 				for (Map.Entry<Player, Piece> e : pieces.entrySet()) {
 					Piece p = e.getValue();
-					add(p);
+					p.addMouseListener(pieceMouseListener);
+					add(p, 0);
 					Move m = gameState.getLastMove(e.getKey());
 					if (m == null) {
 						p.setVisible(false);
@@ -275,6 +374,24 @@ public class BoardPanel extends JPanel {
 		}
 	}
 
+	public GameGraph getGameGraph() {
+		return gameGraph;
+	}
+
+	public MovePreparer getMovePreparer() {
+		return movePreparer;
+	}
+
+
+	public void setMovePreparer(MovePreparer movePreparer) {
+		this.movePreparer = movePreparer;
+	}
+
+
+	public void setGameGraph(GameGraph gameGraph) {
+		this.gameGraph = gameGraph;
+	}
+
 	public Image getImage() {
 		return image;
 	}
@@ -290,5 +407,21 @@ public class BoardPanel extends JPanel {
 		this.image = image;
 		repaint();
 	}
+	
+//	Vllt brauch ich's hier auch nicht...
+//	private final Observer movePreparerObserver = new Observer() {
+//		@Override
+//		public void update(Observable o, Object arg) {
+//			if (o == mPrep) {
+//				if (arg instanceof Player) {
+//					setSelectedPlayer((Player) arg);
+//				}
+//			}
+//		}
+//	};
+//	
+//	public Observer getMovePreparerObserver() {
+//		return movePreparerObserver;
+//	}
 
 }
