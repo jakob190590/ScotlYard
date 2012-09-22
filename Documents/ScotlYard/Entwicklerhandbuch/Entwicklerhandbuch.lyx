@@ -1308,6 +1308,18 @@ Base Move
 Sub Move
 \end_layout
 
+\begin_layout Part
+Spiel-GUI (Projekt Board)
+\end_layout
+
+\begin_layout Standard
+Das Eclipse-Projekt heißt Board (englisch ist für Spielbrett).
+ In diesem Projekt sind auch die meisten Tests für den Core untergebracht,
+ weil erst hier der echte Scotland Yard Graph geladen wird.
+ Für die Tests brauchte ich den echten Graphen, um die Bewegungen nachvollziehen
+ zu können.
+\end_layout
+
 \begin_layout Part*
 Anhang
 \end_layout
@@ -1318,10 +1330,6 @@ Eigennamen
 
 \begin_layout Itemize
 ScotlYard
-\end_layout
-
-\begin_layout Itemize
-Board
 \end_layout
 
 \begin_layout Itemize
