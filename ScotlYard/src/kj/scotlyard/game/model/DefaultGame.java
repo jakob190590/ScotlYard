@@ -415,7 +415,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 		if (player != mrX) {
 			MrXPlayer old = mrX;
 			mrX = player;
-			getPlayerListenerInformer().mrXSet(this, old, player);
+			getPlayerListenerInformer().mrXChanged(this, old, player);
 		}
 	}
 

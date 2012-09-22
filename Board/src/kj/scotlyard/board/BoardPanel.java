@@ -114,7 +114,7 @@ public class BoardPanel extends JPanel {
 	 */
 	private final PlayerListener playerListener = new PlayerListener() {		
 		@Override
-		public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
+		public void mrXChanged(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
 			logger.debug(String.format("Old MrX <%s> replaced by new MrX <%s>", oldMrX, newMrX));
 			
 			Piece piece;

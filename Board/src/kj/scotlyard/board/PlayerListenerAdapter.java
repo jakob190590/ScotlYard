@@ -22,7 +22,7 @@ public abstract class PlayerListenerAdapter implements PlayerListener {
 	}
 
 	@Override
-	public void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
+	public void mrXChanged(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
 		playerListChanged(gameState);
 	}
 

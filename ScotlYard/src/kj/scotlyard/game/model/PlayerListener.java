@@ -48,6 +48,6 @@ public interface PlayerListener {
 	 * @param oldMrX
 	 * @param newMrX
 	 */
-	void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX);
+	void mrXChanged(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX);
 	
 }

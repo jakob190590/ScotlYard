@@ -70,10 +70,10 @@ public abstract class AbstractGameState implements GameState {
 	private final PlayerListener playerListenerInformer = new PlayerListener() {
 
 		@Override
-		public void mrXSet(GameState gameState, MrXPlayer oldMrX,
+		public void mrXChanged(GameState gameState, MrXPlayer oldMrX,
 				MrXPlayer newMrX) {
 			for (PlayerListener l : playerListeners) {
-				l.mrXSet(AbstractGameState.this, oldMrX, newMrX);
+				l.mrXChanged(AbstractGameState.this, oldMrX, newMrX);
 			}
 		}
 

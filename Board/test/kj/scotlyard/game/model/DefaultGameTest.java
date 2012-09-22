@@ -96,7 +96,7 @@ public class DefaultGameTest {
 		}
 
 		@Override
-		public void mrXSet(GameState gameState, MrXPlayer oldMrX,
+		public void mrXChanged(GameState gameState, MrXPlayer oldMrX,
 				MrXPlayer newMrX) {
 			gs = gameState;
 			oldX = oldMrX;
