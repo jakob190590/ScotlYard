@@ -23,9 +23,6 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -73,6 +70,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBoxMenuItem;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame {
@@ -111,6 +109,7 @@ public class Board extends JFrame {
 	private final Action moveNowAction = new MoveNowAction();
 	private JLabel lblCurrentplayerVal;
 	private MovePreparationBar movePreparationBar;
+	private final Action quickPlayAction = new QuickPlayAction();
 
 
 
@@ -263,6 +262,13 @@ public class Board extends JFrame {
 		mntmSetImage.setMnemonic('i');
 		mnBoardPanel.add(mntmSetImage);
 		
+		JMenu mnErnsthaft = new JMenu("Ernsthaft");
+		menuBar.add(mnErnsthaft);
+		
+		JCheckBoxMenuItem mntmQuickPlay = new JCheckBoxMenuItem("Quick Play");
+		mntmQuickPlay.setAction(quickPlayAction);
+		mnErnsthaft.add(mntmQuickPlay);
+		
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -282,17 +288,8 @@ public class Board extends JFrame {
 		JPanel boardPanelContainer = new JPanel(new AspectRatioGridLayout());
 		boardPanel = new BoardPanel();
 		
-		MouseListener ml = new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-				JOptionPane.showMessageDialog(Board.this, "Klick auf VisualStation: " + e.getSource());
-			}
-		};
-//		board.addMouseListener(ml);
 		for (JComponent c : bgl.getVisualComponents()) {
 			boardPanel.add(c);
-			c.addMouseListener(ml);
 		}
 		boardPanel.buildVisualStationMap();
 		nsm = bgl.getNumberStationMap();
@@ -362,7 +359,7 @@ public class Board extends JFrame {
 			@Override
 			protected void errorImpossibleNextStation(StationVertex station,
 					Player player) {
-				System.out.println("impossible next station");
+				logger.info("impossible next station");
 			}
 
 			@Override
@@ -372,6 +369,19 @@ public class Board extends JFrame {
 //				return tickets.iterator().next(); // gleich das erste
 			}
 		};
+		logger.debug("add observer to: " + mPrep);
+		mPrep.addObserver(new Observer() {
+			@Override
+			public void update(Observable o, Object arg) {
+				logger.debug("MovePreparator Ereignis");
+				if (arg instanceof Move && isSelected(quickPlayAction) 
+						&& ((Move) arg).getPlayer() == gs.getCurrentPlayer()) {
+					logger.debug("Move fertig vorbereitet, QuickPlay und Turn");
+					gc.move((Move) arg);
+				}
+			}
+		});
+		logger.debug("number of observers: " + mPrep.countObservers());
 		
 		gs.addMoveListener(new MoveListener() {
 			@Override
@@ -402,6 +412,8 @@ public class Board extends JFrame {
 		
 		setGameControllerActionsEnabled(gc.getStatus());
 		boardPanel.setGameState(gs);
+		boardPanel.setGameGraph(gg);
+		boardPanel.setMovePreparer(mPrep);
 		
 		boardPanelContainer.add(boardPanel);
 		
@@ -467,6 +479,17 @@ public class Board extends JFrame {
 		
 //		pack();
 	}
+	
+	
+	
+	public static void setSelected(Action action, boolean value) {
+		action.putValue(Action.SELECTED_KEY, value);
+	}
+	public static boolean isSelected(Action action) {
+		return (boolean) action.getValue(Action.SELECTED_KEY);
+	}
+	
+	
 
 	private class NewGameAction extends AbstractAction {
 		public NewGameAction() {
@@ -736,7 +759,7 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
 		}
 		public void actionPerformed(ActionEvent e) {
-			gc.move(mPrep.getMove());
+			gc.move(mPrep.getMove(gs.getCurrentPlayer()));
 		}
 	}
 	protected JLabel getLblCurrentplayerVal() {
@@ -744,5 +767,12 @@ public class Board extends JFrame {
 	}
 	protected MovePreparationBar getMovePreparationBar() {
 		return movePreparationBar;
+	}
+	private class QuickPlayAction extends AbstractAction {
+		public QuickPlayAction() {
+			putValue(NAME, "Quick Play");
+			putValue(SHORT_DESCRIPTION, "Toogle Quick Play mode");
+		}
+		public void actionPerformed(ActionEvent e) { }
 	}
 }

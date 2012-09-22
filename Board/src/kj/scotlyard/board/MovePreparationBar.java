@@ -13,6 +13,8 @@ import kj.scotlyard.game.model.PlayerListener;
 import kj.scotlyard.game.model.TurnListener;
 
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Vector;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -67,6 +69,17 @@ public class MovePreparationBar extends JPanel {
 			logger.debug("current player changed: " + newPlayer);
 			if (oldPlayer == getSelectedPlayer()) {
 				setSelectedPlayer(newPlayer);
+			}
+		}
+	};
+	
+	private final Observer movePreparerObserver = new Observer() {
+		@Override
+		public void update(Observable o, Object arg) {
+			if (o == mPrep) {
+				if (arg instanceof Player) {
+					setSelectedPlayer((Player) arg);
+				}
 			}
 		}
 	};
@@ -139,7 +152,9 @@ public class MovePreparationBar extends JPanel {
 			putValue(NAME, "Select Player");
 			putValue(SHORT_DESCRIPTION, "Select the player to prepare a move");
 		}
-		public void actionPerformed(ActionEvent e) { }
+		public void actionPerformed(ActionEvent e) {
+			mPrep.selectPlayer((Player) cbPlayer.getSelectedItem());
+		}
 	}
 	
 	public Player getSelectedPlayer() {
@@ -156,6 +171,10 @@ public class MovePreparationBar extends JPanel {
 		for (Component c : getComponents()) {
 			c.setEnabled(enabled);
 		}
+	}
+	
+	public Observer getMovePreparerObserver() {
+		return movePreparerObserver;
 	}
 
 }
