@@ -86,6 +86,7 @@ public abstract class MovePreparer extends Observable {
 
 	
 	public void reset(Player player) {
+		logger.debug("reset for " + player);
 		moves.remove(player);
 	}
 	
@@ -95,6 +96,7 @@ public abstract class MovePreparer extends Observable {
 	}
 	
 	public void resetAll() {
+		logger.debug("reset for all");
 		moves.clear();
 	}
 	
@@ -117,6 +119,7 @@ public abstract class MovePreparer extends Observable {
 
 	public void selectPlayer(Player player) {
 		if (this.player != player) {
+			logger.debug("select player");
 			this.player = player;
 			setChanged();
 			notifyObservers(player);
@@ -139,6 +142,8 @@ public abstract class MovePreparer extends Observable {
 	 */
 	public void nextStation(final StationVertex station, final Player player) {
 		selectPlayer(player);
+		
+		logger.debug("next station");
 		
 		Move move = moves.get(player);
 		
@@ -166,7 +171,7 @@ public abstract class MovePreparer extends Observable {
 				}
 			}			
 		}
-				
+		
 		Ticket ticket = selectTicket(tickets, player);
 		
 		if (ticket != null) {		
@@ -206,10 +211,13 @@ public abstract class MovePreparer extends Observable {
 	}
 		
 	public Move getMove(Player player) {
+		logger.debug("try get move (turnkey)");
 		Move move = moves.get(player);
 		
 		Move result = null;
 		if (move != null) {
+			logger.debug("prepared move exists");
+			
 			// TODO Move number (und evtl. round number) nur setzen, wenn player == currentPlayer
 			int moveNumber = gameState.getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
 			if (move.getMoves().isEmpty()) {

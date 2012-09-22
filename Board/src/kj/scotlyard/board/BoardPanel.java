@@ -87,6 +87,8 @@ public class BoardPanel extends JPanel {
 			if (p == null) {
 				// nicht eindeutig -> nimm' momentan ausgewaehlten player
 				// TODO vllt doch fragen in diesem fall?
+				// JOptionPane.showMessageDialog(BoardPanel.this, "Not quite sure, wich player you want to move. Please click on the player first.", "Confirmation", JOptionPane.QUESTION_MESSAGE);
+				// eher nicht, lieber fehlermeldung
 				p = movePreparer.getPlayer();
 			}
 			movePreparer.nextStation(s, p);

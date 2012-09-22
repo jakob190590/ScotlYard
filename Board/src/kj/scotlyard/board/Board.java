@@ -71,11 +71,15 @@ import org.apache.log4j.PropertyConfigurator;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame {
 	
 	private static Logger logger = Logger.getLogger(Board.class);
+	
+	private Image img;
 
 	private JPanel contentPane;
 	
@@ -83,9 +87,9 @@ public class Board extends JFrame {
 	
 	private JLabel lblCurrentplayerVal;
 	
-	private MovePreparationBar movePreparationBar;
+	private JLabel lblMoveVal;
 	
-	private Image img;
+	private MovePreparationBar movePreparationBar;
 	
 	GameController gc;
 	Game g;
@@ -112,6 +116,7 @@ public class Board extends JFrame {
 	private final Action suggestMoveAction = new SuggestMoveAction();
 	private final Action moveNowAction = new MoveNowAction();
 	private final Action quickPlayAction = new QuickPlayAction();
+	private final Action selectCurrentPlayerAction = new SelectCurrentPlayerAction();
 
 
 	/**
@@ -374,10 +379,19 @@ public class Board extends JFrame {
 			@Override
 			public void update(Observable o, Object arg) {
 				logger.debug("MovePreparator Ereignis");
-				if (arg instanceof Move && isSelected(quickPlayAction) 
-						&& ((Move) arg).getPlayer() == gs.getCurrentPlayer()) {
-					logger.debug("Move fertig vorbereitet, QuickPlay und Turn");
-					gc.move((Move) arg);
+				if (arg instanceof Move) {
+					logger.debug("move prepared");
+					
+					if (((Move) arg).getPlayer() == gs.getCurrentPlayer()) {
+						lblMoveVal.setText(arg.toString());
+					}
+					
+					if (isSelected(quickPlayAction)
+							&& ((Move) arg).getPlayer() == gs.getCurrentPlayer()
+							&& !false) { // no further moves
+						logger.debug("Move fertig vorbereitet, QuickPlay, no further moves and Turn");
+						gc.move((Move) arg);
+					}
 				}
 			}
 		});
@@ -401,11 +415,14 @@ public class Board extends JFrame {
 			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
 					int newRoundNumber) {
 				// Beim Wechsel in naechste Runde
+				logger.debug(String.format("round changed: %d -> %d", oldRoundNumber, newRoundNumber));
 				mPrep.resetAll();
 			}
 			@Override
 			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
 					Player newPlayer) {
+				Move m = mPrep.getMove(newPlayer);
+				lblMoveVal.setText((m == null) ? "Noch kein Move vorbereitet" : m.toString());
 			}
 		});
 		
@@ -455,6 +472,12 @@ public class Board extends JFrame {
 		MoveControlBar.add(lblCurrentPlayer);
 		
 		lblCurrentplayerVal = new JLabel("CurrentPlayerVal");
+		lblCurrentplayerVal.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				selectCurrentPlayerAction.actionPerformed(null);
+			}
+		});
 		gs.addTurnListener(new TurnListener() {
 			@Override
 			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
@@ -466,6 +489,9 @@ public class Board extends JFrame {
 			}
 		});
 		MoveControlBar.add(lblCurrentplayerVal);
+		
+		lblMoveVal = new JLabel("MoveVal");
+		MoveControlBar.add(lblMoveVal);
 		
 		JButton btnMove = new JButton("Move!");
 		btnMove.setAction(moveNowAction);
@@ -772,5 +798,15 @@ public class Board extends JFrame {
 			putValue(SELECTED_KEY, false);
 		}
 		public void actionPerformed(ActionEvent e) { }
+	}
+	/** Selects the current player to prepare a move for */
+	private class SelectCurrentPlayerAction extends AbstractAction {
+		public SelectCurrentPlayerAction() {
+			putValue(NAME, "Select Current Player");
+			putValue(SHORT_DESCRIPTION, "Select the current player to prepare a move for");
+		}
+		public void actionPerformed(ActionEvent e) {
+			mPrep.selectPlayer(gs.getCurrentPlayer());
+		}
 	}
 }
