@@ -35,12 +35,16 @@ public class TicketSelectionDialog extends JDialog {
 
 	/**
 	 * Create the dialog.
+	 * @param w the owner window - must not be <code>null</code>!
 	 */
 	public TicketSelectionDialog(Window w) {
 		super(w);
 		setModal(true);
 		setTitle("Select a Ticket");
-		setBounds(100, 100, 450, 300);
+		setSize(450, 300);
+		setLocation(w.getX() + w.getWidth() / 2 - getWidth() / 2, 
+				w.getY() + w.getHeight() / 2 - getHeight() / 2);	
+		
 		getContentPane().setLayout(new BorderLayout());
 		ticketSelectionPanel = new TicketSelectionPanel();
 		ticketSelectionPanel.setSelectListener(new TicketSelectListener() {
