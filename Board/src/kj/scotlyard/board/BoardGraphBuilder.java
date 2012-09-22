@@ -53,6 +53,7 @@ public class BoardGraphBuilder extends AbstractGameGraphBuilder implements Graph
 		g.addVertex(v);
 		// TODO add a new Visual Station to visualComponents
 		VisualStation vs = new VisualStation(v, number);
+		vs.setToolTipText("Station # " + number); // TODO gscheider tooltip (i18n)
 		vs.setLocation2(position.x - 0.008066, position.y - 0.010709);
 		vs.setSize2(0.016132, 0.021418);
 		visualComponents.add(vs);

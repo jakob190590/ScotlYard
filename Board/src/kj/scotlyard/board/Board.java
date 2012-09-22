@@ -81,6 +81,10 @@ public class Board extends JFrame {
 	
 	private BoardPanel boardPanel;
 	
+	private JLabel lblCurrentplayerVal;
+	
+	private MovePreparationBar movePreparationBar;
+	
 	private Image img;
 	
 	GameController gc;
@@ -90,8 +94,6 @@ public class Board extends JFrame {
 	MovePreparer mPrep;
 	Map<Integer, StationVertex> nsm; // Number Station Map
 	
-	private JLabel lblCurrentplayerVal;
-	private MovePreparationBar movePreparationBar;
 	
 	private final Action newGameAction = new NewGameAction();
 	private final Action clearPlayersAction = new ClearPlayersAction();
@@ -486,7 +488,34 @@ public class Board extends JFrame {
 		return (boolean) action.getValue(Action.SELECTED_KEY);
 	}
 	
+	private void showErrorMessage(Exception e) {
+		JOptionPane.showMessageDialog(this, e.getMessage(), e.getClass()
+				.getSimpleName(), JOptionPane.ERROR_MESSAGE);
+	}	
+	private void showGameStatusAndWin(GameStatus status, GameWin win) {
+		JOptionPane.showMessageDialog(Board.this, String.format(
+				"Status: %s\nWin: %s", status, win));
+	}
+	private void setGameControllerActionsEnabled(GameStatus status) {
+		boolean inGame = (status == GameStatus.IN_GAME);
+		newGameAction.setEnabled(!inGame);
+		//clearPlayersAction.setEnabled(inGame);
+		//newMrXAction.setEnabled(inGame);
+		//newDetectiveAction.setEnabled(inGame);
+		startAction.setEnabled(!inGame);
+		abortAction.setEnabled(inGame);
+		moveAction.setEnabled(inGame);
+		
+		//removeDetectiveAction.setEnabled(inGame);
+		//shiftDetectiveUpAction.setEnabled(inGame);
+		//shiftDetectiveDownAction.setEnabled(inGame);
+		newGameWithPlayersAction.setEnabled(!inGame);
+	}
 	
+	
+	
+	
+	// Actions *******************************************
 
 	private class NewGameAction extends AbstractAction {
 		public NewGameAction() {
@@ -687,29 +716,6 @@ public class Board extends JFrame {
 			gc.newGame();
 		}
 	}
-	private void showGameStatusAndWin(GameStatus status, GameWin win) {
-		JOptionPane.showMessageDialog(Board.this, String.format(
-				"Status: %s\nWin: %s", status, win));
-	}
-	private void setGameControllerActionsEnabled(GameStatus status) {
-		boolean inGame = (status == GameStatus.IN_GAME);
-		newGameAction.setEnabled(!inGame);
-		//clearPlayersAction.setEnabled(inGame);
-		//newMrXAction.setEnabled(inGame);
-		//newDetectiveAction.setEnabled(inGame);
-		startAction.setEnabled(!inGame);
-		abortAction.setEnabled(inGame);
-		moveAction.setEnabled(inGame);
-		
-		//removeDetectiveAction.setEnabled(inGame);
-		//shiftDetectiveUpAction.setEnabled(inGame);
-		//shiftDetectiveDownAction.setEnabled(inGame);
-		newGameWithPlayersAction.setEnabled(!inGame);
-	}
-	private void showErrorMessage(Exception e) {
-		JOptionPane.showMessageDialog(this, e.getMessage(), e.getClass()
-				.getSimpleName(), JOptionPane.ERROR_MESSAGE);
-	}
 	private class UndoAction extends AbstractAction {
 		public UndoAction() {
 			putValue(NAME, "Undo");
@@ -758,12 +764,6 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			gc.move(mPrep.getMove(gs.getCurrentPlayer()));
 		}
-	}
-	protected JLabel getLblCurrentplayerVal() {
-		return lblCurrentplayerVal;
-	}
-	protected MovePreparationBar getMovePreparationBar() {
-		return movePreparationBar;
 	}
 	private class QuickPlayAction extends AbstractAction {
 		public QuickPlayAction() {

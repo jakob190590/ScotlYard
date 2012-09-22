@@ -82,10 +82,11 @@ public class BoardPanel extends JPanel {
 					return;				
 			}
 			
-			Player p = unambigousPlayer(gameState, gameGraph, s);
-			logger.debug("unambigous player: " + p);
+			Player p = unambiguousPlayer(gameState, gameGraph, s);
+			logger.debug("unambiguous player: " + p);
 			if (p == null) {
 				// nicht eindeutig -> nimm' momentan ausgewaehlten player
+				// TODO vllt doch fragen in diesem fall?
 				p = movePreparer.getPlayer();
 			}
 			movePreparer.nextStation(s, p);
@@ -104,10 +105,10 @@ public class BoardPanel extends JPanel {
 	};
 	
 	/**
-	 * Dieser PlayerListener laesst das BoardPanel reagieren, wenn
-	 * Player hinzugefuegt oder entfernt werden. Hier koennen 
+	 * Dieser PlayerListener lässt das BoardPanel reagieren, wenn
+	 * Player hinzugefügt oder entfernt werden. Hier können 
 	 * <code>NullPointerException</code>s auftreten, wenn die Daten
-	 * im BoardPanel corrupted sind.
+	 * im BoardPanel (sprich <code>pieces</code>) corrupted sind.
 	 */
 	private final PlayerListener playerListener = new PlayerListener() {		
 		@Override
@@ -129,6 +130,7 @@ public class BoardPanel extends JPanel {
 				piece = new MrXPiece(newMrX);
 				piece.setVisible(false);
 				piece.addMouseListener(pieceMouseListener);
+				piece.setToolTipText(piece.getPlayer().toString()); // TODO gscheider tooltip
 				pieces.put(newMrX, piece);
 				add(piece, 0);
 			}
@@ -163,15 +165,17 @@ public class BoardPanel extends JPanel {
 				piece.setVisible(false);
 			}
 			piece.addMouseListener(pieceMouseListener);
+			piece.setToolTipText(piece.getPlayer().toString());
 			pieces.put(detective, piece);			
 			add(piece, 0); // TODO sollte revalidate und repaint ausloesen (wenn piece zum ersten mal sichtbar wird)
 		}
 	};
 	
 	/**
-	 * Dieser MoveListener laesst das BoardPanel auf Move-Ereignisse
-	 * reagieren. Hier koennen <code>NullPointerException</code>s auftreten,
-	 * wenn die Daten im BoardPanel corrupted sind.
+	 * Dieser MoveListener lässt das BoardPanel auf Move-Ereignisse
+	 * reagieren. Hier können <code>NullPointerException</code>s auftreten,
+	 * wenn die Daten im BoardPanel (sprich <code>pieces</code>) corrupted
+	 * sind.
 	 */
 	private final MoveListener moveListener = new MoveListener() {
 		
@@ -181,8 +185,6 @@ public class BoardPanel extends JPanel {
 			for (Piece p : pieces.values()) {
 				p.setVisible(false);
 			}
-			// TODO evtl. markings von stationen disablen + repaint
-			
 		}
 		
 		@Override
@@ -200,7 +202,6 @@ public class BoardPanel extends JPanel {
 				revalidate();
 				
 			}
-			// TODO evtl. markings von stationen disablen + repaint
 		}
 		
 		@Override
@@ -212,11 +213,6 @@ public class BoardPanel extends JPanel {
 			Piece p = pieces.get(move.getPlayer());
 			p.setVisualStation(visualStations.get(move.getStation()));
 			p.setVisible(true); // falls es initial move ist
-			
-//			System.out.println(String.format("move done\nPiece=%s\n" +
-//					"VisualStation=%s", p, p.getVisualStation()));
-			
-			// TODO evtl. markings von stationen disablen
 			
 			revalidate(); // warum wird eigentlich repainted?
 		}
@@ -230,18 +226,12 @@ public class BoardPanel extends JPanel {
 	
 	public BoardPanel() {
 		super(new PercentalLayout());
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				logger.debug("klick auf BoardPanel");
-			}
-		});
 	}
 	
 
 	/**
-	 * Liefert den Spieler, der auf die angegebene Station fahren kann. Dabei
-	 * werden keine Regeln beachtet, sondern nur geprüft, ob der Abstand im
+	 * Liefert den einzigen Spieler, der auf die angegebene Station fahren kann. 
+	 * Dabei werden keine Regeln beachtet, sondern nur geprüft, ob der Abstand im
 	 * Graph genau eins ist!
 	 * Wenn die Situation nicht eindeutig ist, ist das Ergebnis <code>null</code>.
 	 * Die Situation ist nicht eindeutig, wenn andere Spieler zu nahe an der
@@ -257,7 +247,7 @@ public class BoardPanel extends JPanel {
 	 * @param station Station, zu der wir einen eindeutigen Spieler suchen
 	 * @return unambigous player or <code>null</code>
 	 */
-	private Player unambigousPlayer(GameState gameState, GameGraph gameGraph, StationVertex station) {
+	public Player unambiguousPlayer(GameState gameState, GameGraph gameGraph, StationVertex station) {
 		// Bis einschliesslich N zaehlen Distanzen als "gering" (smallDistance)
 		final int N = 1; // N >= 1
 		
@@ -359,6 +349,7 @@ public class BoardPanel extends JPanel {
 				for (Map.Entry<Player, Piece> e : pieces.entrySet()) {
 					Piece p = e.getValue();
 					p.addMouseListener(pieceMouseListener);
+					p.setToolTipText(p.getPlayer().toString()); // TODO gscheider tooltip
 					add(p, 0);
 					Move m = gameState.getLastMove(e.getKey());
 					if (m == null) {
@@ -422,9 +413,5 @@ public class BoardPanel extends JPanel {
 //			}
 //		}
 //	};
-//	
-//	public Observer getMovePreparerObserver() {
-//		return movePreparerObserver;
-//	}
 
 }
