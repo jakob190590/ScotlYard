@@ -412,9 +412,11 @@ public class DefaultGame extends AbstractGameState implements Game {
 	
 	@Override
 	public void setMrX(MrXPlayer player) {
-		MrXPlayer old = mrX;
-		mrX = player;
-		getPlayerListenerInformer().mrXSet(this, old, player);
+		if (player != mrX) {
+			MrXPlayer old = mrX;
+			mrX = player;
+			getPlayerListenerInformer().mrXSet(this, old, player);
+		}
 	}
 
 	@Override
