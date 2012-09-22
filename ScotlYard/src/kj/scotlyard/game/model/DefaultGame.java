@@ -412,35 +412,43 @@ public class DefaultGame extends AbstractGameState implements Game {
 	
 	@Override
 	public void setMrX(MrXPlayer player) {
-		MrXPlayer old = mrX;
-		mrX = player;
-		getPlayerListenerInformer().mrXSet(this, old, player);
+		if (player != mrX) {
+			MrXPlayer old = mrX;
+			mrX = player;
+			getPlayerListenerInformer().mrXSet(this, old, player);
+		}
 	}
 
 	@Override
-	public void setItems(Player player, Set<Item> items) {		
-		Set<Item> old = this.items.get(player);
-		
-		// Kein Item Set (null) ist auch erlaubt!
-		// Klasse ItemSet ist besonderer Set, der eben die listener informiert, wenn sich was aendert.
-		Set<Item> set = (items == null) ? null : new ItemSet(player, items);
-		this.items.put(player, set);
-		
-		getItemListenerInformer().itemSetChanged(this, player, old, set);
+	public void setItems(Player player, Set<Item> items) {	
+		if (items != this.items) {
+			Set<Item> old = this.items.get(player);
+			
+			// Kein Item Set (null) ist auch erlaubt!
+			// Klasse ItemSet ist besonderer Set, der eben die listener informiert, wenn sich was aendert.
+			Set<Item> set = (items == null) ? null : new ItemSet(player, items);
+			this.items.put(player, set);
+			
+			getItemListenerInformer().itemSetChanged(this, player, old, set);
+		}
 	}
 
 	@Override
 	public void setCurrentRoundNumber(int roundNumber) {
-		int old = currentRoundNumber;
-		currentRoundNumber = roundNumber;
-		getTurnListenerInformer().currentRoundChanged(this, old, roundNumber);
+		if (roundNumber != currentRoundNumber) {
+			int old = currentRoundNumber;
+			currentRoundNumber = roundNumber;
+			getTurnListenerInformer().currentRoundChanged(this, old, roundNumber);
+		}
 	}
 
 	@Override
 	public void setCurrentPlayer(Player player) {
-		Player old = currentPlayer;
-		currentPlayer = player;
-		getTurnListenerInformer().currentPlayerChanged(this, old, player);
+		if (player != currentPlayer) {
+			Player old = currentPlayer;
+			currentPlayer = player;
+			getTurnListenerInformer().currentPlayerChanged(this, old, player);
+		}
 	}
 	
 }
