@@ -74,6 +74,8 @@ public class BoardPanel extends JPanel {
 		public void mouseClicked(MouseEvent e) {			
 			logger.debug("mouse clicked on " + e.getSource());
 			super.mouseClicked(e);
+			
+			// falls auf station geklickt wurde auf der ein spieler steht -> abbruch
 			StationVertex s = ((VisualStation) e.getSource()).getStation();
 			for (Player p : gameState.getPlayers()) {
 				if (s == gameState.getLastMove(p).getStation())
@@ -81,8 +83,9 @@ public class BoardPanel extends JPanel {
 			}
 			
 			Player p = unambigousPlayer(gameState, gameGraph, s);
+			logger.debug("unambigous player: " + p);
 			if (p == null) {
-				// nicht eindeutig -> nimm' momentan ausgeaehlten player
+				// nicht eindeutig -> nimm' momentan ausgewaehlten player
 				p = movePreparer.getPlayer();
 			}
 			movePreparer.nextStation(s, p);
@@ -256,7 +259,7 @@ public class BoardPanel extends JPanel {
 	 */
 	private Player unambigousPlayer(GameState gameState, GameGraph gameGraph, StationVertex station) {
 		// Bis einschliesslich N zaehlen Distanzen als "gering" (smallDistance)
-		final int N = 3; // N >= 1
+		final int N = 1; // N >= 1
 		
 		Player player = null;
 		int smallDistance = 0; // Zaehler fuer Faelle, in denen ein Player eine geringe Distanz zu station hat

@@ -102,6 +102,8 @@ public class MovePreparationBar extends JPanel {
 		this.mPrep = mPrep;
 		this.nsm = nsm;
 		
+		mPrep.addObserver(movePreparerObserver);
+		
 		
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
@@ -171,10 +173,5 @@ public class MovePreparationBar extends JPanel {
 		for (Component c : getComponents()) {
 			c.setEnabled(enabled);
 		}
-	}
-	
-	public Observer getMovePreparerObserver() {
-		return movePreparerObserver;
-	}
-
+	}	
 }

@@ -90,6 +90,8 @@ public class Board extends JFrame {
 	MovePreparer mPrep;
 	Map<Integer, StationVertex> nsm; // Number Station Map
 	
+	private JLabel lblCurrentplayerVal;
+	private MovePreparationBar movePreparationBar;
 	
 	private final Action newGameAction = new NewGameAction();
 	private final Action clearPlayersAction = new ClearPlayersAction();
@@ -107,10 +109,7 @@ public class Board extends JFrame {
 	private final Action redoAction = new RedoAction();
 	private final Action suggestMoveAction = new SuggestMoveAction();
 	private final Action moveNowAction = new MoveNowAction();
-	private JLabel lblCurrentplayerVal;
-	private MovePreparationBar movePreparationBar;
 	private final Action quickPlayAction = new QuickPlayAction();
-
 
 
 	/**
@@ -369,7 +368,6 @@ public class Board extends JFrame {
 //				return tickets.iterator().next(); // gleich das erste
 			}
 		};
-		logger.debug("add observer to: " + mPrep);
 		mPrep.addObserver(new Observer() {
 			@Override
 			public void update(Observable o, Object arg) {
@@ -381,7 +379,6 @@ public class Board extends JFrame {
 				}
 			}
 		});
-		logger.debug("number of observers: " + mPrep.countObservers());
 		
 		gs.addMoveListener(new MoveListener() {
 			@Override
@@ -772,6 +769,7 @@ public class Board extends JFrame {
 		public QuickPlayAction() {
 			putValue(NAME, "Quick Play");
 			putValue(SHORT_DESCRIPTION, "Toogle Quick Play mode");
+			putValue(SELECTED_KEY, false);
 		}
 		public void actionPerformed(ActionEvent e) { }
 	}

@@ -29,11 +29,19 @@ import kj.scotlyard.game.util.SubMoves;
  * This class defines the algorithm for "manual" move preparation.
  * This is the steps, the user make, to carry out a move:
  * <ol>
+ * <li>Select the player</li>
  * <li>Select the next station</li>
  * <li>Select the ticket to use (callback)</li>
  * <li>Ready or go to 1. again for a multi move</li>
  * </ol>
  * When done, the turnkey move can be obtained via <code>getMove</code>.
+ * 
+ * The MovePreparer is (like a model in MVC) an Observable. It notify
+ * it's observers
+ * <ul>
+ * <li>when the player is selected (arg = Player)</li>
+ * <li>at step 4., this is a move <i>maybe</i> is ready (arg = Move)</li>
+ * </ul>
  * 
  * @author jakob190590
  *
@@ -81,6 +89,7 @@ public abstract class MovePreparer extends Observable {
 		moves.remove(player);
 	}
 	
+	@Deprecated
 	public void reset() {
 		reset(gameState.getCurrentPlayer());
 	}
@@ -109,6 +118,7 @@ public abstract class MovePreparer extends Observable {
 	public void selectPlayer(Player player) {
 		if (this.player != player) {
 			this.player = player;
+			setChanged();
 			notifyObservers(player);
 		}
 	}
@@ -116,7 +126,8 @@ public abstract class MovePreparer extends Observable {
 	// uebergibt im gegensatz zu nextStation gleich den kompletten zug! (verwendung bei suggest move von ai)
 	public void nextMove(Move move) {
 		moves.put(move.getPlayer(), move);
-		notifyObservers(getMove());
+		setChanged();
+		notifyObservers(getMove(move.getPlayer()));
 	}
 	
 	/**
@@ -142,6 +153,7 @@ public abstract class MovePreparer extends Observable {
 		// TODO next station muss auch noch anderweitig geprueft werden (besetzt, kein ticket, ...?)
 		if (connections.isEmpty()) {
 			errorImpossibleNextStation(station, player);
+			return;
 		}
 		
 		Set<Ticket> tickets = new HashSet<>();
@@ -179,11 +191,9 @@ public abstract class MovePreparer extends Observable {
 			}
 			
 			moves.put(player, move);
+			setChanged();
 			notifyObservers(getMove(player));
-			logger.debug("observers notified");
 		}
-		// TODO Falls es doch noch jemanden interessiert, wenn abgebrochen wird:
-		// else notifyObservers(); // arg = null
 	}
 	
 	@Deprecated
@@ -218,7 +228,7 @@ public abstract class MovePreparer extends Observable {
 				result = MoveProducer.createMultiMove(player, gameState.getCurrentRoundNumber(),
 						moveNumber, doubleMoveCard, sms);
 			}
-		}		
+		}
 		return result;
 	}
 	
@@ -226,5 +236,4 @@ public abstract class MovePreparer extends Observable {
 	public Move getMove() {
 		return getMove(gameState.getCurrentPlayer());
 	}
-
 }
