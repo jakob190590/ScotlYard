@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
@@ -38,9 +40,13 @@ import kj.scotlyard.game.util.SubMoves;
  */
 public abstract class MovePreparer extends Observable {
 	
+	private static final Logger logger = Logger.getLogger(MovePreparer.class);
+	
 	private GameState gameState;
 	
 	private GameGraph gameGraph;
+	
+	private Player player;
 	
 	private Map<Player, Move> moves = new HashMap<>();
 
@@ -100,6 +106,12 @@ public abstract class MovePreparer extends Observable {
 	 */
 	protected abstract Ticket selectTicket(final Set<Ticket> tickets, final Player player);
 
+	public void selectPlayer(Player player) {
+		if (this.player != player) {
+			this.player = player;
+			notifyObservers(player);
+		}
+	}
 	
 	// uebergibt im gegensatz zu nextStation gleich den kompletten zug! (verwendung bei suggest move von ai)
 	public void nextMove(Move move) {
@@ -115,6 +127,8 @@ public abstract class MovePreparer extends Observable {
 	 * @param player
 	 */
 	public void nextStation(final StationVertex station, final Player player) {
+		selectPlayer(player);
+		
 		Move move = moves.get(player);
 		
 		Move lm = gameState.getLastMove(player); // last move
@@ -145,6 +159,7 @@ public abstract class MovePreparer extends Observable {
 		
 		if (ticket != null) {		
 			// D.h. nicht abgebrochen
+			logger.debug("ticket selected");
 			ConnectionEdge conn = MoveHelper.suggestConnection(lastStation, station, ticket);
 			m.setConnection(conn);
 			m.setItem(ticket);
@@ -164,14 +179,20 @@ public abstract class MovePreparer extends Observable {
 			}
 			
 			moves.put(player, move);
-			notifyObservers(getMove());
+			notifyObservers(getMove(player));
+			logger.debug("observers notified");
 		}
 		// TODO Falls es doch noch jemanden interessiert, wenn abgebrochen wird:
 		// else notifyObservers(); // arg = null
 	}
 	
+	@Deprecated
 	public void nextStation(final StationVertex station) {
 		nextStation(station, gameState.getCurrentPlayer());
+	}
+	
+	public Player getPlayer() {
+		return player;
 	}
 		
 	public Move getMove(Player player) {
@@ -201,6 +222,7 @@ public abstract class MovePreparer extends Observable {
 		return result;
 	}
 	
+	@Deprecated
 	public Move getMove() {
 		return getMove(gameState.getCurrentPlayer());
 	}
