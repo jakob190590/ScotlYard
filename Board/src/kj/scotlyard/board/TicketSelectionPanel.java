@@ -97,7 +97,8 @@ public class TicketSelectionPanel extends JPanel {
 		add(pnlFooter, BorderLayout.SOUTH);
 		pnlFooter.setLayout(new BoxLayout(pnlFooter, BoxLayout.X_AXIS));
 		
-		chckbxFurtherMoves = new JCheckBox("FurtherMoves");
+		chckbxFurtherMoves = new JCheckBox("Further Move(s)");
+		chckbxFurtherMoves.setToolTipText("To prepare further move(s) for a multi move");
 		pnlFooter.add(chckbxFurtherMoves);
 		
 		JPanel panel = new JPanel();

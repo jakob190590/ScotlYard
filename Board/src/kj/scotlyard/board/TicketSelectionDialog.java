@@ -54,7 +54,8 @@ public class TicketSelectionDialog extends JDialog {
 
 	/**
 	 * Create the dialog.
-	 * @param w the owner window - must not be <code>null</code>!
+	 * Both params must not be <code>null</code>!
+	 * @param w the owner window
 	 * @param playerType the type of Player for which 
 	 * the dialog should be configured for
 	 */
@@ -69,14 +70,13 @@ public class TicketSelectionDialog extends JDialog {
 		
 		getContentPane().setLayout(new BorderLayout());
 		ticketSelectionPanel = new TicketSelectionPanel();		
-		if (playerType != null) {
-			if (playerType == MrXPlayer.class) {
-				ticketSelectionPanel.setTicketTypes(TaxiTicket.class, BusTicket.class, 
-						UndergroundTicket.class, BlackTicket.class);
-			} else /* if (playerType == DetectivePlayer.class) */ {
-				ticketSelectionPanel.setTicketTypes(TaxiTicket.class, 
-						BusTicket.class, UndergroundTicket.class);
-			}
+		if (playerType == MrXPlayer.class) {
+			// alle moeglichen Ticket types
+			ticketSelectionPanel.setTicketTypes(TaxiTicket.class, BusTicket.class, 
+					UndergroundTicket.class, BlackTicket.class);
+		} else /* if (playerType == DetectivePlayer.class) */ {
+			ticketSelectionPanel.setTicketTypes(TaxiTicket.class, 
+					BusTicket.class, UndergroundTicket.class);
 		}
 		ticketSelectionPanel.setFurtherMovesCheckBoxVisible(false);
 		ticketSelectionPanel.setSelectListener(new TicketSelectListener() {
