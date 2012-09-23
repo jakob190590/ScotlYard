@@ -32,7 +32,6 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
-import org.jgrapht.alg.BellmanFordShortestPath;
 
 import kj.scotlyard.board.layout.PercentalLayout;
 import kj.scotlyard.game.graph.GameGraph;
@@ -44,6 +43,7 @@ import kj.scotlyard.game.model.MoveListener;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.PlayerListener;
+import kj.scotlyard.game.util.MoveHelper;
 
 /**
  * Stellt das Spielbrett mit Stationen und Spielfiguren dar.
@@ -71,7 +71,7 @@ public class BoardPanel extends JPanel {
 	
 	private final MouseListener visualStationMouseListener = new MouseAdapter() {
 		@Override
-		public void mouseClicked(MouseEvent e) {			
+		public void mouseClicked(MouseEvent e) {
 			logger.debug("mouse clicked on " + e.getSource());
 			super.mouseClicked(e);
 			
@@ -82,7 +82,7 @@ public class BoardPanel extends JPanel {
 					return;				
 			}
 			
-			Player p = unambiguousPlayer(gameState, gameGraph, s);
+			Player p = MoveHelper.unambiguousPlayer(gameState, gameGraph, s);
 			logger.debug("unambiguous player: " + p);
 			if (p == null) {
 				// nicht eindeutig -> nimm' momentan ausgewaehlten player
@@ -95,6 +95,10 @@ public class BoardPanel extends JPanel {
 		}
 	};
 	private final MouseListener pieceMouseListener = new MouseAdapter() {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			
+		}
 		@Override
 		public void mousePressed(MouseEvent e) {
 			// Mouse Pressed statt Click wegen Drag & Drop
@@ -229,53 +233,6 @@ public class BoardPanel extends JPanel {
 	public BoardPanel() {
 		super(new PercentalLayout());
 	}
-	
-
-	/**
-	 * Liefert den einzigen Spieler, der auf die angegebene Station fahren kann. 
-	 * Dabei werden keine Regeln beachtet, sondern nur geprüft, ob der Abstand im
-	 * Graph genau eins ist!
-	 * Wenn die Situation nicht eindeutig ist, ist das Ergebnis <code>null</code>.
-	 * Die Situation ist nicht eindeutig, wenn andere Spieler zu nahe an der
-	 * Station sind (d.h. der Abstand im Graph zu gering ist).
-	 * 
-	 * Algorithmus: Eindeutig, welcher Spieler gemeint ist, wenn
-	 * <ol>
-	 * <li>Station nur durch ihn erreichbar ist (Distanz == 1)</li>
-	 * <li>Distanz zwischen Station und allen anderen Spielern größer als N mit N >= 1 (Distanz > N)</li>
-	 * </ol>
-	 * @param gameState
-	 * @param gameGraph
-	 * @param station Station, zu der wir einen eindeutigen Spieler suchen
-	 * @return unambigous player or <code>null</code>
-	 */
-	public Player unambiguousPlayer(GameState gameState, GameGraph gameGraph, StationVertex station) {
-		// Bis einschliesslich N zaehlen Distanzen als "gering" (smallDistance)
-		final int N = 1; // N >= 1
-		
-		Player player = null;
-		int smallDistance = 0; // Zaehler fuer Faelle, in denen ein Player eine geringe Distanz zu station hat
-		for (Player p : gameState.getPlayers()) {
-			int d = BellmanFordShortestPath.findPathBetween(gameGraph.getGraph(), 
-					station, gameState.getLastMove(p).getStation()).size();
-			if (d <= N) {
-				// Geringe Distanz
-				smallDistance++;
-				if (d == 1) {
-					player = p;
-				}
-			}
-		}
-		
-		// Mehr als ein Player mit geringer Distanz zu station
-		if (smallDistance > 1) {
-			// nicht eindeutig
-			return null;
-		}
-		
-		return player;
-	}
-
 
 	@Override
 	protected void paintComponent(Graphics g) {		
