@@ -63,6 +63,9 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+
 import java.awt.event.ActionEvent;
 import javax.swing.Action;
 
@@ -77,7 +80,9 @@ import java.awt.event.MouseEvent;
 @SuppressWarnings("serial")
 public class Board extends JFrame {
 	
-	private static Logger logger = Logger.getLogger(Board.class);
+	private static final Logger logger = Logger.getLogger(Board.class);
+	
+	private static final double ZOMMING_FACTOR = 1.2; 
 	
 	private Image img;
 
@@ -89,6 +94,10 @@ public class Board extends JFrame {
 	
 	private JLabel lblMoveVal;
 	
+	private JPanel boardPanelContainer;
+	
+	private JScrollPane boardPanelScrollPane;
+	
 	private MovePreparationBar movePreparationBar;
 	
 	GameController gc;
@@ -98,6 +107,14 @@ public class Board extends JFrame {
 	MovePreparer mPrep;
 	Map<Integer, StationVertex> nsm; // Number Station Map
 	
+	Dimension originalImageSize;
+	
+	private TicketSelectionDialog ticketSelectionDialogMrX = new TicketSelectionDialog(this, MrXPlayer.class);
+	private TicketSelectionDialog ticketSelectionDialogDetectives = new TicketSelectionDialog(this, DetectivePlayer.class);
+	
+	// TODO beide muessen beim laden der Board def gesetzt werden
+	private double normalZoomFactor = 0.2; // kann sein was will, nur 1 macht keinen sinn, weil das bild dann viel zu riessig ist!
+	private double zoomFactor = normalZoomFactor;	
 	
 	private final Action newGameAction = new NewGameAction();
 	private final Action clearPlayersAction = new ClearPlayersAction();
@@ -116,7 +133,12 @@ public class Board extends JFrame {
 	private final Action suggestMoveAction = new SuggestMoveAction();
 	private final Action moveNowAction = new MoveNowAction();
 	private final Action quickPlayAction = new QuickPlayAction();
+	private final Action fitBoardAction = new FitBoardAction();
+	private final Action zoomInAction = new ZoomInAction();
+	private final Action zoomOutAction = new ZoomOutAction();
+	private final Action zoomNormalAction = new ZoomNormalAction();
 	private final Action selectCurrentPlayerAction = new SelectCurrentPlayerAction();
+
 
 
 	/**
@@ -275,6 +297,26 @@ public class Board extends JFrame {
 		mntmQuickPlay.setAction(quickPlayAction);
 		mnErnsthaft.add(mntmQuickPlay);
 		
+		JMenu mnZoom = new JMenu("Zoom");
+		mnZoom.setMnemonic('z');
+		mnErnsthaft.add(mnZoom);
+		
+		JCheckBoxMenuItem chckbxmntmFitBoard = new JCheckBoxMenuItem("Fit Board");
+		chckbxmntmFitBoard.setAction(fitBoardAction);
+		mnZoom.add(chckbxmntmFitBoard);
+		
+		JMenuItem mntmZoomIn = new JMenuItem("Zoom In");
+		mntmZoomIn.setAction(zoomInAction);
+		mnZoom.add(mntmZoomIn);
+		
+		JMenuItem mntmZoomOut = new JMenuItem("Zoom Out");
+		mntmZoomOut.setAction(zoomOutAction);
+		mnZoom.add(mntmZoomOut);
+		
+		JMenuItem mntmZoomNormal = new JMenuItem("Zoom Normal");
+		mntmZoomNormal.setAction(zoomNormalAction);
+		mnZoom.add(mntmZoomNormal);
+		
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -291,7 +333,7 @@ public class Board extends JFrame {
 		}
 		
 		
-		JPanel boardPanelContainer = new JPanel(new AspectRatioGridLayout());
+		boardPanelContainer = new JPanel(new AspectRatioGridLayout());
 		boardPanel = new BoardPanel();
 		
 		for (JComponent c : bgl.getVisualComponents()) {
@@ -342,8 +384,9 @@ public class Board extends JFrame {
 			throw new IllegalArgumentException("The image seems to be not loaded " +
 					"completely: Cannot determine image's width and/or height.");
 		}
+		originalImageSize = new Dimension(w, h);
 		boardPanel.setImage(img);	
-		boardPanel.setPreferredSize(new Dimension(w, h));
+		boardPanel.setPreferredSize(originalImageSize);
 		
 		// GameState
 		g = new DefaultGame();
@@ -432,8 +475,15 @@ public class Board extends JFrame {
 		boardPanel.setMovePreparer(mPrep);
 		
 		boardPanelContainer.add(boardPanel);
+		// mit preferredSize ist es so:
+		// 1. vorher nicht gesetzt heisst: nimm' vom layoutmanager
+		// 2. setzen heisst: nimm' ab jetzt nur noch das angegebene
+		// 3. wieder auf null setzen heisst: nicht gesetzt, siehe 1.
+		boardPanelContainer.setPreferredSize(new Dimension());
 		
-		contentPane.add(boardPanelContainer, BorderLayout.CENTER);
+		boardPanelScrollPane = new JScrollPane(boardPanelContainer);
+		
+		contentPane.add(boardPanelScrollPane, BorderLayout.CENTER);
 		
 		JPanel toolbarContainer = new JPanel();
 		contentPane.add(toolbarContainer, BorderLayout.NORTH);
@@ -537,7 +587,14 @@ public class Board extends JFrame {
 		//shiftDetectiveDownAction.setEnabled(inGame);
 		newGameWithPlayersAction.setEnabled(!inGame);
 	}
-	
+	private void updateBoardPanelZoom() {
+		boardPanelContainer.setPreferredSize(new Dimension((int) (originalImageSize.width * zoomFactor),
+				(int) (originalImageSize.height * zoomFactor)));
+//		boardPanelScrollPane.revalidate(); // erst hat ich nur dies; war gut gemeint, aber revalidated die childs nicht.
+//		boardPanelScrollPane.repaint();
+		boardPanelContainer.revalidate();
+		boardPanelContainer.repaint();
+	}
 	
 	
 	
@@ -797,7 +854,93 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Toogle Quick Play mode");
 			putValue(SELECTED_KEY, false);
 		}
-		public void actionPerformed(ActionEvent e) { }
+		public void actionPerformed(ActionEvent e) {
+			ticketSelectionDialogMrX.setQuickPlay(isSelected(quickPlayAction));
+			ticketSelectionDialogDetectives.setQuickPlay(isSelected(quickPlayAction));
+		}
+	}
+	private class FitBoardAction extends AbstractAction {
+		public FitBoardAction() {
+			putValue(NAME, "Fit Board");
+			putValue(SHORT_DESCRIPTION, "Fit the board to the window");
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0));
+			putValue(MNEMONIC_KEY, KeyEvent.VK_F);
+			setSelected(this, true); // default behavior
+		}
+		public void actionPerformed(ActionEvent e) {
+			setSelected(this, true);
+			// pref size auf 0 setzen, damit is es immer angepasst an Viewport. 
+			boardPanelContainer.setPreferredSize(new Dimension());	// vorher: getImageScrollPane().getViewport().getSize());
+			// Wenn man's aber an Viewport anpassen wuerde, waere es fix,
+			// je nach dem, wie gross der Viewport war zu dem Zeitpunkt.
+			
+			boardPanelScrollPane.revalidate();
+			boardPanelScrollPane.repaint();
+		}
+	}
+	private class ZoomInAction extends AbstractAction {
+		public ZoomInAction() {
+			putValue(NAME, "Zoom In");
+			putValue(SHORT_DESCRIPTION, "Zoom into the board");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_I);
+			
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '+', KeyEvent.CTRL_DOWN_MASK)); // dont work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed +")); // dont work
+			
+			// KeyStroke.getKeyStroke('+', KeyEvent.CTRL_DOWN_MASK)
+			// wird aufgefasst als getKeyStroke(int, int) -- wtf?? java castet einen char lieber automatisch als int, anstatt auto boxing zu Character.
+			//  http://stackoverflow.com/questions/7931862/java-int-and-char
+			// was werd ich wohl eher mit dem character '-' meinen? den character oder eine Zahl...
+			
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
+			// dabei will ich doch, dass es einfach funktioniert, wenn ein + getippt wird. dafuer ist doch auch getKeyStroke("ctrl typed ...") da, oder? 
+		}
+		public void actionPerformed(ActionEvent e) {
+			setSelected(fitBoardAction, false);
+			zoomFactor = (double) boardPanelContainer.getWidth() / originalImageSize.width;
+			logger.debug(String.format("zoomFactor old: %f, new: %f", zoomFactor, zoomFactor * ZOMMING_FACTOR));			
+			zoomFactor *= ZOMMING_FACTOR;
+			updateBoardPanelZoom();
+		}
+	}
+	private class ZoomOutAction extends AbstractAction {
+		public ZoomOutAction() {
+			putValue(NAME, "Zoom Out");
+			putValue(SHORT_DESCRIPTION, "Zoom out of the board");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_O);
+			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 5);
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '-', KeyEvent.CTRL_DOWN_MASK)); // dont work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed -")); // dont work
+			
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
+		}
+		public void actionPerformed(ActionEvent e) {
+			setSelected(fitBoardAction, false);
+			zoomFactor = (double) boardPanelContainer.getWidth() / originalImageSize.width;
+			logger.debug(String.format("zoomFactor old: %f, new: %f", zoomFactor, zoomFactor * ZOMMING_FACTOR));			
+			zoomFactor /= ZOMMING_FACTOR;
+			updateBoardPanelZoom();
+		}
+	}
+	private class ZoomNormalAction extends AbstractAction {
+		public ZoomNormalAction() {
+			putValue(NAME, "Zoom Normal");
+			putValue(SHORT_DESCRIPTION, "Zoom normal");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_N);
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke((Character) '-', KeyEvent.CTRL_DOWN_MASK)); // dont work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed -")); // dont work
+			
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
+//			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_0, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
+		}
+		public void actionPerformed(ActionEvent e) {
+			setSelected(fitBoardAction, false);
+			zoomFactor = normalZoomFactor;
+			logger.debug(String.format("zoomFactor: %f", zoomFactor));			
+			updateBoardPanelZoom();
+		}
 	}
 	/** Selects the current player to prepare a move for */
 	private class SelectCurrentPlayerAction extends AbstractAction {
@@ -808,5 +951,5 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			mPrep.selectPlayer(gs.getCurrentPlayer());
 		}
-	}
+	}	
 }
