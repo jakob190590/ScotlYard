@@ -1,1 +1,1 @@
-java -classpath "bin;..\ScotlYard\bin" kj.scotlyard.graphbuilder.BuilderTool
+java -classpath "bin;../ScotlYard/bin" kj.scotlyard.graphbuilder.BuilderTool
