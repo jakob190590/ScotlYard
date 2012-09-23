@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.Ticket;
 import java.awt.event.ActionListener;
+import java.awt.FlowLayout;
 
 @SuppressWarnings("serial")
 public class TicketSelectionPanel extends JPanel {
@@ -62,6 +63,8 @@ public class TicketSelectionPanel extends JPanel {
 	// Der Parameter source des ActionEvents steht fuer das ausgewaehlte Ticket!
 	private TicketSelectListener selectListener;
 	private JLabel lblSelectATicket;
+	private JCheckBox chckbxFurtherMoves;
+	private JButton btnCancel;
 	
 	private class SelectAction implements ActionListener {
 		private Class<? extends Ticket> ticketType;
@@ -94,10 +97,15 @@ public class TicketSelectionPanel extends JPanel {
 		add(pnlFooter, BorderLayout.SOUTH);
 		pnlFooter.setLayout(new BoxLayout(pnlFooter, BoxLayout.X_AXIS));
 		
-		JCheckBox chckbxFurtherMoves = new JCheckBox("FurtherMoves");
+		chckbxFurtherMoves = new JCheckBox("FurtherMoves");
 		pnlFooter.add(chckbxFurtherMoves);
 		
-		JButton btnCancel = new JButton("Cancel");
+		JPanel panel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		pnlFooter.add(panel);
+		
+		btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -105,7 +113,8 @@ public class TicketSelectionPanel extends JPanel {
 					selectListener.selectTicket(null);
 			}
 		});
-		pnlFooter.add(btnCancel);
+		// TODO Shortcut: Escape (per Action?)
+		panel.add(btnCancel);
 		
 		JPanel pnlHeader = new JPanel();
 		add(pnlHeader, BorderLayout.NORTH);
@@ -200,6 +209,22 @@ public class TicketSelectionPanel extends JPanel {
 		}
 	}
 
+	public boolean isFutherMovesCheckBoxVisible() {
+		return chckbxFurtherMoves.isVisible();
+	}
+	
+	public void setFurtherMovesCheckBoxVisible(boolean visible) {
+		chckbxFurtherMoves.setVisible(visible);
+	}
+	
+	public boolean isFurtherMovesSelected() {
+		return chckbxFurtherMoves.isSelected();
+	}
+	
+	public void setFurtherMovesSelected(boolean selected) {
+		chckbxFurtherMoves.setSelected(selected);
+	}
+	
 	public TicketSelectListener getSelectListener() {
 		return selectListener;
 	}
@@ -208,4 +233,13 @@ public class TicketSelectionPanel extends JPanel {
 		this.selectListener = selectListener;
 	}
 
+	// requestFocusInWindow bei erstem Ticket button, der enabled ist!
+	@Override
+	public boolean requestFocusInWindow() {
+		for (Component c : pnlTickets.getComponents()) {
+			if (c.isEnabled())
+				return c.requestFocusInWindow();
+		}
+		return requestFocusInWindow();
+	}
 }
