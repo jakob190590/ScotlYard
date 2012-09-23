@@ -20,11 +20,15 @@ package kj.scotlyard.board;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
+import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
@@ -39,8 +43,20 @@ public class TicketSelectionPanel extends JPanel {
 	
 	private Player player;
 	private Set<Ticket> tickets;
-	private Map<Class<? extends Ticket>, Integer> ticketCounts = new HashMap<>();
+	/** Contains available ticket types. The
+	 * order here determines the order of
+	 * <code>ticketCounts</code> and
+	 * <code>pnlTickets.getComponents()</code>!
+	 */
+	private List<Class<? extends Ticket>> ticketTypes = new ArrayList<>();
+	private int[] ticketCounts;
 	
+	/**
+	 * Dieses Panel ist einzig und allein
+	 * fuer die Ticket-Buttons bestimmt. 
+	 * Es duerfen keine andere Components
+	 * hinzugefuegt werden!
+	 */
 	private JPanel pnlTickets;
 	
 	// Der Parameter source des ActionEvents steht fuer das ausgewaehlte Ticket!
@@ -98,7 +114,55 @@ public class TicketSelectionPanel extends JPanel {
 		pnlHeader.add(lblSelectATicket);
 
 	}
+	
+	private void clearTicketCounts() {
+		for (int i = 0; i < ticketCounts.length; i++) {
+			ticketCounts[i] = 0;
+		}
+	}
 
+	/**
+	 * Returns an unmodifiable List of the stated ticket types.
+	 * @return an unmodifiable List
+	 */
+	public List<Class<? extends Ticket>> getTicketTypes() {		
+		return Collections.unmodifiableList(ticketTypes);
+	}
+	
+	/**
+	 * Set the ticket types.
+	 * @param ticketTypes
+	 */
+	public void setTicketTypes(List<Class<? extends Ticket>> ticketTypes) {
+		List<Class<? extends Ticket>> types = this.ticketTypes;
+		types.clear();
+		if (ticketTypes != null) {
+			types.addAll(ticketTypes);
+		}
+		final int count = types.size();
+		ticketCounts = new int[count];
+		// Buttons erstellen
+		pnlTickets.removeAll();
+		for (int i = 0; i < count; i++) {
+			Class<? extends Ticket> type = types.get(i);
+			JButton btn = new JButton(type.getSimpleName());
+//			btn.setIconTextGap(5);
+			btn.setVerticalTextPosition(JButton.BOTTOM); // Text unterhalb des Icons (reicht das schon?)
+			// TODO lieber ein schoenes Bild anzeigen
+			btn.addActionListener(new SelectAction(type));
+			pnlTickets.add(btn);
+		}		
+	}
+
+	/**
+	 * Convenient method for <code>setTicketTypes(List)</code>.
+	 * @param ticketTypes
+	 */
+	@SuppressWarnings("unchecked")
+	public void setTicketTypes(Class<? extends Ticket>... ticketTypes) {
+		setTicketTypes(Arrays.asList(ticketTypes));
+	}
+	
 	public Player getPlayer() {
 		return player;
 	}
@@ -118,27 +182,20 @@ public class TicketSelectionPanel extends JPanel {
 	}
 
 	public void updateTickets() {
-		pnlTickets.removeAll();
-		ticketCounts.clear();
 		if (tickets != null) {
-			// Tickets klassifizieren und zaehlen
-			for (Ticket t : tickets) {
-				Class<? extends Ticket> key = t.getClass();
-				if (ticketCounts.get(key) == null) {
-					ticketCounts.put(key, 1);
-				} else {
-					ticketCounts.put(key, ticketCounts.get(key) + 1);
+			// Tickets zaehlen
+			clearTicketCounts();
+			for (int i = 0; i < ticketTypes.size(); i++) {
+				Class<? extends Ticket> type = ticketTypes.get(i);
+				for (Ticket t : tickets) {
+					if (t.getClass() == type) {
+						ticketCounts[i]++;
+					}
 				}
-			}
-			// Buttons fuer Klassifizierungen erstellen
-			for (Map.Entry<Class<? extends Ticket>, Integer> e : ticketCounts.entrySet()) {
-				JButton btn = new JButton();
-				btn.setText(String.format("%s (%d)", e.getKey(), e.getValue()));
-				btn.setIconTextGap(5);
-				btn.setVerticalTextPosition(JButton.BOTTOM); // Text unterhalb des Icons (reicht das schon?)
-				// TODO lieber ein schoenes Bild anzeigen, anstatt dem full qualified class name
-				btn.addActionListener(new SelectAction(e.getKey()));
-				pnlTickets.add(btn);
+				// Buttons anpassen
+				Component buttons[] = pnlTickets.getComponents();
+				((AbstractButton) buttons[i]).setText(String.format("%s (%d)", type.getSimpleName(), ticketCounts[i]));
+				buttons[i].setEnabled(ticketCounts[i] > 0);
 			}
 		}
 	}
