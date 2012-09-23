@@ -117,13 +117,30 @@ public abstract class MovePreparer extends Observable {
 	 */
 	protected abstract Ticket selectTicket(final Set<Ticket> tickets, final Player player);
 
-	public void selectPlayer(Player player) {
-		if (this.player != player) {
+	protected abstract void errorSelectingPlayer(Player player);
+	
+	/**
+	 * A template method for selecting a player.
+	 * @param player
+	 * @return <code>true</code> if the player is selected now
+	 */
+	public boolean selectPlayer(Player player) {
+		logger.debug("try select player: " + player);
+		boolean result = false;
+		if (gameState.getPlayers().indexOf(player) < gameState.getPlayers()
+				.indexOf(gameState.getCurrentPlayer())) {
+			errorSelectingPlayer(player);
+		} else if (player != gameState.getMrX() 
+				&& gameState.getCurrentPlayer() == gameState.getMrX()) {
+			errorSelectingPlayer(player);
+		} else {
 			logger.debug("select player");
 			this.player = player;
-			setChanged();
-			notifyObservers(player);
+			result = true;
 		}
+		setChanged();
+		notifyObservers(this.player);
+		return result;
 	}
 	
 	// uebergibt im gegensatz zu nextStation gleich den kompletten zug! (verwendung bei suggest move von ai)
@@ -141,7 +158,7 @@ public abstract class MovePreparer extends Observable {
 	 * @param player
 	 */
 	public void nextStation(final StationVertex station, final Player player) {
-		selectPlayer(player);
+		if (!selectPlayer(player)) return;
 		
 		logger.debug("next station");
 		

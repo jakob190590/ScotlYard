@@ -51,6 +51,7 @@ import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MoveListener;
+import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TurnListener;
 import kj.scotlyard.game.model.item.Ticket;
@@ -406,15 +407,22 @@ public class Board extends JFrame {
 		});
 		mPrep = new MovePreparer(gs, gg) {
 			@Override
+			protected void errorSelectingPlayer(Player player) {
+				logger.error("dieser player kann (jetzt) nicht ausgewaehlt werden");				
+			}
+			
+			@Override
 			protected void errorImpossibleNextStation(StationVertex station,
 					Player player) {
-				logger.info("impossible next station");
+				logger.error("impossible next station for: " + player);
 			}
 
 			@Override
 			protected Ticket selectTicket(Set<Ticket> tickets, Player player) {
-				TicketSelectionDialog tsd = new TicketSelectionDialog(Board.this);
-				return tsd.show(tickets, player);
+				if (player instanceof MrXPlayer)
+					return ticketSelectionDialogMrX.show(tickets, player);
+				else // DetectivePlayer
+					return ticketSelectionDialogDetectives.show(tickets, player);
 //				return tickets.iterator().next(); // gleich das erste
 			}
 		};
@@ -424,14 +432,17 @@ public class Board extends JFrame {
 				logger.debug("MovePreparator Ereignis");
 				if (arg instanceof Move) {
 					logger.debug("move prepared");
+					Player player = ((Move) arg).getPlayer();
 					
-					if (((Move) arg).getPlayer() == gs.getCurrentPlayer()) {
+					if (player == gs.getCurrentPlayer()) {
 						lblMoveVal.setText(arg.toString());
 					}
 					
+					boolean furtherMoves = (player instanceof MrXPlayer) ? 
+							ticketSelectionDialogMrX.isFurtherMovesSelected() : false;
 					if (isSelected(quickPlayAction)
-							&& ((Move) arg).getPlayer() == gs.getCurrentPlayer()
-							&& !false) { // no further moves
+							&& player == gs.getCurrentPlayer() // selected player's turn
+							&& !furtherMoves) { // no further moves
 						logger.debug("Move fertig vorbereitet, QuickPlay, no further moves and Turn");
 						gc.move((Move) arg);
 					}
