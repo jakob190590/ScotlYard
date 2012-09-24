@@ -35,7 +35,18 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 	private VisualStation visualStation;
 	
 	public Piece(Player player) {
-		this.player = player;
+		setPlayer(player);
+	}
+	
+	private void updateToolTipText() {
+		String s = "";
+		if (player != null) {
+			s = player.toString();  // TODO gscheider tooltip bzw. player name
+			if (visualStation != null)
+				s += String.format(" at Station # %d", visualStation.getNumber());
+		}
+		setToolTipText(s);
+		
 	}
 
 	public Player getPlayer() {
@@ -44,6 +55,7 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 
 	public void setPlayer(Player player) {
 		this.player = player;
+		updateToolTipText();
 	}
 
 	public VisualStation getVisualStation() {
@@ -52,6 +64,7 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 
 	public void setVisualStation(VisualStation visualStation) {
 		this.visualStation = visualStation;
+		updateToolTipText();
 	}
 
 	@Override

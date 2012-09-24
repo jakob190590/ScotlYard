@@ -136,7 +136,6 @@ public class BoardPanel extends JPanel {
 				piece = new MrXPiece(newMrX);
 				piece.setVisible(false);
 				piece.addMouseListener(pieceMouseListener);
-				piece.setToolTipText(piece.getPlayer().toString()); // TODO gscheider tooltip
 				pieces.put(newMrX, piece);
 				add(piece, 0);
 			}
@@ -171,7 +170,6 @@ public class BoardPanel extends JPanel {
 				piece.setVisible(false);
 			}
 			piece.addMouseListener(pieceMouseListener);
-			piece.setToolTipText(piece.getPlayer().toString());
 			pieces.put(detective, piece);			
 			add(piece, 0); // TODO sollte revalidate und repaint ausloesen (wenn piece zum ersten mal sichtbar wird)
 		}
@@ -308,7 +306,6 @@ public class BoardPanel extends JPanel {
 				for (Map.Entry<Player, Piece> e : pieces.entrySet()) {
 					Piece p = e.getValue();
 					p.addMouseListener(pieceMouseListener);
-					p.setToolTipText(p.getPlayer().toString()); // TODO gscheider tooltip
 					add(p, 0);
 					Move m = gameState.getLastMove(e.getKey());
 					if (m == null) {
