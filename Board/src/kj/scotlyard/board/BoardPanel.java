@@ -55,7 +55,7 @@ import kj.scotlyard.game.util.MoveHelper;
 @SuppressWarnings("serial")
 public class BoardPanel extends JPanel {
 	
-	private static Logger logger = Logger.getLogger(Board.class);
+	private static final Logger logger = Logger.getLogger(Board.class);
 	
 	private Image image;
 	

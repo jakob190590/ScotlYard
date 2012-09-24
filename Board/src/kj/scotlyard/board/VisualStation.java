@@ -91,7 +91,7 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	
 	
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(VisualStation.class);
+	private static final Logger logger = Logger.getLogger(VisualStation.class);
 	
 	private StationVertex station;
 	

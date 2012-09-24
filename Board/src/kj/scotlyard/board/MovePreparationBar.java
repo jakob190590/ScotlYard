@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class MovePreparationBar extends JPanel {
 	
-	private static Logger logger = Logger.getLogger(MovePreparationBar.class);
+	private static final Logger logger = Logger.getLogger(MovePreparationBar.class);
 	
 	private GameState gs;	
 	private MovePreparer mPrep;	
