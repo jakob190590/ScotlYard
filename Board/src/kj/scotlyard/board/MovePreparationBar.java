@@ -55,23 +55,6 @@ public class MovePreparationBar extends JPanel {
 //		public void moveDone(GameState gameState, Move move) {
 //		}
 //	};
-	private final TurnListener turnListener = new TurnListener() {
-		@Override
-		public void currentRoundChanged(GameState gameState, int oldRoundNumber,
-				int newRoundNumber) {
-			// TODO Auto-generated method stub
-			
-		}
-		@Override
-		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
-				Player newPlayer) {
-			// Straight Forward
-			logger.debug("current player changed: " + newPlayer);
-			if (oldPlayer == getSelectedPlayer()) {
-				setSelectedPlayer(newPlayer);
-			}
-		}
-	};
 	
 	private final Observer movePreparerObserver = new Observer() {
 		@Override

@@ -75,10 +75,20 @@ public abstract class MovePreparer extends Observable {
 	private Player player;
 	
 	private Map<Player, Move> moves = new HashMap<>();
+	
+	private final turnListener = new TurnListener() {
+		void currentPlayerChanged(GameState gameState, Player oldPlayer, Player newPlayer) {
+			if (gameState.getPlayers().indexOf(player) < gameState.getPlayers().indexOf(newPlayer)) {
+				if (!selectPlayer(newPlayer))
+					logger.error("algo in selectPlayer laesst player der jetzt an die reihe kommt nicht zu!");
+			}
+		}
+		void currentRoundChanged(GameState gameState, int oldRoundNumber, int newRoundNumber) { }
+	}
 
 	public MovePreparer(GameState gameState, GameGraph gameGraph) {
-		this.gameState = gameState;
-		this.gameGraph = gameGraph;
+		setGameState(gameState);
+		setGameGraph(gameGraph);
 	}
 	
 	public MovePreparer() {
@@ -91,7 +101,13 @@ public abstract class MovePreparer extends Observable {
 	}
 
 	public void setGameState(GameState gameState) {
+		if (this.gameState != null) {
+			this.gameState.removeTurnListener(turnListener);
+		}
 		this.gameState = gameState;
+		if (gameState != null) {
+			gameState.addTurnListener(turnListener);
+		}
 	}
 
 	public GameGraph getGameGraph() {
@@ -144,24 +160,30 @@ public abstract class MovePreparer extends Observable {
 	 */
 	public boolean selectPlayer(Player player) {
 		logger.debug("try select player: " + player);
+		
 		boolean result = false;
-		if (gameState.getPlayers().indexOf(player) < gameState.getPlayers()
-				.indexOf(gameState.getCurrentPlayer())) {
+		Player current = gameState.getCurrentPlayer();
+		if (current instanceof MrXPlayer && player != current) {
+			logger.warn("selectPlayer: jetzt ist NUR mrX dran! kein anderer kann selected werden")
 			errorSelectingPlayer(player);
-		} else if (player != gameState.getMrX() 
-				&& gameState.getCurrentPlayer() == gameState.getMrX()) {
+		} else if (gameState.getPlayers().indexOf(player) 
+				< gameState.getPlayers().indexOf(current)) {
+			logger.warn("selectPlayer: player war schon dran in currentRound!")
 			errorSelectingPlayer(player);
-		} else {
-			logger.debug("select player");
-			this.player = player;
+		} else {			
+			if (this.player != player) {
+				this.player = player;
+				setChanged();
+			}
 			result = true;
+			logger.debug("player selected");
 		}
-		setChanged();
 		notifyObservers(this.player);
 		return result;
 	}
 	
 	// uebergibt im gegensatz zu nextStation gleich den kompletten zug! (verwendung bei suggest move von ai)
+	// der move wird nicht im voraus geprueft, wie bei nextStation!
 	public void nextMove(Move move) {
 		moves.put(move.getPlayer(), move);
 		setChanged();
@@ -189,12 +211,13 @@ public abstract class MovePreparer extends Observable {
 		m.setStation(station);
 		
 		// Calculate all connections from current station to station
-		Set<ConnectionEdge> connections = gameGraph.getGraph().getAllEdges(lastStation, station);
-		// TODO next station muss auch noch anderweitig geprueft werden (besetzt, kein ticket, ...?)
+		Set<ConnectionEdge> connections = gameGraph.getGraph().getAllEdges(lastStation, station);		
 		if (connections.isEmpty()) {
 			errorImpossibleNextStation(station, player);
 			return;
 		}
+		
+		// TODO next station muss auch noch anderweitig geprueft werden (besetzt, kein ticket, ...?)
 		
 		Set<Ticket> tickets = new HashSet<>();
 		Set<Item> allItems = gameState.getItems(player);
@@ -253,12 +276,17 @@ public abstract class MovePreparer extends Observable {
 		if (move != null) {
 			logger.debug("prepared move exists");
 			
-			// TODO Move number (und evtl. round number) nur setzen, wenn player == currentPlayer
-			int moveNumber = gameState.getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
+			// Move und Round number nur setzen, wenn player == currentPlayer
+			int roundNumber = 0;
+			int moveNumber = 0;		
+			if (player == gameState.getCurrentPlayer()) {
+				roundNumber = gameState.getCurrentRoundNumber();
+				moveNumber = gameState.getMoves().get(GameState.LAST_MOVE);// TODO ?? hat doch funktioniert... getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
+			}
+			
 			if (move.getMoves().isEmpty()) {
 				// Single Move
-				result = MoveProducer.createSingleMove(player, gameState.getCurrentRoundNumber(), 
-						moveNumber,
+				result = MoveProducer.createSingleMove(player, roundNumber, moveNumber,
 						move.getStation(), move.getConnection(), (Ticket) move.getItem());
 			} else {
 				// Multi Move
@@ -268,8 +296,8 @@ public abstract class MovePreparer extends Observable {
 				for (Move m : move.getMoves()) {
 					sms.add(m.getStation(), m.getConnection(), (Ticket) m.getItem());
 				}
-				result = MoveProducer.createMultiMove(player, gameState.getCurrentRoundNumber(),
-						moveNumber, doubleMoveCard, sms);
+				result = MoveProducer.createMultiMove(player, roundNumber, moveNumber, 
+						doubleMoveCard, sms);
 			}
 		}
 		return result;

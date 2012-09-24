@@ -152,22 +152,22 @@ class InGameControllerState extends GameControllerState {
 
 	@Override
 	public void newDetective() {
-		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support
+		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support, do not forget TurnListener when currentPlayer is affected!
 	}
 
 	@Override
 	public void removeDetective(DetectivePlayer detective) {
-		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support
+		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support, do not forget TurnListener when currentPlayer is affected!
 	}
 
 	@Override
 	public void shiftUpDetective(DetectivePlayer detective) {
-		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support
+		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support, do not forget TurnListener when currentPlayer is affected!
 	}
 
 	@Override
 	public void shiftDownDetective(DetectivePlayer detective) {
-		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support
+		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support, do not forget TurnListener when currentPlayer is affected!
 	}
 
 	@Override

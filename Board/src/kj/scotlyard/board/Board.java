@@ -133,6 +133,7 @@ public class Board extends JFrame {
 	private final Action redoAction = new RedoAction();
 	private final Action suggestMoveAction = new SuggestMoveAction();
 	private final Action moveNowAction = new MoveNowAction();
+	private final Action moveRoundNowAction = new MoveRoundNowAction();
 	private final Action quickPlayAction = new QuickPlayAction();
 	private final Action fitBoardAction = new FitBoardAction();
 	private final Action zoomInAction = new ZoomInAction();
@@ -475,6 +476,8 @@ public class Board extends JFrame {
 			@Override
 			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
 					Player newPlayer) {
+				lblCurrentplayerVal.setText((newPlayer == null) ? "<null>" : newPlayer.toString());
+
 				Move m = mPrep.getMove(newPlayer);
 				lblMoveVal.setText((m == null) ? "Noch kein Move vorbereitet" : m.toString());
 			}
@@ -538,17 +541,7 @@ public class Board extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				selectCurrentPlayerAction.actionPerformed(null);
 			}
-		});
-		gs.addTurnListener(new TurnListener() {
-			@Override
-			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
-					int newRoundNumber) { }
-			@Override
-			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
-					Player newPlayer) {
-				lblCurrentplayerVal.setText((newPlayer == null) ? "<null>" : newPlayer.toString());
-			}
-		});
+		});		
 		MoveControlBar.add(lblCurrentplayerVal);
 		
 		lblMoveVal = new JLabel("MoveVal");
@@ -561,6 +554,10 @@ public class Board extends JFrame {
 		JButton btnSuggestMove = new JButton("Suggest Move");
 		btnSuggestMove.setAction(suggestMoveAction);
 		MoveControlBar.add(btnSuggestMove);
+		
+		JButton btnMoveRound = new JButton("Move Round!");
+		btnMoveRound.setAction(moveRoundNowAction);
+		MoveControllerBar.add(btnMoveRound);
 		
 		
 //		pack();
@@ -852,11 +849,42 @@ public class Board extends JFrame {
 	private class MoveNowAction extends AbstractAction {
 		public MoveNowAction() {
 			putValue(NAME, "Move!"); // or "Move now"
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Move now");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
 		}
 		public void actionPerformed(ActionEvent e) {
 			gc.move(mPrep.getMove(gs.getCurrentPlayer()));
+		}
+	}	
+	private class MoveRoundNowAction extends AbstractAction {
+		public MoveRoundNowAction() {
+			putValue(NAME, "Move Round!"); // or "Move now"
+			putValue(SHORT_DESCRIPTION, "Move now (complete round)");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
+		}
+		public void actionPerformed(ActionEvent e) {
+			//int index = gs.getPlayers().indexOf(gs.getCurrentPlayer());
+			//if (index >= 0) {
+			//	for (int i = index; i < gs.getPlayers(); i++) {
+			//		gc.move(mPrep.getMove(gs.getPlayers().get(i)));
+			//	}
+			//}
+			
+			boolean doMove = false;
+			Player current = gs.getCurrentPlayer();
+			for (Player p : gs.getPlayers()) {
+				if (p == current) {
+					doMove = true;
+				}
+				if (doMove) {
+					Move m = mPrep.getMove(p);
+					if (m == null) {
+						// TODO entweder abbrechen oder "Suggest Move"
+						break;
+					}
+					gc.move(m);
+				}
+			}
 		}
 	}
 	private class QuickPlayAction extends AbstractAction {
@@ -962,5 +990,5 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			mPrep.selectPlayer(gs.getCurrentPlayer());
 		}
-	}	
+	}
 }
