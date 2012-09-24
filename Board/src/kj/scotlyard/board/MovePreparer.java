@@ -193,12 +193,13 @@ public abstract class MovePreparer extends Observable {
 		m.setStation(station);
 		
 		// Calculate all connections from current station to station
-		Set<ConnectionEdge> connections = gameGraph.getGraph().getAllEdges(lastStation, station);
-		// TODO next station muss auch noch anderweitig geprueft werden (besetzt, kein ticket, ...?)
+		Set<ConnectionEdge> connections = gameGraph.getGraph().getAllEdges(lastStation, station);		
 		if (connections.isEmpty()) {
 			errorImpossibleNextStation(station, player);
 			return;
 		}
+		
+		// TODO next station muss auch noch anderweitig geprueft werden (besetzt, kein ticket, ...?)
 		
 		Set<Ticket> tickets = new HashSet<>();
 		Set<Item> allItems = gameState.getItems(player);
@@ -257,12 +258,17 @@ public abstract class MovePreparer extends Observable {
 		if (move != null) {
 			logger.debug("prepared move exists");
 			
-			// TODO Move number (und evtl. round number) nur setzen, wenn player == currentPlayer
-			int moveNumber = gameState.getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
+			// Move und Round number nur setzen, wenn player == currentPlayer
+			int roundNumber = 0;
+			int moveNumber = 0;		
+			if (player == gameState.getCurrentPlayer()) {
+				roundNumber = gameState.getCurrentRoundNumber();
+				moveNumber = gameState.getMoves().get(GameState.LAST_MOVE);// TODO ?? hat doch funktioniert... getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
+			}
+			
 			if (move.getMoves().isEmpty()) {
 				// Single Move
-				result = MoveProducer.createSingleMove(player, gameState.getCurrentRoundNumber(), 
-						moveNumber,
+				result = MoveProducer.createSingleMove(player, roundNumber, moveNumber,
 						move.getStation(), move.getConnection(), (Ticket) move.getItem());
 			} else {
 				// Multi Move
@@ -272,8 +278,8 @@ public abstract class MovePreparer extends Observable {
 				for (Move m : move.getMoves()) {
 					sms.add(m.getStation(), m.getConnection(), (Ticket) m.getItem());
 				}
-				result = MoveProducer.createMultiMove(player, gameState.getCurrentRoundNumber(),
-						moveNumber, doubleMoveCard, sms);
+				result = MoveProducer.createMultiMove(player, roundNumber, moveNumber, 
+						doubleMoveCard, sms);
 			}
 		}
 		return result;
