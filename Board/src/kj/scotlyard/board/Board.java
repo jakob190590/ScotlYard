@@ -476,6 +476,8 @@ public class Board extends JFrame {
 			@Override
 			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
 					Player newPlayer) {
+				lblCurrentplayerVal.setText((newPlayer == null) ? "<null>" : newPlayer.toString());
+
 				Move m = mPrep.getMove(newPlayer);
 				lblMoveVal.setText((m == null) ? "Noch kein Move vorbereitet" : m.toString());
 			}
@@ -539,17 +541,7 @@ public class Board extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				selectCurrentPlayerAction.actionPerformed(null);
 			}
-		});
-		gs.addTurnListener(new TurnListener() {
-			@Override
-			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
-					int newRoundNumber) { }
-			@Override
-			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
-					Player newPlayer) {
-				lblCurrentplayerVal.setText((newPlayer == null) ? "<null>" : newPlayer.toString());
-			}
-		});
+		});		
 		MoveControlBar.add(lblCurrentplayerVal);
 		
 		lblMoveVal = new JLabel("MoveVal");
