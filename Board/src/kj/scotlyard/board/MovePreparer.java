@@ -165,6 +165,7 @@ public abstract class MovePreparer extends Observable {
 	}
 	
 	// uebergibt im gegensatz zu nextStation gleich den kompletten zug! (verwendung bei suggest move von ai)
+	// der move wird nicht im voraus geprueft, wie bei nextStation!
 	public void nextMove(Move move) {
 		moves.put(move.getPlayer(), move);
 		setChanged();
