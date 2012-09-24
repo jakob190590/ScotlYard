@@ -32,7 +32,6 @@ import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.MrXPlayer;
-import kj.scotlyard.game.util.GameStateExtension;
 import kj.scotlyard.game.util.MoveProducer;
 import kj.scotlyard.game.util.MrXTracker;
 
@@ -44,7 +43,6 @@ public class TheGameWinPolicyTest {
 	Game g;
 	GameGraph gg;
 	Rules r;
-	GameStateExtension ext;
 	GameState dgs;
 	MrXTracker tr;
 	Map<Integer, StationVertex> nsm;
@@ -66,7 +64,6 @@ public class TheGameWinPolicyTest {
 		g = new DefaultGame();
 		r = new TheRules();
 		p = r.getGameWinPolicy();
-		ext = new GameStateExtension(g);
 		dgs = r.getGameStateAccessPolicy().createGameStateForDetectives(g);
 		tr = new MrXTracker(g, gg, r);
 				

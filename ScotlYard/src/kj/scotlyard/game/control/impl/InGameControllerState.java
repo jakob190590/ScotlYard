@@ -87,8 +87,6 @@ class InGameControllerState extends GameControllerState {
 	
 	private final Game game;
 	
-	private final GameStateExtension gameStateExtension;
-	
 	private final GameGraph gameGraph;
 	
 	private final UndoManager undoManager;
@@ -96,7 +94,6 @@ class InGameControllerState extends GameControllerState {
 	protected InGameControllerState(DefaultGameController controller) {
 		super(controller);
 		game = controller.getGame();
-		gameStateExtension = new GameStateExtension(game);
 		gameGraph = controller.getGameGraph();
 		undoManager = controller.getUndoManager();
 	}
@@ -110,7 +107,7 @@ class InGameControllerState extends GameControllerState {
 		List<ItemPassEdit> edits = new LinkedList<>();
 		
 		Player p1 = move.getPlayer();
-		List<Move> moves = gameStateExtension.flattenMove(move, true);
+		List<Move> moves = GameStateExtension.flattenMove(move, true);
 		
 		for (Move m : moves) {
 			Item item = m.getItem();

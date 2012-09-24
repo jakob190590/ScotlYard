@@ -95,7 +95,7 @@ public class TheGameInitPolicy implements GameInitPolicy {
 		
 		// Possible initial positions
 		List<StationVertex> poss = new ArrayList<>(gameGraph.getInitialStations());
-		for (Move m : new GameStateExtension(gameState).getMoves(GameState.INITIAL_ROUND_NUMBER, false)) {
+		for (Move m : GameStateExtension.getMoves(gameState, GameState.INITIAL_ROUND_NUMBER, false)) {
 			poss.remove(m.getStation());
 		}
 		

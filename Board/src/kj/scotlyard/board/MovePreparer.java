@@ -295,8 +295,7 @@ public abstract class MovePreparer extends Observable {
 						move.getStation(), move.getConnection(), (Ticket) move.getItem());
 			} else {
 				// Multi Move
-				GameStateExtension gsx = new GameStateExtension(gameState);
-				DoubleMoveCard doubleMoveCard = (DoubleMoveCard) gsx.getItem(player, DoubleMoveCard.class);
+				DoubleMoveCard doubleMoveCard = (DoubleMoveCard) GameStateExtension.getItem(gameState, player, DoubleMoveCard.class);
 				SubMoves sms = new SubMoves();
 				for (Move m : move.getMoves()) {
 					sms.add(m.getStation(), m.getConnection(), (Ticket) m.getItem());

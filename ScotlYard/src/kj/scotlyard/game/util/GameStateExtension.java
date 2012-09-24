@@ -34,7 +34,7 @@ import kj.scotlyard.game.model.item.Item;
 
 public class GameStateExtension {
 	
-	private class MoveIterator implements ListIterator<Move> {
+	public static class MoveIterator implements ListIterator<Move> {
 
 		private ListIterator<Move> it;
 		
@@ -200,19 +200,14 @@ public class GameStateExtension {
 		
 	}
 	
-	private GameState gameState;
-	
-	public GameStateExtension(GameState gameState) {
-		this.gameState = gameState;
-	}
-
 	/**
 	 * Gibt eine flache Liste aller Moves zurueck. Bei Multi Moves werden
 	 * nur alle Sub Moves eingetragen, nicht der Base Move.
 	 * (Verwendet <tt>flattenMove(Move)</tt>.)
+	 * @param gameState
 	 * @return Liste aller Moves
 	 */
-	public List<Move> getMovesFlat() {
+	public static List<Move> getMovesFlat(GameState gameState) {
 		List<Move> result = new LinkedList<>();
 		for (Move m : gameState.getMoves()) {
 			// auch das hier koennte man effizienter machen:
@@ -222,8 +217,8 @@ public class GameStateExtension {
 		return result;
 	}
 	
-	public ListIterator<Move> moveIterator(Player player, boolean flat, int moveRespRoundNumber) {
-		List<Move> all = (flat) ? getMovesFlat() : gameState.getMoves();
+	public static ListIterator<Move> moveIterator(GameState gameState, Player player, boolean flat, int moveRespRoundNumber) {
+		List<Move> all = (flat) ? getMovesFlat(gameState) : gameState.getMoves();
 		
 		ListIterator<Move> it;		
 		if (moveRespRoundNumber < 0) {
@@ -234,13 +229,13 @@ public class GameStateExtension {
 		return it;
 	}
 	
-	public ListIterator<Move> moveIterator(Player player, boolean flat) {
-		return moveIterator(player, flat, -1);
+	public static ListIterator<Move> moveIterator(GameState gameState, Player player, boolean flat) {
+		return moveIterator(gameState, player, flat, -1);
 	}
 	
-	public List<Move> getMoves(int roundNumber, boolean flat) {
+	public static List<Move> getMoves(GameState gameState, int roundNumber, boolean flat) {
 		List<Move> result = new LinkedList<>();
-		List<Move> all = (flat) ? getMovesFlat() : gameState.getMoves();
+		List<Move> all = (flat) ? getMovesFlat(gameState) : gameState.getMoves();
 		for (Move m : all) {
 			if (m.getRoundNumber() == roundNumber) {
 				result.add(m);
@@ -249,7 +244,7 @@ public class GameStateExtension {
 		return result;
 	}
 	
-	public Move getMove(Player player, int roundNumber, int moveIndex) {
+	public static Move getMove(GameState gameState, Player player, int roundNumber, int moveIndex) {
 		Move m = gameState.getMove(player, roundNumber, GameState.MoveAccessMode.ROUND_NUMBER);
 		try {
 			return m.getMoves().get(moveIndex);
@@ -261,10 +256,11 @@ public class GameStateExtension {
 	/**
 	 * Get the very last Move or Sub Move (if Multi Move) of the
 	 * specified Player.
+	 * @param gameState
 	 * @param player
 	 * @return the last Single Move
 	 */
-	public Move getLastMoveFlat(Player player) {
+	public static Move getLastMoveFlat(GameState gameState, Player player) {
 		Move m = gameState.getLastMove(player);
 		if (m != null) {
 			List<Move> ms = flattenMove(m, true);
@@ -281,7 +277,7 @@ public class GameStateExtension {
 	 * in der Liste stehen soll
 	 * @return eine Liste mit Moves, die keine Sub Moves mehr enthalten
 	 */
-	public List<Move> flattenMove(Move move, boolean includeBaseMove) { // base move or root move ?
+	public static List<Move> flattenMove(Move move, boolean includeBaseMove) { // base move or root move ?
 		List<Move> result = new LinkedList<>();
 		
 		// move selbst adden, wenn er keine sub moves hat 
@@ -304,11 +300,11 @@ public class GameStateExtension {
 	 * @param move
 	 * @return
 	 */
-	public List<Move> flattenMove(Move move) {
+	public static List<Move> flattenMove(Move move) {
 		return flattenMove(move, false);
 	}
 	
-	public Set<StationVertex> getDetectivePositions(int roundNumber) {
+	public static Set<StationVertex> getDetectivePositions(GameState gameState, int roundNumber) {
 		
 		if (roundNumber < 0) {
 			throw new IllegalArgumentException("roundNumber must be greater or equal 0, but is: " + roundNumber);
@@ -325,7 +321,7 @@ public class GameStateExtension {
 			if (move == null) {
 	
 				boolean stop = false;
-				ListIterator<Move> it = moveIterator(d, false);
+				ListIterator<Move> it = moveIterator(gameState, d, false);
 				
 				while (it.hasNext() && !stop) {
 					Move m = it.next();
@@ -350,9 +346,10 @@ public class GameStateExtension {
 	/**
 	 * Gibt die jeweils letzten Stationen (Positions)
 	 * der Detectives zurueck.
+	 * @param gameState
 	 * @return Set with positions of the detectives.
 	 */
-	public Set<StationVertex> getDetectivePositions() {
+	public static Set<StationVertex> getDetectivePositions(GameState gameState) {
 		Set<StationVertex> result = new HashSet<>();
 		
 		for (DetectivePlayer d : gameState.getDetectives()) {
@@ -365,7 +362,7 @@ public class GameStateExtension {
 		return result;
 	}
 		
-	public Item getItem(Player player, Class<? extends Item> itemType) {
+	public static Item getItem(GameState gameState, Player player, Class<? extends Item> itemType) {
 		for (Item item : gameState.getItems(player)) {
 			// Apparently there is exactly one unique runtime representation per class.
 			if (item.getClass() == itemType) { // item.getClass().equals(itemType)) {
@@ -375,4 +372,72 @@ public class GameStateExtension {
 		return null;
 	}
 
+	
+	
+	
+	
+	
+	// For the instance
+	
+	private GameState gameState;
+	
+	// MrXTracker kann die Extension z.B. durchaus als Instanz brauchen
+	public GameStateExtension(GameState gameState) {
+		this.gameState = gameState;
+	}
+	
+	// Methods
+
+	/**
+	 * Gibt eine flache Liste aller Moves zurueck. Bei Multi Moves werden
+	 * nur alle Sub Moves eingetragen, nicht der Base Move.
+	 * (Verwendet <tt>flattenMove(Move)</tt>.)
+	 * @return Liste aller Moves
+	 */
+	public List<Move> getMovesFlat() {
+		return getMovesFlat(gameState);
+	}
+	
+	public ListIterator<Move> moveIterator(Player player, boolean flat, int moveRespRoundNumber) {
+		return moveIterator(gameState, player, flat, moveRespRoundNumber);
+	}
+	
+	public ListIterator<Move> moveIterator(Player player, boolean flat) {
+		return moveIterator(gameState, player, flat);
+	}
+	
+	public List<Move> getMoves(int roundNumber, boolean flat) {
+		return getMoves(gameState, roundNumber, flat);
+	}
+	
+	public Move getMove(Player player, int roundNumber, int moveIndex) {
+		return getMove(gameState, player, roundNumber, moveIndex);
+	}
+	
+	/**
+	 * Get the very last Move or Sub Move (if Multi Move) of the
+	 * specified Player.
+	 * @param player
+	 * @return the last Single Move
+	 */
+	public Move getLastMoveFlat(Player player) {
+		return getLastMoveFlat(gameState, player);
+	}
+	
+	public Set<StationVertex> getDetectivePositions(int roundNumber) {
+		return getDetectivePositions(gameState, roundNumber);
+	}
+	
+	/**
+	 * Gibt die jeweils letzten Stationen (Positions)
+	 * der Detectives zurueck.
+	 * @return Set with positions of the detectives.
+	 */
+	public Set<StationVertex> getDetectivePositions() {
+		return getDetectivePositions(gameState);
+	}
+		
+	public Item getItem(Player player, Class<? extends Item> itemType) {
+		return getItem(gameState, player, itemType);
+	}
 }
