@@ -57,10 +57,20 @@ public abstract class MovePreparer extends Observable {
 	private Player player;
 	
 	private Map<Player, Move> moves = new HashMap<>();
+	
+	private final turnListener = new TurnListener() {
+		void currentPlayerChanged(GameState gameState, Player oldPlayer, Player newPlayer) {
+			if (gameState.getPlayers().indexOf(player) < gameState.getPlayers().indexOf(newPlayer)) {
+				if (!selectPlayer(newPlayer))
+					logger.error("algo in selectPlayer laesst player der jetzt an die reihe kommt nicht zu!");
+			}
+		}
+		void currentRoundChanged(GameState gameState, int oldRoundNumber, int newRoundNumber) { }
+	}
 
 	public MovePreparer(GameState gameState, GameGraph gameGraph) {
-		this.gameState = gameState;
-		this.gameGraph = gameGraph;
+		setGameState(gameState);
+		setGameGraph(gameGraph);
 	}
 	
 	public MovePreparer() {
@@ -73,7 +83,13 @@ public abstract class MovePreparer extends Observable {
 	}
 
 	public void setGameState(GameState gameState) {
+		if (this.gameState != null) {
+			this.gameState.removeTurnListener(turnListener);
+		}
 		this.gameState = gameState;
+		if (gameState != null) {
+			gameState.addTurnListener(turnListener);
+		}
 	}
 
 	public GameGraph getGameGraph() {
