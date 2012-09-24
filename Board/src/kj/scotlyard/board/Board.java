@@ -885,7 +885,12 @@ public class Board extends JFrame {
 					doMove = true;
 				}
 				if (doMove) {
-					gc.move(mPrep.getMove(p));
+					Move m = mPrep.getMove(p);
+					if (m == null) {
+						// TODO entweder abbrechen oder "Suggest Move"
+						break;
+					}
+					gc.move(m);
 				}
 			}
 		}
