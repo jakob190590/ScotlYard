@@ -10,7 +10,6 @@ import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.PlayerListener;
-import kj.scotlyard.game.model.TurnListener;
 
 import java.util.Map;
 import java.util.Observable;
@@ -96,7 +95,6 @@ public class MovePreparationBar extends JPanel {
 		// TODO cbMovePrepPlayer.setRenderer(aRenderer); // Implement ListCellRenderer: http://docs.oracle.com/javase/tutorial/uiswing/components/combobox.html#renderer
 		cbPlayer.setPreferredSize(new Dimension(330, 20));
 		gs.addPlayerListener(playerListener);
-		gs.addTurnListener(turnListener);
 		add(cbPlayer);
 		
 		ftfStationNumber = new JFormattedTextField();

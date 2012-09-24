@@ -32,7 +32,9 @@ import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DefaultMove;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
+import kj.scotlyard.game.model.TurnListener;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.Ticket;
@@ -76,15 +78,17 @@ public abstract class MovePreparer extends Observable {
 	
 	private Map<Player, Move> moves = new HashMap<>();
 	
-	private final turnListener = new TurnListener() {
-		void currentPlayerChanged(GameState gameState, Player oldPlayer, Player newPlayer) {
+	private final TurnListener turnListener = new TurnListener() {
+		@Override
+		public void currentPlayerChanged(GameState gameState, Player oldPlayer, Player newPlayer) {
 			if (gameState.getPlayers().indexOf(player) < gameState.getPlayers().indexOf(newPlayer)) {
 				if (!selectPlayer(newPlayer))
 					logger.error("algo in selectPlayer laesst player der jetzt an die reihe kommt nicht zu!");
 			}
 		}
-		void currentRoundChanged(GameState gameState, int oldRoundNumber, int newRoundNumber) { }
-	}
+		@Override
+		public void currentRoundChanged(GameState gameState, int oldRoundNumber, int newRoundNumber) { }
+	};
 
 	public MovePreparer(GameState gameState, GameGraph gameGraph) {
 		setGameState(gameState);
@@ -164,11 +168,11 @@ public abstract class MovePreparer extends Observable {
 		boolean result = false;
 		Player current = gameState.getCurrentPlayer();
 		if (current instanceof MrXPlayer && player != current) {
-			logger.warn("selectPlayer: jetzt ist NUR mrX dran! kein anderer kann selected werden")
+			logger.warn("selectPlayer: jetzt ist NUR mrX dran! kein anderer kann selected werden");
 			errorSelectingPlayer(player);
 		} else if (gameState.getPlayers().indexOf(player) 
 				< gameState.getPlayers().indexOf(current)) {
-			logger.warn("selectPlayer: player war schon dran in currentRound!")
+			logger.warn("selectPlayer: player war schon dran in currentRound!");
 			errorSelectingPlayer(player);
 		} else {			
 			if (this.player != player) {
@@ -281,7 +285,8 @@ public abstract class MovePreparer extends Observable {
 			int moveNumber = 0;		
 			if (player == gameState.getCurrentPlayer()) {
 				roundNumber = gameState.getCurrentRoundNumber();
-				moveNumber = gameState.getMoves().get(GameState.LAST_MOVE);// TODO ?? hat doch funktioniert... getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
+				moveNumber = gameState.getMoves().get(GameState.LAST_MOVE).getMoveNumber() + 1;// TODO ?? hat doch funktioniert... getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
+				// TODO was is, wenn das ein MultiMove ist!!? vllt hilft kj.scotlyard.game.util.*
 			}
 			
 			if (move.getMoves().isEmpty()) {

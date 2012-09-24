@@ -529,11 +529,11 @@ public class Board extends JFrame {
 		movePreparationBar.setEnabled(false);
 		toolbarContainer.add(movePreparationBar);
 		
-		JPanel MoveControlBar = new JPanel();
-		toolbarContainer.add(MoveControlBar);
+		JPanel moveControlBar = new JPanel();
+		toolbarContainer.add(moveControlBar);
 		
 		JLabel lblCurrentPlayer = new JLabel("CurrentPlayer:");
-		MoveControlBar.add(lblCurrentPlayer);
+		moveControlBar.add(lblCurrentPlayer);
 		
 		lblCurrentplayerVal = new JLabel("CurrentPlayerVal");
 		lblCurrentplayerVal.addMouseListener(new MouseAdapter() {
@@ -542,22 +542,22 @@ public class Board extends JFrame {
 				selectCurrentPlayerAction.actionPerformed(null);
 			}
 		});		
-		MoveControlBar.add(lblCurrentplayerVal);
+		moveControlBar.add(lblCurrentplayerVal);
 		
 		lblMoveVal = new JLabel("MoveVal");
-		MoveControlBar.add(lblMoveVal);
+		moveControlBar.add(lblMoveVal);
 		
 		JButton btnMove = new JButton("Move!");
 		btnMove.setAction(moveNowAction);
-		MoveControlBar.add(btnMove);
+		moveControlBar.add(btnMove);
 		
 		JButton btnSuggestMove = new JButton("Suggest Move");
 		btnSuggestMove.setAction(suggestMoveAction);
-		MoveControlBar.add(btnSuggestMove);
+		moveControlBar.add(btnSuggestMove);
 		
 		JButton btnMoveRound = new JButton("Move Round!");
 		btnMoveRound.setAction(moveRoundNowAction);
-		MoveControllerBar.add(btnMoveRound);
+		moveControlBar.add(btnMoveRound);
 		
 		
 //		pack();
