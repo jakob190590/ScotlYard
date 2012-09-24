@@ -142,19 +142,24 @@ public abstract class MovePreparer extends Observable {
 	 */
 	public boolean selectPlayer(Player player) {
 		logger.debug("try select player: " + player);
+		
 		boolean result = false;
-		if (gameState.getPlayers().indexOf(player) < gameState.getPlayers()
-				.indexOf(gameState.getCurrentPlayer())) {
+		Player current = gameState.getCurrentPlayer();
+		if (current instanceof MrXPlayer && player != current) {
+			logger.warn("selectPlayer: jetzt ist NUR mrX dran! kein anderer kann selected werden")
 			errorSelectingPlayer(player);
-		} else if (player != gameState.getMrX() 
-				&& gameState.getCurrentPlayer() == gameState.getMrX()) {
+		} else if (gameState.getPlayers().indexOf(player) 
+				< gameState.getPlayers().indexOf(current)) {
+			logger.warn("selectPlayer: player war schon dran in currentRound!")
 			errorSelectingPlayer(player);
-		} else {
-			logger.debug("select player");
-			this.player = player;
+		} else {			
+			if (this.player != player) {
+				this.player = player;
+				setChanged();
+			}
 			result = true;
+			logger.debug("player selected");
 		}
-		setChanged();
 		notifyObservers(this.player);
 		return result;
 	}
