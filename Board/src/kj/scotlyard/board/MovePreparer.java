@@ -74,6 +74,9 @@ public abstract class MovePreparer extends Observable {
 	
 	private GameGraph gameGraph;
 	
+	// Feste Zugreihenfolge
+	private boolean fixedTurnOrder;
+	
 	private Player player;
 	
 	private Map<Player, Move> moves = new HashMap<>();
@@ -81,7 +84,9 @@ public abstract class MovePreparer extends Observable {
 	private final TurnListener turnListener = new TurnListener() {
 		@Override
 		public void currentPlayerChanged(GameState gameState, Player oldPlayer, Player newPlayer) {
-			if (gameState.getPlayers().indexOf(player) < gameState.getPlayers().indexOf(newPlayer)) {
+			if (gameState.getPlayers().indexOf(player) < gameState.getPlayers().indexOf(newPlayer) // wechseln wenn ausgewaehlter in runde schon dran war
+					// TODO fixed order beachten
+					|| newPlayer instanceof MrXPlayer) { // oder wenn mrx an die reihe kommt
 				if (!selectPlayer(newPlayer))
 					logger.error("algo in selectPlayer laesst player der jetzt an die reihe kommt nicht zu!");
 			}
@@ -120,6 +125,14 @@ public abstract class MovePreparer extends Observable {
 
 	public void setGameGraph(GameGraph gameGraph) {
 		this.gameGraph = gameGraph;
+	}
+	
+	public boolean isFixedTurnOrder() {
+		return fixedTurnOrder;
+	}
+
+	public void setFixedTurnOrder(boolean fixedTurnOrder) {
+		this.fixedTurnOrder = fixedTurnOrder;
 	}
 
 	
@@ -167,21 +180,22 @@ public abstract class MovePreparer extends Observable {
 		
 		boolean result = false;
 		Player current = gameState.getCurrentPlayer();
-		if (current instanceof MrXPlayer && player != current) {
+		if (fixedTurnOrder && player != current) {
+			logger.warn("selectPlayer: fixedTurnOrder ON; nur current player kann selected werden");
+			errorSelectingPlayer(player);
+		} else if (current instanceof MrXPlayer && player != current) {
 			logger.warn("selectPlayer: jetzt ist NUR mrX dran! kein anderer kann selected werden");
 			errorSelectingPlayer(player);
 		} else if (gameState.getPlayers().indexOf(player) 
 				< gameState.getPlayers().indexOf(current)) {
-			logger.warn("selectPlayer: player war schon dran in currentRound!");
+			logger.warn("selectPlayer: player war schon dran in currentRound! kann nicht selected werden");
 			errorSelectingPlayer(player);
 		} else {			
-			if (this.player != player) {
-				this.player = player;
-				setChanged();
-			}
+			this.player = player;
 			result = true;
 			logger.debug("player selected");
 		}
+		setChanged(); // setChanged in jedem Fall: Falls z.B. MovePrep.Bar einen anderen Player auswaehlt, der nicht ausgewaehlt werden kann, muss die comboBox wieder zurueckgesetzt werden
 		notifyObservers(this.player);
 		return result;
 	}
@@ -285,7 +299,7 @@ public abstract class MovePreparer extends Observable {
 			int moveNumber = 0;		
 			if (player == gameState.getCurrentPlayer()) {
 				roundNumber = gameState.getCurrentRoundNumber();
-				moveNumber = gameState.getMoves().get(GameState.LAST_MOVE).getMoveNumber() + 1;// TODO ?? hat doch funktioniert... getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
+				moveNumber = gameState.getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
 				// TODO was is, wenn das ein MultiMove ist!!? vllt hilft kj.scotlyard.game.util.*
 			}
 			

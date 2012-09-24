@@ -140,6 +140,7 @@ public class Board extends JFrame {
 	private final Action zoomOutAction = new ZoomOutAction();
 	private final Action zoomNormalAction = new ZoomNormalAction();
 	private final Action selectCurrentPlayerAction = new SelectCurrentPlayerAction();
+	private final Action jointMoving = new JointMoving();
 
 
 
@@ -298,6 +299,10 @@ public class Board extends JFrame {
 		JCheckBoxMenuItem mntmQuickPlay = new JCheckBoxMenuItem("Quick Play");
 		mntmQuickPlay.setAction(quickPlayAction);
 		mnErnsthaft.add(mntmQuickPlay);
+		
+		JCheckBoxMenuItem chckbxmntmJointMoving = new JCheckBoxMenuItem("Joint Moving");
+		chckbxmntmJointMoving.setAction(jointMoving);
+		mnErnsthaft.add(chckbxmntmJointMoving);
 		
 		JMenu mnZoom = new JMenu("Zoom");
 		mnZoom.setMnemonic('z');
@@ -989,6 +994,16 @@ public class Board extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			mPrep.selectPlayer(gs.getCurrentPlayer());
+		}
+	}
+	private class JointMoving extends AbstractAction {
+		public JointMoving() {
+			putValue(NAME, "Joint Moving");
+			putValue(SHORT_DESCRIPTION, "Joint moving for detectives");
+			setSelected(this, true);
+		}
+		public void actionPerformed(ActionEvent e) {
+			mPrep.setFixedTurnOrder(!isSelected(this));
 		}
 	}
 }
