@@ -106,8 +106,8 @@ public abstract class AbstractAi implements Ai {
 	 * clears the <code>ready</code> and
 	 * <code>decideNowFlag</code> flags.
 	 * 
-	 * Call this method when your AI starts
-	 * the calculation.
+	 * Call this method when your very concrete
+	 * AI starts the calculation.
 	 */
 	protected void beginCalculation() {
 		decideNowFlag = false; // just for the case
@@ -121,8 +121,8 @@ public abstract class AbstractAi implements Ai {
 	 * Informs the AI listeners accordingly and
 	 * sets the <code>ready</code> flag.
 	 * 
-	 * Call this method when your AI finishes
-	 * the calculation.
+	 * Call this method when your very concrete
+	 * AI finishes the calculation.
 	 */
 	protected void finishCalculation() {
 		ready = true;
