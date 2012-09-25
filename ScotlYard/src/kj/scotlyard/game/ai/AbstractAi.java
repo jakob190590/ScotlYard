@@ -23,6 +23,8 @@ import java.util.Set;
 
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.GameState;
+import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.MoveListener;
 
 public abstract class AbstractAi implements Ai {
 	
@@ -35,6 +37,23 @@ public abstract class AbstractAi implements Ai {
 	private int timeLimit;
 
 	private Set<AiListener> listeners = new HashSet<>();
+	
+	private final MoveListener moveListener = new MoveListener() {
+		@Override
+		public void movesCleard(GameState gameState) {
+		}
+		@Override
+		public void moveUndone(GameState gameState, Move move) {
+			assert gameState == AbstractAi.this.gameState;
+			AbstractAi.this.moveUndone(move);
+		}
+		
+		@Override
+		public void moveDone(GameState gameState, Move move) {
+			assert gameState == AbstractAi.this.gameState;
+			AbstractAi.this.moveDone(move);
+		}
+	};
 	
 	protected AbstractAi(GameGraph gameGraph) {
 		this.gameGraph = gameGraph;
@@ -49,15 +68,17 @@ public abstract class AbstractAi implements Ai {
 		return gameGraph;
 	}
 	
-	/** Clears the ready flag */
-	protected void clearReady() {
-		ready = false;
-	}
-	
-	/** Sets the ready flag */
-	protected void setReady() {
-		ready = true;
-	}
+	// Folgendes wird gleich automatisch gemacht bei beginCalculation() 
+	// und finishCalculation() -- ansonsten wird's wohl nicht gebraucht
+//	/** Clears the ready flag */
+//	protected void clearReady() {
+//		ready = false;
+//	}
+//	
+//	/** Sets the ready flag */
+//	protected void setReady() {
+//		ready = true;
+//	}
 	
 	/**
 	 * Informs the AI listeners accordingly.
@@ -65,6 +86,7 @@ public abstract class AbstractAi implements Ai {
 	 * the calculation.
 	 */
 	protected void beginCalculation() {
+		ready = false;
 		for (AiListener l : listeners) {
 			l.beginCalculation(this);
 		}
@@ -76,14 +98,62 @@ public abstract class AbstractAi implements Ai {
 	 * the calculation.
 	 */
 	protected void finishCalculation() {
+		ready = true;
 		for (AiListener l : listeners) {
 			l.finishCalculation(this);
 		}
 	}
+	
+	/**
+	 * This method is called by our private MoveListener
+	 * when a move is undone in the GameState.
+	 * 
+	 * The implementation (in <code>AbstractMrXAi</code> 
+	 * and <code>AbstractDetectiveAi</code>) should
+	 * invoke <code>startCalculation</code> when appropriate.
+	 * 
+	 * @param move the move which is undone
+	 */
+	// TODO Frage ist, ob impl auch gleich beginCalculation() aufrufen soll... eher nicht
+	protected abstract void moveUndone(Move move);
+
+	/**
+	 * This method is called by our private MoveListener
+	 * when a move is done in the GameState.
+	 * 
+	 * The implementation (in <code>AbstractMrXAi</code> 
+	 * and <code>AbstractDetectiveAi</code>) should
+	 * invoke <code>startCalculation</code> when appropriate.
+	 * 
+	 * @param move the move which is done
+	 */
+	// TODO Frage ist, ob impl auch gleich beginCalculation() aufrufen soll... eher nicht
+	protected abstract void moveDone(Move move);
+	
+	/**
+	 * This method is called when your AI can start the 
+	 * calculation. Note that not this but <code>AbstractMrXAi</code> 
+	 * and <code>AbstractDetectiveAi</code> will call this
+	 * method, because only they know when to start! 
+	 * 
+	 * This method shall just initiate the creation of an extra
+	 * thread for the calculation.
+	 */
+	protected abstract void startCalculation();
+	
+	
+	
+	
+	// Fertige Implementierungen von public Methoden, die 
+	// normalerweise nicht mehr überschrieben werden müssen
 
 	@Override
 	public void setGameState(GameState gameState) {
+		if (this.gameState != null) {
+			throw new IllegalStateException("GameState is already set.");
+		}
 		this.gameState = gameState;
+		gameState.addMoveListener(moveListener);
 	}
 
 	@Override
