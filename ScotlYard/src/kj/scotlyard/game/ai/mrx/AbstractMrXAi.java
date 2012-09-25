@@ -29,24 +29,6 @@ public abstract class AbstractMrXAi extends AbstractAi implements MrXAi {
 	}
 
 	@Override
-	public Move move() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void decideNow() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public int getTimeLeft() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	protected void moveUndone(Move move) {
 		// TODO Auto-generated method stub
 
@@ -54,12 +36,6 @@ public abstract class AbstractMrXAi extends AbstractAi implements MrXAi {
 
 	@Override
 	protected void moveDone(Move move) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected void startCalculation() {
 		// TODO Auto-generated method stub
 
 	}
