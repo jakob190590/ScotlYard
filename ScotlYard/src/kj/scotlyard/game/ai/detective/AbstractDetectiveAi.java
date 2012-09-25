@@ -29,24 +29,6 @@ public abstract class AbstractDetectiveAi extends AbstractAi implements Detectiv
 	}
 
 	@Override
-	public Move move() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void decideNow() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public int getTimeLeft() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	protected void moveUndone(Move move) {
 		// TODO Auto-generated method stub
 
@@ -57,11 +39,4 @@ public abstract class AbstractDetectiveAi extends AbstractAi implements Detectiv
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	protected void startCalculation() {
-		// TODO Auto-generated method stub
-
-	}
-
 }
