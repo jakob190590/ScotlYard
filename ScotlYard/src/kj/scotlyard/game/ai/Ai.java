@@ -27,6 +27,10 @@ public interface Ai extends GameStateRequester {
 	
 	boolean isReady();
 	
+	/**
+	 * Advise the calculation process to come
+	 * to an end.
+	 */
 	void decideNow(); // oder determineNow
 	
 	int getTimeLeft(); // estimated, in millis
