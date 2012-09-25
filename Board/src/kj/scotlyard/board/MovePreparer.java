@@ -231,11 +231,42 @@ public abstract class MovePreparer extends Observable {
 		// Calculate all connections from current station to station
 		Set<ConnectionEdge> connections = gameGraph.getGraph().getAllEdges(lastStation, station);		
 		if (connections.isEmpty()) {
+			logger.warn("nextStation: impossible station - no connections");
 			errorImpossibleNextStation(station, player);
 			return;
 		}
 		
-		// TODO next station muss auch noch anderweitig geprueft werden (besetzt, kein ticket, ...?)
+		// next station pruefen
+		// schon besetzt durch anderen Detective
+		Iterator<Move> it = GameStateExtension.moveIterator(gameState, player, false, currentRoundNumber);
+		while (it.hasNext()) {
+			Move n = it.next();
+			
+			// Fuer den seltsamen Fall, dass schon Moves nach currentRound eingetragen sind
+			if (n.getRoundNumber() > currentRoundNumber)
+				break;
+			
+			// Station already occupied by foregoing detectives
+			if (n.getPlayer() instanceof DetectivePlayer && n.getStation() == station) {
+				logger.warn("nextStation: impossible station - already occupied by a foregoing detective (in current round)");
+				errorImpossibleNextStation(station, player);
+				return;
+			}
+		}
+		// schon vorgemerkt durch anderen Detective
+		for (Detective d : gameState.getDetectives()) {
+			// Nachfolgende Detectives sind nicht relevant
+			if (d == player)
+				break;
+			
+			// Station already prepared by foregoing detectives
+			Move n = getMove(d);
+			if (n != null && n.getStation() == station) {
+				logger.warn("nextStation: impossible station - already prepared by a foregoing detective (in current round)");
+				errorImpossibleNextStation(station, player);
+				return;
+			}
+		}
 		
 		Set<Ticket> tickets = new HashSet<>();
 		Set<Item> allItems = gameState.getItems(player);
