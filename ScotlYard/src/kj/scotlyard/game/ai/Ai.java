@@ -41,16 +41,28 @@ public interface Ai extends GameStateRequester {
 	boolean isReady();
 	
 	/**
-	 * Suggests the calculation process, to come to an end.
+	 * Advise the calculation process, to come to an end.
 	 * Note that also in this case the AI must provide a move,
 	 * even it is a bad one.
 	 */
 	void decideNow(); // oder determineNow
 	
+	/**
+	 * The estimated time left till calculation has finished,
+	 * <tt>-1</tt> if the AI cannot tell and <tt>0</tt> if the
+	 * AI has already finished.
+	 * @return
+	 */
 	int getTimeLeft(); // estimated, in millis
 	
 	int getTimeLimit();
 	
+	/**
+	 * Set the time limit for the move calculation.
+	 * Note that this do not apply for a running calculation.
+	 * Call <code>decideNow()</code> in this case.
+	 * @param millis the time limit in milliseconds
+	 */
 	void setTimeLimit();
 	
 	
