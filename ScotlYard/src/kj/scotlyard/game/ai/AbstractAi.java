@@ -102,11 +102,15 @@ public abstract class AbstractAi implements Ai {
 	}
 	
 	/**
-	 * Informs the AI listeners accordingly.
+	 * Informs the AI listeners accordingly and
+	 * clears the <code>ready</code> and
+	 * <code>decideNowFlag</code> flags.
+	 * 
 	 * Call this method when your AI starts
 	 * the calculation.
 	 */
 	protected void beginCalculation() {
+		decideNowFlag = false; // just for the case
 		ready = false;
 		for (AiListener l : listeners) {
 			l.beginCalculation(this);
@@ -114,7 +118,9 @@ public abstract class AbstractAi implements Ai {
 	}
 	
 	/**
-	 * Informs the AI listeners accordingly.
+	 * Informs the AI listeners accordingly and
+	 * sets the <code>ready</code> flag.
+	 * 
 	 * Call this method when your AI finishes
 	 * the calculation.
 	 */
