@@ -33,7 +33,7 @@ public interface Ai extends GameStateRequester {
 	
 	int getTimeLimit();
 	
-	void setTimeLimit();
+	void setTimeLimit(int millis);
 	
 	
 	void addAiListener(AiListener listener);
