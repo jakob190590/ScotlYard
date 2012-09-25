@@ -43,7 +43,7 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 		if (player != null) {
 			s = player.toString();  // TODO gscheider tooltip bzw. player name
 			if (visualStation != null)
-				s += String.format(" at Station # %d", visualStation.getNumber());
+				s += String.format(" at %s", visualStation.getToolTipText());
 		}
 		setToolTipText(s);
 		
