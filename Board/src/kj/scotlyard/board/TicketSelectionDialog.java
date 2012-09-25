@@ -19,9 +19,18 @@
 package kj.scotlyard.board;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Set;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
@@ -44,6 +53,8 @@ import kj.scotlyard.game.model.item.UndergroundTicket;
 @SuppressWarnings("serial")
 public class TicketSelectionDialog extends JDialog {
 	
+	private Player player;
+	
 	private Ticket ticket;
 	
 	private Class<? extends Player> playerType;
@@ -51,6 +62,10 @@ public class TicketSelectionDialog extends JDialog {
 	private boolean quickPlay;
 	
 	private TicketSelectionPanel ticketSelectionPanel;
+	
+	private JLabel lblSelectATicket;
+	private JCheckBox chckbxFurtherMoves;
+	private JButton btnCancel;
 
 	/**
 	 * Create the dialog.
@@ -69,6 +84,40 @@ public class TicketSelectionDialog extends JDialog {
 		setSize(450, 300);
 		
 		getContentPane().setLayout(new BorderLayout());
+		
+		
+		
+		JPanel pnlFooter = new JPanel();
+		add(pnlFooter, BorderLayout.SOUTH);
+		pnlFooter.setLayout(new BoxLayout(pnlFooter, BoxLayout.X_AXIS));
+		
+		chckbxFurtherMoves = new JCheckBox("Further Move(s)");
+		chckbxFurtherMoves.setToolTipText("To prepare further move(s) for a multi move");
+		pnlFooter.add(chckbxFurtherMoves);
+		
+		JPanel panel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		pnlFooter.add(panel);
+		
+		btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ticket = null;
+				setVisible(false);
+			}
+		});
+		// TODO Shortcut: Escape (per Action?)
+		panel.add(btnCancel);
+		
+		JPanel pnlHeader = new JPanel();
+		add(pnlHeader, BorderLayout.NORTH);
+		
+		lblSelectATicket = new JLabel("Select a Ticket");
+		pnlHeader.add(lblSelectATicket);
+		
+		
 		ticketSelectionPanel = new TicketSelectionPanel();		
 		if (playerType == MrXPlayer.class) {
 			// alle moeglichen Ticket types
@@ -78,7 +127,6 @@ public class TicketSelectionDialog extends JDialog {
 			ticketSelectionPanel.setTicketTypes(TaxiTicket.class, 
 					BusTicket.class, UndergroundTicket.class);
 		}
-		ticketSelectionPanel.setFurtherMovesCheckBoxVisible(false);
 		ticketSelectionPanel.setSelectListener(new TicketSelectListener() {
 			@Override
 			public void selectTicket(Ticket ticket) {
@@ -95,14 +143,12 @@ public class TicketSelectionDialog extends JDialog {
 			throw new IllegalArgumentException("Specified player do not match playerType.");
 		}
 		ticketSelectionPanel.setTickets(tickets);
-		ticketSelectionPanel.setPlayer(player);
-		ticketSelectionPanel.setFurtherMovesSelected(false);
 		ticketSelectionPanel.requestFocusInWindow();
 		ticket = null;
 		
 		setLocation(getOwner().getX() + getOwner().getWidth() / 2 - getWidth() / 2, 
 				getOwner().getY() + getOwner().getHeight() / 2 - getHeight() / 2);
-		setVisible(true); // modal, bis es durch TicketSelectListener geschlossen wird
+		setVisible(true); // modal, bis es durch TicketSelectListener oder so geschlossen wird
 		return ticket;
 	}
 	
@@ -113,15 +159,36 @@ public class TicketSelectionDialog extends JDialog {
 	public void setQuickPlay(boolean flag) {
 		quickPlay = flag;
 		if (playerType == MrXPlayer.class)
-			ticketSelectionPanel.setFurtherMovesCheckBoxVisible(flag);
+			setFurtherMovesCheckBoxVisible(flag);
+	}
+	
+	public Player getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+		lblSelectATicket.setText(String.format("Select a ticket for %s's next move", player));
+	}
+
+	
+
+	
+
+	public boolean isFutherMovesCheckBoxVisible() {
+		return chckbxFurtherMoves.isVisible();
+	}
+	
+	public void setFurtherMovesCheckBoxVisible(boolean visible) {
+		chckbxFurtherMoves.setVisible(visible);
 	}
 	
 	public boolean isFurtherMovesSelected() {
-		return ticketSelectionPanel.isFurtherMovesSelected();
+		return chckbxFurtherMoves.isSelected();
 	}
 	
 	public void setFurtherMovesSelected(boolean selected) {
-		ticketSelectionPanel.setFurtherMovesSelected(selected);
+		chckbxFurtherMoves.setSelected(selected);
 	}
 	
 }

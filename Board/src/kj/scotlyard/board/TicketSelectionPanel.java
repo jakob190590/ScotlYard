@@ -18,54 +18,49 @@
 
 package kj.scotlyard.board;
 
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JPanel;
 import javax.swing.AbstractButton;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 
-import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.Ticket;
-import java.awt.event.ActionListener;
-import java.awt.FlowLayout;
 
+/**
+ * Zeigt Buttons für die festgelegten TicketTypes an,
+ * und darauf auch die Anzahl der entsprechenden Tickets
+ * aus der angegebenen Menge von Tickets.
+ * 
+ * Dieses Panel ist einzig und allein
+ * fuer die Ticket-Buttons bestimmt. 
+ * Es duerfen keine anderen Components
+ * hinzugefuegt werden!
+ */
 @SuppressWarnings("serial")
 public class TicketSelectionPanel extends JPanel {
 	
-	private Player player;
 	private Set<Ticket> tickets;
-	/** Contains available ticket types. The
+	
+	/**
+	 * Contains available ticket types. The
 	 * order here determines the order of
 	 * <code>ticketCounts</code> and
-	 * <code>pnlTickets.getComponents()</code>!
+	 * <code>getComponents()</code>!
 	 */
 	private List<Class<? extends Ticket>> ticketTypes = new ArrayList<>();
 	private int[] ticketCounts;
 	
-	/**
-	 * Dieses Panel ist einzig und allein
-	 * fuer die Ticket-Buttons bestimmt. 
-	 * Es duerfen keine andere Components
-	 * hinzugefuegt werden!
-	 */
-	private JPanel pnlTickets;
-	
-	// Der Parameter source des ActionEvents steht fuer das ausgewaehlte Ticket!
 	private TicketSelectListener selectListener;
-	private JLabel lblSelectATicket;
-	private JCheckBox chckbxFurtherMoves;
-	private JButton btnCancel;
 	
+	// Der Parameter source des ActionEvents steht fuer das ausgewaehlte Ticket!	
 	private class SelectAction implements ActionListener {
 		private Class<? extends Ticket> ticketType;
 		public SelectAction(Class<? extends Ticket> ticketType) {
@@ -88,46 +83,46 @@ public class TicketSelectionPanel extends JPanel {
 	 * Create the panel.
 	 */
 	public TicketSelectionPanel() {
-		setLayout(new BorderLayout(0, 0));
-		
-		pnlTickets = new JPanel();
-		add(pnlTickets, BorderLayout.CENTER);
-		
-		JPanel pnlFooter = new JPanel();
-		add(pnlFooter, BorderLayout.SOUTH);
-		pnlFooter.setLayout(new BoxLayout(pnlFooter, BoxLayout.X_AXIS));
-		
-		chckbxFurtherMoves = new JCheckBox("Further Move(s)");
-		chckbxFurtherMoves.setToolTipText("To prepare further move(s) for a multi move");
-		pnlFooter.add(chckbxFurtherMoves);
-		
-		JPanel panel = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
-		flowLayout.setAlignment(FlowLayout.RIGHT);
-		pnlFooter.add(panel);
-		
-		btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (selectListener != null)
-					selectListener.selectTicket(null);
-			}
-		});
-		// TODO Shortcut: Escape (per Action?)
-		panel.add(btnCancel);
-		
-		JPanel pnlHeader = new JPanel();
-		add(pnlHeader, BorderLayout.NORTH);
-		
-		lblSelectATicket = new JLabel("Select a Ticket");
-		pnlHeader.add(lblSelectATicket);
+		super(new FlowLayout());
+	}
+	
+	
+	public Set<Ticket> getTickets() {
+		return tickets;
+	}
 
+	public void setTickets(Set<Ticket> tickets) {
+		this.tickets = tickets;
+		updateTickets();
 	}
 	
 	private void clearTicketCounts() {
 		for (int i = 0; i < ticketCounts.length; i++) {
 			ticketCounts[i] = 0;
+		}
+	}
+	
+	/**
+	 * Kann aufgerufen werden, wenn sich die Tickets im
+	 * übergebenen Set ändern. Dann werden die Zahlen auf
+	 * den Buttons aktualisiert.
+	 */
+	public void updateTickets() {
+		if (tickets != null) {
+			// Tickets zaehlen
+			clearTicketCounts();
+			for (int i = 0; i < ticketTypes.size(); i++) {
+				Class<? extends Ticket> type = ticketTypes.get(i);
+				for (Ticket t : tickets) {
+					if (t.getClass() == type) {
+						ticketCounts[i]++;
+					}
+				}
+				// Buttons anpassen
+				Component buttons[] = getComponents();
+				((AbstractButton) buttons[i]).setText(String.format("%s (%d)", type.getSimpleName(), ticketCounts[i]));
+				buttons[i].setEnabled(ticketCounts[i] > 0);
+			}
 		}
 	}
 
@@ -152,7 +147,7 @@ public class TicketSelectionPanel extends JPanel {
 		final int count = types.size();
 		ticketCounts = new int[count];
 		// Buttons erstellen
-		pnlTickets.removeAll();
+		removeAll();
 		for (int i = 0; i < count; i++) {
 			Class<? extends Ticket> type = types.get(i);
 			JButton btn = new JButton(type.getSimpleName());
@@ -160,7 +155,7 @@ public class TicketSelectionPanel extends JPanel {
 			btn.setVerticalTextPosition(JButton.BOTTOM); // Text unterhalb des Icons (reicht das schon?)
 			// TODO lieber ein schoenes Bild anzeigen
 			btn.addActionListener(new SelectAction(type));
-			pnlTickets.add(btn);
+			add(btn);
 		}		
 	}
 
@@ -171,60 +166,8 @@ public class TicketSelectionPanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	public void setTicketTypes(Class<? extends Ticket>... ticketTypes) {
 		setTicketTypes(Arrays.asList(ticketTypes));
-	}
+	}	
 	
-	public Player getPlayer() {
-		return player;
-	}
-
-	public void setPlayer(Player player) {
-		this.player = player;
-		lblSelectATicket.setText(String.format("Select a ticket for %s's next move", player));
-	}
-
-	public Set<Ticket> getTickets() {
-		return tickets;
-	}
-
-	public void setTickets(Set<Ticket> tickets) {
-		this.tickets = tickets;
-		updateTickets();
-	}
-
-	public void updateTickets() {
-		if (tickets != null) {
-			// Tickets zaehlen
-			clearTicketCounts();
-			for (int i = 0; i < ticketTypes.size(); i++) {
-				Class<? extends Ticket> type = ticketTypes.get(i);
-				for (Ticket t : tickets) {
-					if (t.getClass() == type) {
-						ticketCounts[i]++;
-					}
-				}
-				// Buttons anpassen
-				Component buttons[] = pnlTickets.getComponents();
-				((AbstractButton) buttons[i]).setText(String.format("%s (%d)", type.getSimpleName(), ticketCounts[i]));
-				buttons[i].setEnabled(ticketCounts[i] > 0);
-			}
-		}
-	}
-
-	public boolean isFutherMovesCheckBoxVisible() {
-		return chckbxFurtherMoves.isVisible();
-	}
-	
-	public void setFurtherMovesCheckBoxVisible(boolean visible) {
-		chckbxFurtherMoves.setVisible(visible);
-	}
-	
-	public boolean isFurtherMovesSelected() {
-		return chckbxFurtherMoves.isSelected();
-	}
-	
-	public void setFurtherMovesSelected(boolean selected) {
-		chckbxFurtherMoves.setSelected(selected);
-	}
 	
 	public TicketSelectListener getSelectListener() {
 		return selectListener;
@@ -234,10 +177,10 @@ public class TicketSelectionPanel extends JPanel {
 		this.selectListener = selectListener;
 	}
 
-	// requestFocusInWindow bei erstem Ticket button, der enabled ist!
 	@Override
 	public boolean requestFocusInWindow() {
-		for (Component c : pnlTickets.getComponents()) {
+		// requestFocusInWindow bei erstem Ticket button, der enabled ist!
+		for (Component c : getComponents()) {
 			if (c.isEnabled())
 				return c.requestFocusInWindow();
 		}
