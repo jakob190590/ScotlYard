@@ -23,6 +23,10 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -37,6 +41,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JMenuBar;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.AbstractAction;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 
 import kj.scotlyard.board.layout.AspectRatioGridLayout;
 import kj.scotlyard.game.control.GameController;
@@ -59,24 +74,8 @@ import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.TheRules;
 import kj.scotlyard.game.util.MoveProducer;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.AbstractAction;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-
-import java.awt.event.ActionEvent;
-import javax.swing.Action;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import java.awt.event.ActionListener;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBoxMenuItem;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame {
@@ -324,6 +323,27 @@ public class Board extends JFrame {
 		mntmZoomNormal.setAction(zoomNormalAction);
 		mnZoom.add(mntmZoomNormal);
 		
+		JMenu mnMode = new JMenu("Mode");		
+		menuBar.add(mnMode);
+		
+		JRadioButtonMenuItem mntmNormalGame = JRadioButtonMenuItem("Normal Game");
+		mnMode.add(mntmNormalGame);
+		
+		// Besser, wenn NormalGame standardmäßig auch Server wäre
+		JRadioButtonMenuItem mntmBeServer = JRadioButtonMenuItem("Be Server");
+		mnMode.add(mntmBeServer);
+		
+		// Connect to Server müsste eigentlich eigene Funktion sein
+		JRadioButtonMenuItem mntmBeClient = JRadioButtonMenuItem("Be Client / Connect to Server");
+		mnMode.add(mntmBeClient);
+		
+		JRadioButtonMenuItem mntmMrXTracking = JRadioButtonMenuItem("MrX Tracking");
+		mnMode.add(mntmMrXTracking);
+		
+		mnMode.addSeparator();
+		
+		JCheckBoxMenuItem mntmMrXAlwaysVisible = JCheckBoxMenuItem("MrX Always Visible");
+		mnMode.add(mntmMrXAlwaysVisible);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
