@@ -32,47 +32,47 @@ import javax.swing.JPanel;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 
-import kj.scotlyard.game.model.item.Ticket;
+import kj.scotlyard.game.model.item.Item;
 
 /**
- * Zeigt Buttons für die festgelegten TicketTypes an,
- * und darauf auch die Anzahl der entsprechenden Tickets
- * aus der angegebenen Menge von Tickets.
+ * Zeigt Buttons für die festgelegten ItemTypes an,
+ * und darauf auch die Anzahl der entsprechenden Items
+ * aus der angegebenen Menge von Items.
  * 
  * Dieses Panel ist einzig und allein
- * fuer die Ticket-Buttons bestimmt. 
+ * fuer die Item-Buttons bestimmt. 
  * Es duerfen keine anderen Components
  * hinzugefuegt werden!
  */
 @SuppressWarnings("serial")
-public class TicketSelectionPanel extends JPanel {
+public class ItemSelectionPanel extends JPanel {
 	
-	private Set<Ticket> tickets;
+	private Set<Item> items;
 	
 	/**
-	 * Contains available ticket types. The
+	 * Contains available item types. The
 	 * order here determines the order of
-	 * <code>ticketCounts</code> and
+	 * <code>itemCounts</code> and
 	 * <code>getComponents()</code>!
 	 */
-	private List<Class<? extends Ticket>> ticketTypes = new ArrayList<>();
-	private int[] ticketCounts;
+	private List<Class<? extends Item>> itemTypes = new ArrayList<>();
+	private int[] itemCounts;
 	
-	private TicketSelectListener selectListener;
+	private ItemSelectListener selectListener;
 	
-	// Der Parameter source des ActionEvents steht fuer das ausgewaehlte Ticket!	
+	// Der Parameter source des ActionEvents steht fuer das ausgewaehlte Item!	
 	private class SelectAction implements ActionListener {
-		private Class<? extends Ticket> ticketType;
-		public SelectAction(Class<? extends Ticket> ticketType) {
-			this.ticketType = ticketType;
+		private Class<? extends Item> itemType;
+		public SelectAction(Class<? extends Item> itemType) {
+			this.itemType = itemType;
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// Naechstbestes Ticket der vorgegebenen Klasse raussuchen
-			for (Ticket t : tickets) {
-				if (t.getClass() == ticketType) {
+			// Naechstbestes Item der vorgegebenen Klasse raussuchen
+			for (Item t : items) {
+				if (t.getClass() == itemType) {
 					if (selectListener != null)
-						selectListener.selectTicket(t);
+						selectListener.selectItem(t);
 					return;
 				}
 			}
@@ -82,74 +82,74 @@ public class TicketSelectionPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public TicketSelectionPanel() {
+	public ItemSelectionPanel() {
 		super(new FlowLayout());
 	}
 	
 	
-	public Set<Ticket> getTickets() {
-		return tickets;
+	public Set<Item> getItems() {
+		return items;
 	}
 
-	public void setTickets(Set<Ticket> tickets) {
-		this.tickets = tickets;
-		updateTickets();
+	public void setItems(Set<Item> items) {
+		this.items = items;
+		updateItems();
 	}
 	
-	private void clearTicketCounts() {
-		for (int i = 0; i < ticketCounts.length; i++) {
-			ticketCounts[i] = 0;
+	private void clearItemCounts() {
+		for (int i = 0; i < itemCounts.length; i++) {
+			itemCounts[i] = 0;
 		}
 	}
 	
 	/**
-	 * Kann aufgerufen werden, wenn sich die Tickets im
+	 * Kann aufgerufen werden, wenn sich die Items im
 	 * übergebenen Set ändern. Dann werden die Zahlen auf
 	 * den Buttons aktualisiert.
 	 */
-	public void updateTickets() {
-		if (tickets != null) {
-			// Tickets zaehlen
-			clearTicketCounts();
-			for (int i = 0; i < ticketTypes.size(); i++) {
-				Class<? extends Ticket> type = ticketTypes.get(i);
-				for (Ticket t : tickets) {
+	public void updateItems() {
+		if (items != null) {
+			// Items zaehlen
+			clearItemCounts();
+			for (int i = 0; i < itemTypes.size(); i++) {
+				Class<? extends Item> type = itemTypes.get(i);
+				for (Item t : items) {
 					if (t.getClass() == type) {
-						ticketCounts[i]++;
+						itemCounts[i]++;
 					}
 				}
 				// Buttons anpassen
 				Component buttons[] = getComponents();
-				((AbstractButton) buttons[i]).setText(String.format("%s (%d)", type.getSimpleName(), ticketCounts[i]));
-				buttons[i].setEnabled(ticketCounts[i] > 0);
+				((AbstractButton) buttons[i]).setText(String.format("%s (%d)", type.getSimpleName(), itemCounts[i]));
+				buttons[i].setEnabled(itemCounts[i] > 0);
 			}
 		}
 	}
 
 	/**
-	 * Returns an unmodifiable List of the stated ticket types.
+	 * Returns an unmodifiable List of the stated item types.
 	 * @return an unmodifiable List
 	 */
-	public List<Class<? extends Ticket>> getTicketTypes() {		
-		return Collections.unmodifiableList(ticketTypes);
+	public List<Class<? extends Item>> getItemTypes() {		
+		return Collections.unmodifiableList(itemTypes);
 	}
 	
 	/**
-	 * Set the ticket types.
-	 * @param ticketTypes
+	 * Set the item types.
+	 * @param itemTypes
 	 */
-	public void setTicketTypes(List<Class<? extends Ticket>> ticketTypes) {
-		List<Class<? extends Ticket>> types = this.ticketTypes;
+	public void setItemTypes(List<Class<? extends Item>> itemTypes) {
+		List<Class<? extends Item>> types = this.itemTypes;
 		types.clear();
-		if (ticketTypes != null) {
-			types.addAll(ticketTypes);
+		if (itemTypes != null) {
+			types.addAll(itemTypes);
 		}
 		final int count = types.size();
-		ticketCounts = new int[count];
+		itemCounts = new int[count];
 		// Buttons erstellen
 		removeAll();
 		for (int i = 0; i < count; i++) {
-			Class<? extends Ticket> type = types.get(i);
+			Class<? extends Item> type = types.get(i);
 			JButton btn = new JButton(type.getSimpleName());
 //			btn.setIconTextGap(5);
 			btn.setVerticalTextPosition(JButton.BOTTOM); // Text unterhalb des Icons (reicht das schon?)
@@ -160,26 +160,26 @@ public class TicketSelectionPanel extends JPanel {
 	}
 
 	/**
-	 * Convenient method for <code>setTicketTypes(List)</code>.
-	 * @param ticketTypes
+	 * Convenient method for <code>setItemTypes(List)</code>.
+	 * @param itemTypes
 	 */
 	@SuppressWarnings("unchecked")
-	public void setTicketTypes(Class<? extends Ticket>... ticketTypes) {
-		setTicketTypes(Arrays.asList(ticketTypes));
+	public void setItemTypes(Class<? extends Item>... itemTypes) {
+		setItemTypes(Arrays.asList(itemTypes));
 	}	
 	
 	
-	public TicketSelectListener getSelectListener() {
+	public ItemSelectListener getSelectListener() {
 		return selectListener;
 	}
 
-	public void setSelectListener(TicketSelectListener selectListener) {
+	public void setSelectListener(ItemSelectListener selectListener) {
 		this.selectListener = selectListener;
 	}
 
 	@Override
 	public boolean requestFocusInWindow() {
-		// requestFocusInWindow bei erstem Ticket button, der enabled ist!
+		// requestFocusInWindow bei erstem Item button, der enabled ist!
 		for (Component c : getComponents()) {
 			if (c.isEnabled())
 				return c.requestFocusInWindow();
