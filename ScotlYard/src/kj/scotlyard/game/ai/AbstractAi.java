@@ -35,6 +35,8 @@ public abstract class AbstractAi implements Ai {
 	private boolean ready;
 
 	private int timeLimit;
+	
+	private boolean decideNowFlag;
 
 	private Set<AiListener> listeners = new HashSet<>();
 	
@@ -54,7 +56,7 @@ public abstract class AbstractAi implements Ai {
 			AbstractAi.this.moveDone(move);
 		}
 	};
-	
+
 	protected AbstractAi(GameGraph gameGraph) {
 		this.gameGraph = gameGraph;
 		// TODO GameState doch ueber Constructor setzen?
@@ -79,6 +81,25 @@ public abstract class AbstractAi implements Ai {
 //	protected void setReady() {
 //		ready = true;
 //	}
+	
+	/**
+	 * This method returns the value of the
+	 * <code>decideNowFlag</code>, which is set
+	 * in the <code>decideNow</code> method.
+	 * @return <code>true</code> if someone do not
+	 * want to wait longer for the resulting move(s)
+	 */
+	protected boolean isDecideNowFlagSet() {
+		return decideNowFlag;
+	}
+	
+	/**
+	 * This method shall be called by the calculation
+	 * process when it checked the <code>decideNowFlag</code>.
+	 */
+	protected void clearDecideNowFlag() {
+		decideNowFlag = false;
+	}
 	
 	/**
 	 * Informs the AI listeners accordingly.
@@ -159,6 +180,16 @@ public abstract class AbstractAi implements Ai {
 	@Override
 	public boolean isReady() {
 		return ready;
+	}
+	
+	/**
+	 * This method just sets the <code>decideNowFlag</code>.
+	 * It can be overridden to do more; such as signal, event or
+	 * something like this ...
+	 */
+	@Override
+	public void decideNow() {
+		decideNowFlag = true;
 	}
 
 	@Override
