@@ -924,7 +924,7 @@ public class Board extends JFrame {
 		public QuickPlayAction() {
 			putValue(NAME, "Quick Play");
 			putValue(SHORT_DESCRIPTION, "Toogle Quick Play mode");
-			putValue(SELECTED_KEY, false);
+			setSelected(this, true);
 		}
 		public void actionPerformed(ActionEvent e) {
 			ticketSelectionDialogMrX.setQuickPlay(isSelected(quickPlayAction));
