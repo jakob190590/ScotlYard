@@ -85,7 +85,7 @@ public abstract class MovePreparer extends Observable {
 		@Override
 		public void currentPlayerChanged(GameState gameState, Player oldPlayer, Player newPlayer) {
 			if (gameState.getPlayers().indexOf(player) < gameState.getPlayers().indexOf(newPlayer) // wechseln wenn ausgewaehlter in runde schon dran war
-					// TODO fixed order beachten
+					|| fixedTurnOrder // feste reihenfolge (bei "No Joint Moving")
 					|| newPlayer instanceof MrXPlayer) { // oder wenn mrx an die reihe kommt
 				if (!selectPlayer(newPlayer))
 					logger.error("algo in selectPlayer laesst player der jetzt an die reihe kommt nicht zu!");
