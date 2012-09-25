@@ -284,6 +284,17 @@ public abstract class MovePreparer extends Observable {
 				}
 			}			
 		}
+		// Tickets wieder rausnehmen, die bei dem Zug, der 
+		// aktuell vorbereitet wird, schon benutzt sind!
+		if (move != null) {
+			if (move.getMoves().isEmpty()) {
+				tickets.remove((Ticket) move.getItem());
+			} else {
+				for (Move n : move.getMoves()) {
+					tickets.remove((Ticket) n.getItem());
+				}
+			}
+		}
 		
 		Ticket ticket = selectTicket(tickets, player);
 		
