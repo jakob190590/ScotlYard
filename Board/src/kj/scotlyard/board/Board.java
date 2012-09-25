@@ -326,23 +326,23 @@ public class Board extends JFrame {
 		JMenu mnMode = new JMenu("Mode");		
 		menuBar.add(mnMode);
 		
-		JRadioButtonMenuItem mntmNormalGame = JRadioButtonMenuItem("Normal Game");
+		JRadioButtonMenuItem mntmNormalGame = new JRadioButtonMenuItem("Normal Game");
 		mnMode.add(mntmNormalGame);
 		
 		// Besser, wenn NormalGame standardmäßig auch Server wäre
-		JRadioButtonMenuItem mntmBeServer = JRadioButtonMenuItem("Be Server");
+		JRadioButtonMenuItem mntmBeServer = new JRadioButtonMenuItem("Be Server");
 		mnMode.add(mntmBeServer);
 		
 		// Connect to Server müsste eigentlich eigene Funktion sein
-		JRadioButtonMenuItem mntmBeClient = JRadioButtonMenuItem("Be Client / Connect to Server");
+		JRadioButtonMenuItem mntmBeClient = new JRadioButtonMenuItem("Be Client / Connect to Server");
 		mnMode.add(mntmBeClient);
 		
-		JRadioButtonMenuItem mntmMrXTracking = JRadioButtonMenuItem("MrX Tracking");
+		JRadioButtonMenuItem mntmMrXTracking = new JRadioButtonMenuItem("MrX Tracking");
 		mnMode.add(mntmMrXTracking);
 		
 		mnMode.addSeparator();
 		
-		JCheckBoxMenuItem mntmMrXAlwaysVisible = JCheckBoxMenuItem("MrX Always Visible");
+		JCheckBoxMenuItem mntmMrXAlwaysVisible = new JCheckBoxMenuItem("MrX Always Visible");
 		mnMode.add(mntmMrXAlwaysVisible);
 		
 		contentPane = new JPanel();

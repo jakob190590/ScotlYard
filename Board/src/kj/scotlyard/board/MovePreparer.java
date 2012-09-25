@@ -20,6 +20,7 @@ package kj.scotlyard.board;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
@@ -30,6 +31,7 @@ import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DefaultMove;
+import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
@@ -209,7 +211,7 @@ public abstract class MovePreparer extends Observable {
 		notifyObservers(getMove(move.getPlayer()));
 	}
 	
-	public void nextStation(final StationVertex station, final Player player, MultiMoveCard multiMoveCard) {
+	public void nextStation(final StationVertex station, final Player player, DoubleMoveCard multiMoveCard) {
 		// TODO egal wann aufgerufen wird: multiMoveCard != null  -> baseMove.setItem(multiMoveCard)
 	}
 	
@@ -228,6 +230,7 @@ public abstract class MovePreparer extends Observable {
 		Move move = moves.get(player);
 		
 		Move lm = gameState.getLastMove(player); // last move
+		int currentRoundNumber = gameState.getCurrentRoundNumber();
 		StationVertex lastStation = lm.getStation();
 		
 		Move m = new DefaultMove();
@@ -259,7 +262,7 @@ public abstract class MovePreparer extends Observable {
 			}
 		}
 		// schon vorgemerkt durch anderen Detective
-		for (Detective d : gameState.getDetectives()) {
+		for (DetectivePlayer d : gameState.getDetectives()) {
 			// Nachfolgende Detectives sind nicht relevant
 			if (d == player)
 				break;
