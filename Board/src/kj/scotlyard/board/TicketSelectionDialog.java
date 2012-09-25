@@ -23,6 +23,7 @@ import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
@@ -36,6 +37,7 @@ import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.BusTicket;
+import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.model.item.UndergroundTicket;
@@ -61,7 +63,7 @@ public class TicketSelectionDialog extends JDialog {
 	
 	private boolean quickPlay;
 	
-	private TicketSelectionPanel ticketSelectionPanel;
+	private ItemSelectionPanel ticketSelectionPanel;
 	
 	private JLabel lblSelectATicket;
 	private JCheckBox chckbxFurtherMoves;
@@ -118,19 +120,19 @@ public class TicketSelectionDialog extends JDialog {
 		pnlHeader.add(lblSelectATicket);
 		
 		
-		ticketSelectionPanel = new TicketSelectionPanel();		
+		ticketSelectionPanel = new ItemSelectionPanel();		
 		if (playerType == MrXPlayer.class) {
 			// alle moeglichen Ticket types
-			ticketSelectionPanel.setTicketTypes(TaxiTicket.class, BusTicket.class, 
+			ticketSelectionPanel.setItemTypes(TaxiTicket.class, BusTicket.class, 
 					UndergroundTicket.class, BlackTicket.class);
 		} else /* if (playerType == DetectivePlayer.class) */ {
-			ticketSelectionPanel.setTicketTypes(TaxiTicket.class, 
+			ticketSelectionPanel.setItemTypes(TaxiTicket.class, 
 					BusTicket.class, UndergroundTicket.class);
 		}
-		ticketSelectionPanel.setSelectListener(new TicketSelectListener() {
+		ticketSelectionPanel.setSelectListener(new ItemSelectListener() {
 			@Override
-			public void selectTicket(Ticket ticket) {
-				TicketSelectionDialog.this.ticket = ticket;
+			public void selectItem(Item ticket) {
+				TicketSelectionDialog.this.ticket = (Ticket) ticket;
 				setVisible(false);
 			}
 		});
@@ -142,7 +144,11 @@ public class TicketSelectionDialog extends JDialog {
 		if (player.getClass() != playerType) {
 			throw new IllegalArgumentException("Specified player do not match playerType.");
 		}
-		ticketSelectionPanel.setTickets(tickets);
+		
+		// Noetiger Umweg fuer ein more reuseable ItemSelectionPanel...
+		Set<Item> items = new HashSet<>();
+		items.addAll(tickets);
+		ticketSelectionPanel.setItems(items);
 		ticketSelectionPanel.requestFocusInWindow();
 		ticket = null;
 		
