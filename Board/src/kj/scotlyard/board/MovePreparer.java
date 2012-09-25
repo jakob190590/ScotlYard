@@ -190,7 +190,8 @@ public abstract class MovePreparer extends Observable {
 				< gameState.getPlayers().indexOf(current)) {
 			logger.warn("selectPlayer: player war schon dran in currentRound! kann nicht selected werden");
 			errorSelectingPlayer(player);
-		} else {			
+		} else {
+			// Selection erfolgreich
 			this.player = player;
 			result = true;
 			logger.debug("player selected");
@@ -206,6 +207,10 @@ public abstract class MovePreparer extends Observable {
 		moves.put(move.getPlayer(), move);
 		setChanged();
 		notifyObservers(getMove(move.getPlayer()));
+	}
+	
+	public void nextStation(final StationVertex station, final Player player, MultiMoveCard multiMoveCard) {
+		// TODO egal wann aufgerufen wird: multiMoveCard != null  -> baseMove.setItem(multiMoveCard)
 	}
 	
 	/**
@@ -268,6 +273,7 @@ public abstract class MovePreparer extends Observable {
 			}
 		}
 		
+		// Alle Tickets raussuchen, die fuer die Connections gueltig sind
 		Set<Ticket> tickets = new HashSet<>();
 		Set<Item> allItems = gameState.getItems(player);
 		MovePolicy mp = new TheMovePolicy();
@@ -288,7 +294,7 @@ public abstract class MovePreparer extends Observable {
 			m.setConnection(conn);
 			m.setItem(ticket);
 			
-			// Publish m as/in move
+			// Publish m as or in move
 			if (move == null) {
 				move = m;
 			} else {				
