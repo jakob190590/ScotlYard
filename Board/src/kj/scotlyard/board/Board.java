@@ -76,6 +76,7 @@ import kj.scotlyard.game.util.MoveProducer;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import javax.swing.ButtonGroup;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame {
@@ -99,6 +100,8 @@ public class Board extends JFrame {
 	private JScrollPane boardPanelScrollPane;
 	
 	private MovePreparationBar movePreparationBar;
+	
+	private final ButtonGroup modeButtonGroup = new ButtonGroup();
 	
 	GameController gc;
 	Game g;
@@ -327,17 +330,21 @@ public class Board extends JFrame {
 		menuBar.add(mnMode);
 		
 		JRadioButtonMenuItem mntmNormalGame = new JRadioButtonMenuItem("Normal Game");
+		modeButtonGroup.add(mntmNormalGame);
 		mnMode.add(mntmNormalGame);
 		
 		// Besser, wenn NormalGame standardmäßig auch Server wäre
 		JRadioButtonMenuItem mntmBeServer = new JRadioButtonMenuItem("Be Server");
+		modeButtonGroup.add(mntmBeServer);
 		mnMode.add(mntmBeServer);
 		
 		// Connect to Server müsste eigentlich eigene Funktion sein
 		JRadioButtonMenuItem mntmBeClient = new JRadioButtonMenuItem("Be Client / Connect to Server");
+		modeButtonGroup.add(mntmBeClient);
 		mnMode.add(mntmBeClient);
 		
 		JRadioButtonMenuItem mntmMrXTracking = new JRadioButtonMenuItem("MrX Tracking");
+		modeButtonGroup.add(mntmMrXTracking);
 		mnMode.add(mntmMrXTracking);
 		
 		mnMode.addSeparator();
