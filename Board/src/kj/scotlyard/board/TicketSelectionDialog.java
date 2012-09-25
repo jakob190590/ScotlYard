@@ -68,6 +68,7 @@ public class TicketSelectionDialog extends JDialog {
 	private JLabel lblSelectATicket;
 	private JCheckBox chckbxFurtherMoves;
 	private JButton btnCancel;
+	private JPanel leftPanel;
 
 	/**
 	 * Create the dialog.
@@ -90,17 +91,22 @@ public class TicketSelectionDialog extends JDialog {
 		
 		
 		JPanel pnlFooter = new JPanel();
-		add(pnlFooter, BorderLayout.SOUTH);
+		getContentPane().add(pnlFooter, BorderLayout.SOUTH);
 		pnlFooter.setLayout(new BoxLayout(pnlFooter, BoxLayout.X_AXIS));
 		
-		chckbxFurtherMoves = new JCheckBox("Further Move(s)");
-		chckbxFurtherMoves.setToolTipText("To prepare further move(s) for a multi move");
-		pnlFooter.add(chckbxFurtherMoves);
+		leftPanel = new JPanel();
+		FlowLayout flowLayout_1 = (FlowLayout) leftPanel.getLayout();
+		flowLayout_1.setAlignment(FlowLayout.LEFT);
+		pnlFooter.add(leftPanel);
 		
-		JPanel panel = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+		chckbxFurtherMoves = new JCheckBox("Further Move(s)");
+		leftPanel.add(chckbxFurtherMoves);
+		chckbxFurtherMoves.setToolTipText("To prepare further move(s) for a multi move");
+		
+		JPanel rightPanel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) rightPanel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
-		pnlFooter.add(panel);
+		pnlFooter.add(rightPanel);
 		
 		btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
@@ -111,10 +117,10 @@ public class TicketSelectionDialog extends JDialog {
 			}
 		});
 		// TODO Shortcut: Escape (per Action?)
-		panel.add(btnCancel);
+		rightPanel.add(btnCancel);
 		
 		JPanel pnlHeader = new JPanel();
-		add(pnlHeader, BorderLayout.NORTH);
+		getContentPane().add(pnlHeader, BorderLayout.NORTH);
 		
 		lblSelectATicket = new JLabel("Select a Ticket");
 		pnlHeader.add(lblSelectATicket);
