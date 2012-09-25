@@ -41,6 +41,7 @@ import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.model.item.UndergroundTicket;
+import java.awt.Font;
 
 /**
  * Dialog, der das TicketSelectionPanel anzeigt.
@@ -123,6 +124,7 @@ public class TicketSelectionDialog extends JDialog {
 		getContentPane().add(pnlHeader, BorderLayout.NORTH);
 		
 		lblSelectATicket = new JLabel("Select a Ticket");
+		lblSelectATicket.setFont(new Font("Tahoma", Font.BOLD, 14));
 		pnlHeader.add(lblSelectATicket);
 		
 		
