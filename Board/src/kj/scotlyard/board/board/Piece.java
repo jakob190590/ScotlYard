@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package kj.scotlyard.board;
+package kj.scotlyard.board.board;
 
 import java.awt.Dimension;
 import java.awt.geom.Point2D;

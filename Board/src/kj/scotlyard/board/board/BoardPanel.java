@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package kj.scotlyard.board;
+package kj.scotlyard.board.board;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -33,6 +33,8 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
+import kj.scotlyard.board.Board;
+import kj.scotlyard.board.MovePreparer;
 import kj.scotlyard.board.layout.PercentalLayout;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;

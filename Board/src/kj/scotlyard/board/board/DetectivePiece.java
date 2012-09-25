@@ -16,28 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package kj.scotlyard.board;
+package kj.scotlyard.board.board;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import kj.scotlyard.game.model.MrXPlayer;
+import kj.scotlyard.game.model.DetectivePlayer;
 
 @SuppressWarnings("serial")
-public class MrXPiece extends Piece {
+public class DetectivePiece extends Piece {
 
-	public MrXPiece(MrXPlayer player) {
+	public DetectivePiece(DetectivePlayer player) {
 		super(player);
 	}
-
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2D = (Graphics2D) g;
 		
-		g.setColor(Color.BLACK);
+		g.setColor(Color.GREEN); // gruen, wie die polizei
 		g2D.fillOval(0, 0, getWidth(), getHeight());
 	}
-	
+
 }

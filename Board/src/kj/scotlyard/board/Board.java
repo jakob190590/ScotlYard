@@ -53,6 +53,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
+import kj.scotlyard.board.board.BoardPanel;
 import kj.scotlyard.board.layout.AspectRatioGridLayout;
 import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.GameStatus;

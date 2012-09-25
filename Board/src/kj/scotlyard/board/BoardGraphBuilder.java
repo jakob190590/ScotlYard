@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
+import kj.scotlyard.board.board.VisualStation;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
