@@ -353,6 +353,7 @@ public class Board extends JFrame {
 		mnMode.addSeparator();
 		
 		JCheckBoxMenuItem mntmMrXAlwaysVisible = new JCheckBoxMenuItem("MrX Always Visible");
+		mntmMrXAlwaysVisible.setAction(mrXAlwaysVisibleAction);
 		mnMode.add(mntmMrXAlwaysVisible);
 		
 		contentPane = new JPanel();
@@ -928,33 +929,33 @@ public class Board extends JFrame {
 			}
 			
 			
-			Move currentMove = null;			
-
-			// Detectives zählen, die schon gezogen sind, oder einen Zug vorbereitet haben.
-			boolean detectivesReady = 0;
-			for (DetectivePlayer d : gs.getDetectives()) {
-				Move m = mPrep.getMove(d);
-				if (d == current) {					
-					if (m == null) {
-						break;
-					}
-					currentMove = m;
-				}
-				if (m != null || ) {
-					detectivesReady++;					
-					if (d == current) {
-						break;
-					}
-				}
-			}
-			if (currentMove == null) {
-				// TODO message, dass currentPlayer noch keinen Zug vorbereitet hat
-			} else if (detectivesReady == gs.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
-					|| JOptionPane == JOptionPane.YES) { // TODO message anzeigen: "nocht nicht alle sind fertig; soweit möglich schon mal ziehen? Ja/Nein"				
-				// Moving anstoßen
-				movemovemove = true;
-				gc.move(currentMove);
-			}
+//			Move currentMove = null;			
+//
+//			// Detectives zählen, die schon gezogen sind, oder einen Zug vorbereitet haben.
+//			int detectivesReady = 0;
+//			for (DetectivePlayer d : gs.getDetectives()) {
+//				Move m = mPrep.getMove(d);
+//				if (d == current) {					
+//					if (m == null) {
+//						break;
+//					}
+//					currentMove = m;
+//				}
+//				if (m != null || ) {
+//					detectivesReady++;					
+//					if (d == current) {
+//						break;
+//					}
+//				}
+//			}
+//			if (currentMove == null) {
+//				// TODO message, dass currentPlayer noch keinen Zug vorbereitet hat
+//			} else if (detectivesReady == gs.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
+//					|| JOptionPane == JOptionPane.YES) { // TODO message anzeigen: "nocht nicht alle sind fertig; soweit möglich schon mal ziehen? Ja/Nein"				
+//				// Moving anstoßen
+//				movemovemove = true;
+//				gc.move(currentMove);
+//			}
 		}
 	}
 	private class QuickPlayAction extends AbstractAction {
