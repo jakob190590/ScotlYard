@@ -33,6 +33,8 @@ public abstract class AbstractAi implements Ai {
 	private GameGraph gameGraph;
 	
 	private boolean ready;
+	
+	private int timeLeft;
 
 	private int timeLimit;
 	
@@ -99,6 +101,10 @@ public abstract class AbstractAi implements Ai {
 	 */
 	protected void clearDecideNowFlag() {
 		decideNowFlag = false;
+	}
+	
+	protected void setTimeLeft(int millis) {
+		timeLeft = millis;
 	}
 	
 	/**
@@ -196,6 +202,11 @@ public abstract class AbstractAi implements Ai {
 	@Override
 	public void decideNow() {
 		decideNowFlag = true;
+	}
+	
+	@Override
+	public int getTimeLeft() {
+		return timeLeft;
 	}
 
 	@Override
