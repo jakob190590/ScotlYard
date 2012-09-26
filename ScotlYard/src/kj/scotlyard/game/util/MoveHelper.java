@@ -40,6 +40,8 @@ public class MoveHelper {
 	/**
 	 * Returns the next best valid Ticket from items for the given
 	 * connection, or <tt>null</tt> if there is no such Ticket.
+	 * This method is only for testing purpose e.g. <code>MoveProducer
+	 * .nextBestSingleMove()</code> use it.
 	 * @param connection the connection for which a Ticket is requested
 	 * @param items the Set of Items, within which the search is conducted
 	 * @return a valid Ticket for connection, or <tt>null</tt> if there is no such Ticket
