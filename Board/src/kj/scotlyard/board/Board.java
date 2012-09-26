@@ -889,7 +889,8 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			gc.move(mPrep.getMove(gs.getCurrentPlayer()));
 		}
-	}	
+	}
+	// TODO Eher MoveDetectivesOfRoundNow! Macht einfach vom Spielprinzip her mehr Sinn
 	private class MoveRoundNowAction extends AbstractAction {
 		public MoveRoundNowAction() {
 			putValue(NAME, "Move Round!"); // or "Move now"
@@ -897,6 +898,8 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
 		}
 		public void actionPerformed(ActionEvent e) {
+			// TODO beide Lösungen ignorieren TurnPolicy!
+			
 			//int index = gs.getPlayers().indexOf(gs.getCurrentPlayer());
 			//if (index >= 0) {
 			//	for (int i = index; i < gs.getPlayers(); i++) {
@@ -904,8 +907,9 @@ public class Board extends JFrame {
 			//	}
 			//}
 			
-			boolean doMove = false;
 			Player current = gs.getCurrentPlayer();
+			
+			boolean doMove = false;			
 			for (Player p : gs.getPlayers()) {
 				if (p == current) {
 					doMove = true;
@@ -918,6 +922,35 @@ public class Board extends JFrame {
 					}
 					gc.move(m);
 				}
+			}
+			
+			
+			Move currentMove = null;			
+
+			// Detectives zählen, die schon gezogen sind, oder einen Zug vorbereitet haben.
+			boolean detectivesReady = 0;
+			for (DetectivePlayer d : gs.getDetectives()) {
+				Move m = mPrep.getMove(d);
+				if (d == current) {					
+					if (m == null) {
+						break;
+					}
+					currentMove = m;
+				}
+				if (m != null || ) {
+					detectivesReady++;					
+					if (d == current) {
+						break;
+					}
+				}
+			}
+			if (currentMove == null) {
+				// TODO message, dass currentPlayer noch keinen Zug vorbereitet hat
+			} else if (detectivesReady == gs.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
+					|| JOptionPane == JOptionPane.YES) { // TODO message anzeigen: "nocht nicht alle sind fertig; soweit möglich schon mal ziehen? Ja/Nein"				
+				// Moving anstoßen
+				movemovemove = true;
+				gc.move(currentMove);
 			}
 		}
 	}
