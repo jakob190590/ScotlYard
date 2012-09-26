@@ -246,9 +246,6 @@ public class AbstractGameStateTest {
 		TestTurnListener l = new TestTurnListener();
 		gs.addTurnListener(l);
 		
-		g.setCurrentPlayer(null);
-		assertEquals(null, l.newP);
-		assertEquals(gs, l.gs);
 		g.setCurrentPlayer(d3);
 		assertEquals(null, l.oldP);
 		assertEquals(d3, l.newP);

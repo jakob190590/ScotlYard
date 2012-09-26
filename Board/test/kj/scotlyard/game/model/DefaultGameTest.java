@@ -588,9 +588,6 @@ public class DefaultGameTest {
 		TestTurnListener l = new TestTurnListener();
 		g.addTurnListener(l);
 		
-		g.setCurrentPlayer(null);
-		assertEquals(null, l.newP);
-		assertEquals(g, l.gs);
 		g.setCurrentPlayer(d3);
 		assertEquals(null, l.oldP);
 		assertEquals(d3, l.newP);
