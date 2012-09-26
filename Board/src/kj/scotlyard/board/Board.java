@@ -144,6 +144,7 @@ public class Board extends JFrame {
 	private final Action zoomNormalAction = new ZoomNormalAction();
 	private final Action selectCurrentPlayerAction = new SelectCurrentPlayerAction();
 	private final Action jointMoving = new JointMoving();
+	private final Action mrXAlwaysVisibleAction = new MrXAlwaysVisibleAction();
 
 
 
@@ -1032,6 +1033,16 @@ public class Board extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			mPrep.setFixedTurnOrder(!isSelected(this));
+		}
+	}	
+	private class MrXAlwaysVisibleAction extends AbstractAction {
+		public MrXAlwaysVisibleAction() {
+			putValue(NAME, "MrX Always Visible");
+			putValue(SHORT_DESCRIPTION, "Keep MrX always visible");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_X); // oder M, A oder V ...
+			setSelected(this, true);
+		}
+		public void actionPerformed(ActionEvent e) {
 		}
 	}
 }
