@@ -18,11 +18,11 @@
 
 package kj.scotlyard.game.ai.mrx;
 
-import java.util.List;
-
 import kj.scotlyard.game.ai.AbstractAi;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.MrXPlayer;
+import kj.scotlyard.game.model.Player;
 
 public abstract class AbstractMrXAi extends AbstractAi implements MrXAi {
 
@@ -31,24 +31,18 @@ public abstract class AbstractMrXAi extends AbstractAi implements MrXAi {
 	}
 
 	@Override
-	protected void moveUndone(Move move) {
-		if (move.getPlayer() instanceof MrXPlayer) {
-			// Zug von MrX Player rückgängig gemacht
-			// -> nochmal neu berechnen
-			startCalculation();
-		}
-		// TODO calc auch abbrechen ??
-	}
+	protected void moveUndone(Move move) { }
 
 	@Override
-	protected void moveDone(Move move) {
-		List<DetectivePlayer> ds = getGameState.getDetectives();
-		if (move.getPlayer() == ds.get(ds.size() - 1)) {
-			// Letzter Detective hat gezogen
-			// -> Berechnung für MrX Zug starten
+	protected void moveDone(Move move) { }
+	
+	@Override
+	protected void currentPlayerChanged(Player oldPlayer, Player newPlayer) {
+		// Starten, immer wenn MrX dran kommt
+		if (newPlayer instanceof MrXPlayer) {
 			startCalculation();
 		}
-		// TODO calc auch abbrechen ??
+		// TODO andauernde calc auch abbrechen ??
 	}
 
 }

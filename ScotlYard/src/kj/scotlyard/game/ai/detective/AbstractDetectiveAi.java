@@ -21,6 +21,7 @@ package kj.scotlyard.game.ai.detective;
 import kj.scotlyard.game.ai.AbstractAi;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.Player;
 
 public abstract class AbstractDetectiveAi extends AbstractAi implements DetectiveAi {
 
@@ -38,5 +39,11 @@ public abstract class AbstractDetectiveAi extends AbstractAi implements Detectiv
 	protected void moveDone(Move move) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	protected void currentPlayerChanged(Player oldPlayer, Player newPlayer) {
+		// TODO Auto-generated method stub
+		
 	}
 }
