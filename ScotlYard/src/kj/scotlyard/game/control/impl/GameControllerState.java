@@ -18,6 +18,9 @@
 
 package kj.scotlyard.game.control.impl;
 
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
+
 import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.rules.GameWin;
 
@@ -27,6 +30,24 @@ abstract class GameControllerState extends GameController {
 	
 	protected GameControllerState(DefaultGameController controller) {
 		this.controller = controller;
+	}
+	
+	protected boolean addEditSafely(UndoableEdit edit) {
+		System.out.println(getUndoManager());
+		if (getUndoManager() != null) {
+			return getUndoManager().addEdit(edit);
+		}
+		return false;
+	}
+	
+	@Override
+	public UndoManager getUndoManager() {
+		return controller.getUndoManager();
+	}
+	
+	@Override
+	public void setUndoManager(UndoManager undoManager) {
+		throw new UnsupportedOperationException("State impl cannot change the UndoManager.");
 	}
 	
 	protected DefaultGameController getController() {

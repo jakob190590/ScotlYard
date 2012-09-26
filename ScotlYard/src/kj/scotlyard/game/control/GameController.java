@@ -21,7 +21,6 @@ package kj.scotlyard.game.control;
 import java.util.Observable;
 
 import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
 
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Move;
@@ -31,10 +30,6 @@ import kj.scotlyard.game.rules.IllegalMoveException;
 public abstract class GameController extends Observable {
 	
 	private UndoManager undoManager;
-	
-	protected boolean addEditSafely(UndoableEdit edit) {
-		return undoManager.addEdit(edit);
-	}
 	
 	public UndoManager getUndoManager() {
 		return undoManager;

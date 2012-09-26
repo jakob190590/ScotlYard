@@ -40,6 +40,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.undo.UndoManager;
 import javax.swing.JMenuBar;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.Action;
@@ -105,6 +106,7 @@ public class Board extends JFrame {
 	
 	private final ButtonGroup modeButtonGroup = new ButtonGroup();
 	
+	UndoManager undoManager;
 	GameController gc;
 	Game g;
 	GameState gs;
@@ -427,10 +429,12 @@ public class Board extends JFrame {
 		boardPanel.setPreferredSize(originalImageSize);
 		
 		// GameState
+		undoManager = new UndoManager();
 		g = new DefaultGame();
 		gs = new DefaultGameState(g);
 		gg = bgl.getGameGraph();
 		gc = new DefaultGameController(g, gg, new TheRules());
+		gc.setUndoManager(undoManager);
 		gc.addObserver(new Observer() {
 			@Override
 			public void update(Observable o, Object arg) {
@@ -852,9 +856,9 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_U);
 		}
 		public void actionPerformed(ActionEvent e) {
-			((DefaultGameController) gc).getUndoManager().undo();
-			setEnabled(((DefaultGameController) gc).getUndoManager().canUndo()); // TODO das kanns doch nicht sein: ueberall, wo UndoManger veraendert werden koennte, muesste sowas stehn! wir brauchen nen listener!!
-			setEnabled(((DefaultGameController) gc).getUndoManager().canRedo());
+			undoManager.undo();
+			setEnabled(undoManager.canUndo()); // TODO das kanns doch nicht sein: ueberall, wo UndoManger veraendert werden koennte, muesste sowas stehn! wir brauchen nen listener!!
+			setEnabled(undoManager.canRedo());
 		}
 	}
 	private class RedoAction extends AbstractAction {
@@ -864,9 +868,9 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
 		}
 		public void actionPerformed(ActionEvent e) {
-			((DefaultGameController) gc).getUndoManager().redo();
-			setEnabled(((DefaultGameController) gc).getUndoManager().canUndo()); // TODO das kanns doch nicht sein: ueberall, wo UndoManger veraendert werden koennte, muesste sowas stehn! wir brauchen nen listener!!
-		    setEnabled(((DefaultGameController) gc).getUndoManager().canRedo());
+			undoManager.redo();
+			setEnabled(undoManager.canUndo()); // TODO das kanns doch nicht sein: ueberall, wo UndoManger veraendert werden koennte, muesste sowas stehn! wir brauchen nen listener!!
+		    setEnabled(undoManager.canRedo());
 		}
 	}
 	private class SuggestMoveAction extends AbstractAction {
