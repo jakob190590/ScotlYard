@@ -64,7 +64,7 @@ public class DefaultGameControllerTest {
 			@Override
 			public void setGameState(GameState gameState) { }			
 			@Override
-			public void setTimeLimit() { }			
+			public void setTimeLimit(int millis) { }			
 			@Override
 			public void removeAiListener(AiListener listener) { }			
 			@Override
@@ -115,7 +115,7 @@ public class DefaultGameControllerTest {
 				return 0;
 			}
 			@Override
-			public void setTimeLimit() { }
+			public void setTimeLimit(int millis) { }
 			@Override
 			public void addAiListener(AiListener listener) { }
 			@Override
