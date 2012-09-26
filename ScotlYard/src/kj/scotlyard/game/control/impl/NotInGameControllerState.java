@@ -24,7 +24,6 @@ import java.util.List;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
 import kj.scotlyard.game.control.GameStatus;
@@ -247,14 +246,11 @@ class NotInGameControllerState extends GameControllerState {
 	
 	private final Rules rules;
 	
-	private final UndoManager undoManager;
-	
 	protected NotInGameControllerState(DefaultGameController controller) {
 		super(controller);
 		game = controller.getGame();
 		gameGraph = controller.getGameGraph();
 		rules = controller.getRules();
-		undoManager = controller.getUndoManager();
 	}
 
 	private void raiseIllegalStateException() {
@@ -275,7 +271,7 @@ class NotInGameControllerState extends GameControllerState {
 		game.setCurrentPlayer(null);
 		game.setCurrentRoundNumber(0); // Einfach der default Wert -- hat nichts mit INITIAL_ROUND_NUMBER zu tun.
 		
-		undoManager.addEdit(edit);
+		addEditSafely(edit);
 	}
 
 	@Override
@@ -285,28 +281,28 @@ class NotInGameControllerState extends GameControllerState {
 		game.setMrX(null);
 		game.getDetectives().clear();
 		
-		undoManager.addEdit(edit);
+		addEditSafely(edit);
 	}
 
 	@Override
 	public void newMrX() {
 		MrXPlayer mrX = game.getMrX();
 		game.setMrX(new MrXPlayer());
-		undoManager.addEdit(new NewMrXEdit(mrX));
+		addEditSafely(new NewMrXEdit(mrX));
 	}
 
 	@Override
 	public void newDetective() {
 		DetectivePlayer d = new DetectivePlayer();
 		game.getDetectives().add(d);
-		undoManager.addEdit(new NewDetectiveEdit(d));
+		addEditSafely(new NewDetectiveEdit(d));
 	}
 
 	@Override
 	public void removeDetective(DetectivePlayer detective) {
 		int i = game.getDetectives().indexOf(detective);
 		game.getDetectives().remove(detective);
-		undoManager.addEdit(new RemoveDetectiveEdit(i, detective));
+		addEditSafely(new RemoveDetectiveEdit(i, detective));
 	}
 
 	@Override
@@ -319,7 +315,7 @@ class NotInGameControllerState extends GameControllerState {
 		if (i > 0) {
 			ds.remove(detective);
 			ds.add(i - 1, detective);
-			undoManager.addEdit(new ShiftUpDetectiveEdit(i, detective));
+			addEditSafely(new ShiftUpDetectiveEdit(i, detective));
 		}		
 	}
 
@@ -333,7 +329,7 @@ class NotInGameControllerState extends GameControllerState {
 		if (i < (ds.size() - 1)) {
 			ds.remove(detective);
 			ds.add(i + 1, detective);
-			undoManager.addEdit(new ShiftDownDetectiveEdit(i, detective));
+			addEditSafely(new ShiftDownDetectiveEdit(i, detective));
 		}
 	}
 
@@ -390,7 +386,8 @@ class NotInGameControllerState extends GameControllerState {
 		GameWin win = getController().getRules().getGameWinPolicy().isGameWon(game, gameGraph);
 		getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
 		
-		undoManager.die();		
+		if (getUndoManager() != null)
+			getUndoManager().die();
 	}
 
 	@Override
