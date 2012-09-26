@@ -106,7 +106,7 @@ public class Board extends JFrame {
 	
 	private final ButtonGroup modeButtonGroup = new ButtonGroup();
 	
-	UndoManager undoManager;
+	UndoManager undoManager = new UndoManager();
 	GameController gc;
 	Game g;
 	GameState gs;
@@ -429,7 +429,6 @@ public class Board extends JFrame {
 		boardPanel.setPreferredSize(originalImageSize);
 		
 		// GameState
-		undoManager = new UndoManager();
 		g = new DefaultGame();
 		gs = new DefaultGameState(g);
 		gg = bgl.getGameGraph();

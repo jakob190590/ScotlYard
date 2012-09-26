@@ -33,7 +33,6 @@ abstract class GameControllerState extends GameController {
 	}
 	
 	protected boolean addEditSafely(UndoableEdit edit) {
-		System.out.println(getUndoManager());
 		if (getUndoManager() != null) {
 			return getUndoManager().addEdit(edit);
 		}
