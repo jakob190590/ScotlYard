@@ -18,9 +18,11 @@
 
 package kj.scotlyard.board;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
@@ -81,7 +83,7 @@ public abstract class MovePreparer extends Observable {
 	
 	private Player player;
 	
-	private Map<Player, Move> moves = new HashMap<>();
+	private Map<Player, List<Move>> moves = new HashMap<>();
 	
 	private final TurnListener turnListener = new TurnListener() {
 		@Override
@@ -105,7 +107,27 @@ public abstract class MovePreparer extends Observable {
 	public MovePreparer() {
 		this(null, null);
 	}
-
+	
+	/**
+	 * Get the moves in preparation for the specified
+	 * player (<code>this.moves.get(player)</code>) and
+	 * ensure that the result is not <code>null</code>.
+	 * 
+	 * To ensure that the result is not <code>null</code>,
+	 * an <i>empty list</i> is put into the Map and returned.
+	 * @param player
+	 * @return the list of moves in preparation or an empty list
+	 */
+	private List<Move> getMoves(Player player) {
+		List<Move> moves = this.moves.get(player);
+		if (moves == null) {
+			// Falls es doch mal höhere Multi Moves geben sollte: Capacity entsprechend erhöhen
+			moves = new ArrayList<>(2);
+			this.moves.put(player, moves);
+		}
+		return moves;
+	}
+	
 	
 	public GameState getGameState() {
 		return gameState;
@@ -206,7 +228,16 @@ public abstract class MovePreparer extends Observable {
 	// uebergibt im gegensatz zu nextStation gleich den kompletten zug! (verwendung bei suggest move von ai)
 	// der move wird nicht im voraus geprueft, wie bei nextStation!
 	public void nextMove(Move move) {
-		moves.put(move.getPlayer(), move);
+		Player p = move.getPlayer();
+		List<Move> moves = getMoves(p);
+		moves.clear();
+		if (move.getMoves().isEmpty()) {
+			// Single Move
+			moves.add(move);
+		} else {
+			// Multi Move
+			moves.addAll(move.getMoves());
+		}
 		setChanged();
 		notifyObservers(getMove(move.getPlayer()));
 	}
@@ -227,7 +258,7 @@ public abstract class MovePreparer extends Observable {
 		
 		logger.debug("next station");
 		
-		Move move = moves.get(player);
+		List<Move> moves = getMoves(player);
 		
 		Move lm = gameState.getLastMove(player); // last move
 		int currentRoundNumber = gameState.getCurrentRoundNumber();
@@ -289,14 +320,8 @@ public abstract class MovePreparer extends Observable {
 		}
 		// Tickets wieder rausnehmen, die bei dem Zug, der 
 		// aktuell vorbereitet wird, schon benutzt sind!
-		if (move != null) {
-			if (move.getMoves().isEmpty()) {
-				tickets.remove((Ticket) move.getItem());
-			} else {
-				for (Move n : move.getMoves()) {
-					tickets.remove((Ticket) n.getItem());
-				}
-			}
+		for (Move n : moves) {
+			tickets.remove((Ticket) n.getItem());
 		}
 		
 		Ticket ticket = selectTicket(tickets, player);
@@ -308,21 +333,9 @@ public abstract class MovePreparer extends Observable {
 			m.setConnection(conn);
 			m.setItem(ticket);
 			
-			// Publish m as or in move
-			if (move == null) {
-				move = m;
-			} else {				
-				if (move.getMoves().isEmpty()) {
-					// move ist noch kein Multi Move
-					// -> move neuem Move als Sub Move adden
-					Move n = new DefaultMove();
-					n.getMoves().add(move);
-					move = n;
-				}
-				move.getMoves().add(m);
-			}
+			// Publish m in moves
+			moves.add(m);
 			
-			moves.put(player, move);
 			setChanged();
 			notifyObservers(getMove(player));
 		}
@@ -338,37 +351,42 @@ public abstract class MovePreparer extends Observable {
 	}
 		
 	public Move getMove(Player player) {
-		logger.debug("try get move (turnkey)");
-		Move move = moves.get(player);
-		
+		logger.debug("try to get the turnkey move for: " + player);
+		List<Move> moves = getMoves(player);	
 		Move result = null;
-		if (move != null) {
-			logger.debug("prepared move exists");
-			
-			// Move und Round number nur setzen, wenn player == currentPlayer
-			int roundNumber = 0;
-			int moveNumber = 0;		
-			if (player == gameState.getCurrentPlayer()) {
-				roundNumber = gameState.getCurrentRoundNumber();
-				moveNumber = gameState.getLastMove(player).getMoveNumber() + 1; // Exception abfangen? eher ned, den fall sollts ja nicht geben
-				// TODO was is, wenn das ein MultiMove ist!!? vllt hilft kj.scotlyard.game.util.*
-			}
-			
-			if (move.getMoves().isEmpty()) {
-				// Single Move
-				result = MoveProducer.createSingleMove(player, roundNumber, moveNumber,
-						move.getStation(), move.getConnection(), (Ticket) move.getItem());
-			} else {
-				// Multi Move
-				DoubleMoveCard doubleMoveCard = (DoubleMoveCard) GameStateExtension.getItem(gameState, player, DoubleMoveCard.class);
-				SubMoves sms = new SubMoves();
-				for (Move m : move.getMoves()) {
-					sms.add(m.getStation(), m.getConnection(), (Ticket) m.getItem());
-				}
-				result = MoveProducer.createMultiMove(player, roundNumber, moveNumber, 
-						doubleMoveCard, sms);
-			}
+		logger.debug("prepared move exists");
+		
+		// Move und Round number nur setzen, wenn player == currentPlayer
+		int roundNumber = 0;
+		int moveNumber = 0;		
+		if (player == gameState.getCurrentPlayer()) {
+			roundNumber = gameState.getCurrentRoundNumber();
+			moveNumber = GameStateExtension.getLastMoveFlat(gameState, player).getMoveNumber() + 1;
 		}
+		
+		int nMoves = moves.size();
+		if (nMoves == 1) {
+			// Single Move
+			Move m = moves.get(0);
+			result = MoveProducer.createSingleMove(player, roundNumber, moveNumber,
+					m.getStation(), m.getConnection(), (Ticket) m.getItem());
+		} else if (nMoves > 1) {
+			// Multi Move
+			Item multiMoveCard = null;
+			if (nMoves == 2) {
+				// Automatisch die DoubleMoveCard verwenden (wenn vorhanden)
+				multiMoveCard = GameStateExtension.getItem(gameState, player, DoubleMoveCard.class);
+			} else {
+				logger.error("multi moves higher than double moves are not yet supported by GUI/MovePreparer: don't know which Item (multimove card) to choose.");
+			}
+			SubMoves sms = new SubMoves();
+			for (Move m : moves) {
+				sms.add(m.getStation(), m.getConnection(), (Ticket) m.getItem());
+			}
+			result = MoveProducer.createMultiMove(player, roundNumber, moveNumber, 
+					(DoubleMoveCard) multiMoveCard, sms);
+		}
+
 		return result;
 	}
 	
