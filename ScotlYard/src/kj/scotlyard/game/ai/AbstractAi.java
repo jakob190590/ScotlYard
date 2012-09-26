@@ -122,9 +122,11 @@ public abstract class AbstractAi implements Ai {
 	}
 	
 	/**
-	 * Informs the AI listeners accordingly and
+	 * Informs the AI listeners accordingly,
 	 * clears the <code>ready</code> and
-	 * <code>decideNowFlag</code> flags.
+	 * <code>decideNowFlag</code> flags and
+	 * sets <code>timeLeft</code> to
+	 * <code>UNKNOWN</code>.
 	 * 
 	 * Call this method when your very concrete
 	 * AI starts the calculation.
@@ -132,20 +134,24 @@ public abstract class AbstractAi implements Ai {
 	protected void beginCalculation() {
 		decideNowFlag = false; // just for the case
 		ready = false;
+		timeLeft = UNKNOWN;
 		for (AiListener l : listeners) {
 			l.beginCalculation(this);
 		}
 	}
 	
 	/**
-	 * Informs the AI listeners accordingly and
-	 * sets the <code>ready</code> flag.
+	 * Informs the AI listeners accordingly,
+	 * sets the <code>ready</code> flag and
+	 * sets <code>timeLeft</code> to
+	 * <tt>0</tt>.
 	 * 
 	 * Call this method when your very concrete
 	 * AI finishes the calculation.
 	 */
 	protected void finishCalculation() {
 		ready = true;
+		timeLeft = 0;
 		for (AiListener l : listeners) {
 			l.finishCalculation(this);
 		}

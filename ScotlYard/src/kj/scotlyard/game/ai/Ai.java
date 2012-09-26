@@ -31,6 +31,9 @@ import kj.scotlyard.game.model.Move;
  *
  */
 public interface Ai extends GameStateRequester {
+	
+	/** Value UNKNOWN for <code>getTimeLeft()</code> */
+	int UNKNOWN = -1;
 
 	/**
 	 * Returns the calculated AI move for the current player.
