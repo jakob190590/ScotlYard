@@ -25,6 +25,8 @@ import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MoveListener;
+import kj.scotlyard.game.model.Player;
+import kj.scotlyard.game.model.TurnListener;
 
 public abstract class AbstractAi implements Ai {
 	
@@ -57,6 +59,18 @@ public abstract class AbstractAi implements Ai {
 			assert gameState == AbstractAi.this.gameState;
 			AbstractAi.this.moveDone(move);
 		}
+	};
+	
+	private final TurnListener turnListener = new TurnListener() {
+		@Override
+		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
+				Player newPlayer) {
+			assert gameState == AbstractAi.this.gameState;
+			AbstractAi.this.currentPlayerChanged(oldPlayer, newPlayer);
+		}
+		@Override
+		public void currentRoundChanged(GameState gameState,
+				int oldRoundNumber, int newRoundNumber) { }
 	};
 
 	protected AbstractAi(GameGraph gameGraph) {
@@ -137,6 +151,7 @@ public abstract class AbstractAi implements Ai {
 		}
 	}
 	
+	// TODO Kommentar bei folgenden vier Methods: startCalc or cancelCalc!!
 	/**
 	 * This method is called by our private MoveListener
 	 * when a move is undone in the GameState.
@@ -147,7 +162,6 @@ public abstract class AbstractAi implements Ai {
 	 * 
 	 * @param move the move which is undone
 	 */
-	// TODO Frage ist, ob impl auch gleich beginCalculation() aufrufen soll... eher nicht
 	protected abstract void moveUndone(Move move);
 
 	/**
@@ -160,17 +174,31 @@ public abstract class AbstractAi implements Ai {
 	 * 
 	 * @param move the move which is done
 	 */
-	// TODO Frage ist, ob impl auch gleich beginCalculation() aufrufen soll... eher nicht
 	protected abstract void moveDone(Move move);
+
+	/**
+	 * This method is called by our private TurnListener
+	 * when a the current player changes in the GameState.
+	 * 
+	 * The implementation (in <code>AbstractMrXAi</code> 
+	 * and <code>AbstractDetectiveAi</code>) should
+	 * invoke <code>startCalculation</code> when appropriate.
+	 * 
+	 * @param oldPlayer
+	 * @param newPlayer
+	 */
+	protected abstract void currentPlayerChanged(Player oldPlayer, Player newPlayer);
 	
 	/**
 	 * This method is called when your AI can start the 
 	 * calculation. Note that not this but <code>AbstractMrXAi</code> 
 	 * and <code>AbstractDetectiveAi</code> will call this
-	 * method, because only they know when to start! 
+	 * method, because they know when to start the calculation! 
 	 * 
 	 * This method shall just initiate the creation of an extra
-	 * thread for the calculation.
+	 * thread for the calculation. The calculation process has
+	 * to call <code>beginCalculation()</code> and
+	 * <code>endCalculation()</code>.
 	 */
 	protected abstract void startCalculation();
 	
@@ -187,6 +215,7 @@ public abstract class AbstractAi implements Ai {
 		}
 		this.gameState = gameState;
 		gameState.addMoveListener(moveListener);
+		gameState.addTurnListener(turnListener);
 	}
 
 	@Override
