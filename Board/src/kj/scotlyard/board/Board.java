@@ -22,7 +22,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,6 +52,7 @@ import javax.swing.JMenuItem;
 import javax.swing.AbstractAction;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 import kj.scotlyard.board.board.BoardPanel;
 import kj.scotlyard.board.layout.AspectRatioGridLayout;
@@ -446,14 +446,14 @@ public class Board extends JFrame {
 			@Override
 			protected void errorSelectingPlayer(Player player) {
 				logger.error("dieser player kann (jetzt) nicht ausgewaehlt werden");
-				Toolkit.getDefaultToolkit().beep();
+				UIManager.getLookAndFeel().provideErrorFeedback(null);
 			}
 			
 			@Override
 			protected void errorImpossibleNextStation(StationVertex station,
 					Player player) {
 				logger.error("impossible next station for: " + player);
-				Toolkit.getDefaultToolkit().beep();
+				UIManager.getLookAndFeel().provideErrorFeedback(null);
 			}
 
 			@Override
