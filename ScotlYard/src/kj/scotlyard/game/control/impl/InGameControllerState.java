@@ -25,7 +25,6 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.UndoManager;
 
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
@@ -89,13 +88,10 @@ class InGameControllerState extends GameControllerState {
 	
 	private final GameGraph gameGraph;
 	
-	private final UndoManager undoManager;
-	
 	protected InGameControllerState(DefaultGameController controller) {
 		super(controller);
 		game = controller.getGame();
 		gameGraph = controller.getGameGraph();
-		undoManager = controller.getUndoManager();
 	}
 	
 	private void raiseIllegalStateException() {
@@ -175,7 +171,7 @@ class InGameControllerState extends GameControllerState {
 	@Override
 	public void abort() {
 		getController().setState(this, GameStatus.NOT_IN_GAME, GameWin.NO);		
-		undoManager.addEdit(getController().new AbortEdit());
+		addEditSafely(getController().new AbortEdit());
 	}
 
 	@Override
@@ -210,7 +206,7 @@ class InGameControllerState extends GameControllerState {
 		GameWin win = rules.getGameWinPolicy().isGameWon(game, gameGraph);
 		getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
 		
-		undoManager.addEdit(moveEdit);
+		addEditSafely(moveEdit);
 	}
 
 }
