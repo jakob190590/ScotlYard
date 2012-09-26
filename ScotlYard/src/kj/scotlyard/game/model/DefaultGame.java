@@ -153,6 +153,13 @@ public class DefaultGame extends AbstractGameState implements Game {
 			return list.size();
 		}
 		
+		/**
+		 * This method not only adds the Move to the list
+		 * but also seals it (<code>seal()</code>)! Move 
+		 * is Sealable because moves once added to the 
+		 * history must not be alterable.
+		 * @param e the move to add
+		 */
 		@Override
 		public boolean add(Move e) {
 			if (list.contains(e)) {
