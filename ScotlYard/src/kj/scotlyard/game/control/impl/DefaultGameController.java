@@ -22,7 +22,6 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.UndoManager;
 
 import kj.scotlyard.game.ai.detective.DetectiveAi;
 import kj.scotlyard.game.control.GameController;
@@ -121,9 +120,6 @@ public class DefaultGameController extends GameController {
 	private final GameGraph gameGraph;
 	
 	private Rules rules;
-	
-	
-	private final UndoManager undoManager = new UndoManager();
 	
 	
 	private final NotInGameControllerState notInGame;
@@ -229,11 +225,6 @@ public class DefaultGameController extends GameController {
 	@Override
 	public GameWin getWin() {
 		return win;
-	}
-
-	
-	public UndoManager getUndoManager() {
-		return undoManager;
 	}
 
 	
