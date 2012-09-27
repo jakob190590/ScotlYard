@@ -26,6 +26,7 @@ import org.jgrapht.alg.BellmanFordShortestPath;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.Item;
@@ -105,6 +106,51 @@ public class MoveHelper {
 		Player player = null;
 		int smallDistance = 0; // Zaehler fuer Faelle, in denen ein Player eine geringe Distanz zu station hat
 		for (Player p : gameState.getPlayers()) {
+			int d = BellmanFordShortestPath.findPathBetween(gameGraph.getGraph(), 
+					station, gameState.getLastMove(p).getStation()).size();
+			if (d <= N) {
+				// Geringe Distanz
+				smallDistance++;
+				if (d == 1) {
+					player = p;
+				}
+			}
+		}
+		
+		// Mehr als ein Player mit geringer Distanz zu station
+		if (smallDistance > 1) {
+			// nicht eindeutig
+			return null;
+		}
+		
+		return player;
+	}
+	
+	/**
+	 * Liefert den einzigen Detektiv, der auf die angegebene Station fahren kann. 
+	 * Dabei werden keine Regeln beachtet, sondern nur geprüft, ob der Abstand im
+	 * Graph genau eins ist!
+	 * Wenn die Situation nicht eindeutig ist, ist das Ergebnis <code>null</code>.
+	 * Die Situation ist nicht eindeutig, wenn andere Detektive zu nahe an der
+	 * Station sind (d.h. der Abstand im Graph zu gering ist).
+	 * 
+	 * Algorithmus: Eindeutig, welcher Detektiv gemeint ist, wenn
+	 * <ol>
+	 * <li>Station nur durch ihn erreichbar ist (Distanz == 1)</li>
+	 * <li>Distanz zwischen Station und allen anderen Spielern größer als N mit N >= 1 (Distanz > N)</li>
+	 * </ol>
+	 * @param gameState
+	 * @param gameGraph
+	 * @param station Station, zu der wir einen eindeutigen Spieler suchen
+	 * @return unambigous player or <code>null</code>
+	 */
+	public static DetectivePlayer unambiguousDetective(GameState gameState, GameGraph gameGraph, StationVertex station) {
+		// Bis einschliesslich N zaehlen Distanzen als "gering" (smallDistance)
+		final int N = 1; // N >= 1
+		
+		DetectivePlayer player = null;
+		int smallDistance = 0; // Zaehler fuer Faelle, in denen ein Detective eine geringe Distanz zu station hat
+		for (DetectivePlayer p : gameState.getDetectives()) {
 			int d = BellmanFordShortestPath.findPathBetween(gameGraph.getGraph(), 
 					station, gameState.getLastMove(p).getStation()).size();
 			if (d <= N) {
