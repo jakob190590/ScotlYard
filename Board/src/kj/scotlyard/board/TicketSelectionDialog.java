@@ -109,6 +109,7 @@ public class TicketSelectionDialog extends JDialog {
 		pnlFooter.add(leftPanel);
 		
 		chckbxFurtherMoves = new JCheckBox("Further Move(s)");
+		chckbxFurtherMoves.setMnemonic(KeyEvent.VK_F);
 		leftPanel.add(chckbxFurtherMoves);
 		chckbxFurtherMoves.setToolTipText("To prepare further move(s) for a multi move");
 		
