@@ -528,7 +528,9 @@ public class Board extends JFrame {
 			}
 			@Override
 			public void moveDone(GameState gameState, Move move) {
-				mPrep.reset(move.getPlayer());
+//				mPrep.reset(move.getPlayer());
+				// Unnoetig, da zum Rundenwechsel eh resetAll() aufgerufen wird
+				// Stoerend, dadurch das (nicht ganz zuverlaessige) counting nicht funktioniert (MoveDetectivesNowAction)
 			}
 		});
 		gs.addTurnListener(new TurnListener() {
@@ -933,10 +935,9 @@ public class Board extends JFrame {
 			move(mPrep.getMove(gs.getCurrentPlayer()));
 		}
 	}
-	// TODO Eher MoveDetectivesOfRoundNow! Macht einfach vom Spielprinzip her mehr Sinn
 	private class MoveDetectivesNowAction extends AbstractAction {
 		public MoveDetectivesNowAction() {
-			putValue(NAME, "Move Detectives!"); // or "Move now"
+			putValue(NAME, "Move Detectives!"); // alternative to simple "Move now"
 			putValue(SHORT_DESCRIPTION, "Move all Detectives now");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_D);
 		}
@@ -945,27 +946,25 @@ public class Board extends JFrame {
 			if (currentPlayer instanceof DetectivePlayer) {
 				Move currentMove = mPrep.getMove(currentPlayer);				
 				
-	//			// Detectives zählen, die schon gezogen sind, oder einen Zug vorbereitet haben.
-	//			int detectivesReady = 0;
-	//			for (DetectivePlayer d : gs.getDetectives()) {
-	//				Move m = mPrep.getMove(d);
-	//				if (d == currentPlayer) {					
-	//					if (m == null) {
-	//						break;
-	//					}
-	//					currentMove = m;
-	//				}
-	//				if (m != null || ) {
-	//					detectivesReady++;					
-	//					if (d == current) {
-	//						break;
-	//					}
-	//				}
-	//			}
+				// Detectives zählen, die schon gezogen sind, oder einen Zug vorbereitet haben.
+				int nDetectivesReady = 0;
+				for (DetectivePlayer d : gs.getDetectives()) {
+					// TODO schon ausgefuehrte moves einbeziehen! die werden momentan ignoriert! dann meldung unten ausbessern!
+					Move m = mPrep.getMove(d);
+					if (m != null) {
+						nDetectivesReady++;					
+					}
+				}
+				logger.debug("result of prepared detective moves counting: " + nDetectivesReady);
+				
 				if (currentMove == null) {
 					JOptionPane.showMessageDialog(Board.this, "The current player has not prepared it's move yet."); // TODO warnung?, dass currentPlayer noch keinen Zug vorbereitet hat
-				} else {// if (detectivesReady == gs.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
-//						|| JOptionPane == JOptionPane.YES) { // TODO message anzeigen: "nocht nicht alle sind fertig; soweit möglich schon mal ziehen? Ja/Nein"				
+				} else if (nDetectivesReady == gs.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
+						|| JOptionPane.showConfirmDialog(Board.this,
+								"It seems that not all detectives have prepared " +
+								"a move yet.\nBegin moving as far as possible?",
+								"Move Detectives", JOptionPane.YES_NO_OPTION) 
+								== JOptionPane.YES_OPTION) {
 					// Moving anstoßen
 					doMoveDetectives = true;
 					move(currentMove);
