@@ -21,7 +21,6 @@ package kj.scotlyard.board;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -290,15 +289,8 @@ public abstract class MovePreparer extends Observable {
 		}
 		
 		// next station pruefen
-		// schon besetzt durch anderen Detective
-		Iterator<Move> it = GameStateExtension.moveIterator(gameState, player, false, currentRoundNumber);
-		while (it.hasNext()) {
-			Move n = it.next();
-			
-			// Fuer den seltsamen Fall, dass schon Moves nach currentRound eingetragen sind
-			if (n.getRoundNumber() > currentRoundNumber)
-				break;
-			
+		List<Move> round = GameStateExtension.getMoves(gameState, currentRoundNumber, true);
+		for (Move n : round) {
 			// Station already occupied by foregoing detectives
 			if (n.getPlayer() instanceof DetectivePlayer && n.getStation() == station) {
 				logger.warn("nextStation: impossible station - already occupied by a foregoing detective (in current round)");
@@ -349,6 +341,9 @@ public abstract class MovePreparer extends Observable {
 			
 			// Publish m in moves
 			moves.add(m);
+			
+			// TODO when prepared moves of other subsequent detectives are foiled, reset these preparations 
+			// and notifyObservers? f*ck i think after all we need a listener instead of observer :( 
 			
 			setChanged();
 			notifyObservers(getMove(player));
