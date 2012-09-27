@@ -210,15 +210,25 @@ public abstract class MovePreparer extends Observable {
 		} else if (current instanceof MrXPlayer && player != current) {
 			logger.warn("selectPlayer: jetzt ist NUR mrX dran! kein anderer kann selected werden");
 			errorSelectingPlayer(player);
-		} else if (gameState.getPlayers().indexOf(player) 
-				< gameState.getPlayers().indexOf(current)) {
-			logger.warn("selectPlayer: player war schon dran in currentRound! kann nicht selected werden");
-			errorSelectingPlayer(player);
 		} else {
-			// Selection erfolgreich
-			this.player = player;
-			result = true;
-			logger.debug("player selected");
+			List<Move> round = GameStateExtension.getMoves(gameState, gameState.getCurrentRoundNumber(), false);
+			boolean alreadyMoved = false; // player already moved this round
+			for (Move m : round) {
+				// player der ausgewaehlt werden soll hat in der runde schon gezogen?
+				if (player == m.getPlayer()) {
+					alreadyMoved = true;
+					break;
+				}
+			}
+			if (alreadyMoved) {
+				logger.warn("selectPlayer: player war schon dran in currentRound! kann nicht selected werden");
+				errorSelectingPlayer(player);
+			} else {
+				// Selection erfolgreich
+				this.player = player;
+				result = true;
+				logger.debug("player selected");
+			}
 		}
 		setChanged(); // setChanged in jedem Fall: Falls z.B. MovePrep.Bar einen anderen Player auswaehlt, der nicht ausgewaehlt werden kann, muss die comboBox wieder zurueckgesetzt werden
 		notifyObservers(this.player);
