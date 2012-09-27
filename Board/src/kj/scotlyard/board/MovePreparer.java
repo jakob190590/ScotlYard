@@ -351,7 +351,7 @@ public abstract class MovePreparer extends Observable {
 		nextStation(station, gameState.getCurrentPlayer());
 	}
 	
-	public Player getPlayer() {
+	public Player getSelectedPlayer() {
 		return player;
 	}
 		

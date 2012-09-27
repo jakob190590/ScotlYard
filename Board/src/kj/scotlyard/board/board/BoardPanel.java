@@ -78,7 +78,7 @@ public class BoardPanel extends JPanel {
 			super.mouseClicked(e);
 			logger.debug("mouse clicked on " + e.getSource());
 			StationVertex s = ((VisualStation) e.getSource()).getStation();
-			Player p = movePreparer.getPlayer();
+			Player p = movePreparer.getSelectedPlayer();
 			
 			// Double click
 			if (e.getClickCount() == 2) {
@@ -102,7 +102,7 @@ public class BoardPanel extends JPanel {
 		public void mouseClicked(MouseEvent e) {
 			Piece piece = (Piece) e.getSource();
 			if (piece.getPlayer() instanceof MrXPlayer
-					&& movePreparer.getPlayer() instanceof DetectivePlayer) {
+					&& movePreparer.getSelectedPlayer() instanceof DetectivePlayer) {
 				// Detective klickt auf MrX -> Klick an VisualStation durchreichen
 				VisualStation vs = piece.getVisualStation();
 				MouseEvent e1 = SwingUtilities.convertMouseEvent(piece, e, vs);
