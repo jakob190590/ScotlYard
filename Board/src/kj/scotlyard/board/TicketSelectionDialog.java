@@ -29,6 +29,7 @@ import java.util.Set;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -93,7 +94,8 @@ public class TicketSelectionDialog extends JDialog {
 		
 		// Cancel Action auf Escape legen (was bewirkt ACCELERATOR_KEY in Action dann eigentlich?)
 		getRootPane().getActionMap().put("cancel", cancelAction);
-		getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
+		getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
+//		                                      ^ optionaler param; aber default = WHEN_FOCUSED!
 		
 		getContentPane().setLayout(new BorderLayout());
 		
@@ -149,6 +151,8 @@ public class TicketSelectionDialog extends JDialog {
 		});
 				
 		getContentPane().add(ticketSelectionPanel, BorderLayout.CENTER);
+		
+		pack();
 	}
 	
 	public Ticket show(Set<Ticket> tickets, Player player) {
