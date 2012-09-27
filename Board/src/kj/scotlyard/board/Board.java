@@ -182,7 +182,7 @@ public class Board extends JFrame {
 		setJMenuBar(menuBar);
 		
 		JMenu mnGameController = new JMenu("GameController");
-		mnGameController.setMnemonic('g');
+		mnGameController.setMnemonic(KeyEvent.VK_C);
 		menuBar.add(mnGameController);
 		
 		JMenuItem mntmNewGame = new JMenuItem("New Game");
@@ -204,7 +204,7 @@ public class Board extends JFrame {
 		mnGameController.add(mntmNewDetective);
 		
 		JMenu mnDetectives = new JMenu("Detectives");
-		mnDetectives.setMnemonic('v');
+		mnDetectives.setMnemonic(KeyEvent.VK_V);
 		mnGameController.add(mnDetectives);
 		
 		JMenuItem mntmRemoveDetective = new JMenuItem("Remove Detective...");
@@ -242,7 +242,7 @@ public class Board extends JFrame {
 		mnGameController.add(mntmMove);
 		
 		JMenu mnUndoRedo = new JMenu("Undo/Redo");
-		mnUndoRedo.setMnemonic('u');
+		mnUndoRedo.setMnemonic(KeyEvent.VK_U);
 		mnGameController.add(mnUndoRedo);
 		
 		JMenuItem mntmUndo = new JMenuItem("Undo");
@@ -261,7 +261,7 @@ public class Board extends JFrame {
 		
 		
 		JMenu mnBoardPanel = new JMenu("BoardPanel");
-		mnBoardPanel.setMnemonic('b');
+		mnBoardPanel.setMnemonic(KeyEvent.VK_B);
 		menuBar.add(mnBoardPanel);
 		
 		// Um zu ueberpruefen, ob das neu setzen waehrend dem Spiel funktioniert
@@ -271,7 +271,7 @@ public class Board extends JFrame {
 				boardPanel.setGameState(null);
 			}
 		});
-		mntmSetGameStateNull.setMnemonic('n');
+		mntmSetGameStateNull.setMnemonic(KeyEvent.VK_N);
 		mnBoardPanel.add(mntmSetGameStateNull);
 		
 		JMenuItem mntmSetGameState = new JMenuItem("Set GameState");
@@ -280,7 +280,7 @@ public class Board extends JFrame {
 				boardPanel.setGameState(gs);
 			}
 		});
-		mntmSetGameState.setMnemonic('g');
+		mntmSetGameState.setMnemonic(KeyEvent.VK_G);
 		mnBoardPanel.add(mntmSetGameState);
 		
 		mnBoardPanel.addSeparator();
@@ -291,7 +291,7 @@ public class Board extends JFrame {
 				boardPanel.setImage(null);
 			}
 		});
-		mntmSetImageToNull.setMnemonic('u');
+		mntmSetImageToNull.setMnemonic(KeyEvent.VK_U);
 		mnBoardPanel.add(mntmSetImageToNull);
 		
 		JMenuItem mntmSetImage = new JMenuItem("Set Image");
@@ -300,7 +300,7 @@ public class Board extends JFrame {
 				boardPanel.setImage(img);
 			}
 		});
-		mntmSetImage.setMnemonic('i');
+		mntmSetImage.setMnemonic(KeyEvent.VK_I);
 		mnBoardPanel.add(mntmSetImage);
 		
 		JMenu mnErnsthaft = new JMenu("Ernsthaft");
@@ -315,7 +315,7 @@ public class Board extends JFrame {
 		mnErnsthaft.add(chckbxmntmJointMoving);
 		
 		JMenu mnZoom = new JMenu("Zoom");
-		mnZoom.setMnemonic('z');
+		mnZoom.setMnemonic(KeyEvent.VK_Z);
 		mnErnsthaft.add(mnZoom);
 		
 		JCheckBoxMenuItem chckbxmntmFitBoard = new JCheckBoxMenuItem("Fit Board");
@@ -334,7 +334,8 @@ public class Board extends JFrame {
 		mntmZoomNormal.setAction(zoomNormalAction);
 		mnZoom.add(mntmZoomNormal);
 		
-		JMenu mnMode = new JMenu("Mode");		
+		JMenu mnMode = new JMenu("Mode");
+		mnMode.setMnemonic(KeyEvent.VK_M);
 		menuBar.add(mnMode);
 		
 		JRadioButtonMenuItem mntmNormalGame = new JRadioButtonMenuItem("Normal Game");
