@@ -27,4 +27,9 @@ public class ItemTypeMetaData {
 		return icon;
 	}
 	
+	@Override
+	public String toString() {
+		return getName();
+	}
+	
 }

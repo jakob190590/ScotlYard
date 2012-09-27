@@ -26,5 +26,10 @@ public class PlayerMetaData {
 	public Color getColor() {
 		return color;
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 
 }
