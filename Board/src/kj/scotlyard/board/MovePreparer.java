@@ -357,11 +357,14 @@ public abstract class MovePreparer extends Observable {
 		logger.debug("prepared move exists");
 		
 		// Move und Round number nur setzen, wenn player == currentPlayer
-		int roundNumber = 0;
-		int moveNumber = 0;		
+		int roundNumber = GameState.INITIAL_ROUND_NUMBER;
+		int moveNumber = GameState.INITIAL_MOVE_NUMBER;
 		if (player == gameState.getCurrentPlayer()) {
 			roundNumber = gameState.getCurrentRoundNumber();
-			moveNumber = GameStateExtension.getLastMoveFlat(gameState, player).getMoveNumber() + 1;
+			Move lmf = GameStateExtension.getLastMoveFlat(gameState, player);
+			if (lmf != null) {
+				moveNumber = lmf.getMoveNumber() + 1;
+			}
 		}
 		
 		int nMoves = moves.size();
