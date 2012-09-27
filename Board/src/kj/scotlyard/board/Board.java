@@ -81,6 +81,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import javax.swing.ButtonGroup;
 
+import static kj.scotlyard.board.ActionTools.isSelected;
+import static kj.scotlyard.board.ActionTools.setSelected;
+
 @SuppressWarnings("serial")
 public class Board extends JFrame {
 	
@@ -605,13 +608,6 @@ public class Board extends JFrame {
 	}
 	
 	
-	
-	public static void setSelected(Action action, boolean value) {
-		action.putValue(Action.SELECTED_KEY, value);
-	}
-	public static boolean isSelected(Action action) {
-		return (boolean) action.getValue(Action.SELECTED_KEY);
-	}
 	
 	private void showErrorMessage(Exception e) {
 		JOptionPane.showMessageDialog(this, e.getMessage(), e.getClass()
