@@ -260,9 +260,14 @@ public abstract class MovePreparer extends Observable {
 		
 		List<Move> moves = getMoves(player);
 		
-		Move lm = gameState.getLastMove(player); // last move
 		int currentRoundNumber = gameState.getCurrentRoundNumber();
-		StationVertex lastStation = lm.getStation();
+		StationVertex lastStation;
+		if (moves.isEmpty()) {
+			// Noch kein Move vorbereitet
+			lastStation = gameState.getLastMove(player).getStation();
+		} else {
+			lastStation = moves.get(moves.size() - 1).getStation();
+		}
 		
 		Move m = new DefaultMove();
 		m.setStation(station);
@@ -354,7 +359,9 @@ public abstract class MovePreparer extends Observable {
 		logger.debug("try to get the turnkey move for: " + player);
 		List<Move> moves = getMoves(player);	
 		Move result = null;
-		logger.debug("prepared move exists");
+		
+		if (moves.isEmpty())
+			logger.debug("there is no move prepared");
 		
 		// Move und Round number nur setzen, wenn player == currentPlayer
 		int roundNumber = GameState.INITIAL_ROUND_NUMBER;
