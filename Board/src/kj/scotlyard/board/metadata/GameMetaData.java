@@ -1,5 +1,6 @@
 package kj.scotlyard.board.metadata;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -11,9 +12,9 @@ public abstract class GameMetaData {
 	
 	private static final Logger logger = Logger.getLogger(GameMetaData.class);
 	
-	private static Map<Player, PlayerMetaData> playerMetaData;
+	private static Map<Player, PlayerMetaData> playerMetaData = new HashMap<>();
 	
-	private static Map<Class<? extends Item>, ItemTypeMetaData> itemTypeMetaData;
+	private static Map<Class<? extends Item>, ItemTypeMetaData> itemTypeMetaData = new HashMap<>();
 	
 	public static PlayerMetaData getForPlayer(Player player) {
 		PlayerMetaData pmd = playerMetaData.get(player);

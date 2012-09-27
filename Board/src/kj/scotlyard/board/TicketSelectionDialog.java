@@ -35,6 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import kj.scotlyard.board.metadata.GameMetaData;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.BlackTicket;
@@ -159,6 +160,7 @@ public class TicketSelectionDialog extends JDialog {
 		if (player.getClass() != playerType) {
 			throw new IllegalArgumentException("Specified player do not match playerType.");
 		}
+		setPlayer(player);
 		
 		// Noetiger Umweg fuer ein more reuseable ItemSelectionPanel...
 		Set<Item> items = new HashSet<>();
@@ -189,7 +191,8 @@ public class TicketSelectionDialog extends JDialog {
 
 	public void setPlayer(Player player) {
 		this.player = player;
-		lblSelectATicket.setText(String.format("Select a ticket for %s's next move", player));
+		lblSelectATicket.setText(String.format("Select a ticket for %s's next move", 
+				GameMetaData.getForPlayer(player).getName()));
 	}
 
 	
