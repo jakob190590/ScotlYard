@@ -199,8 +199,8 @@ class InGameControllerState extends GameControllerState {
 		
 		// Turn/Current sachen nach Move aktualisieren
 		Turn turn = rules.getTurnPolicy().getNextTurn(game, gameGraph);		
-		game.setCurrentPlayer(turn.getPlayer());
 		game.setCurrentRoundNumber(turn.getRoundNumber());
+		game.setCurrentPlayer(turn.getPlayer());
 		
 		// GameWin ermitteln
 		GameWin win = rules.getGameWinPolicy().isGameWon(game, gameGraph);
