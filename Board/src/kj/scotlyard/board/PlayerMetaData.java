@@ -2,6 +2,8 @@ package kj.scotlyard.board;
 
 import java.awt.Color;
 
+import kj.scotlyard.game.model.Player;
+
 public class PlayerMetaData {
 
 	private String name;
@@ -12,21 +14,17 @@ public class PlayerMetaData {
 		this.name = name;
 		this.color = color;
 	}
+	
+	public PlayerMetaData(Player player) {
+		this("Unknown " + player.getClass().getSimpleName(), Color.ORANGE);
+	}
 
 	public String getName() {
 		return name;
 	}
 	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
 	public Color getColor() {
 		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
 	}
 
 }
