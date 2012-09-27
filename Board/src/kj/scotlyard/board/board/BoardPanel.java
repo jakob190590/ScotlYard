@@ -29,6 +29,7 @@ import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -76,22 +77,23 @@ public class BoardPanel extends JPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			super.mouseClicked(e);
-			logger.debug("mouse clicked on " + e.getSource());
+			logger.debug("mouse click on " + e.getSource());
 			StationVertex s = ((VisualStation) e.getSource()).getStation();
 			
-			// Double click
-			if (e.getClickCount() == 2) {
-				logger.debug("it was a double click");
+			// Bei Doppelklick wenn Detectives dran sind, 
+			// versuchen, automatisch den Player zu bestimmen
+			if (e.getClickCount() >= 2 && movePreparer.getSelectedPlayer() instanceof DetectivePlayer) {
 				
-				Player q = MoveHelper.unambiguousPlayer(gameState, gameGraph, s);
-				logger.debug("unambiguous player: " + q);
-				if (q != null) {
-					movePreparer.selectPlayer(q);
+				DetectivePlayer p = MoveHelper.unambiguousDetective(gameState, gameGraph, s);
+				logger.debug("unambiguous detective: " + p);
+				if (p != null) {
+					movePreparer.selectPlayer(p);
+				} else {
+					JOptionPane.showMessageDialog(BoardPanel.this, "Not quite sure, wich " +
+							"detective you want to move. Please select on the player first.",
+							"Automatic player selection", JOptionPane.WARNING_MESSAGE);
+					return;
 				}
-				// nicht eindeutig -> nimm' momentan ausgewaehlten player
-				// TODO vllt doch fragen in diesem fall?
-				// JOptionPane.showMessageDialog(BoardPanel.this, "Not quite sure, wich player you want to move. Please click on the player first.", "Confirmation", JOptionPane.QUESTION_MESSAGE);
-				// eher nicht, lieber fehlermeldung
 			}
 			movePreparer.nextStation(s);
 		}
@@ -100,7 +102,8 @@ public class BoardPanel extends JPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			Piece piece = (Piece) e.getSource();
-			if (piece.getPlayer() instanceof MrXPlayer
+			Player player = piece.getPlayer();
+			if (player instanceof MrXPlayer
 					&& movePreparer.getSelectedPlayer() instanceof DetectivePlayer) {
 				// Detective klickt auf MrX -> Klick an VisualStation durchreichen
 				VisualStation vs = piece.getVisualStation();
@@ -108,15 +111,16 @@ public class BoardPanel extends JPanel {
 				logger.debug(String.format("klick weiterleiten an VisualStation auf %d, %d", e1.getX(), e1.getY()));
 				vs.dispatchEvent(e1);
 				e.consume(); // gilt in keiner Weise fuer das Piece
+			} else {
+				// Ansonsten Player auswählen
+				movePreparer.selectPlayer(player);
 			}
 		}
 		@Override
 		public void mousePressed(MouseEvent e) {
 			// Mouse Pressed statt Click wegen Drag & Drop
+			// nein, es gibt doch DragSource und startDrag ...
 			super.mousePressed(e);
-			Piece p = (Piece) e.getSource();
-			movePreparer.selectPlayer(p.getPlayer());
-			logger.debug("mouse pressed on " + p.getPlayer());
 		}
 		
 	};
