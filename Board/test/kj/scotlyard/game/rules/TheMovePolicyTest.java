@@ -826,7 +826,7 @@ public class TheMovePolicyTest {
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
-						if (!e.getMessage().contains("double move card"))
+						if (!e.getMessage().contains("multi move card"))
 							fail("not the expected exception: " + e.getMessage());
 					}
 					
@@ -840,7 +840,7 @@ public class TheMovePolicyTest {
 						p.checkMove(g, gg, m);
 						fail("move exception expected");
 					} catch (IllegalMoveException e) {
-						if (!e.getMessage().contains("double move card"))
+						if (!e.getMessage().contains("multi move card"))
 							fail("not the expected exception: " + e.getMessage());
 					}
 					

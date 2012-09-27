@@ -229,7 +229,7 @@ public class TheMovePolicy implements MovePolicy {
 					"You cannot attach a connection to a multi move.", move);
 			
 			throwIllegalMove(!(move.getItem() instanceof DoubleMoveCard), 
-					"You must provide a double move card for this move.", move);
+					"You must provide a multi move card for this move.", move);
 			
 			throwIllegalMove(move.getMoves().size() != 2, 
 					"Multi moves have only one manifestation: a double move. " +
