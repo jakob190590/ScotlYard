@@ -15,7 +15,7 @@ public abstract class GameMetaData {
 	
 	private static Map<Class<? extends Item>, ItemTypeMetaData> itemTypeMetaData;
 	
-	public static PlayerMetaData getPlayerMetaData(Player player) {
+	public static PlayerMetaData getForPlayer(Player player) {
 		PlayerMetaData pmd = playerMetaData.get(player);
 		if (pmd == null) {
 			pmd = new PlayerMetaData(player); // To prevent NullPointerExceptions
@@ -24,12 +24,12 @@ public abstract class GameMetaData {
 		return pmd;
 	}
 	
-	public static void setPlayerMetaData(Player player, PlayerMetaData playerMetaData) {
+	public static void setForPlayer(Player player, PlayerMetaData playerMetaData) {
 		GameMetaData.playerMetaData.put(player, playerMetaData);
 	}
 	
 	
-	public static ItemTypeMetaData getItemTypeMetaData(Class<? extends Item> itemType) {
+	public static ItemTypeMetaData getForItemType(Class<? extends Item> itemType) {
 		ItemTypeMetaData imd = itemTypeMetaData.get(itemType);
 		if (imd == null) {
 			imd = new ItemTypeMetaData(itemType);
@@ -38,8 +38,8 @@ public abstract class GameMetaData {
 		return imd;
 	}
 	
-	public static void setItemTypeMetaData(Player player, PlayerMetaData playerMetaData) {
-		GameMetaData.playerMetaData.put(player, playerMetaData);
+	public static void setForItemType(Class<? extends Item> itemType, ItemTypeMetaData itemTypeMetaData) {
+		GameMetaData.itemTypeMetaData.put(itemType, itemTypeMetaData);
 	}
 
 }
