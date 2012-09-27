@@ -1262,6 +1262,21 @@ AI
 
 \begin_layout Standard
 Die künstliche Intelligenz kann für Detectives oder MrX Spielzüge vorschlagen.
+ Hierzu baut ein kleines Framework auf die grundlegenden AI-Schnittstellen
+ auf.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Schnittstellen, Hierarchie und Framework (Abstract...Ai) beschreiben!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -1318,6 +1333,224 @@ Das Eclipse-Projekt heißt Board (englisch ist für Spielbrett).
  weil erst hier der echte Scotland Yard Graph geladen wird.
  Für die Tests brauchte ich den echten Graphen, um die Bewegungen nachvollziehen
  zu können.
+\end_layout
+
+\begin_layout Section
+MovePreparation
+\end_layout
+
+\begin_layout Standard
+MovePreparation ist die Vorbereitung von Zügen.
+ ScotlYard ist wie das original Scotland Yard zwar Rundenbasiert, Züge sollen
+ aber vorbereitet werden können, damit z.
+\begin_inset space \thinspace{}
+\end_inset
+
+B.
+ die Detectives jede Runde 
+\emph on
+gemeinsam
+\emph default
+ ihre Strategie planen können.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename img/Bedienung des MovePreparer.png
+	width 16cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Bedienkonzept-für-MovePreparatio"
+
+\end_inset
+
+Bedienkonzept für MovePreparation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Wie aus der Grafik 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bedienkonzept-für-MovePreparatio"
+
+\end_inset
+
+ ersichtlich, besteht das Vorbereiten eines Zugs immer aus dem Auswählen
+ eines Spielers und dem Festlegen der nächsten Station.
+ Implementiert ist dieses Konzept in der Klasse MovePreparer.
+\end_layout
+
+\begin_layout Subsection
+MovePreparer
+\end_layout
+
+\begin_layout Standard
+Der MovePreparer stellt also eine Schnittstelle zur Verfügung, um Züge für
+ Spieler vorzubereiten.
+ Er führt die Züge aber nicht selbst aus.
+ Außerdem lässt er sich als Model einer MVC-Architektur verstehen: Er ist
+ ein Subclass von observable.
+ Wenn sich
+\end_layout
+
+\begin_layout Itemize
+der ausgewählte Spieler ändert oder
+\end_layout
+
+\begin_layout Itemize
+für einen Zug, der gerade vorbereitet wird, die nächste Station eingereicht
+ wird,
+\end_layout
+
+\begin_layout Standard
+werden alle Observer darüber informiert.
+ Das Argument der update Methode der Observer ist dabei je nachdem der Player
+ oder der Move.
+ Auf seine Daten lässt sich mit den Methoden getSelectedPlayer und getMove
+ zugreifen.
+\end_layout
+
+\begin_layout Standard
+Der MovePreparer besitzt des Weiteren die Methoden selectPlayer(Player)
+ und nextStation(Station
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+, Player?
+\end_layout
+
+\end_inset
+
+).
+ Das ist die Schnittstelle zum Vorbereiten der Züge und gleichzeitig sind
+ es Setter für die Daten des Model.
+\end_layout
+
+\begin_layout Subsection
+Das Bedienkonzept
+\end_layout
+
+\begin_layout Standard
+Wie ebenfalls aus der Grafik 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bedienkonzept-für-MovePreparatio"
+
+\end_inset
+
+ ersichtlich, sind folgende Möglichkeiten zum Vorbereiten von Zügen vorgesehen:
+\end_layout
+
+\begin_layout Enumerate
+Via MovePreparationBar (Nummerneingabe)
+\begin_inset Newline newline
+\end_inset
+
+Hier wählt man im Kombinationsfeld den Spieler aus, gibt die Nummer der
+ nächsten Station ein und bestätigt dann mit OK.
+\end_layout
+
+\begin_layout Enumerate
+Zwei Klicks
+\begin_inset Newline newline
+\end_inset
+
+Man wählt durch den ersten Klick den Spieler aus, durch den zweiten Klick
+ die Station, auf die dieser ziehen soll.
+ Ist der gewünschte Spieler bereits ausgewählt, kann auf den ersten Klick
+ verzichtet werden.
+\end_layout
+
+\begin_layout Enumerate
+Drag & Drop
+\begin_inset Newline newline
+\end_inset
+
+Klassisches Drag & Drop: Den Spieler einfach auf die gewünschte Station
+ ziehen.
+\end_layout
+
+\begin_layout Enumerate
+Doppelklick
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+machma's so?
+\end_layout
+
+\end_inset
+
+Durch einen Doppelklick auf eine Station wird 
+\emph on
+automatisch
+\emph default
+ der nächste Spieler ausgewählt, für den dann der Zug auf diese Station
+ vorbereitet wird.
+ Haben mehrere Spieler den gleichen Abstand (oder besteht für den Menschen
+ Verwechslungsgefahr), wird ...
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+werden sehen
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Klingt erst mal gut, doch gerade bei der Eingabe mit Maus im BoardPanel
+ ergeben einige Problem.
+\end_layout
+
+\begin_layout Subsubsection
+MovePreparationBar
+\end_layout
+
+\begin_layout Subsubsection
+BoardPanel
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Part*
