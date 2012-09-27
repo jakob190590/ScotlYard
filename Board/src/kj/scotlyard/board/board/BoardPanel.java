@@ -99,7 +99,20 @@ public class BoardPanel extends JPanel {
 	private final MouseListener pieceMouseListener = new MouseAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			
+			Piece piece = (Piece) e.getSource();
+			if (piece.getPlayer() instanceof MrXPlayer
+					&& movePreparer.getPlayer() instanceof DetectivePlayer) {
+				// Detective klickt auf MrX -> Klick an VisualStation durchreichen
+				VisualStation vs = piece.getVisualStation();
+				// Absolute Position minus location von VisualStation ergibt relative Position auf VisualStation
+				int x = piece.getX() + e.getX() - vs.getX();
+				int y = piece.getY() + e.getY() - vs.getY();
+				logger.debug(String.format("klick weiterleiten an VisualStation auf %d, %d", x, y));
+				MouseEvent e1 = new MouseEvent(vs, e.getID(), e.getWhen(),
+						e.getModifiers(), x, y, e.getClickCount(), e.isPopupTrigger());
+				visualStationMouseListener.mouseClicked(e1);
+				e.consume(); // gilt in keiner Weise fuer das Piece
+			}
 		}
 		@Override
 		public void mousePressed(MouseEvent e) {

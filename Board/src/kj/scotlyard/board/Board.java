@@ -54,6 +54,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.ButtonGroup;
 
 import kj.scotlyard.board.board.BoardPanel;
 import kj.scotlyard.board.layout.AspectRatioGridLayout;
@@ -79,7 +80,6 @@ import kj.scotlyard.game.util.MoveProducer;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import javax.swing.ButtonGroup;
 
 import static kj.scotlyard.board.ActionTools.isSelected;
 import static kj.scotlyard.board.ActionTools.setSelected;
@@ -890,7 +890,12 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
 		}
 		public void actionPerformed(ActionEvent e) {
-			gc.move(mPrep.getMove(gs.getCurrentPlayer()));
+			try {
+				gc.move(mPrep.getMove(gs.getCurrentPlayer()));
+			} catch (Exception e2) {
+				e2.printStackTrace();
+				showErrorMessage(e2);
+			}
 		}
 	}
 	// TODO Eher MoveDetectivesOfRoundNow! Macht einfach vom Spielprinzip her mehr Sinn
@@ -901,60 +906,65 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
 		}
 		public void actionPerformed(ActionEvent e) {
-			// TODO beide Lösungen ignorieren TurnPolicy!
-			
-			//int index = gs.getPlayers().indexOf(gs.getCurrentPlayer());
-			//if (index >= 0) {
-			//	for (int i = index; i < gs.getPlayers(); i++) {
-			//		gc.move(mPrep.getMove(gs.getPlayers().get(i)));
-			//	}
-			//}
-			
-			Player current = gs.getCurrentPlayer();
-			
-			boolean doMove = false;			
-			for (Player p : gs.getPlayers()) {
-				if (p == current) {
-					doMove = true;
-				}
-				if (doMove) {
-					Move m = mPrep.getMove(p);
-					if (m == null) {
-						// TODO entweder abbrechen oder "Suggest Move"
-						break;
+			try {
+				// TODO beide Lösungen ignorieren TurnPolicy!
+				
+				//int index = gs.getPlayers().indexOf(gs.getCurrentPlayer());
+				//if (index >= 0) {
+				//	for (int i = index; i < gs.getPlayers(); i++) {
+				//		gc.move(mPrep.getMove(gs.getPlayers().get(i)));
+				//	}
+				//}
+				
+				Player current = gs.getCurrentPlayer();
+				
+				boolean doMove = false;			
+				for (Player p : gs.getPlayers()) {
+					if (p == current) {
+						doMove = true;
 					}
-					gc.move(m);
+					if (doMove) {
+						Move m = mPrep.getMove(p);
+						if (m == null) {
+							// TODO entweder abbrechen oder "Suggest Move"
+							break;
+						}
+						gc.move(m);
+					}
 				}
+				
+				
+	//			Move currentMove = null;			
+	//
+	//			// Detectives zählen, die schon gezogen sind, oder einen Zug vorbereitet haben.
+	//			int detectivesReady = 0;
+	//			for (DetectivePlayer d : gs.getDetectives()) {
+	//				Move m = mPrep.getMove(d);
+	//				if (d == current) {					
+	//					if (m == null) {
+	//						break;
+	//					}
+	//					currentMove = m;
+	//				}
+	//				if (m != null || ) {
+	//					detectivesReady++;					
+	//					if (d == current) {
+	//						break;
+	//					}
+	//				}
+	//			}
+	//			if (currentMove == null) {
+	//				// TODO message, dass currentPlayer noch keinen Zug vorbereitet hat
+	//			} else if (detectivesReady == gs.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
+	//					|| JOptionPane == JOptionPane.YES) { // TODO message anzeigen: "nocht nicht alle sind fertig; soweit möglich schon mal ziehen? Ja/Nein"				
+	//				// Moving anstoßen
+	//				movemovemove = true;
+	//				gc.move(currentMove);
+	//			}
+			} catch (Exception e2) {
+				e2.printStackTrace();
+				showErrorMessage(e2);
 			}
-			
-			
-//			Move currentMove = null;			
-//
-//			// Detectives zählen, die schon gezogen sind, oder einen Zug vorbereitet haben.
-//			int detectivesReady = 0;
-//			for (DetectivePlayer d : gs.getDetectives()) {
-//				Move m = mPrep.getMove(d);
-//				if (d == current) {					
-//					if (m == null) {
-//						break;
-//					}
-//					currentMove = m;
-//				}
-//				if (m != null || ) {
-//					detectivesReady++;					
-//					if (d == current) {
-//						break;
-//					}
-//				}
-//			}
-//			if (currentMove == null) {
-//				// TODO message, dass currentPlayer noch keinen Zug vorbereitet hat
-//			} else if (detectivesReady == gs.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
-//					|| JOptionPane == JOptionPane.YES) { // TODO message anzeigen: "nocht nicht alle sind fertig; soweit möglich schon mal ziehen? Ja/Nein"				
-//				// Moving anstoßen
-//				movemovemove = true;
-//				gc.move(currentMove);
-//			}
 		}
 	}
 	private class QuickPlayAction extends AbstractAction {

@@ -22,7 +22,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +32,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
@@ -42,6 +43,8 @@ import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.model.item.UndergroundTicket;
 import java.awt.Font;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 /**
  * Dialog, der das TicketSelectionPanel anzeigt.
@@ -70,6 +73,7 @@ public class TicketSelectionDialog extends JDialog {
 	private JCheckBox chckbxFurtherMoves;
 	private JButton btnCancel;
 	private JPanel leftPanel;
+	private final Action cancelAction = new CancelAction();
 
 	/**
 	 * Create the dialog.
@@ -86,6 +90,10 @@ public class TicketSelectionDialog extends JDialog {
 		setModal(true);
 		setTitle("Select a Ticket");
 		setSize(450, 300);
+		
+		// Cancel Action auf Escape legen (was bewirkt ACCELERATOR_KEY in Action dann eigentlich?)
+		getRootPane().getActionMap().put("cancel", cancelAction);
+		getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
 		
 		getContentPane().setLayout(new BorderLayout());
 		
@@ -110,14 +118,8 @@ public class TicketSelectionDialog extends JDialog {
 		pnlFooter.add(rightPanel);
 		
 		btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ticket = null;
-				setVisible(false);
-			}
-		});
-		// TODO Shortcut: Escape (per Action?)
+		btnCancel.setAction(cancelAction);
+		// cancelAction ist oben schon auf Escape gelegt.
 		rightPanel.add(btnCancel);
 		
 		JPanel pnlHeader = new JPanel();
@@ -205,4 +207,16 @@ public class TicketSelectionDialog extends JDialog {
 		chckbxFurtherMoves.setSelected(selected);
 	}
 	
+	private class CancelAction extends AbstractAction {
+		public CancelAction() {
+			putValue(NAME, "Cancel");
+			putValue(SHORT_DESCRIPTION, "Cancel the ticket selection");
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0)); // hat offenbar keine Wirkung, deshalb wird ActionMap und InputMap verwendet
+			putValue(MNEMONIC_KEY, KeyEvent.VK_C);
+		}
+		public void actionPerformed(ActionEvent e) {
+			ticket = null;
+			setVisible(false);
+		}
+	}
 }
