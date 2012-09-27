@@ -1341,7 +1341,7 @@ MovePreparation
 
 \begin_layout Standard
 MovePreparation ist die Vorbereitung von Zügen.
- ScotlYard ist wie das original Scotland Yard zwar Rundenbasiert, Züge sollen
+ ScotlYard ist wie das original Scotland Yard zwar rundenbasiert, Züge sollen
  aber vorbereitet werden können, damit z.
 \begin_inset space \thinspace{}
 \end_inset
@@ -1406,8 +1406,29 @@ reference "fig:Bedienkonzept-für-MovePreparatio"
 \end_inset
 
  ersichtlich, besteht das Vorbereiten eines Zugs immer aus dem Auswählen
- eines Spielers und dem Festlegen der nächsten Station.
+ eines Spielers und dem Festlegen der nächsten Station(en).
  Implementiert ist dieses Konzept in der Klasse MovePreparer.
+\end_layout
+
+\begin_layout Standard
+Im Folgenden muss zwischen zwei Ausdrücken unterschieden werden:
+\end_layout
+
+\begin_layout Itemize
+selected Player / ausgewählter Spieler
+\begin_inset Newline newline
+\end_inset
+
+Der Spieler, für den momentan der Zug vorbereitet wird; Wird mit selectPlayer
+ festgelegt.
+\end_layout
+
+\begin_layout Itemize
+current Player / Spieler, der gerade dran ist
+\begin_inset Newline newline
+\end_inset
+
+Der Spieler, der gemäß GameState.getCurrentPlayer() gerade am Zug ist.
 \end_layout
 
 \begin_layout Subsection
@@ -1455,6 +1476,82 @@ status open
 ).
  Das ist die Schnittstelle zum Vorbereiten der Züge und gleichzeitig sind
  es Setter für die Daten des Model.
+\end_layout
+
+\begin_layout Standard
+Der MovePreparer ist natürlich so programmiert, dass er möglichst nur gültige
+ Züge vorbereitet.
+ Er macht also eine GUI-seitige Prüfung von Spieler und Station.
+ Beim Ausführen des Zuges wird dieser nochmal von der MovePolicy geprüft.
+ Dabei gibt es im Fall eines ungültigen Zuges eine MoveException.
+ Deshalb wird vom MovePrepaerer im Vorhinein versucht, fehlerhafte Züge
+ zu vermeiden.
+ Es heißt hier 
+\begin_inset Quotes gld
+\end_inset
+
+versuchen
+\begin_inset Quotes grd
+\end_inset
+
+, weil ein Move nur von den Regeln, und wenn er ausgeführt wird, hunderprozentig
+ geprüft werden kann.
+\end_layout
+
+\begin_layout Subsubsection
+selectPlayer
+\end_layout
+
+\begin_layout Standard
+Hiermit wird der Spieler ausgewählt.
+ Es stecken aber gewisse Regln dahinter.
+ Wenn ein Spieler nicht ausgewählt werden kann, wird die Methode errorSelectingP
+layer aufgerufen.
+ Hierin wird der Fehler behandelt bzw.
+ Feedback an den Benutzer gegeben.
+\end_layout
+
+\begin_layout Standard
+In folgenden Fällen kann der angegebene Spieler (player) nicht ausgewählt
+ werden:
+\end_layout
+
+\begin_layout Enumerate
+fixedTurnOrder && player != currentPlayer
+\begin_inset Newline newline
+\end_inset
+
+Die Einstellung fixedTurnOrder bedeutet, dass die Detektive nicht gemeinsam
+ ihre Züge vorbereiten können, sondern wirklich immer nur einer nach dem
+ anderen dran ist.
+\begin_inset Newline newline
+\end_inset
+
+Wenn man bei dieser Einstellung also versucht einen anderen Spieler auszuwählen,
+ als den der an der Reihe ist wird player nicht ausgewählt.
+\end_layout
+
+\begin_layout Enumerate
+currentPlayer instanceof MrXPlayer && player != currentPlayer
+\begin_inset Newline newline
+\end_inset
+
+Wenn MrX gerade dran ist, und versucht wird, einen anderen Spieler auszuwählen,
+ wird player nicht ausgewählt.
+\end_layout
+
+\begin_layout Enumerate
+player hat in dieser Runde schon gezogen (den Zug nur vorbereitet, sondern
+ auch ausgeführt!)
+\begin_inset Newline newline
+\end_inset
+
+Wenn also der Spieler in dieser Runde schon dran war, kann er nicht nochmal
+ ausgewählt werden.
+\end_layout
+
+\begin_layout Subsubsection
+nextStation
 \end_layout
 
 \begin_layout Subsection
@@ -1538,11 +1635,51 @@ werden sehen
 
 \begin_layout Standard
 Klingt erst mal gut, doch gerade bei der Eingabe mit Maus im BoardPanel
- ergeben einige Problem.
+ ergeben sich einige Problem.
 \end_layout
 
 \begin_layout Subsubsection
 MovePreparationBar
+\end_layout
+
+\begin_layout Standard
+Dabei handelt es sich um die Leiste in Abbildung 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bedienkonzept-für-MovePreparatio"
+
+\end_inset
+
+, mit der (ohne Maus und Spielbrett) die Züge vorbereitet werden können.
+\end_layout
+
+\begin_layout Itemize
+Im Kombinationsfeld wählt man den Spieler aus.
+ Demnach wird der Wert im Model (d.
+\begin_inset space \thinspace{}
+\end_inset
+
+h.
+ im MovePreparer) gesetzt.
+ Kann der gewünschte Spieler nicht ausgewählt werden, informiert das Model
+ die Observer über die (Nicht-)Änderung, so dass der ausgewählte Spieler
+ im Kombinationsfeld sofort wieder auf den richtigen zurückgesetzt wird.
+\end_layout
+
+\begin_layout Itemize
+Im Eingabefeld gibt man die Stationsnummer ein.
+ Wenn MrX ausgewählt ist, ist das Textfeld wie ein Unix-Passwortfeld.
+ Dort muss man die Nummer ohne jegliches Feedback eingeben.
+\end_layout
+
+\begin_layout Itemize
+Mit dem Schalter OK bestätigt man die eingegebene Station.
+ Dies bewirkt den Aufruf von nextStation.
+\end_layout
+
+\begin_layout Itemize
+Mit dem Schalter Reset kann für den ausgewählten Spieler der vorbereitete
+ Zug zurückgesetzt, also gelöscht werden, falls man sich vertan hat.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1550,7 +1687,114 @@ BoardPanel
 \end_layout
 
 \begin_layout Standard
+Probleme bzw.
+ Schwierigkeiten:
+\end_layout
 
+\begin_layout Itemize
+Klick auf Spieler kann bedeuten
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Spieler auswählen
+\end_layout
+
+\begin_layout Itemize
+Vorher ausgewählten Spieler auf Station des angeklickten Spielers ziehen
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Detectives können auf Station von MrX fahren, aber nicht umgekehrt
+\end_layout
+
+\begin_layout Standard
+Um Klarheit zu schaffen werden jetzt folgende Algorithmen verwendet:
+\end_layout
+
+\begin_layout Paragraph
+Klick auf Spieler
+\end_layout
+
+\begin_layout Standard
+Im Normalfall soll hier der Spieler ausgewählt werden.
+\end_layout
+
+\begin_layout Standard
+Wenn aber ein Detektiv ausgewählt ist und auf MrX geklickt wird, wird das
+ Klick-Ereignis an die Station durchgereicht, auf der sich MrX befindet.
+\end_layout
+
+\begin_layout Paragraph
+Klick auf Station
+\end_layout
+
+\begin_layout Standard
+Im Normalfall wird für den ausgewählten Spieler diese als nächste Station
+ festgelegt.
+\end_layout
+
+\begin_layout Standard
+Wenn es aber ein Doppelklick war und ein Detektiv ausgewählt ist, wird zuerst
+ versucht automatisch den Detektiv auszuwählen, der auf auf die Station
+ ziehen kann.
+ Wenn das nicht eindeutig ist gibt es eine Meldung mit den Hinweis, den
+ Spieler zuerst manuell auszuwählen (z.
+\begin_inset space \thinspace{}
+\end_inset
+
+B.
+ durch Klick auf den Spieler).
+ In letzterem Fall wird keine nächste Station eingereicht d.
+\begin_inset space \thinspace{}
+\end_inset
+
+h.
+ kein Aufruf von nextStation.
+\end_layout
+
+\begin_layout Paragraph
+Drag bei Spieler
+\end_layout
+
+\begin_layout Standard
+Sobald ein Drag erkannt wird, wird versucht den Spieler auszuwählen (selectPlaye
+r).
+ Wenn das nicht erfolgreich war, wird 
+\emph on
+überall
+\emph default
+ das no-drop-Cursor angezeigt.
+\end_layout
+
+\begin_layout Paragraph
+Drop auf Station
+\end_layout
+
+\begin_layout Standard
+Drop-Ziel kann entweder eine Station oder ein Spieler sein.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Hier muss wohl für alle Spieler und Stationen der 
+\begin_inset Quotes gld
+\end_inset
+
+can-drop-Cursor
+\begin_inset Quotes grd
+\end_inset
+
+ angezeigt werden.
+ Ob die Station möglich ist, sieht man ja erst nach Aufruf von nextStation,
+ also wenn die Maustaste losgelassen wurde.
+\end_layout
+
+\end_inset
+
+ Beim Drop wird die Station (bzw.
+ die Station unter dem Spieler) als nächste Station festgelegt (nextStation).
 \end_layout
 
 \begin_layout Part*
