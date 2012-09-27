@@ -242,7 +242,7 @@ public abstract class MovePreparer extends Observable {
 		notifyObservers(getMove(move.getPlayer()));
 	}
 	
-	public void nextStation(final StationVertex station, final Player player, DoubleMoveCard multiMoveCard) {
+	public void nextStation(final StationVertex station, DoubleMoveCard multiMoveCard) {
 		// TODO egal wann aufgerufen wird: multiMoveCard != null  -> baseMove.setItem(multiMoveCard)
 	}
 	
@@ -253,10 +253,9 @@ public abstract class MovePreparer extends Observable {
 	 * @param station
 	 * @param player
 	 */
-	public void nextStation(final StationVertex station, final Player player) {
-		if (!selectPlayer(player)) return;
+	public void nextStation(final StationVertex station) {
 		
-		logger.debug("next station");
+		logger.debug("next station for " + player);
 		
 		List<Move> moves = getMoves(player);
 		
@@ -345,13 +344,8 @@ public abstract class MovePreparer extends Observable {
 			notifyObservers(getMove(player));
 		}
 	}
-	
-	@Deprecated
-	public void nextStation(final StationVertex station) {
-		nextStation(station, gameState.getCurrentPlayer());
-	}
-	
-	public Player getPlayer() {
+
+	public Player getSelectedPlayer() {
 		return player;
 	}
 		
