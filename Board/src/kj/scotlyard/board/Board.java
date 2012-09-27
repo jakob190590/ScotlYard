@@ -122,6 +122,27 @@ public class Board extends JFrame {
 	private TicketSelectionDialog ticketSelectionDialogMrX = new TicketSelectionDialog(this, MrXPlayer.class);
 	private TicketSelectionDialog ticketSelectionDialogDetectives = new TicketSelectionDialog(this, DetectivePlayer.class);
 	
+	// Fuer Action MoveDetectivesNow, die alle Detectives ziehen laesst (sofern Moves vorbereitet sind)
+	private boolean doMoveDetectives = false;
+	private TurnListener moveDetectivesTurnListener = new TurnListener() {
+		@Override
+		public void currentRoundChanged(GameState gameState, int oldRoundNumber,
+				int newRoundNumber) {
+			// Runde vorbei / Neue Runde
+			doMoveDetectives = false;
+		}
+		@Override
+		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
+				Player newPlayer) {
+			if (doMoveDetectives) {
+				Move m = mPrep.getMove(newPlayer);
+				if (m != null) {
+					move(m);
+				}
+			}
+		}
+	};
+	
 	// TODO beide muessen beim laden der Board def gesetzt werden
 	private double normalZoomFactor = 0.2; // kann sein was will, nur 1 macht keinen sinn, weil das bild dann viel zu riessig ist!
 	private double zoomFactor = normalZoomFactor;	
@@ -142,7 +163,7 @@ public class Board extends JFrame {
 	private final Action redoAction = new RedoAction();
 	private final Action suggestMoveAction = new SuggestMoveAction();
 	private final Action moveNowAction = new MoveNowAction();
-	private final Action moveRoundNowAction = new MoveRoundNowAction();
+	private final Action moveDetectivesNowAction = new MoveDetectivesNowAction();
 	private final Action quickPlayAction = new QuickPlayAction();
 	private final Action fitBoardAction = new FitBoardAction();
 	private final Action zoomInAction = new ZoomInAction();
@@ -490,7 +511,7 @@ public class Board extends JFrame {
 							&& player == gs.getCurrentPlayer() // selected player's turn
 							&& !furtherMoves) { // no further moves
 						logger.debug("Move fertig vorbereitet, QuickPlay, no further moves and Turn");
-						gc.move((Move) arg);
+						move((Move) arg);
 					}
 				}
 			}
@@ -527,6 +548,7 @@ public class Board extends JFrame {
 				lblMoveVal.setText((m == null) ? "Noch kein Move vorbereitet" : m.toString());
 			}
 		});
+		gs.addTurnListener(moveDetectivesTurnListener);
 		
 		setGameControllerActionsEnabled(gc.getStatus());
 		boardPanel.setGameState(gs);
@@ -600,8 +622,8 @@ public class Board extends JFrame {
 		btnSuggestMove.setAction(suggestMoveAction);
 		moveControlBar.add(btnSuggestMove);
 		
-		JButton btnMoveRound = new JButton("Move Round!");
-		btnMoveRound.setAction(moveRoundNowAction);
+		JButton btnMoveRound = new JButton("Move Detectives!");
+		btnMoveRound.setAction(moveDetectivesNowAction);
 		moveControlBar.add(btnMoveRound);
 		
 		
@@ -641,11 +663,32 @@ public class Board extends JFrame {
 		boardPanelContainer.revalidate();
 		boardPanelContainer.repaint();
 	}
+
+	/**
+	 * Try to carry out the specified move.
+	 * When the MovePolicy throws an Exception,
+	 * an error message dialog pops up.
+	 * @param move
+	 * @return <code>true</code> when successful
+	 */
+	private boolean move(Move move) {
+		boolean success = true;
+		try {
+			gc.move(move);
+		} catch (Exception e2) {
+			success = false;
+			doMoveDetectives = false;
+			e2.printStackTrace();
+			showErrorMessage(e2);
+		}
+		return success;
+	}
 	
 	
 	
 	// Actions *******************************************
-
+	
+	
 	private class NewGameAction extends AbstractAction {
 		public NewGameAction() {
 			putValue(NAME, "New Game");
@@ -717,15 +760,11 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
 		}
 		public void actionPerformed(ActionEvent e) {
-			try {
-				Move move = null;
-				if (gc.getStatus() == GameStatus.IN_GAME) {
-					move = MoveProducer.createRandomSingleMove(gs, gg);
-				}
-				gc.move(move);
-			} catch (Exception e2) {
-				showErrorMessage(e2);
+			Move move = null;
+			if (gc.getStatus() == GameStatus.IN_GAME) {
+				move = MoveProducer.createRandomSingleMove(gs, gg);
 			}
+			move(move);
 		}
 	}
 	private class GameStatusWinAction extends AbstractAction {
@@ -891,57 +930,26 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
 		}
 		public void actionPerformed(ActionEvent e) {
-			try {
-				gc.move(mPrep.getMove(gs.getCurrentPlayer()));
-			} catch (Exception e2) {
-				e2.printStackTrace();
-				showErrorMessage(e2);
-			}
+			move(mPrep.getMove(gs.getCurrentPlayer()));
 		}
 	}
 	// TODO Eher MoveDetectivesOfRoundNow! Macht einfach vom Spielprinzip her mehr Sinn
-	private class MoveRoundNowAction extends AbstractAction {
-		public MoveRoundNowAction() {
-			putValue(NAME, "Move Round!"); // or "Move now"
-			putValue(SHORT_DESCRIPTION, "Move now (complete round)");
-			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
+	private class MoveDetectivesNowAction extends AbstractAction {
+		public MoveDetectivesNowAction() {
+			putValue(NAME, "Move Detectives!"); // or "Move now"
+			putValue(SHORT_DESCRIPTION, "Move all Detectives now");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_D);
 		}
 		public void actionPerformed(ActionEvent e) {
-			try {
-				// TODO beide Lösungen ignorieren TurnPolicy!
+			Player currentPlayer = gs.getCurrentPlayer();
+			if (currentPlayer instanceof DetectivePlayer) {
+				Move currentMove = mPrep.getMove(currentPlayer);				
 				
-				//int index = gs.getPlayers().indexOf(gs.getCurrentPlayer());
-				//if (index >= 0) {
-				//	for (int i = index; i < gs.getPlayers(); i++) {
-				//		gc.move(mPrep.getMove(gs.getPlayers().get(i)));
-				//	}
-				//}
-				
-				Player current = gs.getCurrentPlayer();
-				
-				boolean doMove = false;			
-				for (Player p : gs.getPlayers()) {
-					if (p == current) {
-						doMove = true;
-					}
-					if (doMove) {
-						Move m = mPrep.getMove(p);
-						if (m == null) {
-							// TODO entweder abbrechen oder "Suggest Move"
-							break;
-						}
-						gc.move(m);
-					}
-				}
-				
-				
-	//			Move currentMove = null;			
-	//
 	//			// Detectives zählen, die schon gezogen sind, oder einen Zug vorbereitet haben.
 	//			int detectivesReady = 0;
 	//			for (DetectivePlayer d : gs.getDetectives()) {
 	//				Move m = mPrep.getMove(d);
-	//				if (d == current) {					
+	//				if (d == currentPlayer) {					
 	//					if (m == null) {
 	//						break;
 	//					}
@@ -954,17 +962,14 @@ public class Board extends JFrame {
 	//					}
 	//				}
 	//			}
-	//			if (currentMove == null) {
-	//				// TODO message, dass currentPlayer noch keinen Zug vorbereitet hat
-	//			} else if (detectivesReady == gs.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
-	//					|| JOptionPane == JOptionPane.YES) { // TODO message anzeigen: "nocht nicht alle sind fertig; soweit möglich schon mal ziehen? Ja/Nein"				
-	//				// Moving anstoßen
-	//				movemovemove = true;
-	//				gc.move(currentMove);
-	//			}
-			} catch (Exception e2) {
-				e2.printStackTrace();
-				showErrorMessage(e2);
+				if (currentMove == null) {
+					JOptionPane.showMessageDialog(Board.this, "The current player has not prepared it's move yet."); // TODO warnung?, dass currentPlayer noch keinen Zug vorbereitet hat
+				} else {// if (detectivesReady == gs.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
+//						|| JOptionPane == JOptionPane.YES) { // TODO message anzeigen: "nocht nicht alle sind fertig; soweit möglich schon mal ziehen? Ja/Nein"				
+					// Moving anstoßen
+					doMoveDetectives = true;
+					move(currentMove);
+				}
 			}
 		}
 	}
