@@ -1171,6 +1171,95 @@ Der Controller steuert den Zugriff auf das Model.
 \end_layout
 
 \begin_layout Section
+Controller
+\end_layout
+
+\begin_layout Standard
+Über den Controller (oder GameController) lässt sich das Spiel steuern.
+ Der Controller kennt zwei Zustände: IN_GAME und NOT_IN_GAME.
+\end_layout
+
+\begin_layout Standard
+Der DefaultGameController implementiert die GameController-Schnittstelle
+ und verwendet das State pattern.
+ Die gesamte Implementierung liegt im Package \SpecialChar \ldots{}
+.control.impl.
+ Der DefaultGameController besitzt also für jeden der zwei Zustände eine
+ GameController Instanz, an die er die meisten Aufrufe deligiert.
+ Für die Gemeinsamkeiten der beiden konkreten GameController für die existiert
+ die Basisklasse GameControllerState.
+\end_layout
+
+\begin_layout Subsection
+move(Move)
+\end_layout
+
+\begin_layout Standard
+Diese Methode für currentPlayer den angegebenen Zug aus.
+ Der genaue Ablauf ist folgender:
+\end_layout
+
+\begin_layout Enumerate
+Die MovePolicy überprüft den Zug.
+ Bei einem ungültigen Zug wird mit der entsprechenden Exception abgebrochen.
+ In diesem Fall entfallen die folgenden Schritte
+\end_layout
+
+\begin_layout Enumerate
+Der Zug wird der MoveList des GameState hinzugefügt und dabei versiegelt
+ (
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+ seal()).
+ Dabei werden die MoveListener informiert.
+\end_layout
+
+\begin_layout Enumerate
+Alle verwendeten Items werden gemäß den Regeln weitergegeben bzw.
+ weggeworfen.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "enu:Durch-die-TurnPolicy"
+
+\end_inset
+
+Durch die TurnPolicy werden Runde und Spieler (der als nächstes dran ist)
+ ermittelt.
+\end_layout
+
+\begin_layout Enumerate
+currentRoundNumber wird gemäß 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "enu:Durch-die-TurnPolicy"
+
+\end_inset
+
+ gesetzt und dabei werden die TurnListener informiert.
+\end_layout
+
+\begin_layout Enumerate
+currentPlayer wird gemäß 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "enu:Durch-die-TurnPolicy"
+
+\end_inset
+
+ gesetzt und dabei werden die TurnListener informiert.
+\end_layout
+
+\begin_layout Enumerate
+Der GameWin wird ermittelt (NO, MRX_WINS, DETECTIVES_WIN), und entsprechend
+ der Zustand des Controllers gesetzt.
+ Dabei werden -- wenn sich der Zustand ändert -- auch die Observer informiert.
+\end_layout
+
+\begin_layout Section
 Regeln
 \end_layout
 
