@@ -6,9 +6,9 @@ import org.apache.log4j.Logger;
 
 import kj.scotlyard.game.model.Player;
 
-public abstract class GameStateMetaData {
+public abstract class GameMetaData {
 	
-	private static final Logger logger = Logger.getLogger(GameStateMetaData.class);
+	private static final Logger logger = Logger.getLogger(GameMetaData.class);
 	
 	private static Map<Player, PlayerMetaData> playerMetaData;
 	
@@ -22,7 +22,7 @@ public abstract class GameStateMetaData {
 	}
 	
 	public static void setPlayerMetaData(Player player, PlayerMetaData playerMetaData) {
-		GameStateMetaData.playerMetaData.put(player, playerMetaData);
+		GameMetaData.playerMetaData.put(player, playerMetaData);
 	}
 
 }
