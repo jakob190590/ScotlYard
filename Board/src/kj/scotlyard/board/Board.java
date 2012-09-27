@@ -145,7 +145,7 @@ public class Board extends JFrame {
 	
 	// TODO beide muessen beim laden der Board def gesetzt werden
 	private double normalZoomFactor = 0.2; // kann sein was will, nur 1 macht keinen sinn, weil das bild dann viel zu riessig ist!
-	private double zoomFactor = normalZoomFactor;	
+	private double zoomFactor = normalZoomFactor;
 	
 	private final Action newGameAction = new NewGameAction();
 	private final Action clearPlayersAction = new ClearPlayersAction();

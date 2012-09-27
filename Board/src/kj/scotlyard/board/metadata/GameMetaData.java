@@ -1,4 +1,4 @@
-package kj.scotlyard.board;
+package kj.scotlyard.board.metadata;
 
 import java.util.Map;
 
