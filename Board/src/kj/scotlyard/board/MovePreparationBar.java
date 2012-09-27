@@ -134,8 +134,7 @@ public class MovePreparationBar extends JPanel {
 			putValue(SHORT_DESCRIPTION, "Submit the station number");
 		}
 		public void actionPerformed(ActionEvent e) {
-			mPrep.nextStation(nsm.get(Integer.parseInt(ftfStationNumber.getText())), // TODO vllt spaeter ftfStationNumber.getValue()
-					getSelectedPlayer());
+			mPrep.nextStation(nsm.get(Integer.parseInt(ftfStationNumber.getText()))); // TODO vllt spaeter ftfStationNumber.getValue()
 		}
 	}
 	private class ResetAction extends AbstractAction {

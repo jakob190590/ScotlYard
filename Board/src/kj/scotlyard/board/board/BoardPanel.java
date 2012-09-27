@@ -78,23 +78,22 @@ public class BoardPanel extends JPanel {
 			super.mouseClicked(e);
 			logger.debug("mouse clicked on " + e.getSource());
 			StationVertex s = ((VisualStation) e.getSource()).getStation();
-			Player p = movePreparer.getSelectedPlayer();
 			
 			// Double click
 			if (e.getClickCount() == 2) {
 				logger.debug("it was a double click");
 				
 				Player q = MoveHelper.unambiguousPlayer(gameState, gameGraph, s);
-				logger.debug("unambiguous player: " + p);
+				logger.debug("unambiguous player: " + q);
 				if (q != null) {
-					p = q;
+					movePreparer.selectPlayer(q);
 				}
 				// nicht eindeutig -> nimm' momentan ausgewaehlten player
 				// TODO vllt doch fragen in diesem fall?
 				// JOptionPane.showMessageDialog(BoardPanel.this, "Not quite sure, wich player you want to move. Please click on the player first.", "Confirmation", JOptionPane.QUESTION_MESSAGE);
 				// eher nicht, lieber fehlermeldung
 			}
-			movePreparer.nextStation(s, p);
+			movePreparer.nextStation(s);
 		}
 	};
 	private final MouseListener pieceMouseListener = new MouseAdapter() {
