@@ -1,0 +1,7 @@
+board.image original-scotland-yard-board.png
+board.graph-description graph-description
+board.initial-stations  initial-stations
+board.station.width  0.016132
+board.station.height 0.021418
+board.piece.width
+board.piece.height
