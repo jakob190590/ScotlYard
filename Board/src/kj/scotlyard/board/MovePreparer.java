@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
@@ -47,6 +45,8 @@ import kj.scotlyard.game.util.GameStateExtension;
 import kj.scotlyard.game.util.MoveHelper;
 import kj.scotlyard.game.util.MoveProducer;
 import kj.scotlyard.game.util.SubMoves;
+
+import org.apache.log4j.Logger;
 
 /**
  * This class defines the algorithm for "manual" move preparation.
@@ -162,16 +162,25 @@ public abstract class MovePreparer extends Observable {
 	public void reset(Player player) {
 		logger.debug("reset for " + player);
 		moves.remove(player);
+		setChanged();
+		notifyObservers(new MovePreparationEvent(
+				MovePreparationEvent.RESET, player, null));
 	}
 	
 	@Deprecated
 	public void reset() {
-		reset(gameState.getCurrentPlayer());
+		reset(player);
+		setChanged();
+		notifyObservers(new MovePreparationEvent(
+				MovePreparationEvent.RESET, player, null));
 	}
 	
 	public void resetAll() {
 		logger.debug("reset for all");
 		moves.clear();
+		setChanged();
+		notifyObservers(new MovePreparationEvent(
+				MovePreparationEvent.RESET_ALL, null, null));
 	}
 	
 	
@@ -179,7 +188,7 @@ public abstract class MovePreparer extends Observable {
 
 	/**
 	 * Selects one ticket of the set and returns that ticket. The method may
-	 * return <code>null</code> to cancel the move preparation. But this would 
+	 * return <code>null</code> to cancel the move preparation. But this would
 	 * be not equivalent to <code>reset</code>: If there is a multi move
 	 * in preparation, only the new sub move would be discarded.
 	 * 
@@ -230,7 +239,7 @@ public abstract class MovePreparer extends Observable {
 			}
 		}
 		setChanged(); // setChanged in jedem Fall: Falls z.B. MovePrep.Bar einen anderen Player auswaehlt, der nicht ausgewaehlt werden kann, muss die comboBox wieder zurueckgesetzt werden
-		notifyObservers(this.player);
+		notifyObservers(new MovePreparationEvent(MovePreparationEvent.SELECT_PLAYER, player, null));
 		return result;
 	}
 	
@@ -247,8 +256,9 @@ public abstract class MovePreparer extends Observable {
 			// Multi Move
 			moves.addAll(move.getMoves());
 		}
+		// TODO entweder NEXT_MOVE, oder NEXT_STATION bei jeder station von etwaigen Sub Moves aufrufen!
 		setChanged();
-		notifyObservers(getMove(move.getPlayer()));
+		notifyObservers(new MovePreparationEvent(MovePreparationEvent.NEXT_STATION, p, getMove(p)));
 	}
 	
 	public void nextStation(final StationVertex station, DoubleMoveCard multiMoveCard) {
@@ -281,7 +291,7 @@ public abstract class MovePreparer extends Observable {
 		m.setStation(station);
 		
 		// Calculate all connections from current station to station
-		Set<ConnectionEdge> connections = gameGraph.getGraph().getAllEdges(lastStation, station);		
+		Set<ConnectionEdge> connections = gameGraph.getGraph().getAllEdges(lastStation, station);
 		if (connections.isEmpty()) {
 			logger.warn("nextStation: impossible station - no connections");
 			errorImpossibleNextStation(station, player);
@@ -322,17 +332,17 @@ public abstract class MovePreparer extends Observable {
 				if (i instanceof Ticket && mp.isTicketValidForConnection((Ticket) i, c)) {
 					tickets.add((Ticket) i);
 				}
-			}			
+			}
 		}
-		// Tickets wieder rausnehmen, die bei dem Zug, der 
+		// Tickets wieder rausnehmen, die bei dem Zug, der
 		// aktuell vorbereitet wird, schon benutzt sind!
 		for (Move n : moves) {
-			tickets.remove((Ticket) n.getItem());
+			tickets.remove(n.getItem());
 		}
 		
 		Ticket ticket = selectTicket(tickets, player);
 		
-		if (ticket != null) {		
+		if (ticket != null) {
 			// D.h. nicht abgebrochen
 			logger.debug("ticket selected");
 			ConnectionEdge conn = MoveHelper.suggestConnection(lastStation, station, ticket);
@@ -342,11 +352,10 @@ public abstract class MovePreparer extends Observable {
 			// Publish m in moves
 			moves.add(m);
 			
-			// TODO when prepared moves of other subsequent detectives are foiled, reset these preparations 
-			// and notifyObservers? f*ck i think after all we need a listener instead of observer :( 
+			// TODO when prepared moves of other subsequent detectives are foiled, reset these preparations
 			
 			setChanged();
-			notifyObservers(getMove(player));
+			notifyObservers(new MovePreparationEvent(MovePreparationEvent.NEXT_STATION, player, getMove(player)));
 		}
 	}
 
@@ -356,7 +365,7 @@ public abstract class MovePreparer extends Observable {
 		
 	public Move getMove(Player player) {
 		logger.debug("try to get the turnkey move for: " + player);
-		List<Move> moves = getMoves(player);	
+		List<Move> moves = getMoves(player);
 		Move result = null;
 		
 		if (moves.isEmpty())
@@ -392,7 +401,7 @@ public abstract class MovePreparer extends Observable {
 			for (Move m : moves) {
 				sms.add(m.getStation(), m.getConnection(), (Ticket) m.getItem());
 			}
-			result = MoveProducer.createMultiMove(player, roundNumber, moveNumber, 
+			result = MoveProducer.createMultiMove(player, roundNumber, moveNumber,
 					(DoubleMoveCard) multiMoveCard, sms);
 		}
 
