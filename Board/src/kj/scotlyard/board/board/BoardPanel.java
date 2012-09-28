@@ -46,6 +46,7 @@ import kj.scotlyard.game.model.MoveListener;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.PlayerListener;
+import kj.scotlyard.game.model.TurnListener;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.util.GameStateExtension;
 import kj.scotlyard.game.util.MoveHelper;
@@ -254,6 +255,20 @@ public class BoardPanel extends JPanel {
 			revalidate(); // warum wird eigentlich repainted?
 		}
 	};
+	
+	private final TurnListener turnListener = new TurnListener() {
+		@Override
+		public void currentRoundChanged(GameState gameState, int oldRoundNumber,
+				int newRoundNumber) { }
+		@Override
+		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
+				Player newPlayer) {
+			for (Piece p : pieces.values()) {
+				logger.debug("setCurrent: " + (newPlayer == p.getPlayer()));
+				p.setCurrent(newPlayer == p.getPlayer());
+			}
+		}
+	};
 
 	// Mehr als Move- und PlayerListener brauchen wir fuer's erste nicht:
 	// Kleine Indicator Turn oder Item betreffend, sollen Pieces
@@ -323,6 +338,7 @@ public class BoardPanel extends JPanel {
 				// Unregister listeners from old GameState
 				this.gameState.removePlayerListener(playerListener);
 				this.gameState.removeMoveListener(moveListener);
+				this.gameState.removeTurnListener(turnListener);
 			}
 
 			// Alle Pieces loeschen
@@ -338,6 +354,7 @@ public class BoardPanel extends JPanel {
 				// Register listeners at new GameState
 				gameState.addPlayerListener(playerListener);
 				gameState.addMoveListener(moveListener);
+				gameState.addTurnListener(turnListener);
 
 				// Add new pieces and set visibility/VisualStation
 				MrXPlayer mrX = gameState.getMrX();

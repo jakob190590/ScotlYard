@@ -31,14 +31,21 @@ import javax.swing.JComponent;
 import kj.scotlyard.board.layout.PercentalBounds;
 import kj.scotlyard.game.model.Player;
 
+import org.apache.log4j.Logger;
+
 @SuppressWarnings("serial")
 public abstract class Piece extends JComponent implements PercentalBounds {
+	
+	private final static Logger logger = Logger.getLogger(Piece.class);
 
 	private Player player;
 
 	private VisualStation visualStation;
 
 	private boolean selected;
+	
+	/** Is <code>currentPlayer</code> */
+	private boolean current;
 
 	public Piece(Player player) {
 		setPlayer(player);
@@ -64,10 +71,16 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2D = (Graphics2D) g;
+		if (current) {
+			logger.debug("draw piece as current: " + this);
+			g2D.setStroke(new BasicStroke(5));
+			g2D.setColor(Color.RED);
+			g2D.drawRect(0, 0, getWidth(), getHeight());
+		}
 		if (selected) {
 			g2D.setStroke(new BasicStroke(3));
 			g2D.setColor(Color.ORANGE);
-			g2D.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+			g2D.drawRect(0, 0, getWidth(), getHeight());
 		}
 	}
 
@@ -98,7 +111,17 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 		repaint();
 	}
 
+	public boolean isCurrent() {
+		return current;
+	}
 
+	public void setCurrent(boolean current) {
+		this.current = current;
+		repaint();
+	}
+	
+	
+	
 
 	@Override
 	public Point2D.Double getLocation2() {
