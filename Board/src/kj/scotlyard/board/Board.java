@@ -1020,6 +1020,7 @@ public class Board extends JFrame {
 	}
 	private class MoveDetectivesNowAction extends AbstractAction {
 		// Fuer Action MoveDetectivesNow, die alle Detectives ziehen laesst (sofern Moves vorbereitet sind)
+		private final Logger logger = Logger.getLogger(MoveDetectivesNowAction.class);
 		private boolean doMoveDetectives = false;
 		final TurnListener moveDetectivesTurnListener = new TurnListener() {
 			@Override
@@ -1046,6 +1047,7 @@ public class Board extends JFrame {
 		final Observer moveDetectivesGameObserver = new Observer() {
 			@Override
 			public void update(Observable o, Object arg) {
+				logger.debug("cancel move detectives, because " + gc.getStatus() + ", " + gc.getWin());
 				doMoveDetectives = false;
 			}
 		};
@@ -1080,7 +1082,9 @@ public class Board extends JFrame {
 								"Move Detectives", JOptionPane.YES_NO_OPTION)
 								== JOptionPane.YES_OPTION) {
 					// Moving anstoßen, und weitermachen wenn erfolgreich
-					 doMoveDetectives = move(currentMove);
+					logger.debug("initiate move detectives");
+					doMoveDetectives = true; // turnListener (wird in naechster zeile aufgerufen) verwendet die variable ja, deswegen muss sie vorher gesetzt sein
+					doMoveDetectives = move(currentMove);
 				}
 			}
 		}
