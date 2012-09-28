@@ -102,6 +102,8 @@ public class Board extends JFrame {
 	
 	private BoardPanel boardPanel;
 	
+	private JLabel lblCurrentRoundNumberVal;
+	
 	private JLabel lblCurrentPlayerVal;
 	
 	private JLabel lblMoveVal;
@@ -128,31 +130,6 @@ public class Board extends JFrame {
 	private TicketSelectionDialog ticketSelectionDialogMrX = new TicketSelectionDialog(this, MrXPlayer.class);
 	private TicketSelectionDialog ticketSelectionDialogDetectives = new TicketSelectionDialog(this, DetectivePlayer.class);
 	
-	// Fuer Action MoveDetectivesNow, die alle Detectives ziehen laesst (sofern Moves vorbereitet sind)
-	private boolean doMoveDetectives = false;
-	private TurnListener moveDetectivesTurnListener = new TurnListener() {
-		@Override
-		public void currentRoundChanged(GameState gameState, int oldRoundNumber,
-				int newRoundNumber) {
-			// Runde vorbei / Neue Runde
-			doMoveDetectives = false;
-		}
-		@Override
-		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
-				Player newPlayer) {
-			if (doMoveDetectives) {
-				Move m = mPrep.getMove(newPlayer);
-				if (m != null) {
-					logger.debug("move next detective");
-					move(m);
-				} else {
-					logger.debug("stop move next detective");
-					doMoveDetectives = false;
-				}
-			}
-		}
-	};
-	
 	// TODO beide muessen beim laden der Board def gesetzt werden
 	private double normalZoomFactor = 0.2; // kann sein was will, nur 1 macht keinen sinn, weil das bild dann viel zu riessig ist!
 	private double zoomFactor = normalZoomFactor;
@@ -173,7 +150,7 @@ public class Board extends JFrame {
 	private final Action redoAction = new RedoAction();
 	private final Action suggestMoveAction = new SuggestMoveAction();
 	private final Action moveNowAction = new MoveNowAction();
-	private final Action moveDetectivesNowAction = new MoveDetectivesNowAction();
+	private final MoveDetectivesNowAction moveDetectivesNowAction = new MoveDetectivesNowAction();
 	private final Action quickPlayAction = new QuickPlayAction();
 	private final Action fitBoardAction = new FitBoardAction();
 	private final Action zoomInAction = new ZoomInAction();
@@ -182,7 +159,6 @@ public class Board extends JFrame {
 	private final Action selectCurrentPlayerAction = new SelectCurrentPlayerAction();
 	private final Action jointMoving = new JointMoving();
 	private final Action mrXAlwaysVisibleAction = new MrXAlwaysVisibleAction();
-	private JLabel lblCurrentRoundNumberVal;
 
 
 
@@ -207,6 +183,7 @@ public class Board extends JFrame {
 	 * Create the frame.
 	 */
 	public Board() {
+		setTitle("ScotlYard");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 600, 600);
 		
@@ -494,6 +471,7 @@ public class Board extends JFrame {
 		gg = bgl.getGameGraph();
 		gc = new DefaultGameController(g, gg, r);
 		gc.setUndoManager(undoManager);
+		gc.addObserver(moveDetectivesNowAction.moveDetectivesGameObserver);
 		gc.addObserver(new Observer() {
 			@Override
 			public void update(Observable o, Object arg) {
@@ -595,7 +573,7 @@ public class Board extends JFrame {
 				lblMoveVal.setText((m == null) ? "Noch kein Move vorbereitet" : m.toString());
 			}
 		});
-		gs.addTurnListener(moveDetectivesTurnListener);
+		gs.addTurnListener(moveDetectivesNowAction.moveDetectivesTurnListener);
 		
 		setGameControllerActionsEnabled(gc.getStatus());
 		boardPanel.setGameState(gs);
@@ -755,7 +733,6 @@ public class Board extends JFrame {
 			gc.move(move);
 		} catch (Exception e2) {
 			success = false;
-			doMoveDetectives = false;
 			e2.printStackTrace();
 			showErrorMessage(e2);
 		}
@@ -1012,6 +989,36 @@ public class Board extends JFrame {
 		}
 	}
 	private class MoveDetectivesNowAction extends AbstractAction {
+		// Fuer Action MoveDetectivesNow, die alle Detectives ziehen laesst (sofern Moves vorbereitet sind)
+		private boolean doMoveDetectives = false;
+		final TurnListener moveDetectivesTurnListener = new TurnListener() {
+			@Override
+			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
+					int newRoundNumber) {
+				// Runde vorbei / Neue Runde
+				doMoveDetectives = false;
+			}
+			@Override
+			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
+					Player newPlayer) {
+				if (doMoveDetectives) {
+					Move m = mPrep.getMove(newPlayer);
+					if (m != null) {
+						logger.debug("move next detective");
+						move(m);
+					} else {
+						logger.debug("stop move next detective");
+						doMoveDetectives = false;
+					}
+				}
+			}
+		};
+		final Observer moveDetectivesGameObserver = new Observer() {
+			@Override
+			public void update(Observable o, Object arg) {
+				doMoveDetectives = false;
+			}
+		};
 		public MoveDetectivesNowAction() {
 			putValue(NAME, "Move Detectives!"); // alternative to simple "Move now"
 			putValue(SHORT_DESCRIPTION, "Move all Detectives now");
@@ -1041,9 +1048,8 @@ public class Board extends JFrame {
 								"a move yet.\nBegin moving as far as possible?",
 								"Move Detectives", JOptionPane.YES_NO_OPTION) 
 								== JOptionPane.YES_OPTION) {
-					// Moving anstoßen
-					doMoveDetectives = true;
-					move(currentMove);
+					// Moving anstoßen, und weitermachen wenn erfolgreich
+					 doMoveDetectives = move(currentMove);
 				}
 			}
 		}

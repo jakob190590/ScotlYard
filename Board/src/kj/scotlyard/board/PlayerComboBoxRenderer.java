@@ -36,7 +36,7 @@ public class PlayerComboBoxRenderer extends JLabel implements
 			setFont(list.getFont());
 			setText(GameMetaData.getForPlayer(value).getName()
 					+ ((value instanceof DetectivePlayer) ?
-								(" - " + value.hashCode()) : ""));
+								(" - " + Integer.toHexString(value.hashCode())) : ""));
 		}
 
 		return this;
