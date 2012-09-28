@@ -143,7 +143,11 @@ public class Board extends JFrame {
 			if (doMoveDetectives) {
 				Move m = mPrep.getMove(newPlayer);
 				if (m != null) {
+					logger.debug("move next detective");
 					move(m);
+				} else {
+					logger.debug("stop move next detective");
+					doMoveDetectives = false;
 				}
 			}
 		}
@@ -495,6 +499,8 @@ public class Board extends JFrame {
 			public void update(Observable o, Object arg) {
 				GameController c = (GameController) o;
 				
+				logger.info(String.format("state changed: %s, %s", c.getStatus(), c.getWin()));
+				
 				movePreparationBar.setEnabled(c.getStatus() == GameStatus.IN_GAME);
 				setGameControllerActionsEnabled(c.getStatus());
 				if (c.getStatus() != GameStatus.IN_GAME)
@@ -527,7 +533,6 @@ public class Board extends JFrame {
 		mPrep.addObserver(new Observer() {
 			@Override
 			public void update(Observable o, Object arg) {
-				logger.debug("MovePreparator Ereignis");
 				if (arg instanceof Move) {
 					logger.debug("move prepared");
 					Player player = ((Move) arg).getPlayer();
@@ -544,6 +549,8 @@ public class Board extends JFrame {
 						logger.debug("Move fertig vorbereitet, QuickPlay, no further moves and Turn");
 						move((Move) arg);
 					}
+				} else {
+					logger.debug("player selected");
 				}
 			}
 		});
@@ -555,10 +562,12 @@ public class Board extends JFrame {
 			}
 			@Override
 			public void moveUndone(GameState gameState, Move move) {
-				mPrep.reset(move.getPlayer());				
+				logger.info(String.format("move undone; player: %s", move.getPlayer()));
+				mPrep.reset(move.getPlayer());
 			}
 			@Override
 			public void moveDone(GameState gameState, Move move) {
+				logger.info(String.format("move done; player: %s", move.getPlayer()));
 //				mPrep.reset(move.getPlayer());
 				// Unnoetig, da zum Rundenwechsel eh resetAll() aufgerufen wird
 				// Stoerend, dadurch das (nicht ganz zuverlaessige) counting nicht funktioniert (MoveDetectivesNowAction)
@@ -569,7 +578,7 @@ public class Board extends JFrame {
 			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
 					int newRoundNumber) {
 				// Beim Wechsel in naechste Runde
-				logger.debug(String.format("round changed: %d -> %d", oldRoundNumber, newRoundNumber));
+				logger.info(String.format("round changed: %d -> %d", oldRoundNumber, newRoundNumber));
 				
 				lblCurrentRoundNumberVal.setText(String.valueOf(newRoundNumber));
 				
@@ -742,6 +751,7 @@ public class Board extends JFrame {
 	private boolean move(Move move) {
 		boolean success = true;
 		try {
+			logger.debug("try to carry out move for: " + move.getPlayer());
 			gc.move(move);
 		} catch (Exception e2) {
 			success = false;
@@ -1157,7 +1167,8 @@ public class Board extends JFrame {
 			putValue(NAME, "MrX Always Visible");
 			putValue(SHORT_DESCRIPTION, "Keep MrX always visible");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_X); // oder M, A oder V ...
-			setSelected(this, true);
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
+			setSelected(this, false);
 		}
 		public void actionPerformed(ActionEvent e) {
 			boardPanel.setMrXAlwaysVisible(isSelected(this));

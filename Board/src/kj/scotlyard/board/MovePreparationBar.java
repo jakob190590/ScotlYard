@@ -109,6 +109,7 @@ public class MovePreparationBar extends JPanel {
 		cbPlayer = new JComboBox<>(players);
 		cbPlayer.setAction(selectPlayerAction);
 		// TODO cbMovePrepPlayer.setRenderer(aRenderer); // Implement ListCellRenderer: http://docs.oracle.com/javase/tutorial/uiswing/components/combobox.html#renderer
+		cbPlayer.setRenderer(new PlayerComboBoxRenderer());
 		cbPlayer.setPreferredSize(new Dimension(330, 20));
 		gs.addPlayerListener(playerListener);
 		gs.addTurnListener(turnListener);

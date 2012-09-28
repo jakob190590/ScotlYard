@@ -393,7 +393,11 @@ public class BoardPanel extends JPanel {
 
 	public void setMrXAlwaysVisible(boolean mrXAlwaysVisible) {
 		this.mrXAlwaysVisible = mrXAlwaysVisible;
-		updatePieceVisibility(pieces.get(gameState.getMrX()));
+		Player mrX;
+		Piece p;
+		if (gameState != null && (mrX = gameState.getMrX()) != null 
+				&& (p = pieces.get(mrX)) != null)
+			updatePieceVisibility(p);
 	}
 
 	private void updatePieceVisibility(Piece piece) {
