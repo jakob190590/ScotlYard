@@ -308,13 +308,33 @@ public class Board extends JFrame {
 		
 		mnBoardPanel.addSeparator();
 		
+		JMenuItem mntmSetRulesNull = new JMenuItem("Set Rules to null");
+		mntmSetRulesNull.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setRules(null);
+			}
+		});
+		mntmSetRulesNull.setMnemonic(KeyEvent.VK_U);
+		mnBoardPanel.add(mntmSetRulesNull);
+		
+		JMenuItem mntmSetRules = new JMenuItem("Set Rules");
+		mntmSetRules.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setRules(r);
+			}
+		});
+		mntmSetRules.setMnemonic(KeyEvent.VK_R);
+		mnBoardPanel.add(mntmSetRules);
+		
+		mnBoardPanel.addSeparator();
+		
 		JMenuItem mntmSetImageToNull = new JMenuItem("Set Image to null");
 		mntmSetImageToNull.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				boardPanel.setImage(null);
 			}
 		});
-		mntmSetImageToNull.setMnemonic(KeyEvent.VK_U);
+		mntmSetImageToNull.setMnemonic(KeyEvent.VK_L);
 		mnBoardPanel.add(mntmSetImageToNull);
 		
 		JMenuItem mntmSetImage = new JMenuItem("Set Image");

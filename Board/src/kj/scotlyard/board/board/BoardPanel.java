@@ -337,11 +337,10 @@ public class BoardPanel extends JPanel {
 				for (Map.Entry<Player, Piece> e : pieces.entrySet()) {
 					Piece p = e.getValue();
 					p.addMouseListener(pieceMouseListener);
-					add(p, 0);
+					add(p, 0); // oben einfuegen
+					updatePieceVisibility(p);
 					Move m = gameState.getLastMove(e.getKey());
-					if (m == null) {
-						updatePieceVisibility(p);
-					} else {
+					if (m != null) {
 						p.setVisualStation(visualStations.get(m.getStation()));
 					}
 				}
