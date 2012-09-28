@@ -357,6 +357,9 @@ public class Board extends JFrame {
 		chckbxmntmJointMoving.setAction(jointMoving);
 		mnErnsthaft.add(chckbxmntmJointMoving);
 		
+		JMenuItem mntmShowMrx = new JMenuItem("Show MrX");
+		mnErnsthaft.add(mntmShowMrx);
+		
 		JMenu mnZoom = new JMenu("Zoom");
 		mnZoom.setMnemonic(KeyEvent.VK_Z);
 		mnErnsthaft.add(mnZoom);

@@ -186,7 +186,7 @@ public class DefaultGameController extends GameController {
 			notifyObservers();
 						
 		} else {
-			throw new SecurityException("Only this' own current state implementation can change the state.");
+			throw new SecurityException("Only GameController's own current state implementation can change the state.");
 		}
 		
 	}
