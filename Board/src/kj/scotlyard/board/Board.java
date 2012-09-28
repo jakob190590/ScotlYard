@@ -117,7 +117,7 @@ public class Board extends JFrame {
 	MovePreparer mPrep;
 	Map<Integer, StationVertex> nsm; // Number Station Map
 	
-	Dimension originalImageSize;
+	private Dimension originalImageSize;
 	
 	private TicketSelectionDialog ticketSelectionDialogMrX = new TicketSelectionDialog(this, MrXPlayer.class);
 	private TicketSelectionDialog ticketSelectionDialogDetectives = new TicketSelectionDialog(this, DetectivePlayer.class);
@@ -197,7 +197,7 @@ public class Board extends JFrame {
 	 */
 	public Board() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 513, 321);
+		setBounds(100, 100, 600, 600);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -1022,7 +1022,7 @@ public class Board extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			setSelected(fitBoardAction, false);
-			zoomFactor = (double) boardPanelContainer.getWidth() / originalImageSize.width;
+			zoomFactor = (double) boardPanel.getWidth() / originalImageSize.width;
 			logger.debug(String.format("zoomFactor old: %f, new: %f", zoomFactor, zoomFactor * ZOMMING_FACTOR));			
 			zoomFactor *= ZOMMING_FACTOR;
 			updateBoardPanelZoom();
@@ -1042,7 +1042,7 @@ public class Board extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			setSelected(fitBoardAction, false);
-			zoomFactor = (double) boardPanelContainer.getWidth() / originalImageSize.width;
+			zoomFactor = (double) boardPanel.getWidth() / originalImageSize.width;
 			logger.debug(String.format("zoomFactor old: %f, new: %f", zoomFactor, zoomFactor * ZOMMING_FACTOR));			
 			zoomFactor /= ZOMMING_FACTOR;
 			updateBoardPanelZoom();
