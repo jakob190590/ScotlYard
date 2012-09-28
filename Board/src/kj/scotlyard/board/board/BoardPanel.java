@@ -35,6 +35,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import kj.scotlyard.board.MovePreparationEvent;
 import kj.scotlyard.board.MovePreparer;
 import kj.scotlyard.board.layout.PercentalLayout;
 import kj.scotlyard.game.graph.GameGraph;
@@ -136,9 +137,11 @@ public class BoardPanel extends JPanel {
 	private final Observer movePreparerObserver = new Observer() {
 		@Override
 		public void update(Observable o, Object arg) {
-			if (arg instanceof Player) {
+			MovePreparationEvent mpe;
+			if (arg instanceof MovePreparationEvent && (mpe = (MovePreparationEvent) arg)
+					.getId() == MovePreparationEvent.SELECT_PLAYER) {
 				for (Piece p : pieces.values()) {
-					p.setSelected(arg == p.getPlayer());
+					p.setSelected(mpe.getPlayer() == p.getPlayer());
 				}
 			}
 		}

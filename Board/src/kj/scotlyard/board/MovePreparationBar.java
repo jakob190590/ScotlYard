@@ -1,10 +1,20 @@
 package kj.scotlyard.board;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Vector;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JPanel;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JPanel;
 
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.GameState;
@@ -13,17 +23,6 @@ import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.PlayerListener;
 import kj.scotlyard.game.model.TurnListener;
 
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Vector;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-
-import javax.swing.JFormattedTextField;
-import javax.swing.JButton;
-
 import org.apache.log4j.Logger;
 
 @SuppressWarnings("serial")
@@ -31,8 +30,8 @@ public class MovePreparationBar extends JPanel {
 	
 	private static final Logger logger = Logger.getLogger(MovePreparationBar.class);
 	
-	private GameState gs;	
-	private MovePreparer mPrep;	
+	private GameState gs;
+	private MovePreparer mPrep;
 	private Map<Integer, StationVertex> nsm; // Number Station Map
 	
 	private Vector<Player> players;
@@ -74,10 +73,10 @@ public class MovePreparationBar extends JPanel {
 	private final Observer movePreparerObserver = new Observer() {
 		@Override
 		public void update(Observable o, Object arg) {
-			if (o == mPrep) {
-				if (arg instanceof Player) {
-					setSelectedPlayer((Player) arg);
-				}
+			MovePreparationEvent mpe;
+			if (arg instanceof MovePreparationEvent && (mpe = (MovePreparationEvent) arg)
+					.getId() == MovePreparationEvent.SELECT_PLAYER) {
+				setSelectedPlayer(mpe.getPlayer());
 			}
 		}
 	};
@@ -134,6 +133,7 @@ public class MovePreparationBar extends JPanel {
 			putValue(NAME, "OK");
 			putValue(SHORT_DESCRIPTION, "Submit the station number");
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			mPrep.nextStation(nsm.get(Integer.parseInt(ftfStationNumber.getText()))); // TODO vllt spaeter ftfStationNumber.getValue()
 		}
@@ -143,6 +143,7 @@ public class MovePreparationBar extends JPanel {
 			putValue(NAME, "Reset");
 			putValue(SHORT_DESCRIPTION, "Reset move preparation");
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			mPrep.reset(getSelectedPlayer());
 		}
@@ -152,6 +153,7 @@ public class MovePreparationBar extends JPanel {
 			putValue(NAME, "Select Player");
 			putValue(SHORT_DESCRIPTION, "Select the player to prepare a move");
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			mPrep.selectPlayer((Player) cbPlayer.getSelectedItem());
 		}
@@ -171,5 +173,5 @@ public class MovePreparationBar extends JPanel {
 		for (Component c : getComponents()) {
 			c.setEnabled(enabled);
 		}
-	}	
+	}
 }

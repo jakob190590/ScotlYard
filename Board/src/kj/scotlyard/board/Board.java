@@ -18,13 +18,18 @@
 
 package kj.scotlyard.board;
 
+import static kj.scotlyard.board.ActionTools.isSelected;
+import static kj.scotlyard.board.ActionTools.setSelected;
+
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Image;
-import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -35,26 +40,27 @@ import java.util.Observer;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.undo.UndoManager;
-import javax.swing.JMenuBar;
-import javax.swing.JRadioButtonMenuItem;
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBoxMenuItem;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.ButtonGroup;
+import javax.swing.border.EmptyBorder;
+import javax.swing.undo.UndoManager;
 
 import kj.scotlyard.board.board.BoardPanel;
 import kj.scotlyard.board.layout.AspectRatioGridLayout;
@@ -83,18 +89,12 @@ import kj.scotlyard.game.util.MoveProducer;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import static kj.scotlyard.board.ActionTools.isSelected;
-import static kj.scotlyard.board.ActionTools.setSelected;
-import java.awt.Font;
-import javax.swing.SwingConstants;
-import java.awt.Component;
-
 @SuppressWarnings("serial")
 public class Board extends JFrame {
 	
 	private static final Logger logger = Logger.getLogger(Board.class);
 	
-	private static final double ZOMMING_FACTOR = 1.2; 
+	private static final double ZOMMING_FACTOR = 1.2;
 	
 	private Image img;
 
@@ -167,6 +167,7 @@ public class Board extends JFrame {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					Board frame = new Board();
@@ -276,6 +277,7 @@ public class Board extends JFrame {
 		// Um zu ueberpruefen, ob das neu setzen waehrend dem Spiel funktioniert
 		JMenuItem mntmSetGameStateNull = new JMenuItem("Set GameState to null");
 		mntmSetGameStateNull.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				boardPanel.setGameState(null);
 			}
@@ -285,6 +287,7 @@ public class Board extends JFrame {
 		
 		JMenuItem mntmSetGameState = new JMenuItem("Set GameState");
 		mntmSetGameState.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				boardPanel.setGameState(gs);
 			}
@@ -296,6 +299,7 @@ public class Board extends JFrame {
 		
 		JMenuItem mntmSetRulesNull = new JMenuItem("Set Rules to null");
 		mntmSetRulesNull.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				boardPanel.setRules(null);
 			}
@@ -305,6 +309,7 @@ public class Board extends JFrame {
 		
 		JMenuItem mntmSetRules = new JMenuItem("Set Rules");
 		mntmSetRules.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				boardPanel.setRules(r);
 			}
@@ -316,6 +321,7 @@ public class Board extends JFrame {
 		
 		JMenuItem mntmSetImageToNull = new JMenuItem("Set Image to null");
 		mntmSetImageToNull.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				boardPanel.setImage(null);
 			}
@@ -325,6 +331,7 @@ public class Board extends JFrame {
 		
 		JMenuItem mntmSetImage = new JMenuItem("Set Image");
 		mntmSetImage.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				boardPanel.setImage(img);
 			}
@@ -435,10 +442,10 @@ public class Board extends JFrame {
 //			public boolean imageUpdate(Image img, int infoflags, int x, int y,
 //					int width, int height) {
 //				// width und height koennten einzeln oder gleichzeitig ankommen
-//				if ((infoflags & WIDTH) != 0) {				
+//				if ((infoflags & WIDTH) != 0) {
 //					imageWidth = width;
 //				}
-//				if ((infoflags & HEIGHT) != 0) {				
+//				if ((infoflags & HEIGHT) != 0) {
 //					imageHeight = height;
 //				}
 //				if ((imageWidth >= 0) && (imageHeight >= 0)) {
@@ -452,7 +459,7 @@ public class Board extends JFrame {
 //		imageHeight = image.getHeight(imageSizeObserver);
 //		if ((imageWidth >= 0) && (imageHeight >= 0)) {
 //			preferredSize = new Dimension(imageWidth, imageHeight);
-//		}		
+//		}
 		
 		int w = img.getWidth(null);
 		int h = img.getHeight(null);
@@ -461,7 +468,7 @@ public class Board extends JFrame {
 					"completely: Cannot determine image's width and/or height.");
 		}
 		originalImageSize = new Dimension(w, h);
-		boardPanel.setImage(img);	
+		boardPanel.setImage(img);
 		boardPanel.setPreferredSize(originalImageSize);
 		
 		// GameState
@@ -511,21 +518,24 @@ public class Board extends JFrame {
 		mPrep.addObserver(new Observer() {
 			@Override
 			public void update(Observable o, Object arg) {
-				if (arg instanceof Move) {
+				MovePreparationEvent mpe;
+				if (arg instanceof MovePreparationEvent && (mpe = (MovePreparationEvent) arg)
+						.getId() == MovePreparationEvent.NEXT_STATION) {
+					
 					logger.debug("move prepared");
-					Player player = ((Move) arg).getPlayer();
+					Player player = mpe.getPlayer();
 					
 					if (player == gs.getCurrentPlayer()) {
-						lblMoveVal.setText(arg.toString());
+						lblMoveVal.setText(mpe.getMove().toString());
 					}
 					
-					boolean furtherMoves = (player instanceof MrXPlayer) ? 
+					boolean furtherMoves = (player instanceof MrXPlayer) ?
 							ticketSelectionDialogMrX.isFurtherMovesSelected() : false;
 					if (isSelected(quickPlayAction)
 							&& player == gs.getCurrentPlayer() // selected player's turn
 							&& !furtherMoves) { // no further moves
 						logger.debug("Move fertig vorbereitet, QuickPlay, no further moves and Turn");
-						move((Move) arg);
+						move(mpe.getMove());
 					}
 				} else {
 					logger.debug("player selected");
@@ -589,6 +599,10 @@ public class Board extends JFrame {
 		boardPanelContainer.setPreferredSize(new Dimension());
 		
 		boardPanelScrollPane = new JScrollPane(boardPanelContainer);
+		// Scrollgeschwindigkeit einstellen
+		final int scrollBarUnitIncrement = 20;
+		boardPanelScrollPane.getVerticalScrollBar().setUnitIncrement(scrollBarUnitIncrement);
+		boardPanelScrollPane.getHorizontalScrollBar().setUnitIncrement(scrollBarUnitIncrement);
 		
 		contentPane.add(boardPanelScrollPane, BorderLayout.CENTER);
 		
@@ -683,7 +697,7 @@ public class Board extends JFrame {
 	private void showErrorMessage(Exception e) {
 		JOptionPane.showMessageDialog(this, e.getMessage(), e.getClass()
 				.getSimpleName(), JOptionPane.ERROR_MESSAGE);
-	}	
+	}
 	private void showGameStatusAndWin(GameStatus status, GameWin win) {
 		JOptionPane.showMessageDialog(Board.this, String.format(
 				"Status: %s\nWin: %s", status, win));
@@ -750,6 +764,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Create a new game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_N);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			gc.newGame();
 		}
@@ -760,6 +775,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Clear all players");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_C);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			gc.clearPlayers();
 		}
@@ -770,6 +786,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Set new Mr. X");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_X);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			gc.newMrX();
 		}
@@ -780,6 +797,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Add a new detective");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_D);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			gc.newDetective();
 		}
@@ -790,6 +808,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Start the game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_S);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
 				gc.start();
@@ -804,6 +823,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Abort the game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_A);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			gc.abort();
 		}
@@ -814,6 +834,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Make a move");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			Move move = null;
 			if (gc.getStatus() == GameStatus.IN_GAME) {
@@ -828,6 +849,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Show the game status and win");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_I); // i as information
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			showGameStatusAndWin(gc.getStatus(), gc.getWin());
 		}
@@ -838,6 +860,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Remove a detective");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			String s = "0";
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
@@ -845,8 +868,8 @@ public class Board extends JFrame {
 				try {
 					d = g.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
-					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
-							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
+					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(),
+							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION,
 							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
 						break;
 					}
@@ -855,7 +878,7 @@ public class Board extends JFrame {
 				try {
 					gc.removeDetective(d);
 				} catch (Exception e2) {
-					showErrorMessage(e2);					
+					showErrorMessage(e2);
 				}
 				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
 				break;
@@ -868,6 +891,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Shift up a detective in the list");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_U);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			String s = "0";
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
@@ -875,8 +899,8 @@ public class Board extends JFrame {
 				try {
 					d = g.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
-					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
-							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
+					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(),
+							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION,
 							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
 						break;
 					}
@@ -885,7 +909,7 @@ public class Board extends JFrame {
 				try {
 					gc.shiftUpDetective(d);
 				} catch (Exception e2) {
-					showErrorMessage(e2);					
+					showErrorMessage(e2);
 				}
 				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
 				break;
@@ -899,6 +923,7 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_D);
 			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 16);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			String s = "0";
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
@@ -906,8 +931,8 @@ public class Board extends JFrame {
 				try {
 					d = g.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
-					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(), 
-							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION, 
+					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(),
+							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION,
 							JOptionPane.ERROR_MESSAGE) != JOptionPane.OK_OPTION) {
 						break;
 					}
@@ -916,7 +941,7 @@ public class Board extends JFrame {
 				try {
 					gc.shiftDownDetective(d);
 				} catch (Exception e2) {
-					showErrorMessage(e2);					
+					showErrorMessage(e2);
 				}
 				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
 				break;
@@ -929,6 +954,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Create a new game with new players");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_W);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			logger.info("new game with players");
 			gc.clearPlayers();
@@ -945,6 +971,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Some short description");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_U);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			undoManager.undo();
 			setEnabled(undoManager.canUndo()); // TODO das kanns doch nicht sein: ueberall, wo UndoManger veraendert werden koennte, muesste sowas stehn! wir brauchen nen listener!!
@@ -957,6 +984,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Some short description");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			undoManager.redo();
 			setEnabled(undoManager.canUndo()); // TODO das kanns doch nicht sein: ueberall, wo UndoManger veraendert werden koennte, muesste sowas stehn! wir brauchen nen listener!!
@@ -969,6 +997,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Some short description");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_S);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			// Suggest an AI move!
 			if (gc.getStatus() == GameStatus.IN_GAME) {
@@ -984,6 +1013,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Move now");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_M);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			move(mPrep.getMove(gs.getCurrentPlayer()));
 		}
@@ -1024,10 +1054,11 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Move all Detectives now");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_D);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			Player currentPlayer = gs.getCurrentPlayer();
 			if (currentPlayer instanceof DetectivePlayer) {
-				Move currentMove = mPrep.getMove(currentPlayer);				
+				Move currentMove = mPrep.getMove(currentPlayer);
 				
 				// Detectives zählen, die schon gezogen sind, oder einen Zug vorbereitet haben.
 				int nDetectivesReady = 0;
@@ -1046,7 +1077,7 @@ public class Board extends JFrame {
 						|| JOptionPane.showConfirmDialog(Board.this,
 								"It seems that not all detectives have prepared " +
 								"a move yet.\nBegin moving as far as possible?",
-								"Move Detectives", JOptionPane.YES_NO_OPTION) 
+								"Move Detectives", JOptionPane.YES_NO_OPTION)
 								== JOptionPane.YES_OPTION) {
 					// Moving anstoßen, und weitermachen wenn erfolgreich
 					 doMoveDetectives = move(currentMove);
@@ -1060,6 +1091,7 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Toogle Quick Play mode");
 			setSelected(this, true);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			ticketSelectionDialogMrX.setQuickPlay(isSelected(quickPlayAction));
 			ticketSelectionDialogDetectives.setQuickPlay(isSelected(quickPlayAction));
@@ -1073,9 +1105,10 @@ public class Board extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_F);
 			setSelected(this, true); // default behavior
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			setSelected(this, true);
-			// pref size auf 0 setzen, damit is es immer angepasst an Viewport. 
+			// pref size auf 0 setzen, damit is es immer angepasst an Viewport.
 			boardPanelContainer.setPreferredSize(new Dimension());	// vorher: getImageScrollPane().getViewport().getSize());
 			// Wenn man's aber an Viewport anpassen wuerde, waere es fix,
 			// je nach dem, wie gross der Viewport war zu dem Zeitpunkt.
@@ -1100,12 +1133,13 @@ public class Board extends JFrame {
 			
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
 //			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
-			// dabei will ich doch, dass es einfach funktioniert, wenn ein + getippt wird. dafuer ist doch auch getKeyStroke("ctrl typed ...") da, oder? 
+			// dabei will ich doch, dass es einfach funktioniert, wenn ein + getippt wird. dafuer ist doch auch getKeyStroke("ctrl typed ...") da, oder?
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			setSelected(fitBoardAction, false);
 			zoomFactor = (double) boardPanel.getWidth() / originalImageSize.width;
-			logger.debug(String.format("zoomFactor old: %f, new: %f", zoomFactor, zoomFactor * ZOMMING_FACTOR));			
+			logger.debug(String.format("zoomFactor old: %f, new: %f", zoomFactor, zoomFactor * ZOMMING_FACTOR));
 			zoomFactor *= ZOMMING_FACTOR;
 			updateBoardPanelZoom();
 		}
@@ -1122,10 +1156,11 @@ public class Board extends JFrame {
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
 //			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			setSelected(fitBoardAction, false);
 			zoomFactor = (double) boardPanel.getWidth() / originalImageSize.width;
-			logger.debug(String.format("zoomFactor old: %f, new: %f", zoomFactor, zoomFactor * ZOMMING_FACTOR));			
+			logger.debug(String.format("zoomFactor old: %f, new: %f", zoomFactor, zoomFactor * ZOMMING_FACTOR));
 			zoomFactor /= ZOMMING_FACTOR;
 			updateBoardPanelZoom();
 		}
@@ -1141,10 +1176,11 @@ public class Board extends JFrame {
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
 //			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_0, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			setSelected(fitBoardAction, false);
 			zoomFactor = normalZoomFactor;
-			logger.debug(String.format("zoomFactor: %f", zoomFactor));			
+			logger.debug(String.format("zoomFactor: %f", zoomFactor));
 			updateBoardPanelZoom();
 		}
 	}
@@ -1154,6 +1190,7 @@ public class Board extends JFrame {
 			putValue(NAME, "Select Current Player");
 			putValue(SHORT_DESCRIPTION, "Select the current player to prepare a move for");
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			mPrep.selectPlayer(gs.getCurrentPlayer());
 		}
@@ -1164,10 +1201,11 @@ public class Board extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Joint moving for detectives");
 			setSelected(this, true);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			mPrep.setFixedTurnOrder(!isSelected(this));
 		}
-	}	
+	}
 	private class MrXAlwaysVisibleAction extends AbstractAction {
 		public MrXAlwaysVisibleAction() {
 			putValue(NAME, "MrX Always Visible");
@@ -1176,6 +1214,7 @@ public class Board extends JFrame {
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
 			setSelected(this, false);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			boardPanel.setMrXAlwaysVisible(isSelected(this));
 		}

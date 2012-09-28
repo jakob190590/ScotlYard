@@ -239,7 +239,7 @@ public abstract class MovePreparer extends Observable {
 			}
 		}
 		setChanged(); // setChanged in jedem Fall: Falls z.B. MovePrep.Bar einen anderen Player auswaehlt, der nicht ausgewaehlt werden kann, muss die comboBox wieder zurueckgesetzt werden
-		notifyObservers(new MovePreparationEvent(MovePreparationEvent.SELECT_PLAYER, player, null));
+		notifyObservers(new MovePreparationEvent(MovePreparationEvent.SELECT_PLAYER, this.player, null));
 		return result;
 	}
 	
