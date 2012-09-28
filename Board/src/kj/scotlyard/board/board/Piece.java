@@ -18,7 +18,11 @@
 
 package kj.scotlyard.board.board;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -31,13 +35,20 @@ import kj.scotlyard.game.model.Player;
 public abstract class Piece extends JComponent implements PercentalBounds {
 
 	private Player player;
-	
+
 	private VisualStation visualStation;
-	
+
+	private boolean selected;
+
 	public Piece(Player player) {
 		setPlayer(player);
 	}
-	
+
+	private void raiseSetterUnsuppExc() {
+		throw new UnsupportedOperationException("Setter not supported; " +
+				"value is obtained from the VisualStation.");
+	}
+
 	private void updateToolTipText() {
 		String s = "";
 		if (player != null) {
@@ -46,7 +57,18 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 				s += String.format(" at %s", visualStation.getToolTipText());
 		}
 		setToolTipText(s);
-		
+
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Graphics2D g2D = (Graphics2D) g;
+		if (selected) {
+			g2D.setStroke(new BasicStroke(3));
+			g2D.setColor(Color.ORANGE);
+			g2D.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+		}
 	}
 
 	public Player getPlayer() {
@@ -67,6 +89,17 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 		updateToolTipText();
 	}
 
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+		repaint();
+	}
+
+
+
 	@Override
 	public Point2D.Double getLocation2() {
 		if (getVisualStation() == null)
@@ -81,7 +114,7 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 
 	@Override
 	public void setLocation2(Point2D.Double p) {
-		raiseSetterUnsuppExc();		
+		raiseSetterUnsuppExc();
 	}
 
 	@Override
@@ -117,10 +150,5 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 	public void setBounds2(Rectangle2D.Double r) {
 		raiseSetterUnsuppExc();
 	}
-	
-	private void raiseSetterUnsuppExc() {
-		throw new UnsupportedOperationException("Setter not supported; " +
-				"value is obtained from the VisualStation.");
-	}
-	
+
 }

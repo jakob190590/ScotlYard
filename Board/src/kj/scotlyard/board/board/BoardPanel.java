@@ -28,14 +28,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
-
-import kj.scotlyard.board.Board;
 import kj.scotlyard.board.MovePreparer;
 import kj.scotlyard.board.layout.PercentalLayout;
 import kj.scotlyard.game.graph.GameGraph;
@@ -51,45 +50,47 @@ import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.util.GameStateExtension;
 import kj.scotlyard.game.util.MoveHelper;
 
+import org.apache.log4j.Logger;
+
 /**
  * Stellt das Spielbrett mit Stationen und Spielfiguren dar.
- * Dazu wird ein <code>Image</code> angezeigt, das erst 
+ * Dazu wird ein <code>Image</code> angezeigt, das erst
  * gesetzt werden darf, wenn es vollständig geladen ist.
  * @author jakob190590
  *
  */
 @SuppressWarnings("serial")
 public class BoardPanel extends JPanel {
-	
-	private static final Logger logger = Logger.getLogger(Board.class);
-	
+
+	private static final Logger logger = Logger.getLogger(BoardPanel.class);
+
 	private Image image;
-	
+
 	private Rules rules;
-	
+
 	private GameState gameState;
-	
+
 	private GameGraph gameGraph;
-	
+
 	private Map<Player, Piece> pieces = new HashMap<>();
-	
+
 	private Map<StationVertex, VisualStation> visualStations = new HashMap<>();
-	
+
 	private MovePreparer movePreparer;
-	
+
 	private boolean mrXAlwaysVisible;
-	
+
 	private final MouseListener visualStationMouseListener = new MouseAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			super.mouseClicked(e);
 			logger.debug("mouse click on " + e.getSource());
 			StationVertex s = ((VisualStation) e.getSource()).getStation();
-			
-			// Bei Doppelklick wenn Detectives dran sind, 
+
+			// Bei Doppelklick wenn Detectives dran sind,
 			// versuchen, automatisch den Player zu bestimmen
 			if (e.getClickCount() >= 2 && movePreparer.getSelectedPlayer() instanceof DetectivePlayer) {
-				
+
 				DetectivePlayer p = MoveHelper.unambiguousDetective(gameState, gameGraph, s);
 				logger.debug("unambiguous detective: " + p);
 				if (p != null) {
@@ -128,20 +129,32 @@ public class BoardPanel extends JPanel {
 			// nein, es gibt doch DragSource und startDrag ...
 			super.mousePressed(e);
 		}
-		
+
 	};
-	
+
+	private final Observer movePreparerObserver = new Observer() {
+		@Override
+		public void update(Observable o, Object arg) {
+			if (arg instanceof Player) {
+				for (Piece p : pieces.values()) {
+					p.setSelected(arg == p.getPlayer());
+				}
+			}
+		}
+	};
+
+
 	/**
 	 * Dieser PlayerListener lässt das BoardPanel reagieren, wenn
-	 * Player hinzugefügt oder entfernt werden. Hier können 
+	 * Player hinzugefügt oder entfernt werden. Hier können
 	 * <code>NullPointerException</code>s auftreten, wenn die Daten
 	 * im BoardPanel (sprich <code>pieces</code>) corrupted sind.
 	 */
-	private final PlayerListener playerListener = new PlayerListener() {		
+	private final PlayerListener playerListener = new PlayerListener() {
 		@Override
 		public void mrXChanged(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX) {
 			logger.debug(String.format("Old MrX <%s> replaced by new MrX <%s>", oldMrX, newMrX));
-			
+
 			Piece piece;
 
 			// Alten MrX (wenn nicht null) entfernen aus Map und Container
@@ -151,7 +164,7 @@ public class BoardPanel extends JPanel {
 				remove(piece);
 				repaint();
 			}
-			
+
 			// Neuen MrX (wenn nicht null) Map und Container hinzufuegen
 			if (newMrX != null) {
 				piece = new MrXPiece(newMrX);
@@ -163,7 +176,7 @@ public class BoardPanel extends JPanel {
 				add(piece, 0);
 			}
 		}
-		
+
 		@Override
 		public void detectiveRemoved(GameState gameState,
 				DetectivePlayer detective, int atIndex) {
@@ -172,10 +185,10 @@ public class BoardPanel extends JPanel {
 			Piece piece = pieces.remove(detective);
 			piece.removeMouseListener(pieceMouseListener);
 			remove(piece);
-			
+
 			repaint();
 		}
-		
+
 		@Override
 		public void detectiveAdded(GameState gameState, DetectivePlayer detective,
 				int atIndex) {
@@ -184,18 +197,18 @@ public class BoardPanel extends JPanel {
 			Piece piece = new DetectivePiece(detective);
 			/*
 			 * This happens when a detective is shifted up or
-			 * down in the list: It will be removed and then 
+			 * down in the list: It will be removed and then
 			 * inserted at an other index in the list.
 			 * I think that's the only case; provided that you
 			 * use the GameController!
 			 */
 			updatePieceVisibility(piece);
 			piece.addMouseListener(pieceMouseListener);
-			pieces.put(detective, piece);			
+			pieces.put(detective, piece);
 			add(piece, 0); // TODO sollte revalidate und repaint ausloesen (wenn piece zum ersten mal sichtbar wird)
 		}
 	};
-	
+
 	/**
 	 * Dieser MoveListener lässt das BoardPanel auf Move-Ereignisse
 	 * reagieren. Hier können <code>NullPointerException</code>s auftreten,
@@ -203,7 +216,7 @@ public class BoardPanel extends JPanel {
 	 * sind.
 	 */
 	private final MoveListener moveListener = new MoveListener() {
-		
+
 		@Override
 		public void movesCleard(GameState gameState) {
 			logger.debug("Moves cleared, making player invisible");
@@ -211,7 +224,7 @@ public class BoardPanel extends JPanel {
 				p.setVisible(false);
 			}
 		}
-		
+
 		@Override
 		public void moveUndone(GameState gameState, Move move) {
 			logger.debug("Moves undone");
@@ -223,11 +236,11 @@ public class BoardPanel extends JPanel {
 			if (m == null) {
 				updatePieceVisibility(pieces.get(p));
 			} else {
-				pieces.get(p).setVisualStation(visualStations.get(m.getStation()));				
-				revalidate();				
+				pieces.get(p).setVisualStation(visualStations.get(m.getStation()));
+				revalidate();
 			}
 		}
-		
+
 		@Override
 		public void moveDone(GameState gameState, Move move) {
 			logger.debug("Moves done");
@@ -237,33 +250,33 @@ public class BoardPanel extends JPanel {
 			Piece p = pieces.get(move.getPlayer());
 			p.setVisualStation(visualStations.get(move.getStation()));
 			updatePieceVisibility(p);
-			
+
 			revalidate(); // warum wird eigentlich repainted?
 		}
 	};
-	
+
 	// Mehr als Move- und PlayerListener brauchen wir fuer's erste nicht:
-	// Kleine Indicator Turn oder Item betreffend, sollen Pieces 
+	// Kleine Indicator Turn oder Item betreffend, sollen Pieces
 	// selbst anzeigen, das ist nicht Aufgabe des BoardPanels.
-	
-	
-	
+
+
+
 	public BoardPanel() {
 		super(new PercentalLayout());
 	}
 
 	@Override
-	protected void paintComponent(Graphics g) {		
+	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (image != null) {
 			Graphics2D g2D = (Graphics2D) g;
 			Insets insets = getInsets();
-			g2D.drawImage(image, insets.left, insets.top, 
-					getWidth() - insets.left - insets.right, 
-					getHeight() - insets.top - insets.bottom, this);			
-		}		
+			g2D.drawImage(image, insets.left, insets.top,
+					getWidth() - insets.left - insets.right,
+					getHeight() - insets.top - insets.bottom, this);
+		}
 	}
-	
+
 	public Rules getRules() {
 		return rules;
 	}
@@ -279,7 +292,7 @@ public class BoardPanel extends JPanel {
 	 * Builds the <code>visualStations</code> <code>Map</code>, which
 	 * maps a <code>StationVertex</code> to it's <code>VisualStation</code>.
 	 * This method must be called after <code>VisualStation</code>s
-	 * are added to or removed from this Container. 
+	 * are added to or removed from this Container.
 	 */
 	// Must be called, after all VisualComponents of a Graph are added to the component
 	public void buildVisualStationMap() {
@@ -290,7 +303,7 @@ public class BoardPanel extends JPanel {
 			}
 		}
 		visualStations.clear();
-		
+
 		for (Component c : getComponents()) {
 			if (c instanceof VisualStation) {
 				VisualStation vs = (VisualStation) c;
@@ -299,7 +312,7 @@ public class BoardPanel extends JPanel {
 			}
 		}
 	}
-	
+
 	public GameState getGameState() {
 		return gameState;
 	}
@@ -309,9 +322,9 @@ public class BoardPanel extends JPanel {
 			if (this.gameState != null) {
 				// Unregister listeners from old GameState
 				this.gameState.removePlayerListener(playerListener);
-				this.gameState.removeMoveListener(moveListener);				
+				this.gameState.removeMoveListener(moveListener);
 			}
-			
+
 			// Alle Pieces loeschen
 			for (Piece p : pieces.values()) {
 				p.removeMouseListener(pieceMouseListener);
@@ -319,7 +332,7 @@ public class BoardPanel extends JPanel {
 			}
 			pieces.clear();
 			logger.debug("setGameState: All pieces removed");
-			
+
 			this.gameState = gameState;
 			if (gameState != null) {
 				// Register listeners at new GameState
@@ -327,7 +340,7 @@ public class BoardPanel extends JPanel {
 				gameState.addMoveListener(moveListener);
 
 				// Add new pieces and set visibility/VisualStation
-				MrXPlayer mrX = gameState.getMrX(); 
+				MrXPlayer mrX = gameState.getMrX();
 				if (mrX != null) {
 					pieces.put(mrX, new MrXPiece(mrX));
 				}
@@ -344,12 +357,12 @@ public class BoardPanel extends JPanel {
 						p.setVisualStation(visualStations.get(m.getStation()));
 					}
 				}
-				
+
 				revalidate();
 			}
-			
+
 			repaint();
-			
+
 			logger.debug("BoardPanel repainted");
 		}
 	}
@@ -365,12 +378,13 @@ public class BoardPanel extends JPanel {
 	public MovePreparer getMovePreparer() {
 		return movePreparer;
 	}
-	
-	
+
+
 	public void setMovePreparer(MovePreparer movePreparer) {
 		this.movePreparer = movePreparer;
+		movePreparer.addObserver(movePreparerObserver);
 	}
-	
+
 	public Image getImage() {
 		return image;
 	}
@@ -395,7 +409,7 @@ public class BoardPanel extends JPanel {
 		this.mrXAlwaysVisible = mrXAlwaysVisible;
 		Player mrX;
 		Piece p;
-		if (gameState != null && (mrX = gameState.getMrX()) != null 
+		if (gameState != null && (mrX = gameState.getMrX()) != null
 				&& (p = pieces.get(mrX)) != null)
 			updatePieceVisibility(p);
 	}
@@ -415,18 +429,5 @@ public class BoardPanel extends JPanel {
 			piece.setVisible(lmf != null);
 		}
 	}
-	
-	
-//	Vllt brauch ich's hier auch nicht...
-//	private final Observer movePreparerObserver = new Observer() {
-//		@Override
-//		public void update(Observable o, Object arg) {
-//			if (o == mPrep) {
-//				if (arg instanceof Player) {
-//					setSelectedPlayer((Player) arg);
-//				}
-//			}
-//		}
-//	};
 
 }
