@@ -47,6 +47,8 @@ import kj.scotlyard.game.model.MoveListener;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.PlayerListener;
+import kj.scotlyard.game.rules.Rules;
+import kj.scotlyard.game.util.GameStateExtension;
 import kj.scotlyard.game.util.MoveHelper;
 
 /**
@@ -63,6 +65,8 @@ public class BoardPanel extends JPanel {
 	
 	private Image image;
 	
+	private Rules rules;
+	
 	private GameState gameState;
 	
 	private GameGraph gameGraph;
@@ -72,6 +76,8 @@ public class BoardPanel extends JPanel {
 	private Map<StationVertex, VisualStation> visualStations = new HashMap<>();
 	
 	private MovePreparer movePreparer;
+	
+	private boolean mrXAlwaysVisible;
 	
 	private final MouseListener visualStationMouseListener = new MouseAdapter() {
 		@Override
@@ -149,6 +155,8 @@ public class BoardPanel extends JPanel {
 			// Neuen MrX (wenn nicht null) Map und Container hinzufuegen
 			if (newMrX != null) {
 				piece = new MrXPiece(newMrX);
+				// grade erst hinzugefuegt -> kann noch keinen
+				// initial move haben (mit GameController)
 				piece.setVisible(false);
 				piece.addMouseListener(pieceMouseListener);
 				pieces.put(newMrX, piece);
@@ -174,16 +182,14 @@ public class BoardPanel extends JPanel {
 			logger.debug("Detective added: " + detective);
 			// Piece Map und Container hinzufuegen
 			Piece piece = new DetectivePiece(detective);
-			if (gameState.getLastMove(detective) == null) {
-				/*
-				 * This happens when a detective is shifted up or
-				 * down in the list: It will be removed and then 
-				 * inserted at an other index in the list.
-				 * I think that's the only case; provided that you
-				 * use the GameController!
-				 */
-				piece.setVisible(false);
-			}
+			/*
+			 * This happens when a detective is shifted up or
+			 * down in the list: It will be removed and then 
+			 * inserted at an other index in the list.
+			 * I think that's the only case; provided that you
+			 * use the GameController!
+			 */
+			updatePieceVisibility(piece);
 			piece.addMouseListener(pieceMouseListener);
 			pieces.put(detective, piece);			
 			add(piece, 0); // TODO sollte revalidate und repaint ausloesen (wenn piece zum ersten mal sichtbar wird)
@@ -215,11 +221,10 @@ public class BoardPanel extends JPanel {
 			Player p = move.getPlayer();
 			Move m = gameState.getLastMove(p);
 			if (m == null) {
-				pieces.get(p).setVisible(false);
+				updatePieceVisibility(pieces.get(p));
 			} else {
 				pieces.get(p).setVisualStation(visualStations.get(m.getStation()));				
-				revalidate();
-				
+				revalidate();				
 			}
 		}
 		
@@ -231,7 +236,7 @@ public class BoardPanel extends JPanel {
 			// oder das BoardPanel corrupted ist, gibt's Exception!
 			Piece p = pieces.get(move.getPlayer());
 			p.setVisualStation(visualStations.get(move.getStation()));
-			p.setVisible(true); // falls es initial move ist
+			updatePieceVisibility(p);
 			
 			revalidate(); // warum wird eigentlich repainted?
 		}
@@ -257,6 +262,17 @@ public class BoardPanel extends JPanel {
 					getWidth() - insets.left - insets.right, 
 					getHeight() - insets.top - insets.bottom, this);			
 		}		
+	}
+	
+	public Rules getRules() {
+		return rules;
+	}
+
+	public void setRules(Rules rules) {
+		this.rules = rules;
+		MrXPlayer mrX = gameState.getMrX();
+		if (mrX != null)
+			updatePieceVisibility(pieces.get(mrX));
 	}
 
 	/**
@@ -324,7 +340,7 @@ public class BoardPanel extends JPanel {
 					add(p, 0);
 					Move m = gameState.getLastMove(e.getKey());
 					if (m == null) {
-						p.setVisible(false);
+						updatePieceVisibility(p);
 					} else {
 						p.setVisualStation(visualStations.get(m.getStation()));
 					}
@@ -343,20 +359,19 @@ public class BoardPanel extends JPanel {
 		return gameGraph;
 	}
 
-	public MovePreparer getMovePreparer() {
-		return movePreparer;
-	}
-
-
-	public void setMovePreparer(MovePreparer movePreparer) {
-		this.movePreparer = movePreparer;
-	}
-
-
 	public void setGameGraph(GameGraph gameGraph) {
 		this.gameGraph = gameGraph;
 	}
 
+	public MovePreparer getMovePreparer() {
+		return movePreparer;
+	}
+	
+	
+	public void setMovePreparer(MovePreparer movePreparer) {
+		this.movePreparer = movePreparer;
+	}
+	
 	public Image getImage() {
 		return image;
 	}
@@ -372,6 +387,32 @@ public class BoardPanel extends JPanel {
 		this.image = image;
 		repaint();
 	}
+
+	public boolean isMrXAlwaysVisible() {
+		return mrXAlwaysVisible;
+	}
+
+	public void setMrXAlwaysVisible(boolean mrXAlwaysVisible) {
+		this.mrXAlwaysVisible = mrXAlwaysVisible;
+		updatePieceVisibility(pieces.get(gameState.getMrX()));
+	}
+
+	private void updatePieceVisibility(Piece piece) {
+		Player player = piece.getPlayer();
+		Move lmf = GameStateExtension.getLastMoveFlat(gameState, player);
+		if (player instanceof MrXPlayer) {
+			// Piece sichtbar machen, wenn es mindestens einen Move hat UND
+			// entweder immer sichtbar ist ODER eben in dieser Runde (wenn regeln verfuegbar)
+			piece.setVisible(lmf != null &&
+					(mrXAlwaysVisible ||
+					rules == null ||
+					rules.getGameStateAccessPolicy().getMrXUncoverMoveNumbers()
+					.contains(lmf.getMoveNumber())));
+		} else {
+			piece.setVisible(lmf != null);
+		}
+	}
+	
 	
 //	Vllt brauch ich's hier auch nicht...
 //	private final Observer movePreparerObserver = new Observer() {
