@@ -1424,6 +1424,117 @@ Das Eclipse-Projekt heißt Board (englisch ist für Spielbrett).
  zu können.
 \end_layout
 
+\begin_layout Chapter
+GUI-Komponenten
+\end_layout
+
+\begin_layout Section
+BoardPanel
+\end_layout
+
+\begin_layout Standard
+Das BoardPanel ist das JPanel, das das Spielfeld anzeigt.
+ Das Spielfeld besteht aus dem Bild/der Karte, den VisualComponents des
+ Graphen (bis jetzt nur VisualStations), den Pieces (Spielfiguren) und Markierun
+gen, die irgendwie gezeichnet werden.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+wie ist das mit den markierungen?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Um alles richtig darstellen zu können, braucht das BoardPanel:
+\end_layout
+
+\begin_layout Itemize
+Rules
+\begin_inset Newline newline
+\end_inset
+
+genauer gesagt GameStateAccessPolicy, dass MrX zur richtigen Zeit sichtbar
+ gemacht werden kann
+\end_layout
+
+\begin_layout Itemize
+GameState
+\end_layout
+
+\begin_layout Itemize
+GameGraph
+\end_layout
+
+\begin_layout Itemize
+Image
+\begin_inset Newline newline
+\end_inset
+
+das Hintergrundbild/die Karte
+\end_layout
+
+\begin_layout Itemize
+MovePreparer
+\begin_inset Newline newline
+\end_inset
+
+dass Züge per Maus vorbereiteten werden können
+\end_layout
+
+\begin_layout Standard
+Außerdem hat das BoardPanel die Eigenschaft mrXAlwaysVisible, die angibt,
+ ob MrX immer sichtbar ist, oder nur wenn es die Regeln erlauben.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Sind die Regeln nicht gegeben d.
+\begin_inset space \thinspace{}
+\end_inset
+
+h.
+ null, ist MrX immer sichtbar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die VisualComponents werden dem BoardPanel -- wie andere Child-Components
+ auch -- einfach mit add(...) hinzugefügt.
+ Intern benötigt das BoardPanel aber Verwaltungsstrukturen wie die visualStation
+s-Map, die StationVertex auf VisualStation abbildet.
+ Diese muss erzeugt werden, wenn mit add alle VisualComponents hinzugefügt
+ wurden.
+ Dazu dient die Methode buildVisualStationMap().
+ Eleganter wäre es wohl, die add-Methoden zu überschreiben, und die VisualStatio
+ns sofort der Map hinzuzufügen.
+ Da gab es aber irgendwelche Probleme.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Kann sein, dass es einfach zu viele Methoden waren, die Childs hinzufügen
+ oder entfernen, und ich Angst hatte, alle zu überschreiben, weil ich welche
+ vergessen könnte.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Konzepte
+\end_layout
+
 \begin_layout Section
 MovePreparation
 \end_layout
