@@ -20,7 +20,7 @@ public abstract class GameMetaData {
 		PlayerMetaData pmd = playerMetaData.get(player);
 		if (pmd == null) {
 			pmd = new PlayerMetaData(player); // To prevent NullPointerExceptions
-			logger.error("access to non-existing MetaData for Player " + player);
+			logger.warn("access to non-existing MetaData for Player " + player);
 		}
 		return pmd;
 	}
@@ -34,7 +34,7 @@ public abstract class GameMetaData {
 		ItemTypeMetaData imd = itemTypeMetaData.get(itemType);
 		if (imd == null) {
 			imd = new ItemTypeMetaData(itemType);
-			logger.error("access to non-existing MetaData for itemType " + itemType);
+			logger.warn("access to non-existing MetaData for itemType " + itemType);
 		}
 		return imd;
 	}
