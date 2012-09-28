@@ -658,12 +658,19 @@ public class Board extends JFrame {
 		newGameWithPlayersAction.setEnabled(!inGame);
 	}
 	private void updateBoardPanelZoom() {
-		boardPanelContainer.setPreferredSize(new Dimension((int) (originalImageSize.width * zoomFactor),
-				(int) (originalImageSize.height * zoomFactor)));
-//		boardPanelScrollPane.revalidate(); // erst hat ich nur dies; war gut gemeint, aber revalidated die childs nicht.
-//		boardPanelScrollPane.repaint();
-		boardPanelContainer.revalidate();
-		boardPanelContainer.repaint();
+		int w = (int) (originalImageSize.width * zoomFactor);
+		int h = (int) (originalImageSize.height * zoomFactor);
+		boardPanelContainer.setPreferredSize(new Dimension(w, h));
+		boardPanelScrollPane.getViewport().revalidate();
+		boardPanelScrollPane.getViewport().repaint();
+		
+		// Zusatz, dass nicht kleiner gezoomt werden kann, als das Fenster ist:
+		if (w < boardPanelScrollPane.getViewport().getWidth()
+				&& h < boardPanelScrollPane.getViewport().getHeight()) {
+			w = boardPanelScrollPane.getViewport().getWidth();
+			h = boardPanelScrollPane.getViewport().getHeight();
+			boardPanelContainer.setPreferredSize(new Dimension(w, h));
+		}
 	}
 
 	/**
