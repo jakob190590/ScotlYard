@@ -58,6 +58,7 @@ import javax.swing.ButtonGroup;
 
 import kj.scotlyard.board.board.BoardPanel;
 import kj.scotlyard.board.layout.AspectRatioGridLayout;
+import kj.scotlyard.board.metadata.GameMetaData;
 import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.control.impl.DefaultGameController;
@@ -83,6 +84,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 import static kj.scotlyard.board.ActionTools.isSelected;
 import static kj.scotlyard.board.ActionTools.setSelected;
+import java.awt.Font;
+import javax.swing.SwingConstants;
+import java.awt.Component;
 
 @SuppressWarnings("serial")
 public class Board extends JFrame {
@@ -97,7 +101,7 @@ public class Board extends JFrame {
 	
 	private BoardPanel boardPanel;
 	
-	private JLabel lblCurrentplayerVal;
+	private JLabel lblCurrentPlayerVal;
 	
 	private JLabel lblMoveVal;
 	
@@ -172,6 +176,7 @@ public class Board extends JFrame {
 	private final Action selectCurrentPlayerAction = new SelectCurrentPlayerAction();
 	private final Action jointMoving = new JointMoving();
 	private final Action mrXAlwaysVisibleAction = new MrXAlwaysVisibleAction();
+	private JLabel lblCurrentRoundNumberVal;
 
 
 
@@ -539,13 +544,18 @@ public class Board extends JFrame {
 					int newRoundNumber) {
 				// Beim Wechsel in naechste Runde
 				logger.debug(String.format("round changed: %d -> %d", oldRoundNumber, newRoundNumber));
+				
+				lblCurrentRoundNumberVal.setText(String.valueOf(newRoundNumber));
+				
 				mPrep.resetAll();
 			}
 			@Override
 			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
 					Player newPlayer) {
-				lblCurrentplayerVal.setText((newPlayer == null) ? "<null>" : newPlayer.toString());
+				lblCurrentPlayerVal.setText((newPlayer == null) ? "(None)"
+						: GameMetaData.getForPlayer(newPlayer).getName());
 
+				// TODO nicht fuer current, sondern fuer selected player
 				Move m = mPrep.getMove(newPlayer);
 				lblMoveVal.setText((m == null) ? "Noch kein Move vorbereitet" : m.toString());
 			}
@@ -601,18 +611,6 @@ public class Board extends JFrame {
 		JPanel moveControlBar = new JPanel();
 		toolbarContainer.add(moveControlBar);
 		
-		JLabel lblCurrentPlayer = new JLabel("CurrentPlayer:");
-		moveControlBar.add(lblCurrentPlayer);
-		
-		lblCurrentplayerVal = new JLabel("CurrentPlayerVal");
-		lblCurrentplayerVal.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				selectCurrentPlayerAction.actionPerformed(null);
-			}
-		});		
-		moveControlBar.add(lblCurrentplayerVal);
-		
 		lblMoveVal = new JLabel("MoveVal");
 		moveControlBar.add(lblMoveVal);
 		
@@ -627,6 +625,40 @@ public class Board extends JFrame {
 		JButton btnMoveRound = new JButton("Move Detectives!");
 		btnMoveRound.setAction(moveDetectivesNowAction);
 		moveControlBar.add(btnMoveRound);
+		
+		JPanel panelLeft = new JPanel();
+		contentPane.add(panelLeft, BorderLayout.WEST);
+		panelLeft.setLayout(new BoxLayout(panelLeft, BoxLayout.Y_AXIS));
+		
+		JLabel lblCurrentRoundNumber = new JLabel("Current Round Number");
+		lblCurrentRoundNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panelLeft.add(lblCurrentRoundNumber);
+		
+		lblCurrentRoundNumberVal = new JLabel("R#");
+		lblCurrentRoundNumberVal.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lblCurrentRoundNumber.setLabelFor(lblCurrentRoundNumberVal);
+		lblCurrentRoundNumberVal.setHorizontalAlignment(SwingConstants.CENTER);
+		lblCurrentRoundNumberVal.setFont(new Font("Tahoma", Font.BOLD, 36));
+		panelLeft.add(lblCurrentRoundNumberVal);
+		
+		JLabel lblSeparator = new JLabel(" ");
+		lblSeparator.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panelLeft.add(lblSeparator);
+		
+		JLabel lblCurrentPlayer = new JLabel("Current Player");
+		lblCurrentPlayer.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panelLeft.add(lblCurrentPlayer);
+		
+		lblCurrentPlayerVal = new JLabel("CurrentPlayerVal");
+		lblCurrentPlayer.setLabelFor(lblCurrentPlayerVal);
+		lblCurrentPlayerVal.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panelLeft.add(lblCurrentPlayerVal);
+		lblCurrentPlayerVal.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				selectCurrentPlayerAction.actionPerformed(null);
+			}
+		});
 		
 		
 //		pack();
