@@ -76,6 +76,7 @@ import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TurnListener;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.GameWin;
+import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
 import kj.scotlyard.game.util.MoveProducer;
 
@@ -114,6 +115,7 @@ public class Board extends JFrame {
 	private final ButtonGroup modeButtonGroup = new ButtonGroup();
 	
 	UndoManager undoManager = new UndoManager();
+	Rules r;
 	GameController gc;
 	Game g;
 	GameState gs;
@@ -311,13 +313,33 @@ public class Board extends JFrame {
 		
 		mnBoardPanel.addSeparator();
 		
+		JMenuItem mntmSetRulesNull = new JMenuItem("Set Rules to null");
+		mntmSetRulesNull.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setRules(null);
+			}
+		});
+		mntmSetRulesNull.setMnemonic(KeyEvent.VK_U);
+		mnBoardPanel.add(mntmSetRulesNull);
+		
+		JMenuItem mntmSetRules = new JMenuItem("Set Rules");
+		mntmSetRules.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boardPanel.setRules(r);
+			}
+		});
+		mntmSetRules.setMnemonic(KeyEvent.VK_R);
+		mnBoardPanel.add(mntmSetRules);
+		
+		mnBoardPanel.addSeparator();
+		
 		JMenuItem mntmSetImageToNull = new JMenuItem("Set Image to null");
 		mntmSetImageToNull.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				boardPanel.setImage(null);
 			}
 		});
-		mntmSetImageToNull.setMnemonic(KeyEvent.VK_U);
+		mntmSetImageToNull.setMnemonic(KeyEvent.VK_L);
 		mnBoardPanel.add(mntmSetImageToNull);
 		
 		JMenuItem mntmSetImage = new JMenuItem("Set Image");
@@ -339,6 +361,9 @@ public class Board extends JFrame {
 		JCheckBoxMenuItem chckbxmntmJointMoving = new JCheckBoxMenuItem("Joint Moving");
 		chckbxmntmJointMoving.setAction(jointMoving);
 		mnErnsthaft.add(chckbxmntmJointMoving);
+		
+		JMenuItem mntmShowMrx = new JMenuItem("Show MrX");
+		mnErnsthaft.add(mntmShowMrx);
 		
 		JMenu mnZoom = new JMenu("Zoom");
 		mnZoom.setMnemonic(KeyEvent.VK_Z);
@@ -459,10 +484,11 @@ public class Board extends JFrame {
 		boardPanel.setPreferredSize(originalImageSize);
 		
 		// GameState
+		r = new TheRules();
 		g = new DefaultGame();
 		gs = new DefaultGameState(g);
 		gg = bgl.getGameGraph();
-		gc = new DefaultGameController(g, gg, new TheRules());
+		gc = new DefaultGameController(g, gg, r);
 		gc.setUndoManager(undoManager);
 		gc.addObserver(new Observer() {
 			@Override
@@ -566,6 +592,7 @@ public class Board extends JFrame {
 		boardPanel.setGameState(gs);
 		boardPanel.setGameGraph(gg);
 		boardPanel.setMovePreparer(mPrep);
+		boardPanel.setRules(r);
 		
 		boardPanelContainer.add(boardPanel);
 		// mit preferredSize ist es so:
@@ -991,7 +1018,7 @@ public class Board extends JFrame {
 					// TODO schon ausgefuehrte moves einbeziehen! die werden momentan ignoriert! dann meldung unten ausbessern!
 					Move m = mPrep.getMove(d);
 					if (m != null) {
-						nDetectivesReady++;					
+						nDetectivesReady++;
 					}
 				}
 				logger.debug("result of prepared detective moves counting: " + nDetectivesReady);
@@ -1133,6 +1160,7 @@ public class Board extends JFrame {
 			setSelected(this, true);
 		}
 		public void actionPerformed(ActionEvent e) {
+			boardPanel.setMrXAlwaysVisible(isSelected(this));
 		}
 	}
 }
