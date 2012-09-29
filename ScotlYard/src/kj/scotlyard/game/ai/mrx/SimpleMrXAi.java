@@ -74,6 +74,7 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		Set<Alternative> alternatives = _1_alternatives();
 		_2_rating(alternatives);
 		Alternative bestAlternative = _3_select(alternatives);
+		logger.info(String.format("alternative with best rating: doublemove=%b, rating=%f", bestAlternative.isDoubleMove(), bestAlternative.rating));
 		
 		Move move = makeMove(bestAlternative);
 
@@ -212,7 +213,6 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		// 3. Station mit der günstigsten Bewertung wird ausgewählt
 		Alternative best = new Alternative(null, null); // nur um den anfangswert 0 fuer rating zu haben
 		for (Alternative a : alternatives) {
-			double result = 0;
 			if (a.rating > best.rating) {
 				best = a;
 			}

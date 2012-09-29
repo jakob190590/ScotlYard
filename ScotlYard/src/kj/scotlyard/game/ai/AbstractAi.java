@@ -86,13 +86,13 @@ public abstract class AbstractAi implements Ai {
 		return gameGraph;
 	}
 	
-	// Folgendes wird gleich automatisch gemacht bei beginCalculation() 
+	// Folgendes wird gleich automatisch gemacht bei beginCalculation()
 	// und finishCalculation() -- ansonsten wird's wohl nicht gebraucht
 //	/** Clears the ready flag */
 //	protected void clearReady() {
 //		ready = false;
 //	}
-//	
+//
 //	/** Sets the ready flag */
 //	protected void setReady() {
 //		ready = true;
@@ -134,7 +134,7 @@ public abstract class AbstractAi implements Ai {
 	protected void beginCalculation() {
 		decideNowFlag = false; // just for the case
 		ready = false;
-		timeLeft = UNKNOWN;
+		timeLeft = UNKNOWN_TIME;
 		for (AiListener l : listeners) {
 			l.beginCalculation(this);
 		}
@@ -162,7 +162,7 @@ public abstract class AbstractAi implements Ai {
 	 * This method is called by our private MoveListener
 	 * when a move is undone in the GameState.
 	 * 
-	 * The implementation (in <code>AbstractMrXAi</code> 
+	 * The implementation (in <code>AbstractMrXAi</code>
 	 * and <code>AbstractDetectiveAi</code>) should
 	 * invoke <code>startCalculation</code> when appropriate.
 	 * 
@@ -174,7 +174,7 @@ public abstract class AbstractAi implements Ai {
 	 * This method is called by our private MoveListener
 	 * when a move is done in the GameState.
 	 * 
-	 * The implementation (in <code>AbstractMrXAi</code> 
+	 * The implementation (in <code>AbstractMrXAi</code>
 	 * and <code>AbstractDetectiveAi</code>) should
 	 * invoke <code>startCalculation</code> when appropriate.
 	 * 
@@ -186,7 +186,7 @@ public abstract class AbstractAi implements Ai {
 	 * This method is called by our private TurnListener
 	 * when a the current player changes in the GameState.
 	 * 
-	 * The implementation (in <code>AbstractMrXAi</code> 
+	 * The implementation (in <code>AbstractMrXAi</code>
 	 * and <code>AbstractDetectiveAi</code>) should
 	 * invoke <code>startCalculation</code> when appropriate.
 	 * 
@@ -196,10 +196,10 @@ public abstract class AbstractAi implements Ai {
 	protected abstract void currentPlayerChanged(Player oldPlayer, Player newPlayer);
 	
 	/**
-	 * This method is called when your AI can start the 
-	 * calculation. Note that not this but <code>AbstractMrXAi</code> 
+	 * This method is called when your AI can start the
+	 * calculation. Note that not this but <code>AbstractMrXAi</code>
 	 * and <code>AbstractDetectiveAi</code> will call this
-	 * method, because they know when to start the calculation! 
+	 * method, because they know when to start the calculation!
 	 * 
 	 * This method shall just initiate the creation of an extra
 	 * thread for the calculation. The calculation process has
@@ -211,7 +211,7 @@ public abstract class AbstractAi implements Ai {
 	
 	
 	
-	// Fertige Implementierungen von public Methoden, die 
+	// Fertige Implementierungen von public Methoden, die
 	// normalerweise nicht mehr überschrieben werden müssen
 
 	@Override
@@ -222,6 +222,14 @@ public abstract class AbstractAi implements Ai {
 		this.gameState = gameState;
 		gameState.addMoveListener(moveListener);
 		gameState.addTurnListener(turnListener);
+	}
+	
+	@Override
+	public void setGameGraph(GameGraph gameGraph) {
+		if (this.gameGraph != null) {
+			throw new IllegalStateException("GameGraph is already set.");
+		}
+		this.gameGraph = gameGraph;
 	}
 
 	@Override
@@ -245,7 +253,7 @@ public abstract class AbstractAi implements Ai {
 	}
 
 	@Override
-	public int getTimeLimit() {		
+	public int getTimeLimit() {
 		return timeLimit;
 	}
 
