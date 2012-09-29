@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -89,20 +90,29 @@ public class BoardPanel extends JPanel {
 			logger.debug("mouse click on " + e.getSource());
 			StationVertex s = ((VisualStation) e.getSource()).getStation();
 
-			// Bei Doppelklick wenn Detectives dran sind,
-			// versuchen, automatisch den Player zu bestimmen
-			if (e.getClickCount() >= 2 && movePreparer.getSelectedPlayer() instanceof DetectivePlayer) {
-
-				DetectivePlayer p = MoveHelper.unambiguousDetective(gameState, gameGraph, s);
-				logger.debug("unambiguous detective: " + p);
-				if (p != null) {
-					movePreparer.selectPlayer(p);
-				} else {
+			// Wenn Detectives dran sind, versuchen,
+			// automatisch den Player zu bestimmen
+			if (movePreparer.getSelectedPlayer() instanceof DetectivePlayer) {
+				
+				Set<DetectivePlayer> detectives = MoveHelper.getDetectivesInVicinity(gameState, gameGraph, s, 1);
+				if (detectives.contains(movePreparer.getSelectedPlayer())) {
+					// Selected Player ist in der Umgebung
+					
+					if (detectives.size() > 1) {
+						// msg: fuer diese station kommen mehrere detective in frage. momentan ausgewaehlten det. verwenden? ja/cancel
+					}
+				} else if (detectives.size() == 1) {
+					// Eindeutig -- das heisst aber noch nicht dass auch select geht!
+					Player p = detectives.iterator().next();
+					logger.debug("unambiguous detective: " + p);
+					movePreparer.selectPlayer(p); // ... einfach ausprobieren, geht ja nicht anders
+				} else if (detectives.size() > 1) {
 					JOptionPane.showMessageDialog(BoardPanel.this, "Not quite sure, wich " +
-							"detective you want to move. Please select on the player first.",
+							"detective you want to move. Please select the player first or " +
+							"use drag and drop or station number input.",
 							"Automatic player selection", JOptionPane.WARNING_MESSAGE);
-					return;
 				}
+
 			}
 			movePreparer.nextStation(s);
 		}

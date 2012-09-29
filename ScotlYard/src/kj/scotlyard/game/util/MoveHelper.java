@@ -18,10 +18,9 @@
 
 package kj.scotlyard.game.util;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.jgrapht.alg.BellmanFordShortestPath;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
@@ -33,6 +32,8 @@ import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.MovePolicy;
 import kj.scotlyard.game.rules.TheMovePolicy;
+
+import org.jgrapht.alg.BellmanFordShortestPath;
 
 public class MoveHelper {
 	
@@ -82,7 +83,7 @@ public class MoveHelper {
 	}
 	
 	/**
-	 * Liefert den einzigen Spieler, der auf die angegebene Station fahren kann. 
+	 * Liefert den einzigen Spieler, der auf die angegebene Station fahren kann.
 	 * Dabei werden keine Regeln beachtet, sondern nur geprüft, ob der Abstand im
 	 * Graph genau eins ist!
 	 * Wenn die Situation nicht eindeutig ist, ist das Ergebnis <code>null</code>.
@@ -106,7 +107,7 @@ public class MoveHelper {
 		Player player = null;
 		int smallDistance = 0; // Zaehler fuer Faelle, in denen ein Player eine geringe Distanz zu station hat
 		for (Player p : gameState.getPlayers()) {
-			int d = BellmanFordShortestPath.findPathBetween(gameGraph.getGraph(), 
+			int d = BellmanFordShortestPath.findPathBetween(gameGraph.getGraph(),
 					station, gameState.getLastMove(p).getStation()).size();
 			if (d <= N) {
 				// Geringe Distanz
@@ -127,7 +128,7 @@ public class MoveHelper {
 	}
 	
 	/**
-	 * Liefert den einzigen Detektiv, der auf die angegebene Station fahren kann. 
+	 * Liefert den einzigen Detektiv, der auf die angegebene Station fahren kann.
 	 * Dabei werden keine Regeln beachtet, sondern nur geprüft, ob der Abstand im
 	 * Graph genau eins ist!
 	 * Wenn die Situation nicht eindeutig ist, ist das Ergebnis <code>null</code>.
@@ -151,7 +152,7 @@ public class MoveHelper {
 		DetectivePlayer player = null;
 		int smallDistance = 0; // Zaehler fuer Faelle, in denen ein Detective eine geringe Distanz zu station hat
 		for (DetectivePlayer p : gameState.getDetectives()) {
-			int d = BellmanFordShortestPath.findPathBetween(gameGraph.getGraph(), 
+			int d = BellmanFordShortestPath.findPathBetween(gameGraph.getGraph(),
 					station, gameState.getLastMove(p).getStation()).size();
 			if (d <= N) {
 				// Geringe Distanz
@@ -169,6 +170,18 @@ public class MoveHelper {
 		}
 		
 		return player;
+	}
+	
+	public static Set<DetectivePlayer> getDetectivesInVicinity(GameState gameState, GameGraph gameGraph, StationVertex station, int radius) {
+		Set<DetectivePlayer> result = new HashSet<>();
+		for (DetectivePlayer p : gameState.getDetectives()) {
+			int d = BellmanFordShortestPath.findPathBetween(gameGraph.getGraph(),
+					station, gameState.getLastMove(p).getStation()).size();
+			if (d <= radius) {
+				result.add(p);
+			}
+		}
+		return result;
 	}
 	
 	public static Player unambiguousPlayer(GameState gameState, GameGraph gameGraph, StationVertex station, List<Player> players) {
