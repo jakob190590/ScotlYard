@@ -272,7 +272,7 @@ public abstract class MovePreparer extends Observable {
 	 * @param station
 	 * @param player
 	 */
-	public void nextStation(final StationVertex station) {
+	public boolean nextStation(final StationVertex station) {
 		
 		logger.debug("next station for " + player);
 		
@@ -295,7 +295,7 @@ public abstract class MovePreparer extends Observable {
 		if (connections.isEmpty()) {
 			logger.warn("nextStation: impossible station - no connections");
 			errorImpossibleNextStation(station, player);
-			return;
+			return false;
 		}
 		
 		// next station pruefen
@@ -305,7 +305,7 @@ public abstract class MovePreparer extends Observable {
 			if (n.getPlayer() instanceof DetectivePlayer && n.getStation() == station) {
 				logger.warn("nextStation: impossible station - already occupied by a foregoing detective (in current round)");
 				errorImpossibleNextStation(station, player);
-				return;
+				return false;
 			}
 		}
 		// schon vorgemerkt durch anderen Detective
@@ -319,7 +319,7 @@ public abstract class MovePreparer extends Observable {
 			if (n != null && n.getStation() == station) {
 				logger.warn("nextStation: impossible station - already prepared by a foregoing detective (in current round)");
 				errorImpossibleNextStation(station, player);
-				return;
+				return false;
 			}
 		}
 		
@@ -356,7 +356,10 @@ public abstract class MovePreparer extends Observable {
 			
 			setChanged();
 			notifyObservers(new MovePreparationEvent(MovePreparationEvent.NEXT_STATION, player, getMove(player)));
+			return true;
 		}
+		
+		return false;
 	}
 
 	public Player getSelectedPlayer() {

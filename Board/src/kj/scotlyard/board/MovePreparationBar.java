@@ -135,7 +135,9 @@ public class MovePreparationBar extends JPanel {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			mPrep.nextStation(nsm.get(Integer.parseInt(ftfStationNumber.getText()))); // TODO vllt spaeter ftfStationNumber.getValue()
+			if (mPrep.nextStation(nsm.get(Integer.parseInt(ftfStationNumber.getText())))) { // TODO vllt spaeter ftfStationNumber.getValue()
+				ftfStationNumber.setText(""); // oder setValue(null) ?
+			}
 		}
 	}
 	private class ResetAction extends AbstractAction {
@@ -146,6 +148,7 @@ public class MovePreparationBar extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			mPrep.reset(getSelectedPlayer());
+			ftfStationNumber.setText(""); // oder setValue(null) ?
 		}
 	}
 	private class SelectPlayerAction extends AbstractAction {
