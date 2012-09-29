@@ -167,6 +167,48 @@ public class Board extends JFrame {
 	private final Action jointMoving = new JointMoving();
 	private final Action mrXAlwaysVisibleAction = new MrXAlwaysVisibleAction();
 
+	private final MoveListener moveListener = new MoveListener() {
+		@Override
+		public void movesCleard(GameState gameState) {
+			movePreparer.resetAll();
+		}
+		@Override
+		public void moveUndone(GameState gameState, Move move) {
+			logger.info(String.format("move undone; player: %s", move.getPlayer()));
+			movePreparer.reset(move.getPlayer());
+		}
+		@Override
+		public void moveDone(GameState gameState, Move move) {
+			logger.info(String.format("move done; player: %s", move.getPlayer()));
+//			mPrep.reset(move.getPlayer());
+			// Unnoetig, da zum Rundenwechsel eh resetAll() aufgerufen wird
+			// Stoerend, dadurch das (nicht ganz zuverlaessige) counting nicht funktioniert (MoveDetectivesNowAction)
+		}
+	};
+
+	private final TurnListener turnListener = new TurnListener() {
+		@Override
+		public void currentRoundChanged(GameState gameState, int oldRoundNumber,
+				int newRoundNumber) {
+			// Beim Wechsel in naechste Runde
+			logger.info(String.format("round changed: %d -> %d", oldRoundNumber, newRoundNumber));
+			
+			lblCurrentRoundNumberVal.setText(String.valueOf(newRoundNumber));
+			
+			movePreparer.resetAll();
+		}
+		@Override
+		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
+				Player newPlayer) {
+			lblCurrentPlayerVal.setText((newPlayer == null) ? "(None)"
+					: GameMetaData.getForPlayer(newPlayer).getName());
+
+			// TODO nicht fuer current, sondern fuer selected player
+			Move m = movePreparer.getMove(newPlayer);
+			lblMoveVal.setText((m == null) ? "Noch kein Move vorbereitet" : m.toString());
+		}
+	};
+
 
 
 	/**
@@ -398,6 +440,7 @@ public class Board extends JFrame {
 		modeButtonGroup.add(mntmBeClient);
 		mnMode.add(mntmBeClient);
 		
+		// Modus zur Hilfe fuer Detectives, wenn man am echten Spielbrett spielt: Man muss nicht fuer MrX ziehen, sondern nur seine Tickets eingeben
 		JRadioButtonMenuItem mntmMrXTracking = new JRadioButtonMenuItem("MrX Tracking");
 		modeButtonGroup.add(mntmMrXTracking);
 		mnMode.add(mntmMrXTracking);
@@ -549,46 +592,8 @@ public class Board extends JFrame {
 			}
 		});
 		
-		gameState.addMoveListener(new MoveListener() {
-			@Override
-			public void movesCleard(GameState gameState) {
-				movePreparer.resetAll();
-			}
-			@Override
-			public void moveUndone(GameState gameState, Move move) {
-				logger.info(String.format("move undone; player: %s", move.getPlayer()));
-				movePreparer.reset(move.getPlayer());
-			}
-			@Override
-			public void moveDone(GameState gameState, Move move) {
-				logger.info(String.format("move done; player: %s", move.getPlayer()));
-//				mPrep.reset(move.getPlayer());
-				// Unnoetig, da zum Rundenwechsel eh resetAll() aufgerufen wird
-				// Stoerend, dadurch das (nicht ganz zuverlaessige) counting nicht funktioniert (MoveDetectivesNowAction)
-			}
-		});
-		gameState.addTurnListener(new TurnListener() {
-			@Override
-			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
-					int newRoundNumber) {
-				// Beim Wechsel in naechste Runde
-				logger.info(String.format("round changed: %d -> %d", oldRoundNumber, newRoundNumber));
-				
-				lblCurrentRoundNumberVal.setText(String.valueOf(newRoundNumber));
-				
-				movePreparer.resetAll();
-			}
-			@Override
-			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
-					Player newPlayer) {
-				lblCurrentPlayerVal.setText((newPlayer == null) ? "(None)"
-						: GameMetaData.getForPlayer(newPlayer).getName());
-
-				// TODO nicht fuer current, sondern fuer selected player
-				Move m = movePreparer.getMove(newPlayer);
-				lblMoveVal.setText((m == null) ? "Noch kein Move vorbereitet" : m.toString());
-			}
-		});
+		gameState.addMoveListener(moveListener);
+		gameState.addTurnListener(turnListener);
 		
 		setGameControllerActionsEnabled(gameController.getStatus());
 		boardPanel.setGameState(gameState);
