@@ -32,16 +32,17 @@ public class MovePreparationBar extends JPanel {
 	
 	private static final Logger logger = Logger.getLogger(MovePreparationBar.class);
 	// TODO movePrepBar fehlen Setter/Getter fuer GameState, MovePreparer und nsm ...
-	private GameState gs;
-	private MovePreparer mPrep;
-	private Map<Integer, StationVertex> nsm; // Number Station Map
+	private GameState gameState;
+	private MovePreparer movePreparer;
+	private Map<Integer, StationVertex> numberStationMap; // Number Station Map
 	
 	private Vector<Player> players;
 	private final PlayerListener playerListener = new PlayerListenerAdapter() {
 		@Override
 		public void playerListChanged(GameState gameState) {
+			assert gameState == MovePreparationBar.this.gameState;
 			players.clear();
-			players.addAll(gs.getPlayers());
+			players.addAll(gameState.getPlayers());
 			cbPlayer.updateUI();
 			logger.debug("player list changed; player in move prep updated");
 		}
@@ -53,6 +54,7 @@ public class MovePreparationBar extends JPanel {
 		@Override
 		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
 				Player newPlayer) {
+			assert gameState == MovePreparationBar.this.gameState;
 			if (newPlayer instanceof MrXPlayer) {
 				cbPlayer.setEnabled(false);
 			} else {
@@ -60,17 +62,6 @@ public class MovePreparationBar extends JPanel {
 			}
 		}
 	};
-//	private final MoveListener moveListener = new MoveListener() {
-//		@Override
-//		public void movesCleard(GameState gameState) {
-//		}
-//		@Override
-//		public void moveUndone(GameState gameState, Move move) {
-//		}
-//		@Override
-//		public void moveDone(GameState gameState, Move move) {
-//		}
-//	};
 	
 	private final Observer movePreparerObserver = new Observer() {
 		@Override
@@ -97,9 +88,9 @@ public class MovePreparationBar extends JPanel {
 	public MovePreparationBar(GameState gs, MovePreparer mPrep,
 			Map<Integer, StationVertex> nsm) {
 		
-		this.gs = gs;
-		this.mPrep = mPrep;
-		this.nsm = nsm;
+		this.gameState = gs;
+		this.movePreparer = mPrep;
+		this.numberStationMap = nsm;
 		
 		mPrep.addObserver(movePreparerObserver);
 		
@@ -112,8 +103,8 @@ public class MovePreparationBar extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					MovePreparationBar.this.mPrep.selectPlayer(
-							MovePreparationBar.this.gs.getCurrentPlayer());
+					MovePreparationBar.this.movePreparer.selectPlayer(
+							MovePreparationBar.this.gameState.getCurrentPlayer());
 				}
 			}
 		});
@@ -146,7 +137,7 @@ public class MovePreparationBar extends JPanel {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (mPrep.nextStation(nsm.get(Integer.parseInt(ftfStationNumber.getText())))) { // TODO vllt spaeter ftfStationNumber.getValue()
+			if (movePreparer.nextStation(numberStationMap.get(Integer.parseInt(ftfStationNumber.getText())))) { // TODO vllt spaeter ftfStationNumber.getValue()
 				ftfStationNumber.setText(""); // oder setValue(null) ?
 			}
 		}
@@ -158,7 +149,7 @@ public class MovePreparationBar extends JPanel {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			mPrep.reset(getSelectedPlayer());
+			movePreparer.reset(getSelectedPlayer());
 			ftfStationNumber.setText(""); // oder setValue(null) ?
 		}
 	}
@@ -170,7 +161,7 @@ public class MovePreparationBar extends JPanel {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			mPrep.selectPlayer((Player) cbPlayer.getSelectedItem());
+			movePreparer.selectPlayer((Player) cbPlayer.getSelectedItem());
 		}
 	}
 	
