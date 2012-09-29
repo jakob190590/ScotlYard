@@ -85,8 +85,7 @@ public class MovePreparationBar extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public MovePreparationBar(GameState gameState, MovePreparer movePreparer,
-			Map<Integer, StationVertex> numberStationMap) {
+	public MovePreparationBar() {
 		
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
@@ -115,12 +114,6 @@ public class MovePreparationBar extends JPanel {
 		JButton btnReset = new JButton("Reset");
 		btnReset.setAction(resetAction);
 		add(btnReset);
-		
-		// Model/Daten setzen
-		setGameState(gameState);
-		setMovePreparer(movePreparer);
-		setNumberStationMap(numberStationMap);
-		
 	}
 	
 	@Override // TODO probleme, wenn was einzeln enabled werden soll..
