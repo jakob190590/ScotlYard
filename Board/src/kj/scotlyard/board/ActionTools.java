@@ -15,7 +15,7 @@ public abstract class ActionTools {
 	/**
 	 * Set the values for <code>NAME</code>, <code>MNEMONIC_KEY</code> and
 	 * <code>DISPLAYED_MNEMONIC_INDEX_KEY</code> for an Action.
-	 * If the first ampersend (&) in <code>name</code> is followed by a letter
+	 * If the first ampersand (&) in <code>name</code> is followed by a letter
 	 * or a digit (<code>Character.isLetterOrDigit(char)</code>), this letter
 	 * or digit will be the displayed mnemonic key. In this case, the ampersand
 	 * will be deleted.
@@ -52,5 +52,20 @@ public abstract class ActionTools {
 		
 		action.putValue(Action.NAME, name);
 	}
+	
+	/*
+	 * TODO Was vllt mal nett waere:
+	 * 
+	 * Mnemonics automatisch vergeben
+	 * Kriterien dass man sich's gut merken kann:
+	 *  - Grosse Anfangsbuchstaben
+	 *  - Grosse Buchstaben
+	 *  - Anfangsbuchstaben
+	 * Schwierigkeit: Darf nicht mehrfach vergeben werden
+	 * Moeglichkeit: JMenu uebergeben
+	 * JMenu -> Items von oben nach unten durchgehen,
+	 * Mnemonic auf black list (bevorzugt von Action nehmen)
+	 * 
+	 */
 
 }
