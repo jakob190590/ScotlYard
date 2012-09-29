@@ -28,8 +28,8 @@ import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.GameStateRequester;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
-import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.DefaultGameState;
+import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
@@ -75,8 +75,8 @@ public class DefaultGameController extends GameController {
 			
 			move = game.getMoves().remove(GameState.LAST_MOVE);
 			
-			game.setCurrentPlayer(oldPlayer);
 			game.setCurrentRoundNumber(oldRoundNumber);
+			game.setCurrentPlayer(oldPlayer);
 			
 			// falls es der game-winning move war: zustand wieder auf IN_GAME setzen
 			if (status == GameStatus.NOT_IN_GAME)
@@ -145,7 +145,7 @@ public class DefaultGameController extends GameController {
 	}
 	
 	/**
-	 * Aendert den aktuellen Zustand des Controllers. Dieser kann 
+	 * Aendert den aktuellen Zustand des Controllers. Dieser kann
 	 * nur vom eigenen momentanen Zustand geaendert werden.
 	 * @param sender the state object requesting the change of state
 	 * @param status the new status (in or not in game)
