@@ -29,9 +29,11 @@ public abstract class ActionTools {
 		if (index >= 0) {
 			StringBuffer s = new StringBuffer(name);
 			s.deleteCharAt(index);
+//			char c = Character.toLowerCase(s.charAt(index)); // mnemonic char
 			char c = s.charAt(index); // mnemonic char
-			action.putValue(Action.NAME, s);
-			action.putValue(Action.MNEMONIC_KEY, KeyStroke.getKeyStroke(c).getKeyCode());
+			System.out.println(c + " = " + KeyStroke.getKeyStroke("typed " + c).getKeyCode());
+			action.putValue(Action.NAME, s.toString());
+			action.putValue(Action.MNEMONIC_KEY, KeyStroke.getKeyStroke("typed " + c).getKeyCode());
 			if (name.indexOf(c) < index)
 				action.putValue(Action.DISPLAYED_MNEMONIC_INDEX_KEY, index);
 			
