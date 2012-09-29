@@ -28,6 +28,7 @@ import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Player;
+import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.Item;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.MovePolicy;
@@ -58,6 +59,24 @@ public class MoveHelper {
 			}
 		}
 		return null;
+	}
+	
+	
+	public static Ticket cheapTicket(ConnectionEdge connection, Set<Item> items) {
+		Ticket anyTicket = null;
+		for (Item i : items) {
+			if (i instanceof Ticket) {
+				Ticket t = (Ticket) i;
+				if (movePolicy.isTicketValidForConnection(t, connection)) {
+					if (t instanceof BlackTicket) {
+						anyTicket = t;
+					} else {
+						return t;
+					}
+				}
+			}
+		}
+		return anyTicket;
 	}
 	
 	/**
