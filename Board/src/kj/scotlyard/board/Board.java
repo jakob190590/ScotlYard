@@ -65,6 +65,8 @@ import javax.swing.undo.UndoManager;
 import kj.scotlyard.board.board.BoardPanel;
 import kj.scotlyard.board.layout.AspectRatioGridLayout;
 import kj.scotlyard.board.metadata.GameMetaData;
+import kj.scotlyard.game.ai.detective.DetectiveAi;
+import kj.scotlyard.game.ai.mrx.MrXAi;
 import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.control.impl.DefaultGameController;
@@ -118,13 +120,17 @@ public class Board extends JFrame {
 	private final ButtonGroup modeButtonGroup = new ButtonGroup();
 	
 	UndoManager undoManager = new UndoManager();
-	Rules r;
-	GameController gc;
-	Game g;
-	GameState gs;
-	GameGraph gg;
-	MovePreparer mPrep;
-	Map<Integer, StationVertex> nsm; // Number Station Map
+	
+	private Rules rules;
+	private GameController gameController;
+	private Game game;
+	private GameState gameState;
+	private GameGraph gameGraph;
+	private Map<Integer, StationVertex> numberStationMap;
+	private MrXAi mrXAi;
+	private DetectiveAi detectiveAi;
+	
+	private MovePreparer movePreparer;
 	
 	private Dimension originalImageSize;
 	
@@ -290,7 +296,7 @@ public class Board extends JFrame {
 		mntmSetGameState.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boardPanel.setGameState(gs);
+				boardPanel.setGameState(gameState);
 			}
 		});
 		mntmSetGameState.setMnemonic(KeyEvent.VK_G);
@@ -312,7 +318,7 @@ public class Board extends JFrame {
 		mntmSetRules.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boardPanel.setRules(r);
+				boardPanel.setRules(rules);
 			}
 		});
 		mntmSetRules.setMnemonic(KeyEvent.VK_R);
@@ -424,7 +430,7 @@ public class Board extends JFrame {
 			boardPanel.add(c);
 		}
 		boardPanel.buildVisualStationMap();
-		nsm = bgl.getNumberStationMap();
+		numberStationMap = bgl.getNumberStationMap();
 		
 		
 		
@@ -473,13 +479,13 @@ public class Board extends JFrame {
 		boardPanel.setPreferredSize(originalImageSize);
 		
 		// GameState
-		r = new TheRules();
-		g = new DefaultGame();
-		gs = new DefaultGameState(g);
-		gg = bgl.getGameGraph();
-		gc = new DefaultGameController(g, gg, r);
-		gc.setUndoManager(undoManager);
-		gc.addObserver(new Observer() {
+		rules = new TheRules();
+		game = new DefaultGame();
+		gameState = new DefaultGameState(game);
+		gameGraph = bgl.getGameGraph();
+		gameController = new DefaultGameController(game, gameGraph, rules);
+		gameController.setUndoManager(undoManager);
+		gameController.addObserver(new Observer() {
 			@Override
 			public void update(Observable o, Object arg) {
 				GameController c = (GameController) o;
@@ -492,7 +498,7 @@ public class Board extends JFrame {
 					showGameStatusAndWin(c.getStatus(), c.getWin());
 			}
 		});
-		mPrep = new MovePreparer(gs, gg) {
+		movePreparer = new MovePreparer(gameState, gameGraph) {
 			@Override
 			protected void errorSelectingPlayer(Player player) {
 				logger.error("dieser player kann (jetzt) nicht ausgewaehlt werden");
@@ -515,7 +521,7 @@ public class Board extends JFrame {
 //				return tickets.iterator().next(); // gleich das erste
 			}
 		};
-		mPrep.addObserver(new Observer() {
+		movePreparer.addObserver(new Observer() {
 			@Override
 			public void update(Observable o, Object arg) {
 				MovePreparationEvent mpe;
@@ -525,14 +531,14 @@ public class Board extends JFrame {
 					logger.debug("move prepared");
 					Player player = mpe.getPlayer();
 					
-					if (player == gs.getCurrentPlayer()) {
+					if (player == gameState.getCurrentPlayer()) {
 						lblMoveVal.setText(mpe.getMove().toString());
 					}
 					
 					boolean furtherMoves = (player instanceof MrXPlayer) ?
 							ticketSelectionDialogMrX.isFurtherMovesSelected() : false;
 					if (isSelected(quickPlayAction)
-							&& player == gs.getCurrentPlayer() // selected player's turn
+							&& player == gameState.getCurrentPlayer() // selected player's turn
 							&& !furtherMoves) { // no further moves
 						logger.debug("Move fertig vorbereitet, QuickPlay, no further moves and Turn");
 						move(mpe.getMove());
@@ -543,15 +549,15 @@ public class Board extends JFrame {
 			}
 		});
 		
-		gs.addMoveListener(new MoveListener() {
+		gameState.addMoveListener(new MoveListener() {
 			@Override
 			public void movesCleard(GameState gameState) {
-				mPrep.resetAll();
+				movePreparer.resetAll();
 			}
 			@Override
 			public void moveUndone(GameState gameState, Move move) {
 				logger.info(String.format("move undone; player: %s", move.getPlayer()));
-				mPrep.reset(move.getPlayer());
+				movePreparer.reset(move.getPlayer());
 			}
 			@Override
 			public void moveDone(GameState gameState, Move move) {
@@ -561,7 +567,7 @@ public class Board extends JFrame {
 				// Stoerend, dadurch das (nicht ganz zuverlaessige) counting nicht funktioniert (MoveDetectivesNowAction)
 			}
 		});
-		gs.addTurnListener(new TurnListener() {
+		gameState.addTurnListener(new TurnListener() {
 			@Override
 			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
 					int newRoundNumber) {
@@ -570,7 +576,7 @@ public class Board extends JFrame {
 				
 				lblCurrentRoundNumberVal.setText(String.valueOf(newRoundNumber));
 				
-				mPrep.resetAll();
+				movePreparer.resetAll();
 			}
 			@Override
 			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
@@ -579,16 +585,20 @@ public class Board extends JFrame {
 						: GameMetaData.getForPlayer(newPlayer).getName());
 
 				// TODO nicht fuer current, sondern fuer selected player
-				Move m = mPrep.getMove(newPlayer);
+				Move m = movePreparer.getMove(newPlayer);
 				lblMoveVal.setText((m == null) ? "Noch kein Move vorbereitet" : m.toString());
 			}
 		});
 		
-		setGameControllerActionsEnabled(gc.getStatus());
-		boardPanel.setGameState(gs);
-		boardPanel.setGameGraph(gg);
-		boardPanel.setMovePreparer(mPrep);
-		boardPanel.setRules(r);
+		setGameControllerActionsEnabled(gameController.getStatus());
+		boardPanel.setGameState(gameState);
+		boardPanel.setGameGraph(gameGraph);
+		boardPanel.setMovePreparer(movePreparer);
+		boardPanel.setRules(rules);
+		
+		movePreparationBar.setNumberStationMap(numberStationMap);
+		movePreparationBar.setGameState(gameState);
+		movePreparationBar.setMovePreparer(movePreparer);
 		
 		boardPanelContainer.add(boardPanel);
 		// mit preferredSize ist es so:
@@ -631,7 +641,7 @@ public class Board extends JFrame {
 		button_3.setAction(moveAction);
 		panel.add(button_3);
 		
-		movePreparationBar = new MovePreparationBar(gs, mPrep, nsm);
+		movePreparationBar = new MovePreparationBar();
 		movePreparationBar.setEnabled(false);
 		toolbarContainer.add(movePreparationBar);
 		
@@ -743,7 +753,7 @@ public class Board extends JFrame {
 		boolean success = true;
 		try {
 			logger.debug("try to carry out move for: " + move.getPlayer());
-			gc.move(move);
+			gameController.move(move);
 		} catch (Exception e2) {
 			success = false;
 			e2.printStackTrace();
@@ -752,6 +762,32 @@ public class Board extends JFrame {
 		return success;
 	}
 	
+	// Alle benoetigten Daten/Objekte laden bzw. erzeugen
+	
+	/** Game, GameState, GameController erzeugen */
+	protected void loadGame() {
+		
+	}
+	
+	/** Boarddef laden, d.h. GameGraph, Board */
+	protected void loadBoard() {
+		
+	}
+	
+	/** Rules laden (spaeter auch aus JAR) */
+	protected void loadRules() {
+		
+	}
+	
+	/** MrX AI laden (spaeter auch aus JAR) */
+	protected void loadMrXAi() {
+		
+	}
+	
+	/** Detective AI laden (spaeter auch aus JAR) */
+	protected void loadDetectiveAi() {
+		
+	}
 	
 	
 	// Actions *******************************************
@@ -765,7 +801,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			gc.newGame();
+			gameController.newGame();
 		}
 	}
 	private class ClearPlayersAction extends AbstractAction {
@@ -776,7 +812,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			gc.clearPlayers();
+			gameController.clearPlayers();
 		}
 	}
 	private class NewMrXAction extends AbstractAction {
@@ -787,7 +823,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			gc.newMrX();
+			gameController.newMrX();
 		}
 	}
 	private class NewDetectiveAction extends AbstractAction {
@@ -798,7 +834,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			gc.newDetective();
+			gameController.newDetective();
 		}
 	}
 	private class StartAction extends AbstractAction {
@@ -810,7 +846,7 @@ public class Board extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				gc.start();
+				gameController.start();
 			} catch (Exception e2) {
 				showErrorMessage(e2);
 			}
@@ -824,7 +860,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			gc.abort();
+			gameController.abort();
 		}
 	}
 	private class MoveAction extends AbstractAction {
@@ -836,8 +872,8 @@ public class Board extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Move move = null;
-			if (gc.getStatus() == GameStatus.IN_GAME) {
-				move = MoveProducer.createRandomSingleMove(gs, gg);
+			if (gameController.getStatus() == GameStatus.IN_GAME) {
+				move = MoveProducer.createRandomSingleMove(gameState, gameGraph);
 			}
 			move(move);
 		}
@@ -850,7 +886,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			showGameStatusAndWin(gc.getStatus(), gc.getWin());
+			showGameStatusAndWin(gameController.getStatus(), gameController.getWin());
 		}
 	}
 	private class RemoveDetectiveAction extends AbstractAction {
@@ -865,7 +901,7 @@ public class Board extends JFrame {
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
 				DetectivePlayer d = null;
 				try {
-					d = g.getDetectives().get(Integer.parseInt(s));
+					d = game.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
 					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(),
 							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION,
@@ -875,7 +911,7 @@ public class Board extends JFrame {
 					continue;
 				}
 				try {
-					gc.removeDetective(d);
+					gameController.removeDetective(d);
 				} catch (Exception e2) {
 					showErrorMessage(e2);
 				}
@@ -896,7 +932,7 @@ public class Board extends JFrame {
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
 				DetectivePlayer d = null;
 				try {
-					d = g.getDetectives().get(Integer.parseInt(s));
+					d = game.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
 					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(),
 							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION,
@@ -906,7 +942,7 @@ public class Board extends JFrame {
 					continue;
 				}
 				try {
-					gc.shiftUpDetective(d);
+					gameController.shiftUpDetective(d);
 				} catch (Exception e2) {
 					showErrorMessage(e2);
 				}
@@ -928,7 +964,7 @@ public class Board extends JFrame {
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
 				DetectivePlayer d = null;
 				try {
-					d = g.getDetectives().get(Integer.parseInt(s));
+					d = game.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
 					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(),
 							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION,
@@ -938,7 +974,7 @@ public class Board extends JFrame {
 					continue;
 				}
 				try {
-					gc.shiftDownDetective(d);
+					gameController.shiftDownDetective(d);
 				} catch (Exception e2) {
 					showErrorMessage(e2);
 				}
@@ -956,12 +992,12 @@ public class Board extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			logger.info("new game with players");
-			gc.clearPlayers();
-			gc.newMrX();
+			gameController.clearPlayers();
+			gameController.newMrX();
 			for (int i = 0; i < 4; i++)
-				gc.newDetective();
+				gameController.newDetective();
 			
-			gc.newGame();
+			gameController.newGame();
 		}
 	}
 	private class UndoAction extends AbstractAction {
@@ -999,10 +1035,10 @@ public class Board extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// Suggest an AI move!
-			if (gc.getStatus() == GameStatus.IN_GAME) {
-				Move move = MoveProducer.createRandomSingleMove(gs, gg);
+			if (gameController.getStatus() == GameStatus.IN_GAME) {
+				Move move = MoveProducer.createRandomSingleMove(gameState, gameGraph);
 				// ... not yet
-				mPrep.nextMove(move);
+				movePreparer.nextMove(move);
 			}
 		}
 	}
@@ -1014,7 +1050,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			move(mPrep.getMove(gs.getCurrentPlayer()));
+			move(movePreparer.getMove(gameState.getCurrentPlayer()));
 		}
 	}
 	private class MoveDetectivesNowAction extends AbstractAction {
@@ -1025,15 +1061,15 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Player currentPlayer = gs.getCurrentPlayer();
+			Player currentPlayer = gameState.getCurrentPlayer();
 			if (currentPlayer instanceof DetectivePlayer) {
-				Move currentMove = mPrep.getMove(currentPlayer);
+				Move currentMove = movePreparer.getMove(currentPlayer);
 				
 				// Detectives zählen, die schon gezogen sind, oder einen Zug vorbereitet haben.
 				int nDetectivesReady = 0;
-				for (DetectivePlayer d : gs.getDetectives()) {
+				for (DetectivePlayer d : gameState.getDetectives()) {
 					// TODO schon ausgefuehrte moves einbeziehen! die werden momentan ignoriert! dann meldung unten ausbessern!
-					Move m = mPrep.getMove(d);
+					Move m = movePreparer.getMove(d);
 					if (m != null) {
 						nDetectivesReady++;
 					}
@@ -1042,7 +1078,7 @@ public class Board extends JFrame {
 				
 				if (currentMove == null) {
 					JOptionPane.showMessageDialog(Board.this, "The current player has not prepared it's move yet."); // TODO warnung?, dass currentPlayer noch keinen Zug vorbereitet hat
-				} else if (nDetectivesReady == gs.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
+				} else if (nDetectivesReady == gameState.getDetectives().size() // Alle Detectives haben gezogen oder Zug vorbereitet
 						|| JOptionPane.showConfirmDialog(Board.this,
 								"It seems that not all detectives have prepared " +
 								"a move yet.\nBegin moving as far as possible?",
@@ -1050,10 +1086,10 @@ public class Board extends JFrame {
 								== JOptionPane.YES_OPTION) {
 
 					Player p;
-					while (gc.getStatus() == GameStatus.IN_GAME
-							&& (p = gs.getCurrentPlayer()) != gs.getMrX()) {
+					while (gameController.getStatus() == GameStatus.IN_GAME
+							&& (p = gameState.getCurrentPlayer()) != gameState.getMrX()) {
 						
-						Move m = mPrep.getMove(p);
+						Move m = movePreparer.getMove(p);
 						if (m == null || !move(m)) {
 							break;
 						}
@@ -1169,7 +1205,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			mPrep.selectPlayer(gs.getCurrentPlayer());
+			movePreparer.selectPlayer(gameState.getCurrentPlayer());
 		}
 	}
 	private class JointMoving extends AbstractAction {
@@ -1180,7 +1216,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			mPrep.setFixedTurnOrder(!isSelected(this));
+			movePreparer.setFixedTurnOrder(!isSelected(this));
 		}
 	}
 	private class MrXAlwaysVisibleAction extends AbstractAction {
