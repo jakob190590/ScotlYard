@@ -76,6 +76,8 @@ public class MovePreparationBar extends JPanel {
 	
 	private JFormattedTextField ftfStationNumber;
 	private JComboBox<Player> cbPlayer;
+	private final PlayerComboBoxRenderer playerComboBoxRenderer = new PlayerComboBoxRenderer();
+	
 	
 	private final Action submitStationNumberAction = new SubmitStationNumberAction();
 	private final Action resetAction = new ResetAction();
@@ -100,7 +102,7 @@ public class MovePreparationBar extends JPanel {
 			}
 		});
 		cbPlayer.setAction(selectPlayerAction);
-		cbPlayer.setRenderer(new PlayerComboBoxRenderer(gameState));
+		cbPlayer.setRenderer(playerComboBoxRenderer);
 		add(cbPlayer);
 		
 		ftfStationNumber = new JFormattedTextField();
@@ -134,14 +136,18 @@ public class MovePreparationBar extends JPanel {
 	public void setGameState(GameState gameState) {
 		if (gameState != this.gameState) {
 			if (this.gameState != null) {
+				// Player ComboBox
+				players.clear();
+				playerComboBoxRenderer.setGameState(null);
 				// unregister listeners/observers
 				this.gameState.removePlayerListener(playerListener);
 				this.gameState.removeTurnListener(turnListener);
-				players.clear();
 			}
 			this.gameState = gameState;
 			if (gameState != null) {
+				// Player ComboBox
 				players.addAll(gameState.getPlayers());
+				playerComboBoxRenderer.setGameState(gameState);
 				// register listeners/observers
 				gameState.addPlayerListener(playerListener);
 				gameState.addTurnListener(turnListener);

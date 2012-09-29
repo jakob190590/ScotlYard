@@ -411,8 +411,17 @@ public class BoardPanel extends JPanel {
 
 
 	public void setMovePreparer(MovePreparer movePreparer) {
-		this.movePreparer = movePreparer;
-		movePreparer.addObserver(movePreparerObserver);
+		if (movePreparer != this.movePreparer) {
+			if (this.gameState != null) {
+				// unregister listeners/observers
+				movePreparer.deleteObserver(movePreparerObserver);
+			}
+			this.movePreparer = movePreparer;
+			if (gameState != null) {
+				// register listeners/observers
+				movePreparer.addObserver(movePreparerObserver);
+			}
+		}
 	}
 
 	public Image getImage() {
@@ -454,7 +463,7 @@ public class BoardPanel extends JPanel {
 					(mrXAlwaysVisible ||
 					rules == null ||
 					rules.getGameStateAccessPolicy().getMrXUncoverMoveNumbers()
-					.contains(lmf.getMoveNumber())));
+							.contains(lmf.getMoveNumber())));
 		} else {
 			piece.setVisible(lmf != null);
 		}

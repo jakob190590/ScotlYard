@@ -99,7 +99,7 @@ public class Board extends JFrame {
 	/** Faktor, mit dem zoomFactor bei jedem Zoom-Schritt verrechnet wird (mal/geteilt) */
 	private static final double ZOMMING_FACTOR = 1.2;
 	
-	private Image img;
+	private Image image;
 
 	private JPanel contentPane;
 	
@@ -137,7 +137,6 @@ public class Board extends JFrame {
 	private TicketSelectionDialog ticketSelectionDialogMrX = new TicketSelectionDialog(this, MrXPlayer.class);
 	private TicketSelectionDialog ticketSelectionDialogDetectives = new TicketSelectionDialog(this, DetectivePlayer.class);
 	
-	// TODO beide muessen beim laden der Board def gesetzt werden
 	private double normalZoomFactor = 0.2; // kann sein was will, nur >= 1 macht keinen sinn, weil das bild dann viel zu riessig ist!
 	private double zoomFactor = normalZoomFactor;
 	
@@ -157,14 +156,14 @@ public class Board extends JFrame {
 	private final Action redoAction = new RedoAction();
 	private final Action suggestMoveAction = new SuggestMoveAction();
 	private final Action moveNowAction = new MoveNowAction();
-	private final MoveDetectivesNowAction moveDetectivesNowAction = new MoveDetectivesNowAction();
+	private final Action moveDetectivesNowAction = new MoveDetectivesNowAction();
 	private final Action quickPlayAction = new QuickPlayAction();
 	private final Action fitBoardAction = new FitBoardAction();
 	private final Action zoomInAction = new ZoomInAction();
 	private final Action zoomOutAction = new ZoomOutAction();
 	private final Action zoomNormalAction = new ZoomNormalAction();
 	private final Action selectCurrentPlayerAction = new SelectCurrentPlayerAction();
-	private final Action jointMoving = new JointMoving();
+	private final Action jointMovingAction = new JointMovingAction();
 	private final Action mrXAlwaysVisibleAction = new MrXAlwaysVisibleAction();
 
 	private final MoveListener moveListener = new MoveListener() {
@@ -209,6 +208,20 @@ public class Board extends JFrame {
 		}
 	};
 
+	private final Observer gameControllerObserver = new Observer() {
+		@Override
+		public void update(Observable o, Object arg) {
+			GameController c = (GameController) o;
+			
+			logger.info(String.format("state changed: %s, %s", c.getStatus(), c.getWin()));
+			
+			movePreparationBar.setEnabled(c.getStatus() == GameStatus.IN_GAME);
+			setGameControllerActionsEnabled(c.getStatus());
+			if (c.getStatus() != GameStatus.IN_GAME)
+				showGameStatusAndWin(c.getStatus(), c.getWin());
+		}
+	};
+
 
 
 	/**
@@ -233,6 +246,9 @@ public class Board extends JFrame {
 	 * Create the frame.
 	 */
 	public Board() {
+		
+		createController();
+		
 		setTitle("ScotlYard");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 600, 600);
@@ -382,7 +398,7 @@ public class Board extends JFrame {
 		mntmSetImage.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boardPanel.setImage(img);
+				boardPanel.setImage(image);
 			}
 		});
 		mntmSetImage.setMnemonic(KeyEvent.VK_I);
@@ -396,7 +412,7 @@ public class Board extends JFrame {
 		mnErnsthaft.add(mntmQuickPlay);
 		
 		JCheckBoxMenuItem chckbxmntmJointMoving = new JCheckBoxMenuItem("Joint Moving");
-		chckbxmntmJointMoving.setAction(jointMoving);
+		chckbxmntmJointMoving.setAction(jointMovingAction);
 		mnErnsthaft.add(chckbxmntmJointMoving);
 		
 		JMenuItem mntmShowMrx = new JMenuItem("Show MrX");
@@ -456,154 +472,9 @@ public class Board extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
-		// Board laden
-		BoardGraphLoader bgl = new BoardGraphLoader();
-		try {
-			bgl.load("graph-description", "initial-stations");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		
 		boardPanelContainer = new JPanel(new AspectRatioGridLayout());
 		boardPanel = new BoardPanel();
-		
-		for (JComponent c : bgl.getVisualComponents()) {
-			boardPanel.add(c);
-		}
-		boardPanel.buildVisualStationMap();
-		numberStationMap = bgl.getNumberStationMap();
-		
-		
-		
-		
-		img = null;
-		// Variante 1
-		try {
-			img = ImageIO.read(new File("original-scotland-yard-board.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		// Variante 2 (ungefaehr)
-//		img = Toolkit.getDefaultToolkit().getImage("original-scotland-yard-board.png");
-//		private final ImageObserver imageSizeObserver = new ImageObserver() {
-//			@Override
-//			public boolean imageUpdate(Image img, int infoflags, int x, int y,
-//					int width, int height) {
-//				// width und height koennten einzeln oder gleichzeitig ankommen
-//				if ((infoflags & WIDTH) != 0) {
-//					imageWidth = width;
-//				}
-//				if ((infoflags & HEIGHT) != 0) {
-//					imageHeight = height;
-//				}
-//				if ((imageWidth >= 0) && (imageHeight >= 0)) {
-//					preferredSize = new Dimension(imageWidth, imageHeight);
-//					return false; // required information has been acquired
-//				}
-//				return true; // further updates are needed
-//			}
-//		};
-//		imageWidth = image.getWidth(imageSizeObserver);
-//		imageHeight = image.getHeight(imageSizeObserver);
-//		if ((imageWidth >= 0) && (imageHeight >= 0)) {
-//			preferredSize = new Dimension(imageWidth, imageHeight);
-//		}
-		
-		int w = img.getWidth(null);
-		int h = img.getHeight(null);
-		if (w < 0 || h < 0) {
-			throw new IllegalArgumentException("The image seems to be not loaded " +
-					"completely: Cannot determine image's width and/or height.");
-		}
-		originalImageSize = new Dimension(w, h);
-		boardPanel.setImage(img);
-		boardPanel.setPreferredSize(originalImageSize);
-		
-		// GameState
-		rules = new TheRules();
-		game = new DefaultGame();
-		gameState = new DefaultGameState(game);
-		gameGraph = bgl.getGameGraph();
-		gameController = new DefaultGameController(game, gameGraph, rules);
-		gameController.setUndoManager(undoManager);
-		gameController.addObserver(new Observer() {
-			@Override
-			public void update(Observable o, Object arg) {
-				GameController c = (GameController) o;
-				
-				logger.info(String.format("state changed: %s, %s", c.getStatus(), c.getWin()));
-				
-				movePreparationBar.setEnabled(c.getStatus() == GameStatus.IN_GAME);
-				setGameControllerActionsEnabled(c.getStatus());
-				if (c.getStatus() != GameStatus.IN_GAME)
-					showGameStatusAndWin(c.getStatus(), c.getWin());
-			}
-		});
-		movePreparer = new MovePreparer(gameState, gameGraph) {
-			@Override
-			protected void errorSelectingPlayer(Player player) {
-				logger.error("dieser player kann (jetzt) nicht ausgewaehlt werden");
-				UIManager.getLookAndFeel().provideErrorFeedback(null);
-			}
-			
-			@Override
-			protected void errorImpossibleNextStation(StationVertex station,
-					Player player) {
-				logger.error("impossible next station for: " + player);
-				UIManager.getLookAndFeel().provideErrorFeedback(null);
-			}
-
-			@Override
-			protected Ticket selectTicket(Set<Ticket> tickets, Player player) {
-				if (player instanceof MrXPlayer)
-					return ticketSelectionDialogMrX.show(tickets, player);
-				else // DetectivePlayer
-					return ticketSelectionDialogDetectives.show(tickets, player);
-//				return tickets.iterator().next(); // gleich das erste
-			}
-		};
-		movePreparer.addObserver(new Observer() {
-			@Override
-			public void update(Observable o, Object arg) {
-				MovePreparationEvent mpe;
-				if (arg instanceof MovePreparationEvent && (mpe = (MovePreparationEvent) arg)
-						.getId() == MovePreparationEvent.NEXT_STATION) {
-					
-					logger.debug("move prepared");
-					Player player = mpe.getPlayer();
-					
-					if (player == gameState.getCurrentPlayer()) {
-						lblMoveVal.setText(mpe.getMove().toString());
-					}
-					
-					boolean furtherMoves = (player instanceof MrXPlayer) ?
-							ticketSelectionDialogMrX.isFurtherMovesSelected() : false;
-					if (isSelected(quickPlayAction)
-							&& player == gameState.getCurrentPlayer() // selected player's turn
-							&& !furtherMoves) { // no further moves
-						logger.debug("Move fertig vorbereitet, QuickPlay, no further moves and Turn");
-						move(mpe.getMove());
-					}
-				} else {
-					logger.debug("player selected");
-				}
-			}
-		});
-		
-		gameState.addMoveListener(moveListener);
-		gameState.addTurnListener(turnListener);
-		
-		setGameControllerActionsEnabled(gameController.getStatus());
-		boardPanel.setGameState(gameState);
-		boardPanel.setGameGraph(gameGraph);
 		boardPanel.setMovePreparer(movePreparer);
-		boardPanel.setRules(rules);
-		
-		movePreparationBar.setNumberStationMap(numberStationMap);
-		movePreparationBar.setGameState(gameState);
-		movePreparationBar.setMovePreparer(movePreparer);
 		
 		boardPanelContainer.add(boardPanel);
 		// mit preferredSize ist es so:
@@ -614,7 +485,7 @@ public class Board extends JFrame {
 		
 		boardPanelScrollPane = new JScrollPane(boardPanelContainer);
 		// Scrollgeschwindigkeit einstellen
-		final int scrollBarUnitIncrement = 20;
+		final int scrollBarUnitIncrement = 30;
 		boardPanelScrollPane.getVerticalScrollBar().setUnitIncrement(scrollBarUnitIncrement);
 		boardPanelScrollPane.getHorizontalScrollBar().setUnitIncrement(scrollBarUnitIncrement);
 		
@@ -627,27 +498,27 @@ public class Board extends JFrame {
 		JPanel panel = new JPanel();
 		toolbarContainer.add(panel);
 		
-		JLabel label = new JLabel("GameController");
-		panel.add(label);
+		JLabel lblGameController = new JLabel("GameController");
+		panel.add(lblGameController);
 		
-		JButton button = new JButton("New Game with Players");
-		button.setAction(newGameWithPlayersAction);
-		panel.add(button);
+		JButton btnNewGameWithPlayers = new JButton("New Game with Players");
+		btnNewGameWithPlayers.setAction(newGameWithPlayersAction);
+		panel.add(btnNewGameWithPlayers);
 		
-		JButton button_1 = new JButton("Start");
-		button_1.setAction(startAction);
-		panel.add(button_1);
+		JButton btnStart = new JButton("Start");
+		btnStart.setAction(startAction);
+		panel.add(btnStart);
 		
-		JButton button_2 = new JButton("Abort");
-		button_2.setAction(abortAction);
-		panel.add(button_2);
+		JButton btnAbort = new JButton("Abort");
+		btnAbort.setAction(abortAction);
+		panel.add(btnAbort);
 		
-		JButton button_3 = new JButton("Move...");
-		button_3.setAction(moveAction);
-		panel.add(button_3);
+		JButton btnMoveM = new JButton("Move...");
+		btnMoveM.setAction(moveAction);
+		panel.add(btnMoveM);
 		
 		movePreparationBar = new MovePreparationBar();
-		movePreparationBar.setEnabled(false);
+		movePreparationBar.setMovePreparer(movePreparer);
 		toolbarContainer.add(movePreparationBar);
 		
 		JPanel moveControlBar = new JPanel();
@@ -703,7 +574,71 @@ public class Board extends JFrame {
 		});
 		
 		
+		
+		
+		// Daten/Models/... laden bzw. erzeugen
+				
+		loadRules();
+		loadBoard();
+		loadGame();
+		loadMrXAi();
+		loadDetectiveAi();
+		
 //		pack();
+	}
+
+	private void createController() {
+		// Controll Komponenten
+		movePreparer = new MovePreparer() {
+			@Override
+			protected void errorSelectingPlayer(Player player) {
+				logger.error("dieser player kann (jetzt) nicht ausgewaehlt werden");
+				UIManager.getLookAndFeel().provideErrorFeedback(null);
+			}
+			
+			@Override
+			protected void errorImpossibleNextStation(StationVertex station,
+					Player player) {
+				logger.error("impossible next station for: " + player);
+				UIManager.getLookAndFeel().provideErrorFeedback(null);
+			}
+
+			@Override
+			protected Ticket selectTicket(Set<Ticket> tickets, Player player) {
+				if (player instanceof MrXPlayer)
+					return ticketSelectionDialogMrX.show(tickets, player);
+				else // DetectivePlayer
+					return ticketSelectionDialogDetectives.show(tickets, player);
+//				return tickets.iterator().next(); // gleich das erste
+			}
+		};
+		movePreparer.addObserver(new Observer() {
+			@Override
+			public void update(Observable o, Object arg) {
+				MovePreparationEvent mpe;
+				if (arg instanceof MovePreparationEvent && (mpe = (MovePreparationEvent) arg)
+						.getId() == MovePreparationEvent.NEXT_STATION) {
+					
+					logger.debug("move prepared");
+					Player player = mpe.getPlayer();
+					
+					if (player == gameState.getCurrentPlayer()) {
+						lblMoveVal.setText(mpe.getMove().toString());
+					}
+					
+					boolean furtherMoves = (player instanceof MrXPlayer) ?
+							ticketSelectionDialogMrX.isFurtherMovesSelected() : false;
+					if (isSelected(quickPlayAction)
+							&& player == gameState.getCurrentPlayer() // selected player's turn
+							&& !furtherMoves) { // no further moves
+						logger.debug("Move fertig vorbereitet, QuickPlay, no further moves and Turn");
+						move(mpe.getMove());
+					}
+				} else {
+					logger.debug("player selected");
+				}
+			}
+		});
 	}
 	
 	
@@ -767,31 +702,210 @@ public class Board extends JFrame {
 		return success;
 	}
 	
+	// --------------------------------------------------
+	// Setter/Getter fuer meine Felder
+
+	protected Rules getRules() {
+		return rules;
+	}
+
+	protected void setRules(Rules rules) {
+		this.rules = rules;
+		boardPanel.setRules(rules);
+	}
+
+	protected GameController getGameController() {
+		return gameController;
+	}
+
+	protected void setGameController(GameController gameController) {
+		this.gameController = gameController;
+	}
+
+	protected Game getGame() {
+		return game;
+	}
+
+	protected void setGame(Game game) {
+		this.game = game;
+	}
+
+	protected GameState getGameState() {
+		return gameState;
+	}
+
+	protected void setGameState(GameState gameState) {
+		if (gameState != this.gameState) {
+			if (this.gameState != null) {
+				// unregister listeners/observers
+				gameState.removeMoveListener(moveListener);
+				gameState.removeTurnListener(turnListener);
+			}
+			this.gameState = gameState;
+			movePreparationBar.setGameState(gameState);
+			boardPanel.setGameState(gameState);
+			movePreparer.setGameState(gameState);
+			
+			if (gameState != null) {
+				// register listeners/observers
+				gameState.addMoveListener(moveListener);
+				gameState.addTurnListener(turnListener);
+			}
+		}
+		
+	}
+
+	protected GameGraph getGameGraph() {
+		return gameGraph;
+	}
+
+	protected void setGameGraph(GameGraph gameGraph) {
+		this.gameGraph = gameGraph;
+		movePreparer.setGameGraph(gameGraph);
+		boardPanel.setGameGraph(gameGraph);
+	}
+
+	protected Map<Integer, StationVertex> getNumberStationMap() {
+		return numberStationMap;
+	}
+
+	protected void setNumberStationMap(Map<Integer, StationVertex> numberStationMap) {
+		this.numberStationMap = numberStationMap;
+		movePreparationBar.setNumberStationMap(numberStationMap);
+	}
+
+	protected MrXAi getMrXAi() {
+		return mrXAi;
+	}
+
+	protected void setMrXAi(MrXAi mrXAi) {
+		this.mrXAi = mrXAi;
+	}
+
+	protected DetectiveAi getDetectiveAi() {
+		return detectiveAi;
+	}
+
+	protected void setDetectiveAi(DetectiveAi detectiveAi) {
+		this.detectiveAi = detectiveAi;
+	}
+	
+	protected Image getImage() {
+		return image;
+	}
+	
+	protected void setImage(Image image) {
+		this.image = image;
+		boardPanel.setImage(image);
+	}
+	
+	protected Dimension getOriginalImageSize() {
+		return originalImageSize;
+	}
+	
+	protected void setOriginalImageSize(Dimension originalImageSize) {
+		this.originalImageSize = originalImageSize;
+		boardPanel.setPreferredSize(originalImageSize);
+	}
+	
+	// **************************************************
 	// Alle benoetigten Daten/Objekte laden bzw. erzeugen
 	
-	/** Game, GameState, GameController erzeugen */
-	protected void loadGame() {
-		
-	}
-	
-	/** Boarddef laden, d.h. GameGraph, Board */
-	protected void loadBoard() {
-		
-	}
-	
+
 	/** Rules laden (spaeter auch aus JAR) */
-	protected void loadRules() {
+	protected void loadRules(/* String jarName, String className */) {
+//		if (jarName != null) {
+//			// link JAR file
+//		}
+//		if (className != null) {
+//			Class.forName(classname).createInstance();
+//		} else {
+		
+			rules = new TheRules();
+			
+//		}
+	}
+
+	/** Boarddef laden, d.h. GameGraph, Board */
+	protected void loadBoard(/* params, wie boarddef filename */) {
+		
+		// Momentan wird noch das Standard Board geladen ...
+		
+		// Board laden
+		BoardGraphLoader bgl = new BoardGraphLoader();
+		try {
+			bgl.load("graph-description", "initial-stations");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			showErrorMessage(e1);
+		}
+		
+		// Dem BoardPanel alle VisualComponents adden
+		for (JComponent c : bgl.getVisualComponents()) {
+			boardPanel.add(c);
+		}
+		boardPanel.buildVisualStationMap();
+		
+		Map<Integer, StationVertex> numberStationMap = bgl.getNumberStationMap();
+		
+		GameGraph gameGraph = bgl.getGameGraph();
+		
+		// TODO beide muessen beim laden der Board def gesetzt werden
+		normalZoomFactor = 0.2; // kann sein was will, nur >= 1 macht keinen sinn, weil das bild dann viel zu riessig ist!
+		zoomFactor = normalZoomFactor;
+		
+		// Bild laden
+		
+		Image img = null;
+		try {
+			img = ImageIO.read(new File("original-scotland-yard-board.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		int w = img.getWidth(null);
+		int h = img.getHeight(null);
+		if (w < 0 || h < 0) {
+			throw new IllegalArgumentException("The image seems to be not loaded " +
+					"completely: Cannot determine image's width and/or height.");
+		}
+		Dimension originalImageSize = new Dimension(w, h);
+		
+		
+		
+		setImage(img);
+		setOriginalImageSize(originalImageSize);
+		
+		setGameGraph(gameGraph);
+		setNumberStationMap(numberStationMap);
+		
+	}
+	
+	/** Game, GameState, GameController erzeugen */
+	protected void loadGame(/* params wie gamestate filename*/) {
+		
+		Game game = new DefaultGame();
+		GameState gameState = new DefaultGameState(game);
+		
+		undoManager.discardAllEdits(); // am besten erst, wenn erfolgreich geladen
+		GameController gameController = new DefaultGameController(game, gameGraph, rules);
+		gameController.setUndoManager(undoManager);
+		gameController.addObserver(gameControllerObserver );
+		
+		setGameControllerActionsEnabled(gameController.getStatus());
+		
+		setGame(game);
+		setGameState(gameState);
+		setGameController(gameController);
 		
 	}
 	
 	/** MrX AI laden (spaeter auch aus JAR) */
-	protected void loadMrXAi() {
-		
+	protected void loadMrXAi(/* params wie JAR und cassname*/) {
 	}
 	
 	/** Detective AI laden (spaeter auch aus JAR) */
-	protected void loadDetectiveAi() {
-		
+	protected void loadDetectiveAi(/* params wie JAR und classname*/) {
 	}
 	
 	
@@ -1213,8 +1327,8 @@ public class Board extends JFrame {
 			movePreparer.selectPlayer(gameState.getCurrentPlayer());
 		}
 	}
-	private class JointMoving extends AbstractAction {
-		public JointMoving() {
+	private class JointMovingAction extends AbstractAction {
+		public JointMovingAction() {
 			putValue(NAME, "Joint Moving");
 			putValue(SHORT_DESCRIPTION, "Joint moving for detectives");
 			setSelected(this, true);

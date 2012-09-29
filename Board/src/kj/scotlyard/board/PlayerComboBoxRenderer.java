@@ -36,8 +36,7 @@ public class PlayerComboBoxRenderer extends JLabel implements
 
 	private GameState gameState;
 	
-	public PlayerComboBoxRenderer(GameState gameState) {
-		this.gameState = gameState;
+	public PlayerComboBoxRenderer() {
 		setOpaque(true);
 		setVerticalAlignment(CENTER);
 	}
@@ -61,12 +60,20 @@ public class PlayerComboBoxRenderer extends JLabel implements
 					+ ((value instanceof DetectivePlayer) ?
 								(" - " + Integer.toHexString(value.hashCode())) : ""));
 			
-			if (gameState.getCurrentPlayer() == value) {
+			if (gameState != null && gameState.getCurrentPlayer() == value) {
 				setBackground(Color.RED); // TODO unschoen, und bis jetzt unabhaengig von isSelected!
 			}
 		}
 
 		return this;
+	}
+
+	public GameState getGameState() {
+		return gameState;
+	}
+
+	public void setGameState(GameState gameState) {
+		this.gameState = gameState;
 	}
 
 }
