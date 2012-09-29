@@ -180,10 +180,7 @@ public class DefaultGameController extends GameController {
 			}
 			
 			// nur notify, wenn wirklich was geaendert (deswegen setChanged)
-			
-			// soll ich GameStatus oder GameWin als param uebergeben?
-			// weiss nicht -- dann lieber gar keinen param (null).
-			notifyObservers();
+			notifyObservers(status);
 						
 		} else {
 			throw new SecurityException("Only GameController's own current state implementation can change the state.");
