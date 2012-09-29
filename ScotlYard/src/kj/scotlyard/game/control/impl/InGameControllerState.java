@@ -25,7 +25,6 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.UndoManager;
 
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
@@ -87,18 +86,12 @@ class InGameControllerState extends GameControllerState {
 	
 	private final Game game;
 	
-	private final GameStateExtension gameStateExtension;
-	
 	private final GameGraph gameGraph;
-	
-	private final UndoManager undoManager;
 	
 	protected InGameControllerState(DefaultGameController controller) {
 		super(controller);
 		game = controller.getGame();
-		gameStateExtension = new GameStateExtension(game);
 		gameGraph = controller.getGameGraph();
-		undoManager = controller.getUndoManager();
 	}
 	
 	private void raiseIllegalStateException() {
@@ -110,7 +103,7 @@ class InGameControllerState extends GameControllerState {
 		List<ItemPassEdit> edits = new LinkedList<>();
 		
 		Player p1 = move.getPlayer();
-		List<Move> moves = gameStateExtension.flattenMove(move, true);
+		List<Move> moves = GameStateExtension.flattenMove(move, true);
 		
 		for (Move m : moves) {
 			Item item = m.getItem();
@@ -124,7 +117,7 @@ class InGameControllerState extends GameControllerState {
 				
 				edits.add(new ItemPassEdit(p1, p2, item));
 				
-			}			
+			}
 		}
 
 		return edits;
@@ -152,22 +145,22 @@ class InGameControllerState extends GameControllerState {
 
 	@Override
 	public void newDetective() {
-		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support
+		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support, do not forget TurnListener when currentPlayer is affected!
 	}
 
 	@Override
 	public void removeDetective(DetectivePlayer detective) {
-		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support
+		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support, do not forget TurnListener when currentPlayer is affected!
 	}
 
 	@Override
 	public void shiftUpDetective(DetectivePlayer detective) {
-		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support
+		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support, do not forget TurnListener when currentPlayer is affected!
 	}
 
 	@Override
 	public void shiftDownDetective(DetectivePlayer detective) {
-		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support
+		throw new IllegalStateException("Not yet supported, while IN_GAME."); // TODO add support, do not forget TurnListener when currentPlayer is affected!
 	}
 
 	@Override
@@ -177,14 +170,14 @@ class InGameControllerState extends GameControllerState {
 
 	@Override
 	public void abort() {
-		getController().setState(this, GameStatus.NOT_IN_GAME, GameWin.NO);		
-		undoManager.addEdit(getController().new AbortEdit());
+		getController().setState(this, GameStatus.NOT_IN_GAME, GameWin.NO);
+		addEditSafely(getController().new AbortEdit());
 	}
 
 	@Override
 	public void move(Move move) {
 
-		final Rules rules = getController().getRules();		
+		final Rules rules = getController().getRules();
 		final MovePolicy movePolicy = rules.getMovePolicy();
 		
 		movePolicy.checkMove(game, gameGraph, move);
@@ -192,7 +185,7 @@ class InGameControllerState extends GameControllerState {
 		CompoundEdit moveEdit = getController().new MoveEdit(
 				game.getCurrentPlayer(), game.getCurrentRoundNumber());
 		
-		// move.seal(): das macht game.getMoves().add(..)		
+		// move.seal(): das macht game.getMoves().add(..)
 		
 		// Move eintragen
 		game.getMoves().add(move);
@@ -205,15 +198,21 @@ class InGameControllerState extends GameControllerState {
 		moveEdit.end();
 		
 		// Turn/Current sachen nach Move aktualisieren
-		Turn turn = rules.getTurnPolicy().getNextTurn(game, gameGraph);		
-		game.setCurrentPlayer(turn.getPlayer());
-		game.setCurrentRoundNumber(turn.getRoundNumber());
+		Turn turn = rules.getTurnPolicy().getNextTurn(game, gameGraph);
 		
 		// GameWin ermitteln
 		GameWin win = rules.getGameWinPolicy().isGameWon(game, gameGraph);
-		getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
 		
-		undoManager.addEdit(moveEdit);
+		if (win == GameWin.NO) {
+			// Spiel noch nicht vorbei, es geht weiter
+			game.setCurrentRoundNumber(turn.getRoundNumber());
+			game.setCurrentPlayer(turn.getPlayer());
+		} else {
+			// Spiel vorbei; Current Round Number und Player werden nicht mehr geaendert
+			getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
+		}
+		
+		addEditSafely(moveEdit);
 	}
 
 }

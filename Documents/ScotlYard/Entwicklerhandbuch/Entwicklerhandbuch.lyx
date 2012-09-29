@@ -1171,6 +1171,95 @@ Der Controller steuert den Zugriff auf das Model.
 \end_layout
 
 \begin_layout Section
+Controller
+\end_layout
+
+\begin_layout Standard
+Über den Controller (oder GameController) lässt sich das Spiel steuern.
+ Der Controller kennt zwei Zustände: IN_GAME und NOT_IN_GAME.
+\end_layout
+
+\begin_layout Standard
+Der DefaultGameController implementiert die GameController-Schnittstelle
+ und verwendet das State pattern.
+ Die gesamte Implementierung liegt im Package \SpecialChar \ldots{}
+.control.impl.
+ Der DefaultGameController besitzt also für jeden der zwei Zustände eine
+ GameController Instanz, an die er die meisten Aufrufe deligiert.
+ Für die Gemeinsamkeiten der beiden konkreten GameController für die existiert
+ die Basisklasse GameControllerState.
+\end_layout
+
+\begin_layout Subsection
+move(Move)
+\end_layout
+
+\begin_layout Standard
+Diese Methode für currentPlayer den angegebenen Zug aus.
+ Der genaue Ablauf ist folgender:
+\end_layout
+
+\begin_layout Enumerate
+Die MovePolicy überprüft den Zug.
+ Bei einem ungültigen Zug wird mit der entsprechenden Exception abgebrochen.
+ In diesem Fall entfallen die folgenden Schritte
+\end_layout
+
+\begin_layout Enumerate
+Der Zug wird der MoveList des GameState hinzugefügt und dabei versiegelt
+ (
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+ seal()).
+ Dabei werden die MoveListener informiert.
+\end_layout
+
+\begin_layout Enumerate
+Alle verwendeten Items werden gemäß den Regeln weitergegeben bzw.
+ weggeworfen.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "enu:Durch-die-TurnPolicy"
+
+\end_inset
+
+Durch die TurnPolicy werden Runde und Spieler (der als nächstes dran ist)
+ ermittelt.
+\end_layout
+
+\begin_layout Enumerate
+currentRoundNumber wird gemäß 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "enu:Durch-die-TurnPolicy"
+
+\end_inset
+
+ gesetzt und dabei werden die TurnListener informiert.
+\end_layout
+
+\begin_layout Enumerate
+currentPlayer wird gemäß 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "enu:Durch-die-TurnPolicy"
+
+\end_inset
+
+ gesetzt und dabei werden die TurnListener informiert.
+\end_layout
+
+\begin_layout Enumerate
+Der GameWin wird ermittelt (NO, MRX_WINS, DETECTIVES_WIN), und entsprechend
+ der Zustand des Controllers gesetzt.
+ Dabei werden -- wenn sich der Zustand ändert -- auch die Observer informiert.
+\end_layout
+
+\begin_layout Section
 Regeln
 \end_layout
 
@@ -1262,6 +1351,21 @@ AI
 
 \begin_layout Standard
 Die künstliche Intelligenz kann für Detectives oder MrX Spielzüge vorschlagen.
+ Hierzu baut ein kleines Framework auf die grundlegenden AI-Schnittstellen
+ auf.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Schnittstellen, Hierarchie und Framework (Abstract...Ai) beschreiben!
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Chapter
@@ -1308,6 +1412,591 @@ Base Move
 Sub Move
 \end_layout
 
+\begin_layout Part
+Spiel-GUI (Projekt Board)
+\end_layout
+
+\begin_layout Standard
+Das Eclipse-Projekt heißt Board (englisch ist für Spielbrett).
+ In diesem Projekt sind auch die meisten Tests für den Core untergebracht,
+ weil erst hier der echte Scotland Yard Graph geladen wird.
+ Für die Tests brauchte ich den echten Graphen, um die Bewegungen nachvollziehen
+ zu können.
+\end_layout
+
+\begin_layout Chapter
+GUI-Komponenten
+\end_layout
+
+\begin_layout Section
+BoardPanel
+\end_layout
+
+\begin_layout Standard
+Das BoardPanel ist das JPanel, das das Spielfeld anzeigt.
+ Das Spielfeld besteht aus dem Bild/der Karte, den VisualComponents des
+ Graphen (bis jetzt nur VisualStations), den Pieces (Spielfiguren) und Markierun
+gen, die irgendwie gezeichnet werden.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+wie ist das mit den markierungen?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Um alles richtig darstellen zu können, braucht das BoardPanel:
+\end_layout
+
+\begin_layout Itemize
+Rules
+\begin_inset Newline newline
+\end_inset
+
+genauer gesagt GameStateAccessPolicy, dass MrX zur richtigen Zeit sichtbar
+ gemacht werden kann
+\end_layout
+
+\begin_layout Itemize
+GameState
+\end_layout
+
+\begin_layout Itemize
+GameGraph
+\end_layout
+
+\begin_layout Itemize
+Image
+\begin_inset Newline newline
+\end_inset
+
+das Hintergrundbild/die Karte
+\end_layout
+
+\begin_layout Itemize
+MovePreparer
+\begin_inset Newline newline
+\end_inset
+
+dass Züge per Maus vorbereiteten werden können
+\end_layout
+
+\begin_layout Standard
+Außerdem hat das BoardPanel die Eigenschaft mrXAlwaysVisible, die angibt,
+ ob MrX immer sichtbar ist, oder nur wenn es die Regeln erlauben.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Sind die Regeln nicht gegeben d.
+\begin_inset space \thinspace{}
+\end_inset
+
+h.
+ null, ist MrX immer sichtbar.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die VisualComponents werden dem BoardPanel -- wie andere Child-Components
+ auch -- einfach mit add(...) hinzugefügt.
+ Intern benötigt das BoardPanel aber Verwaltungsstrukturen wie die visualStation
+s-Map, die StationVertex auf VisualStation abbildet.
+ Diese muss erzeugt werden, wenn mit add alle VisualComponents hinzugefügt
+ wurden.
+ Dazu dient die Methode buildVisualStationMap().
+ Eleganter wäre es wohl, die add-Methoden zu überschreiben, und die VisualStatio
+ns sofort der Map hinzuzufügen.
+ Da gab es aber irgendwelche Probleme.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Kann sein, dass es einfach zu viele Methoden waren, die Childs hinzufügen
+ oder entfernen, und ich Angst hatte, alle zu überschreiben, weil ich welche
+ vergessen könnte.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Konzepte
+\end_layout
+
+\begin_layout Section
+MovePreparation
+\end_layout
+
+\begin_layout Standard
+MovePreparation ist die Vorbereitung von Zügen.
+ ScotlYard ist wie das original Scotland Yard zwar rundenbasiert, Züge sollen
+ aber vorbereitet werden können, damit z.
+\begin_inset space \thinspace{}
+\end_inset
+
+B.
+ die Detectives jede Runde 
+\emph on
+gemeinsam
+\emph default
+ ihre Strategie planen können.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename img/Bedienung des MovePreparer.png
+	width 16cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Bedienkonzept-für-MovePreparatio"
+
+\end_inset
+
+Bedienkonzept für MovePreparation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Wie aus der Grafik 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bedienkonzept-für-MovePreparatio"
+
+\end_inset
+
+ ersichtlich, besteht das Vorbereiten eines Zugs immer aus dem Auswählen
+ eines Spielers und dem Festlegen der nächsten Station(en).
+ Implementiert ist dieses Konzept in der Klasse MovePreparer.
+\end_layout
+
+\begin_layout Standard
+Im Folgenden muss zwischen zwei Ausdrücken unterschieden werden:
+\end_layout
+
+\begin_layout Itemize
+selected Player / ausgewählter Spieler
+\begin_inset Newline newline
+\end_inset
+
+Der Spieler, für den momentan der Zug vorbereitet wird; Wird mit selectPlayer
+ festgelegt.
+\end_layout
+
+\begin_layout Itemize
+current Player / Spieler, der gerade dran ist
+\begin_inset Newline newline
+\end_inset
+
+Der Spieler, der gemäß GameState.getCurrentPlayer() gerade am Zug ist.
+\end_layout
+
+\begin_layout Subsection
+MovePreparer
+\end_layout
+
+\begin_layout Standard
+Der MovePreparer stellt also eine Schnittstelle zur Verfügung, um Züge für
+ Spieler vorzubereiten.
+ Er führt die Züge aber nicht selbst aus.
+ Außerdem lässt er sich als Model einer MVC-Architektur verstehen: Er ist
+ ein Subclass von observable.
+ Wenn sich
+\end_layout
+
+\begin_layout Itemize
+der ausgewählte Spieler ändert oder
+\end_layout
+
+\begin_layout Itemize
+für einen Zug, der gerade vorbereitet wird, die nächste Station eingereicht
+ wird,
+\end_layout
+
+\begin_layout Standard
+werden alle Observer darüber informiert.
+ Das Argument der update Methode der Observer ist dabei je nachdem der Player
+ oder der Move.
+ Auf seine Daten lässt sich mit den Methoden getSelectedPlayer und getMove
+ zugreifen.
+\end_layout
+
+\begin_layout Standard
+Der MovePreparer besitzt des Weiteren die Methoden selectPlayer(Player)
+ und nextStation(Station
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+, Player?
+\end_layout
+
+\end_inset
+
+).
+ Das ist die Schnittstelle zum Vorbereiten der Züge und gleichzeitig sind
+ es Setter für die Daten des Model.
+\end_layout
+
+\begin_layout Standard
+Der MovePreparer ist natürlich so programmiert, dass er möglichst nur gültige
+ Züge vorbereitet.
+ Er macht also eine GUI-seitige Prüfung von Spieler und Station.
+ Beim Ausführen des Zuges wird dieser nochmal von der MovePolicy geprüft.
+ Dabei gibt es im Fall eines ungültigen Zuges eine MoveException.
+ Deshalb wird vom MovePrepaerer im Vorhinein versucht, fehlerhafte Züge
+ zu vermeiden.
+ Es heißt hier 
+\begin_inset Quotes gld
+\end_inset
+
+versuchen
+\begin_inset Quotes grd
+\end_inset
+
+, weil ein Move nur von den Regeln, und wenn er ausgeführt wird, hunderprozentig
+ geprüft werden kann.
+\end_layout
+
+\begin_layout Subsubsection
+selectPlayer
+\end_layout
+
+\begin_layout Standard
+Hiermit wird der Spieler ausgewählt.
+ Es stecken aber gewisse Regln dahinter.
+ Wenn ein Spieler nicht ausgewählt werden kann, wird die Methode errorSelectingP
+layer aufgerufen.
+ Hierin wird der Fehler behandelt bzw.
+ Feedback an den Benutzer gegeben.
+\end_layout
+
+\begin_layout Standard
+In folgenden Fällen kann der angegebene Spieler (player) nicht ausgewählt
+ werden:
+\end_layout
+
+\begin_layout Enumerate
+fixedTurnOrder && player != currentPlayer
+\begin_inset Newline newline
+\end_inset
+
+Die Einstellung fixedTurnOrder bedeutet, dass die Detektive nicht gemeinsam
+ ihre Züge vorbereiten können, sondern wirklich immer nur einer nach dem
+ anderen dran ist.
+\begin_inset Newline newline
+\end_inset
+
+Wenn man bei dieser Einstellung also versucht einen anderen Spieler auszuwählen,
+ als den der an der Reihe ist wird player nicht ausgewählt.
+\end_layout
+
+\begin_layout Enumerate
+currentPlayer instanceof MrXPlayer && player != currentPlayer
+\begin_inset Newline newline
+\end_inset
+
+Wenn MrX gerade dran ist, und versucht wird, einen anderen Spieler auszuwählen,
+ wird player nicht ausgewählt.
+\end_layout
+
+\begin_layout Enumerate
+player hat in dieser Runde schon gezogen (den Zug nur vorbereitet, sondern
+ auch ausgeführt!)
+\begin_inset Newline newline
+\end_inset
+
+Wenn also der Spieler in dieser Runde schon dran war, kann er nicht nochmal
+ ausgewählt werden.
+\end_layout
+
+\begin_layout Subsubsection
+nextStation
+\end_layout
+
+\begin_layout Subsection
+Das Bedienkonzept
+\end_layout
+
+\begin_layout Standard
+Wie ebenfalls aus der Grafik 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bedienkonzept-für-MovePreparatio"
+
+\end_inset
+
+ ersichtlich, sind folgende Möglichkeiten zum Vorbereiten von Zügen vorgesehen:
+\end_layout
+
+\begin_layout Enumerate
+Via MovePreparationBar (Nummerneingabe)
+\begin_inset Newline newline
+\end_inset
+
+Hier wählt man im Kombinationsfeld den Spieler aus, gibt die Nummer der
+ nächsten Station ein und bestätigt dann mit OK.
+\end_layout
+
+\begin_layout Enumerate
+Zwei Klicks
+\begin_inset Newline newline
+\end_inset
+
+Man wählt durch den ersten Klick den Spieler aus, durch den zweiten Klick
+ die Station, auf die dieser ziehen soll.
+ Ist der gewünschte Spieler bereits ausgewählt, kann auf den ersten Klick
+ verzichtet werden.
+\end_layout
+
+\begin_layout Enumerate
+Drag & Drop
+\begin_inset Newline newline
+\end_inset
+
+Klassisches Drag & Drop: Den Spieler einfach auf die gewünschte Station
+ ziehen.
+\end_layout
+
+\begin_layout Enumerate
+Doppelklick
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+machma's so?
+\end_layout
+
+\end_inset
+
+Durch einen Doppelklick auf eine Station wird 
+\emph on
+automatisch
+\emph default
+ der nächste Spieler ausgewählt, für den dann der Zug auf diese Station
+ vorbereitet wird.
+ Haben mehrere Spieler den gleichen Abstand (oder besteht für den Menschen
+ Verwechslungsgefahr), wird ...
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+werden sehen
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Klingt erst mal gut, doch gerade bei der Eingabe mit Maus im BoardPanel
+ ergeben sich einige Problem.
+\end_layout
+
+\begin_layout Subsubsection
+MovePreparationBar
+\end_layout
+
+\begin_layout Standard
+Dabei handelt es sich um die Leiste in Abbildung 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Bedienkonzept-für-MovePreparatio"
+
+\end_inset
+
+, mit der (ohne Maus und Spielbrett) die Züge vorbereitet werden können.
+\end_layout
+
+\begin_layout Itemize
+Im Kombinationsfeld wählt man den Spieler aus.
+ Demnach wird der Wert im Model (d.
+\begin_inset space \thinspace{}
+\end_inset
+
+h.
+ im MovePreparer) gesetzt.
+ Kann der gewünschte Spieler nicht ausgewählt werden, informiert das Model
+ die Observer über die (Nicht-)Änderung, so dass der ausgewählte Spieler
+ im Kombinationsfeld sofort wieder auf den richtigen zurückgesetzt wird.
+\end_layout
+
+\begin_layout Itemize
+Im Eingabefeld gibt man die Stationsnummer ein.
+ Wenn MrX ausgewählt ist, ist das Textfeld wie ein Unix-Passwortfeld.
+ Dort muss man die Nummer ohne jegliches Feedback eingeben.
+\end_layout
+
+\begin_layout Itemize
+Mit dem Schalter OK bestätigt man die eingegebene Station.
+ Dies bewirkt den Aufruf von nextStation.
+\end_layout
+
+\begin_layout Itemize
+Mit dem Schalter Reset kann für den ausgewählten Spieler der vorbereitete
+ Zug zurückgesetzt, also gelöscht werden, falls man sich vertan hat.
+\end_layout
+
+\begin_layout Subsubsection
+BoardPanel
+\end_layout
+
+\begin_layout Standard
+Probleme bzw.
+ Schwierigkeiten:
+\end_layout
+
+\begin_layout Itemize
+Klick auf Spieler kann bedeuten
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Spieler auswählen
+\end_layout
+
+\begin_layout Itemize
+Vorher ausgewählten Spieler auf Station des angeklickten Spielers ziehen
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Detectives können auf Station von MrX fahren, aber nicht umgekehrt
+\end_layout
+
+\begin_layout Standard
+Um Klarheit zu schaffen werden jetzt folgende Algorithmen verwendet:
+\end_layout
+
+\begin_layout Paragraph
+Klick auf Spieler
+\end_layout
+
+\begin_layout Standard
+Im Normalfall soll hier der Spieler ausgewählt werden.
+\end_layout
+
+\begin_layout Standard
+Wenn aber ein Detektiv ausgewählt ist und auf MrX geklickt wird, wird das
+ Klick-Ereignis an die Station durchgereicht, auf der sich MrX befindet.
+\end_layout
+
+\begin_layout Paragraph
+Klick auf Station
+\end_layout
+
+\begin_layout Standard
+Im Normalfall wird für den ausgewählten Spieler diese als nächste Station
+ festgelegt.
+\end_layout
+
+\begin_layout Standard
+Wenn es aber ein Doppelklick war und ein Detektiv ausgewählt ist, wird zuerst
+ versucht automatisch den Detektiv auszuwählen, der auf auf die Station
+ ziehen kann.
+ Wenn das nicht eindeutig ist gibt es eine Meldung mit den Hinweis, den
+ Spieler zuerst manuell auszuwählen (z.
+\begin_inset space \thinspace{}
+\end_inset
+
+B.
+ durch Klick auf den Spieler).
+ In letzterem Fall wird keine nächste Station eingereicht d.
+\begin_inset space \thinspace{}
+\end_inset
+
+h.
+ kein Aufruf von nextStation.
+\end_layout
+
+\begin_layout Paragraph
+Drag bei Spieler
+\end_layout
+
+\begin_layout Standard
+Sobald ein Drag erkannt wird, wird versucht den Spieler auszuwählen (selectPlaye
+r).
+ Wenn das nicht erfolgreich war, wird 
+\emph on
+überall
+\emph default
+ das no-drop-Cursor angezeigt.
+\end_layout
+
+\begin_layout Paragraph
+Drop auf Station
+\end_layout
+
+\begin_layout Standard
+Drop-Ziel kann entweder eine Station oder ein Spieler sein.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Hier muss wohl für alle Spieler und Stationen der 
+\begin_inset Quotes gld
+\end_inset
+
+can-drop-Cursor
+\begin_inset Quotes grd
+\end_inset
+
+ angezeigt werden.
+ Ob die Station möglich ist, sieht man ja erst nach Aufruf von nextStation,
+ also wenn die Maustaste losgelassen wurde.
+\end_layout
+
+\end_inset
+
+ Beim Drop wird die Station (bzw.
+ die Station unter dem Spieler) als nächste Station festgelegt (nextStation).
+\end_layout
+
 \begin_layout Part*
 Anhang
 \end_layout
@@ -1318,10 +2007,6 @@ Eigennamen
 
 \begin_layout Itemize
 ScotlYard
-\end_layout
-
-\begin_layout Itemize
-Board
 \end_layout
 
 \begin_layout Itemize

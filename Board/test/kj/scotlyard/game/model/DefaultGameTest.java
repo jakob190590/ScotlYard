@@ -96,7 +96,7 @@ public class DefaultGameTest {
 		}
 
 		@Override
-		public void mrXSet(GameState gameState, MrXPlayer oldMrX,
+		public void mrXChanged(GameState gameState, MrXPlayer oldMrX,
 				MrXPlayer newMrX) {
 			gs = gameState;
 			oldX = oldMrX;
@@ -588,9 +588,6 @@ public class DefaultGameTest {
 		TestTurnListener l = new TestTurnListener();
 		g.addTurnListener(l);
 		
-		g.setCurrentPlayer(null);
-		assertEquals(null, l.newP);
-		assertEquals(g, l.gs);
 		g.setCurrentPlayer(d3);
 		assertEquals(null, l.oldP);
 		assertEquals(d3, l.newP);

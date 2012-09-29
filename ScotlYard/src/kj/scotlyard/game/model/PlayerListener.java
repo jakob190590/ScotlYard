@@ -20,10 +20,34 @@ package kj.scotlyard.game.model;
 
 public interface PlayerListener {
 	
+	/**
+	 * Is called by a Game when a detective is added at the specified index.
+	 * The index refers to the detective list (<code>getDetectives()</code>, 
+	 * not <code>getPlayers()</code>)!
+	 * @param gameState
+	 * @param detective
+	 * @param atIndex
+	 */
 	void detectiveAdded(GameState gameState, DetectivePlayer detective, int atIndex);
 	
+	/**
+	 * Is called by a Game when a detective is removed at the specified index.
+	 * The index refers to the detective list (<code>getDetectives()</code>, 
+	 * not <code>getPlayers()</code>)!
+	 * @param gameState
+	 * @param detective
+	 * @param atIndex
+	 */
 	void detectiveRemoved(GameState gameState, DetectivePlayer detective, int atIndex);
 	
-	void mrXSet(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX);
+	/**
+	 * Is called by a Game when oldMrX is replaced by newMrX,
+	 * provided that <code>oldMrX != newMrX</code>!
+	 * Either oldMrX or newMrX may be <code>null</code>.
+	 * @param gameState
+	 * @param oldMrX
+	 * @param newMrX
+	 */
+	void mrXChanged(GameState gameState, MrXPlayer oldMrX, MrXPlayer newMrX);
 	
 }

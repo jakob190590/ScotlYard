@@ -49,14 +49,13 @@ public class TheMovePolicy implements MovePolicy {
 	private void checkSingleMoveGenerally(GameState gameState, GameGraph gameGraph, Move move)
 			throws IllegalMoveException {
 		
-		GameStateExtension ext = new GameStateExtension(gameState);
 		StationVertex station = move.getStation();
 		
 		// Vertex element von Graph? 
 		throwIllegalMove(!gameGraph.getGraph().vertexSet().contains(station),
 				"The specified station is not part of the game graph.", move);
 		
-		throwIllegalMove(ext.getDetectivePositions().contains(station),
+		throwIllegalMove(GameStateExtension.getDetectivePositions(gameState).contains(station),
 				"The specified station is occupied by another detective.", move);
 		
 	}
@@ -118,8 +117,8 @@ public class TheMovePolicy implements MovePolicy {
 		StationVertex currentStation = lastMove.getStation();
 		
 		Set<Item> items = gameState.getItems(player);
-		Set<StationVertex> detectivePositions = new GameStateExtension(gameState)
-				.getDetectivePositions(lastMove.getRoundNumber());
+		Set<StationVertex> detectivePositions = GameStateExtension
+				.getDetectivePositions(gameState, lastMove.getRoundNumber());
 		
 		for (ConnectionEdge connection : currentStation.getEdges()) {
 			
@@ -170,7 +169,7 @@ public class TheMovePolicy implements MovePolicy {
 		
 		// Allgemein
 		boolean subMoves = !move.getMoves().isEmpty(); // there are sub moves
-		Move previous = new GameStateExtension(gameState).getLastMoveFlat(move.getPlayer());
+		Move previous = GameStateExtension.getLastMoveFlat(gameState, move.getPlayer());
 
 		throwIllegalMove(!gameState.getPlayers().contains(move.getPlayer()), 
 				"The specified player is not part of this game.", move);
@@ -230,7 +229,7 @@ public class TheMovePolicy implements MovePolicy {
 					"You cannot attach a connection to a multi move.", move);
 			
 			throwIllegalMove(!(move.getItem() instanceof DoubleMoveCard), 
-					"You must provide a double move card for this move.", move);
+					"You must provide a multi move card for this move.", move);
 			
 			throwIllegalMove(move.getMoves().size() != 2, 
 					"Multi moves have only one manifestation: a double move. " +
@@ -279,7 +278,7 @@ public class TheMovePolicy implements MovePolicy {
 		
 		// Grundlegender Gueltigkeitstest
 		boolean itemInMove = false;
-		for (Move m : new GameStateExtension(gameState).flattenMove(move, true)) {
+		for (Move m : GameStateExtension.flattenMove(move, true)) {
 			if (m.getItem() == item) {
 				itemInMove = true;
 				break;

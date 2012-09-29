@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.undo.UndoManager;
+
 import kj.scotlyard.board.BoardGraphLoader;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.graph.GameGraph;
@@ -71,12 +73,15 @@ public class InGameControllerTest {
 	
 	Game g;
 	DefaultGameController c; // controller
+	UndoManager um;
 	
 	@Before
 	public void setUp() throws Exception {
-		
+
+		um = new UndoManager();
 		g = new DefaultGame();
 		c = new DefaultGameController(g, gg, r);
+		c.setUndoManager(um);
 		
 		g.setMrX(new MrXPlayer());
 		

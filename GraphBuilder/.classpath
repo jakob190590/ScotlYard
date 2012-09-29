@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ScotlYard"/>
-	<classpathentry kind="lib" path="/Library/lib/jgrapht/jgrapht-jdk1.6.jar"/>
 	<classpathentry kind="lib" path="/Library/lib/apache-commons-attributes/commons-attributes-api-2.2.jar"/>
+	<classpathentry kind="lib" path="/Library/lib/jgrapht/jgrapht-jdk1.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

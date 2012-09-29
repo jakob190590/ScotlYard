@@ -28,6 +28,15 @@ public interface ItemListener {
 	
 	void itemRemoved(GameState gameState, Player player, Item item);
 	
+	/**
+	 * Is called by a Game when for the specified player 
+	 * the item set oldItems is replaced by newItems,
+	 * provided that <code>oldItems != newItems</code>!
+	 * @param gameState
+	 * @param player the owner of the items
+	 * @param oldItems
+	 * @param newItems
+	 */
 	void itemSetChanged(GameState gameState, Player player, Set<Item> oldItems, Set<Item> newItems);
 	
 }

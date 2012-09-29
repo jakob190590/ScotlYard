@@ -23,8 +23,21 @@ import java.util.List;
 import kj.scotlyard.game.ai.Ai;
 import kj.scotlyard.game.model.Move;
 
+/**
+ * This interface extends the Ai interface, to obtain all
+ * detective moves in the current round. This is because
+ * it is reasonable that the detective AI always calculates 
+ * for all detectives.
+ * @author jakob190590
+ *
+ */
 public interface DetectiveAi extends Ai {
 
+	/**
+	 * Returns a list with all detective moves for the current round.// TODO unmodifiable list?
+	 * The order of the moves corresponds with the order of the detectives in the GameState.
+	 * @return a list with all detective moves in the current round
+	 */
 	List<Move> getMoves();
 	
 }

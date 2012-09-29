@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package kj.scotlyard.board;
+package kj.scotlyard.board.board;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -34,6 +34,7 @@ import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
 
+import kj.scotlyard.board.layout.PercentalBounds;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.Player;
 
@@ -90,7 +91,7 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	
 	
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(VisualStation.class);
+	private static final Logger logger = Logger.getLogger(VisualStation.class);
 	
 	private StationVertex station;
 	

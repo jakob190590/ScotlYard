@@ -23,9 +23,20 @@ import java.util.Set;
 
 import kj.scotlyard.game.model.item.Item;
 
-
+/**
+ * The GameState is an (read-only) access interface to 
+ * the complete state and move history of the game.
+ * @author jakob190590
+ *
+ */
 public interface GameState {
 	
+	/** 
+	 * Access mode for moves in the list. Round and
+	 * move number are the same unless there are multi
+	 * moves. A multi move has one round number, but 
+	 * it's sub moves have different move numbers.
+	 */
 	enum MoveAccessMode {
 		ROUND_NUMBER,
 		MOVE_NUMBER
@@ -57,20 +68,67 @@ public interface GameState {
 	
 	List<DetectivePlayer> getDetectives();
 	
+	/**
+	 * Returns an unmodifiable List with all players.
+	 * If MrX is not <code>null</code>, it is the first
+	 * player in the list, otherwise it is not in the list.
+	 * This is followed by the detectives in the same order 
+	 * as in the detective list, see <code>getDetectives()</code>.
+	 * @return an unmodifiable list with all players
+	 */
 	List<Player> getPlayers();
 	
+	/**
+	 * Returns the item set for the specified player or
+	 * <code>null</code> if there is no associated set.
+	 * @param player
+	 * @return the item set or <code>null</code>
+	 */
 	Set<Item> getItems(Player player);
 	
 	
+	/**
+	 * Returns a list of all moves that have been made (move history).
+	 * Note that negative indices mean that the move list is accessed 
+	 * from it's end. That is -1 is the last move, -2 the last but one 
+	 * and so on.
+	 * @return a list of all moves
+	 */
 	List<Move> getMoves();
 	
+	/**
+	 * Returns a specific move from the move history according to
+	 * the parameter values. If number is negative, the move list 
+	 * is accessed from it's end. That is -1 is the last move, -2
+	 * the last but one and so on.
+	 * @param player
+	 * @param number the move or round number (depending on accessMode)
+	 * @param accessMode the access mode for moves
+	 * @return the specified move
+	 */
 	Move getMove(Player player, int number, MoveAccessMode accessMode);
 	
+	/**
+	 * Returns the last move of the player or <code>null</code> if
+	 * the player has not moved yet.
+	 * @param player
+	 * @return the last move or <code>null</code>
+	 */
 	Move getLastMove(Player player);
 	
-	
+	/**
+	 * Returns the current round number. The round 
+	 * number must be greater than or equal to
+	 * <code>INITIAL_ROUND_NUMBER</code>.
+	 * @return the current round number
+	 */
 	int getCurrentRoundNumber();
 	
+	/**
+	 * Returns the player whose turn it is or <code>null</code>
+	 * if the game has not started or has ended.
+	 * @return the current player or <code>null</code>
+	 */
 	Player getCurrentPlayer();
 	
 	

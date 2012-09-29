@@ -16,38 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package kj.scotlyard.board;
+package kj.scotlyard.board.metadata;
 
-import java.awt.Dimension;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import javax.swing.Icon;
 
-/**
- * An interface that provides location and size hints for a
- * <code>PercentalLayout</code> layout manager.
- * @author jakob190590
- *
- */
-interface PercentalBounds {
+import kj.scotlyard.game.model.item.Item;
+
+public class ItemTypeMetaData {
 	
-	// TODO rename all methods with suffix '2' or 'Percental'
+	private String name;
 
-	Point2D.Double getLocation2();
+	private Icon icon;
 
-	void setLocation2(double x, double y);
+	public ItemTypeMetaData(String name, Icon icon) {
+		this.name = name;
+		this.icon = icon;
+	}
 
-	void setLocation2(Point2D.Double p);
+	public ItemTypeMetaData(Class<? extends Item> itemType) {
+		name = itemType.getSimpleName();
+	}
 
-	Dimension getSize2();
+	public String getName() {
+		return name;
+	}
 
-	void setSize2(double width, double height);
-
-	void setSize2(Dimension d);
-
-	Rectangle2D.Double getBounds2();
-
-	void setBounds2(double x, double y, double width, double height);
-
-	void setBounds2(Rectangle2D.Double r);
-
+	public Icon getIcon() {
+		return icon;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
+	
 }

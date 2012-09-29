@@ -20,12 +20,25 @@ package kj.scotlyard.game.control;
 
 import java.util.Observable;
 
+import javax.swing.undo.UndoManager;
+
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.IllegalMoveException;
 
 public abstract class GameController extends Observable {
+	
+	private UndoManager undoManager;
+	
+	public UndoManager getUndoManager() {
+		return undoManager;
+	}
+	
+	public void setUndoManager(UndoManager undoManager) {
+		this.undoManager = undoManager;
+	}
+	
 	
 	public abstract GameStatus getStatus();
 	

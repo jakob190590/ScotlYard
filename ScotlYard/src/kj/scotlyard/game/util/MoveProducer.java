@@ -104,7 +104,7 @@ public abstract class MoveProducer {
 		MovePolicy movePolicy = new TheMovePolicy();
 		
 		// Wir gehen von einem konsistenten GameState aus
-		Move last = gameState.getLastMove(gameState.getCurrentPlayer());
+		Move last = GameStateExtension.getLastMoveFlat(gameState, gameState.getCurrentPlayer());
 		Move m = createSingleMove(gameState.getCurrentPlayer(), gameState.getCurrentRoundNumber(),
 				last.getMoveNumber() + 1, null, null, null);
 		
@@ -142,7 +142,7 @@ public abstract class MoveProducer {
 		MovePolicy movePolicy = new TheMovePolicy();
 		
 		// Wir gehen von einem konsistenten GameState aus
-		Move last = gameState.getLastMove(gameState.getCurrentPlayer());
+		Move last = GameStateExtension.getLastMoveFlat(gameState, gameState.getCurrentPlayer());
 		Move m = createSingleMove(gameState.getCurrentPlayer(), gameState.getCurrentRoundNumber(),
 				last.getMoveNumber() + 1, null, null, null);
 		
