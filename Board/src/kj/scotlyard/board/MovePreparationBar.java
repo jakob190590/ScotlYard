@@ -66,10 +66,11 @@ public class MovePreparationBar extends JPanel {
 	private final Observer movePreparerObserver = new Observer() {
 		@Override
 		public void update(Observable o, Object arg) {
+			assert o == movePreparer;
 			MovePreparationEvent mpe;
 			if (arg instanceof MovePreparationEvent && (mpe = (MovePreparationEvent) arg)
 					.getId() == MovePreparationEvent.SELECT_PLAYER) {
-				setSelectedPlayer(mpe.getPlayer());
+				cbPlayer.setSelectedItem(mpe.getPlayer());
 			}
 		}
 	};
@@ -149,7 +150,7 @@ public class MovePreparationBar extends JPanel {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			movePreparer.reset(getSelectedPlayer());
+			movePreparer.reset(movePreparer.getSelectedPlayer());
 			ftfStationNumber.setText(""); // oder setValue(null) ?
 		}
 	}
@@ -165,15 +166,7 @@ public class MovePreparationBar extends JPanel {
 		}
 	}
 	
-	public Player getSelectedPlayer() {
-		return (Player) cbPlayer.getSelectedItem();
-	}
-	
-	public void setSelectedPlayer(Player player) {
-		cbPlayer.setSelectedItem(player);
-	}
-
-	@Override
+	@Override // TODO probleme, wenn was einzeln enabled werden soll..
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
 		for (Component c : getComponents()) {
