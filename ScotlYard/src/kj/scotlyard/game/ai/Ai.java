@@ -31,6 +31,9 @@ import kj.scotlyard.game.model.Move;
  *
  */
 public interface Ai extends GameStateRequester {
+	
+	/** Value UNKNOWN for <code>getTimeLeft()</code> */
+	int UNKNOWN = -1;
 
 	/**
 	 * Returns the calculated AI move for the current player.
@@ -61,9 +64,11 @@ public interface Ai extends GameStateRequester {
 	 * Set the time limit for the move calculation.
 	 * Note that this do not apply for a running calculation.
 	 * Call <code>decideNow()</code> in this case.
+	 * There is no guarantee the AI comes up with it's
+	 * result in time.
 	 * @param millis the time limit in milliseconds
 	 */
-	void setTimeLimit();
+	void setTimeLimit(int millis);
 	
 	
 	void addAiListener(AiListener listener);
