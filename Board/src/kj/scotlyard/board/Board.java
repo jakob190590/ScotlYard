@@ -94,6 +94,7 @@ public class Board extends JFrame {
 	
 	private static final Logger logger = Logger.getLogger(Board.class);
 	
+	/** Faktor, mit dem zoomFactor bei jedem Zoom-Schritt verrechnet wird (mal/geteilt) */
 	private static final double ZOMMING_FACTOR = 1.2;
 	
 	private Image img;
@@ -131,7 +132,7 @@ public class Board extends JFrame {
 	private TicketSelectionDialog ticketSelectionDialogDetectives = new TicketSelectionDialog(this, DetectivePlayer.class);
 	
 	// TODO beide muessen beim laden der Board def gesetzt werden
-	private double normalZoomFactor = 0.2; // kann sein was will, nur 1 macht keinen sinn, weil das bild dann viel zu riessig ist!
+	private double normalZoomFactor = 0.2; // kann sein was will, nur >= 1 macht keinen sinn, weil das bild dann viel zu riessig ist!
 	private double zoomFactor = normalZoomFactor;
 	
 	private final Action newGameAction = new NewGameAction();

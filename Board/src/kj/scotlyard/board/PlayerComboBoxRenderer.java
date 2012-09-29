@@ -18,6 +18,7 @@
 
 package kj.scotlyard.board;
 
+import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JLabel;
@@ -26,13 +27,17 @@ import javax.swing.ListCellRenderer;
 
 import kj.scotlyard.board.metadata.GameMetaData;
 import kj.scotlyard.game.model.DetectivePlayer;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Player;
 
 @SuppressWarnings("serial")
 public class PlayerComboBoxRenderer extends JLabel implements
 		ListCellRenderer<Player> {
 
-	public PlayerComboBoxRenderer() {
+	private GameState gameState;
+	
+	public PlayerComboBoxRenderer(GameState gameState) {
+		this.gameState = gameState;
 		setOpaque(true);
 		setVerticalAlignment(CENTER);
 	}
@@ -55,6 +60,10 @@ public class PlayerComboBoxRenderer extends JLabel implements
 			setText(GameMetaData.getForPlayer(value).getName()
 					+ ((value instanceof DetectivePlayer) ?
 								(" - " + Integer.toHexString(value.hashCode())) : ""));
+			
+			if (gameState.getCurrentPlayer() == value) {
+				setBackground(Color.RED); // TODO unschoen, und bis jetzt unabhaengig von isSelected!
+			}
 		}
 
 		return this;

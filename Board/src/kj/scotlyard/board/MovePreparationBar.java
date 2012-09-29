@@ -3,6 +3,8 @@ package kj.scotlyard.board;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -29,7 +31,7 @@ import org.apache.log4j.Logger;
 public class MovePreparationBar extends JPanel {
 	
 	private static final Logger logger = Logger.getLogger(MovePreparationBar.class);
-	
+	// TODO movePrepBar fehlen Setter/Getter fuer GameState, MovePreparer und nsm ...
 	private GameState gs;
 	private MovePreparer mPrep;
 	private Map<Integer, StationVertex> nsm; // Number Station Map
@@ -106,9 +108,18 @@ public class MovePreparationBar extends JPanel {
 		
 		players = new Vector<>(gs.getPlayers());
 		cbPlayer = new JComboBox<>(players);
+		cbPlayer.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					MovePreparationBar.this.mPrep.selectPlayer(
+							MovePreparationBar.this.gs.getCurrentPlayer());
+				}
+			}
+		});
 		cbPlayer.setAction(selectPlayerAction);
 		// TODO cbMovePrepPlayer.setRenderer(aRenderer); // Implement ListCellRenderer: http://docs.oracle.com/javase/tutorial/uiswing/components/combobox.html#renderer
-		cbPlayer.setRenderer(new PlayerComboBoxRenderer());
+		cbPlayer.setRenderer(new PlayerComboBoxRenderer(gs));
 		cbPlayer.setPreferredSize(new Dimension(330, 20));
 		gs.addPlayerListener(playerListener);
 		gs.addTurnListener(turnListener);
@@ -155,6 +166,7 @@ public class MovePreparationBar extends JPanel {
 		public SelectPlayerAction() {
 			putValue(NAME, "Select Player");
 			putValue(SHORT_DESCRIPTION, "Select the player to prepare a move");
+			putValue(TOOL_TIP_TEXT_KEY, "Select the player to prepare a move or double click to select current player");
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
