@@ -478,7 +478,6 @@ public class Board extends JFrame {
 		gg = bgl.getGameGraph();
 		gc = new DefaultGameController(g, gg, r);
 		gc.setUndoManager(undoManager);
-		gc.addObserver(moveDetectivesNowAction.moveDetectivesGameObserver);
 		gc.addObserver(new Observer() {
 			@Override
 			public void update(Observable o, Object arg) {
@@ -583,7 +582,6 @@ public class Board extends JFrame {
 				lblMoveVal.setText((m == null) ? "Noch kein Move vorbereitet" : m.toString());
 			}
 		});
-		gs.addTurnListener(moveDetectivesNowAction.moveDetectivesTurnListener);
 		
 		setGameControllerActionsEnabled(gc.getStatus());
 		boardPanel.setGameState(gs);
@@ -1019,38 +1017,6 @@ public class Board extends JFrame {
 		}
 	}
 	private class MoveDetectivesNowAction extends AbstractAction {
-		// Fuer Action MoveDetectivesNow, die alle Detectives ziehen laesst (sofern Moves vorbereitet sind)
-		private final Logger logger = Logger.getLogger(MoveDetectivesNowAction.class);
-		private boolean doMoveDetectives = false;
-		final TurnListener moveDetectivesTurnListener = new TurnListener() {
-			@Override
-			public void currentRoundChanged(GameState gameState, int oldRoundNumber,
-					int newRoundNumber) {
-				// Runde vorbei / Neue Runde
-				doMoveDetectives = false;
-			}
-			@Override
-			public void currentPlayerChanged(GameState gameState, Player oldPlayer,
-					Player newPlayer) {
-				if (doMoveDetectives) {
-					Move m = mPrep.getMove(newPlayer);
-					if (m != null) {
-						logger.debug("move next detective");
-						move(m);
-					} else {
-						logger.debug("stop move next detective");
-						doMoveDetectives = false;
-					}
-				}
-			}
-		};
-		final Observer moveDetectivesGameObserver = new Observer() {
-			@Override
-			public void update(Observable o, Object arg) {
-				logger.debug("cancel move detectives, because " + gc.getStatus() + ", " + gc.getWin());
-				doMoveDetectives = false;
-			}
-		};
 		public MoveDetectivesNowAction() {
 			putValue(NAME, "Move Detectives!"); // alternative to simple "Move now"
 			putValue(SHORT_DESCRIPTION, "Move all Detectives now");
@@ -1081,10 +1047,16 @@ public class Board extends JFrame {
 								"a move yet.\nBegin moving as far as possible?",
 								"Move Detectives", JOptionPane.YES_NO_OPTION)
 								== JOptionPane.YES_OPTION) {
-					// Moving anstoßen, und weitermachen wenn erfolgreich
-					logger.debug("initiate move detectives");
-					doMoveDetectives = true; // turnListener (wird in naechster zeile aufgerufen) verwendet die variable ja, deswegen muss sie vorher gesetzt sein
-					doMoveDetectives = move(currentMove);
+
+					Player p;
+					while (gc.getStatus() == GameStatus.IN_GAME
+							&& (p = gs.getCurrentPlayer()) != gs.getMrX()) {
+						
+						Move m = mPrep.getMove(p);
+						if (m == null || !move(m)) {
+							break;
+						}
+					}
 				}
 			}
 		}
