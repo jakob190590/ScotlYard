@@ -39,7 +39,7 @@ public abstract class AbstractMrXAi extends AbstractAi implements MrXAi {
 	@Override
 	protected void currentPlayerChanged(Player oldPlayer, Player newPlayer) {
 		// Starten, immer wenn MrX dran kommt
-		if (newPlayer instanceof MrXPlayer) {
+		if (newPlayer instanceof MrXPlayer && getGameState().getLastMove(newPlayer) != null) {
 			startCalculation();
 		}
 		// TODO andauernde calc auch abbrechen ??

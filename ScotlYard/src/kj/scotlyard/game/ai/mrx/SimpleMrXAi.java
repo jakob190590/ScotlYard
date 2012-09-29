@@ -117,14 +117,17 @@ public class SimpleMrXAi extends AbstractMrXAi {
 			StationVertex v = e.getOther(startingPosition);
 			alternatives.add(new Alternative(e, v));
 		}
+		
+		Set<Alternative> furtherAlternatives = new HashSet<>();
 		if (nDoubleMoveCards > 0) {
 			for (Alternative a : alternatives) {
 				for (ConnectionEdge e : a.v1.getEdges()) {
 					StationVertex v = e.getOther(startingPosition);
-					alternatives.add(new Alternative(a.e1, a.v1, e, v));
+					furtherAlternatives.add(new Alternative(a.e1, a.v1, e, v));
 				}
 			}
 		}
+		alternatives.addAll(furtherAlternatives);
 		
 		// Alternativen aussortieren/bewerten
 		Iterator<Alternative> it = alternatives.iterator();

@@ -67,6 +67,7 @@ import kj.scotlyard.board.layout.AspectRatioGridLayout;
 import kj.scotlyard.board.metadata.GameMetaData;
 import kj.scotlyard.game.ai.detective.DetectiveAi;
 import kj.scotlyard.game.ai.mrx.MrXAi;
+import kj.scotlyard.game.ai.mrx.SimpleMrXAi;
 import kj.scotlyard.game.control.GameController;
 import kj.scotlyard.game.control.GameStatus;
 import kj.scotlyard.game.control.impl.DefaultGameController;
@@ -84,6 +85,7 @@ import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.TurnListener;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.rules.GameWin;
+import kj.scotlyard.game.rules.IllegalMoveException;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
 import kj.scotlyard.game.util.MoveProducer;
@@ -698,6 +700,9 @@ public class Board extends JFrame {
 			success = false;
 			e2.printStackTrace();
 			showErrorMessage(e2);
+			if (e2 instanceof IllegalMoveException) {
+				logger.error("IllegalMove - Details: " + ((IllegalMoveException) e2).getMove());
+			}
 		}
 		return success;
 	}
@@ -902,6 +907,7 @@ public class Board extends JFrame {
 	
 	/** MrX AI laden (spaeter auch aus JAR) */
 	protected void loadMrXAi(/* params wie JAR und cassname*/) {
+		mrXAi = new SimpleMrXAi(gameState, gameGraph);
 	}
 	
 	/** Detective AI laden (spaeter auch aus JAR) */
@@ -967,6 +973,7 @@ public class Board extends JFrame {
 			try {
 				gameController.start();
 			} catch (Exception e2) {
+				e2.printStackTrace();
 				showErrorMessage(e2);
 			}
 		}
@@ -1032,6 +1039,7 @@ public class Board extends JFrame {
 				try {
 					gameController.removeDetective(d);
 				} catch (Exception e2) {
+					e2.printStackTrace();
 					showErrorMessage(e2);
 				}
 				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
@@ -1063,6 +1071,7 @@ public class Board extends JFrame {
 				try {
 					gameController.shiftUpDetective(d);
 				} catch (Exception e2) {
+					e2.printStackTrace();
 					showErrorMessage(e2);
 				}
 				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
@@ -1095,6 +1104,7 @@ public class Board extends JFrame {
 				try {
 					gameController.shiftDownDetective(d);
 				} catch (Exception e2) {
+					e2.printStackTrace();
 					showErrorMessage(e2);
 				}
 				// Erfolgreich oder nicht am Ende -> Raus aus Schleife
@@ -1155,7 +1165,12 @@ public class Board extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			// Suggest an AI move!
 			if (gameController.getStatus() == GameStatus.IN_GAME) {
-				Move move = MoveProducer.createRandomSingleMove(gameState, gameGraph);
+				Move move;
+				if (movePreparer.getSelectedPlayer() instanceof MrXPlayer) {
+					move = mrXAi.move();
+				} else {
+					move = MoveProducer.createRandomSingleMove(gameState, gameGraph);
+				}
 				// ... not yet
 				movePreparer.nextMove(move);
 			}
