@@ -1,7 +1,6 @@
 package kj.scotlyard.board;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -22,7 +21,6 @@ import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.PlayerListener;
 import kj.scotlyard.game.model.TurnListener;
 
 import org.apache.log4j.Logger;
@@ -31,13 +29,14 @@ import org.apache.log4j.Logger;
 public class MovePreparationBar extends JPanel {
 	
 	private static final Logger logger = Logger.getLogger(MovePreparationBar.class);
-	// TODO movePrepBar fehlen Setter/Getter fuer GameState, MovePreparer und nsm ...
+
 	private GameState gameState;
 	private MovePreparer movePreparer;
 	private Map<Integer, StationVertex> numberStationMap; // Number Station Map
 	
-	private Vector<Player> players;
-	private final PlayerListener playerListener = new PlayerListenerAdapter() {
+	// List for ComboBox Model
+	private Vector<Player> players = new Vector<>();
+	private final PlayerListenerAdapter playerListener = new PlayerListenerAdapter() {
 		@Override
 		public void playerListChanged(GameState gameState) {
 			assert gameState == MovePreparationBar.this.gameState;
@@ -86,19 +85,11 @@ public class MovePreparationBar extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public MovePreparationBar(GameState gs, MovePreparer mPrep,
-			Map<Integer, StationVertex> nsm) {
-		
-		this.gameState = gs;
-		this.movePreparer = mPrep;
-		this.numberStationMap = nsm;
-		
-		mPrep.addObserver(movePreparerObserver);
-		
+	public MovePreparationBar(GameState gameState, MovePreparer movePreparer,
+			Map<Integer, StationVertex> numberStationMap) {
 		
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
-		players = new Vector<>(gs.getPlayers());
 		cbPlayer = new JComboBox<>(players);
 		cbPlayer.addMouseListener(new MouseAdapter() {
 			@Override
@@ -110,11 +101,7 @@ public class MovePreparationBar extends JPanel {
 			}
 		});
 		cbPlayer.setAction(selectPlayerAction);
-		// TODO cbMovePrepPlayer.setRenderer(aRenderer); // Implement ListCellRenderer: http://docs.oracle.com/javase/tutorial/uiswing/components/combobox.html#renderer
-		cbPlayer.setRenderer(new PlayerComboBoxRenderer(gs));
-		cbPlayer.setPreferredSize(new Dimension(330, 20));
-		gs.addPlayerListener(playerListener);
-		gs.addTurnListener(turnListener);
+		cbPlayer.setRenderer(new PlayerComboBoxRenderer(gameState));
 		add(cbPlayer);
 		
 		ftfStationNumber = new JFormattedTextField();
@@ -128,9 +115,76 @@ public class MovePreparationBar extends JPanel {
 		JButton btnReset = new JButton("Reset");
 		btnReset.setAction(resetAction);
 		add(btnReset);
-
+		
+		// Model/Daten setzen
+		setGameState(gameState);
+		setMovePreparer(movePreparer);
+		setNumberStationMap(numberStationMap);
+		
 	}
 	
+	@Override // TODO probleme, wenn was einzeln enabled werden soll..
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		for (Component c : getComponents()) {
+			c.setEnabled(enabled);
+		}
+	}
+	
+	
+	// Getters/Setters
+	
+	public GameState getGameState() {
+		return gameState;
+	}
+
+	public void setGameState(GameState gameState) {
+		if (gameState != this.gameState) {
+			if (this.gameState != null) {
+				// unregister listeners/observers
+				this.gameState.removePlayerListener(playerListener);
+				this.gameState.removeTurnListener(turnListener);
+				players.clear();
+			}
+			this.gameState = gameState;
+			if (gameState != null) {
+				players.addAll(gameState.getPlayers());
+				// register listeners/observers
+				gameState.addPlayerListener(playerListener);
+				gameState.addTurnListener(turnListener);
+			}
+			cbPlayer.updateUI();
+		}
+	}
+
+	public MovePreparer getMovePreparer() {
+		return movePreparer;
+	}
+
+	public void setMovePreparer(MovePreparer movePreparer) {
+		if (movePreparer != this.movePreparer) {
+			if (this.movePreparer != null) {
+				// unregister listeners/observers
+				this.movePreparer.deleteObserver(movePreparerObserver);
+			}
+			this.movePreparer = movePreparer;
+			if (movePreparer != null) {
+				// register listeners/observers
+				movePreparer.addObserver(movePreparerObserver);
+			}
+		}
+	}
+
+	public Map<Integer, StationVertex> getNumberStationMap() {
+		return numberStationMap;
+	}
+
+	public void setNumberStationMap(Map<Integer, StationVertex> numberStationMap) {
+		this.numberStationMap = numberStationMap;
+	}
+	
+	// Actions
+
 	private class SubmitStationNumberAction extends AbstractAction {
 		public SubmitStationNumberAction() {
 			putValue(NAME, "OK");
@@ -166,11 +220,4 @@ public class MovePreparationBar extends JPanel {
 		}
 	}
 	
-	@Override // TODO probleme, wenn was einzeln enabled werden soll..
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
-		for (Component c : getComponents()) {
-			c.setEnabled(enabled);
-		}
-	}
 }
