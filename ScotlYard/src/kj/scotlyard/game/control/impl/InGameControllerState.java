@@ -117,7 +117,7 @@ class InGameControllerState extends GameControllerState {
 				
 				edits.add(new ItemPassEdit(p1, p2, item));
 				
-			}			
+			}
 		}
 
 		return edits;
@@ -170,14 +170,14 @@ class InGameControllerState extends GameControllerState {
 
 	@Override
 	public void abort() {
-		getController().setState(this, GameStatus.NOT_IN_GAME, GameWin.NO);		
+		getController().setState(this, GameStatus.NOT_IN_GAME, GameWin.NO);
 		addEditSafely(getController().new AbortEdit());
 	}
 
 	@Override
 	public void move(Move move) {
 
-		final Rules rules = getController().getRules();		
+		final Rules rules = getController().getRules();
 		final MovePolicy movePolicy = rules.getMovePolicy();
 		
 		movePolicy.checkMove(game, gameGraph, move);
@@ -185,7 +185,7 @@ class InGameControllerState extends GameControllerState {
 		CompoundEdit moveEdit = getController().new MoveEdit(
 				game.getCurrentPlayer(), game.getCurrentRoundNumber());
 		
-		// move.seal(): das macht game.getMoves().add(..)		
+		// move.seal(): das macht game.getMoves().add(..)
 		
 		// Move eintragen
 		game.getMoves().add(move);
@@ -198,13 +198,19 @@ class InGameControllerState extends GameControllerState {
 		moveEdit.end();
 		
 		// Turn/Current sachen nach Move aktualisieren
-		Turn turn = rules.getTurnPolicy().getNextTurn(game, gameGraph);		
-		game.setCurrentRoundNumber(turn.getRoundNumber());
-		game.setCurrentPlayer(turn.getPlayer());
+		Turn turn = rules.getTurnPolicy().getNextTurn(game, gameGraph);
 		
 		// GameWin ermitteln
 		GameWin win = rules.getGameWinPolicy().isGameWon(game, gameGraph);
-		getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
+		
+		if (win == GameWin.NO) {
+			// Spiel noch nicht vorbei, es geht weiter
+			game.setCurrentRoundNumber(turn.getRoundNumber());
+			game.setCurrentPlayer(turn.getPlayer());
+		} else {
+			// Spiel vorbei; Current Round Number und Player werden nicht mehr geaendert
+			getController().setState(this, (win == GameWin.NO) ? GameStatus.IN_GAME : GameStatus.NOT_IN_GAME, win);
+		}
 		
 		addEditSafely(moveEdit);
 	}
