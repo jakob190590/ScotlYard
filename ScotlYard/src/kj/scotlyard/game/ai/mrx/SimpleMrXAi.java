@@ -221,36 +221,38 @@ public class SimpleMrXAi extends AbstractMrXAi {
 	private Move makeMove(Alternative bestAlternative) {
 		Ticket t1 = null;
 		Ticket t2 = null;
-//		if (bestAlternative.e1 instanceof FerryConnection) {
-//			t1 = (Ticket) GameStateExtension.getItem(getGameState(),
-//					getGameState().getMrX(), BlackTicket.class);
-//		}
-		t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
+		if (bestAlternative.e1 instanceof FerryConnection) {
+			t1 = (Ticket) GameStateExtension.getItem(getGameState(),
+					getGameState().getMrX(), BlackTicket.class);
+		}
+//		t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
 		Move m;
 		if (bestAlternative.isDoubleMove()) {
-//			if (bestAlternative.e2 instanceof FerryConnection) {
-//				t2 = (Ticket) GameStateExtension.getItem(getGameState(),
-//						getGameState().getMrX(), BlackTicket.class);
-//			}
-//
-//			if (t1 == null) {
-//				if (bestAlternative.rating < .85) {
-//					t1 = (Ticket) GameStateExtension.getItem(getGameState(),
-//							getGameState().getMrX(), BlackTicket.class);
-//				} else {
-//					t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
-//				}
-//			}
-//			if (t2 == null) {
-//				if (bestAlternative.rating < .8) {
-//					t2 = (Ticket) GameStateExtension.getItem(getGameState(),
-//							getGameState().getMrX(), BlackTicket.class);
-//				} else {
-//					t2 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
-//				}
-//			}
+			if (bestAlternative.e2 instanceof FerryConnection) {
+				t2 = (Ticket) GameStateExtension.getItem(getGameState(),
+						getGameState().getMrX(), BlackTicket.class);
+			}
+
+			if (t1 == null) {
+				if (bestAlternative.rating < .9) {
+					t1 = (Ticket) GameStateExtension.getItem(getGameState(),
+							getGameState().getMrX(), BlackTicket.class);
+				}
+				if (t1 == null) {
+					t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
+				}
+			}
+			if (t2 == null) {
+				if (bestAlternative.rating < .85) {
+					t2 = (Ticket) GameStateExtension.getItem(getGameState(),
+							getGameState().getMrX(), BlackTicket.class);
+				}
+				if (t2 == null) {
+					t2 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
+				}
+			}
 			
-			t2 = MoveHelper.cheapTicket(bestAlternative.e2, getGameState().getItems(getGameState().getMrX()));
+//			t2 = MoveHelper.cheapTicket(bestAlternative.e2, getGameState().getItems(getGameState().getMrX()));
 			
 			DoubleMoveCard card = (DoubleMoveCard) GameStateExtension.getItem(getGameState(),
 					getGameState().getMrX(), DoubleMoveCard.class);
@@ -263,14 +265,15 @@ public class SimpleMrXAi extends AbstractMrXAi {
 					card, sms);
 			
 		} else {
-//			if (t1 == null) {
-//				if (bestAlternative.rating < .85) {
-//					t1 = (Ticket) GameStateExtension.getItem(getGameState(),
-//							getGameState().getMrX(), BlackTicket.class);
-//				} else {
-//					t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
-//				}
-//			}
+			if (t1 == null) {
+				if (bestAlternative.rating < .9) {
+					t1 = (Ticket) GameStateExtension.getItem(getGameState(),
+							getGameState().getMrX(), BlackTicket.class);
+				}
+				if (t1 == null) { // rating gut genug fuer cheap ticket ODER offenbar keine blackticket mehr
+					t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
+				}
+			}
 			m = MoveProducer.createSingleMove(getGameState().getMrX(),
 					getGameState().getCurrentRoundNumber(),
 					getGameState().getLastMove(getGameState().getMrX()).getMoveNumber() + 1,
