@@ -9,7 +9,6 @@ import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.graph.connection.FerryConnection;
-import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.item.BlackTicket;
@@ -74,7 +73,8 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		Set<Alternative> alternatives = _1_alternatives();
 		_2_rating(alternatives);
 		Alternative bestAlternative = _3_select(alternatives);
-		logger.info(String.format("alternative with best rating: doublemove=%b, rating=%f", bestAlternative.isDoubleMove(), bestAlternative.rating));
+		logger.info(String.format("alternative with best rating: doublemove=%b, rating=%f, costs=%f",
+				bestAlternative.isDoubleMove(), bestAlternative.rating, bestAlternative.costs));
 		
 		Move move = makeMove(bestAlternative);
 
@@ -111,12 +111,15 @@ public class SimpleMrXAi extends AbstractMrXAi {
 			if (i instanceof BlackTicket)       nBlackTickets++;
 		}
 		
+		Set<StationVertex> detectivePositions = GameStateExtension.getDetectivePositions(getGameState());
+		
 		Set<Alternative> alternatives = new HashSet<>();
 		Move lm = getGameState().getLastMove(getGameState().getMrX());
 		StationVertex startingPosition = lm.getStation();
 		for (ConnectionEdge e : startingPosition.getEdges()) {
 			StationVertex v = e.getOther(startingPosition);
-			alternatives.add(new Alternative(e, v));
+			if (!detectivePositions.contains(v))
+				alternatives.add(new Alternative(e, v));
 		}
 		
 		Set<Alternative> furtherAlternatives = new HashSet<>();
@@ -124,7 +127,8 @@ public class SimpleMrXAi extends AbstractMrXAi {
 			for (Alternative a : alternatives) {
 				for (ConnectionEdge e : a.v1.getEdges()) {
 					StationVertex v = e.getOther(startingPosition);
-					furtherAlternatives.add(new Alternative(a.e1, a.v1, e, v));
+					if (!detectivePositions.contains(v))
+						furtherAlternatives.add(new Alternative(a.e1, a.v1, e, v));
 				}
 			}
 		}
@@ -183,20 +187,20 @@ public class SimpleMrXAi extends AbstractMrXAi {
 			StationVertex v = (a.isDoubleMove()) ? a.v2 : a.v1;
 			int distances[] = new int[getGameState().getDetectives().size()];
 			int i = 0;
-			for (DetectivePlayer d : getGameState().getDetectives()) {
-				StationVertex vd = getGameState().getLastMove(d).getStation();
+			for (StationVertex vd : GameStateExtension.getDetectivePositions(getGameState())) {
 				// TODO eigentlich brauch ich ALLE shortest paths
+				// TODO und auch die nicht shortest path, weil ich shortest paths mit ferry conn nich nutzten kann
 				List<ConnectionEdge> path = BellmanFordShortestPath.findPathBetween(getGameGraph().getGraph(), v, vd);
-				boolean impossible = false;
+				
+				// zaehlen, wie viele ferry conns der pfad enthaelt
+				int nFerryConnections = 0;
 				for (ConnectionEdge e : path) {
 					if (e instanceof FerryConnection) {
-						impossible = true;
-						break;
+						nFerryConnections++;
 					}
 				}
-				if (!impossible) {
-					distances[i] = path.size();
-				}
+				// abschaetzung: distanz ist im schnitt 4 mal (2 x 3 mal, 1 x 5 mal) so lang auf normalem wege
+				distances[i] = path.size() + nFerryConnections * 3;
 				i++;
 			}
 			
@@ -213,7 +217,8 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		// 3. Station mit der günstigsten Bewertung wird ausgewählt
 		Alternative best = new Alternative(null, null); // nur um den anfangswert 0 fuer rating zu haben
 		for (Alternative a : alternatives) {
-			if (a.rating > best.rating) {
+			// hast schon recht korbi, mit ner schwelle waers wahrscheinlich besser, aber fuers erste mach ichs mal so
+			if (a.rating * (1 - a.costs) > best.rating * (1 - best.costs)) {
 				best = a;
 			}
 		}
@@ -223,33 +228,36 @@ public class SimpleMrXAi extends AbstractMrXAi {
 	private Move makeMove(Alternative bestAlternative) {
 		Ticket t1 = null;
 		Ticket t2 = null;
-		if (bestAlternative.e1 instanceof FerryConnection) {
-			t1 = (Ticket) GameStateExtension.getItem(getGameState(),
-					getGameState().getMrX(), BlackTicket.class);
-		}
+//		if (bestAlternative.e1 instanceof FerryConnection) {
+//			t1 = (Ticket) GameStateExtension.getItem(getGameState(),
+//					getGameState().getMrX(), BlackTicket.class);
+//		}
+		t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
 		Move m;
 		if (bestAlternative.isDoubleMove()) {
-			if (bestAlternative.e2 instanceof FerryConnection) {
-				t2 = (Ticket) GameStateExtension.getItem(getGameState(),
-						getGameState().getMrX(), BlackTicket.class);
-			}
+//			if (bestAlternative.e2 instanceof FerryConnection) {
+//				t2 = (Ticket) GameStateExtension.getItem(getGameState(),
+//						getGameState().getMrX(), BlackTicket.class);
+//			}
+//
+//			if (t1 == null) {
+//				if (bestAlternative.rating < .85) {
+//					t1 = (Ticket) GameStateExtension.getItem(getGameState(),
+//							getGameState().getMrX(), BlackTicket.class);
+//				} else {
+//					t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
+//				}
+//			}
+//			if (t2 == null) {
+//				if (bestAlternative.rating < .8) {
+//					t2 = (Ticket) GameStateExtension.getItem(getGameState(),
+//							getGameState().getMrX(), BlackTicket.class);
+//				} else {
+//					t2 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
+//				}
+//			}
 			
-			if (t1 == null) {
-				if (bestAlternative.rating < .85) {
-					t1 = (Ticket) GameStateExtension.getItem(getGameState(),
-							getGameState().getMrX(), BlackTicket.class);
-				} else {
-					t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
-				}
-			}
-			if (t2 == null) {
-				if (bestAlternative.rating < .8) {
-					t2 = (Ticket) GameStateExtension.getItem(getGameState(),
-							getGameState().getMrX(), BlackTicket.class);
-				} else {
-					t2 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
-				}
-			}
+			t2 = MoveHelper.cheapTicket(bestAlternative.e2, getGameState().getItems(getGameState().getMrX()));
 			
 			DoubleMoveCard card = (DoubleMoveCard) GameStateExtension.getItem(getGameState(),
 					getGameState().getMrX(), DoubleMoveCard.class);
@@ -262,14 +270,14 @@ public class SimpleMrXAi extends AbstractMrXAi {
 					card, sms);
 			
 		} else {
-			if (t1 == null) {
-				if (bestAlternative.rating < .85) {
-					t1 = (Ticket) GameStateExtension.getItem(getGameState(),
-							getGameState().getMrX(), BlackTicket.class);
-				} else {
-					t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
-				}
-			}
+//			if (t1 == null) {
+//				if (bestAlternative.rating < .85) {
+//					t1 = (Ticket) GameStateExtension.getItem(getGameState(),
+//							getGameState().getMrX(), BlackTicket.class);
+//				} else {
+//					t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
+//				}
+//			}
 			m = MoveProducer.createSingleMove(getGameState().getMrX(),
 					getGameState().getCurrentRoundNumber(),
 					getGameState().getLastMove(getGameState().getMrX()).getMoveNumber() + 1,

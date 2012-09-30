@@ -69,6 +69,8 @@ public class MoveHelper {
 				Ticket t = (Ticket) i;
 				if (movePolicy.isTicketValidForConnection(t, connection)) {
 					if (t instanceof BlackTicket) {
+						// Teueres BlackTicket gefunden: mal beiseite
+						// legen, falls wir kein anderes finden
 						anyTicket = t;
 					} else {
 						return t;
