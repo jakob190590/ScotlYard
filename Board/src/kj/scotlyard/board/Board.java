@@ -221,6 +221,7 @@ public class Board extends JFrame {
 				showGameStatusAndWin(c.getStatus(), c.getWin());
 		}
 	};
+	private final Action aboutAction = new AboutAction();
 
 
 
@@ -466,6 +467,14 @@ public class Board extends JFrame {
 		JCheckBoxMenuItem mntmMrXAlwaysVisible = new JCheckBoxMenuItem("MrX Always Visible");
 		mntmMrXAlwaysVisible.setAction(mrXAlwaysVisibleAction);
 		mnMode.add(mntmMrXAlwaysVisible);
+		
+		JMenu mnHelp = new JMenu("Help");
+		mnHelp.setMnemonic(KeyEvent.VK_H);
+		menuBar.add(mnHelp);
+		
+		JMenuItem mntmAbout = new JMenuItem("About");
+		mntmAbout.setAction(aboutAction);
+		mnHelp.add(mntmAbout);
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -1352,6 +1361,28 @@ public class Board extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			boardPanel.setMrXAlwaysVisible(isSelected(this));
+		}
+	}
+	private class AboutAction extends AbstractAction {
+		public AboutAction() {
+			putValue(NAME, "About");
+			putValue(SHORT_DESCRIPTION, "About ScotlYard");
+			putValue(MNEMONIC_KEY, KeyEvent.VK_A);
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(Board.this,
+					"<html>" +
+					"<p>ScotlYard &ndash; A software implementation of the Scotland Yard board game</p>" +
+							
+					"<p>Copyright (C) 2012  Jakob Schöttl</p>" +
+					
+					"<p>Published under the GNU GPLv3 License.</p>" +
+					 
+					"<p>You should have received a copy of the GNU General Public License<br/>" +
+					"along with this program.  If not, see <http://www.gnu.org/licenses/>.</p>" +
+					"</html>",
+					"About", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 }
