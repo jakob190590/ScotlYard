@@ -78,6 +78,7 @@ public abstract class Piece extends JComponent implements PercentalBounds {
 			g2D.drawRect(0, 0, getWidth(), getHeight());
 		}
 		if (selected) {
+			logger.debug("draw piece as selected: " + this);
 			g2D.setStroke(new BasicStroke(3));
 			g2D.setColor(Color.ORANGE);
 			g2D.drawRect(0, 0, getWidth(), getHeight());

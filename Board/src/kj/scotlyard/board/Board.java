@@ -814,6 +814,7 @@ public class Board extends JFrame {
 
 	/** Rules laden (spaeter auch aus JAR) */
 	protected void loadRules(/* String jarName, String className */) {
+		Rules rules;
 //		if (jarName != null) {
 //			// link JAR file
 //		}
@@ -824,6 +825,8 @@ public class Board extends JFrame {
 			rules = new TheRules();
 			
 //		}
+			
+		setRules(rules);
 	}
 
 	/** Boarddef laden, d.h. GameGraph, Board */
