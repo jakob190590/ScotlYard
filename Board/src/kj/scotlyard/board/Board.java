@@ -907,7 +907,7 @@ public class Board extends JFrame {
 	
 	/** MrX AI laden (spaeter auch aus JAR) */
 	protected void loadMrXAi(/* params wie JAR und cassname*/) {
-		mrXAi = new SimpleMrXAi(gameState, gameGraph);
+		setMrXAi(new SimpleMrXAi(gameState, gameGraph));
 	}
 	
 	/** Detective AI laden (spaeter auch aus JAR) */
