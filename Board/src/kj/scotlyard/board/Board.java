@@ -241,7 +241,7 @@ public class Board extends JFrame {
 				}
 			}
 		});
-		PropertyConfigurator.configure("log4j.properties");
+		PropertyConfigurator.configure("log4j-board.properties");
 	}
 
 	/**
@@ -907,7 +907,10 @@ public class Board extends JFrame {
 	
 	/** MrX AI laden (spaeter auch aus JAR) */
 	protected void loadMrXAi(/* params wie JAR und cassname*/) {
-		setMrXAi(new SimpleMrXAi(gameState, gameGraph));
+		MrXAi xAi = new SimpleMrXAi();
+		xAi.setGameGraph(gameGraph);
+		xAi.setGameState(gameState);// TODO das gehoert anders
+		setMrXAi(xAi);
 	}
 	
 	/** Detective AI laden (spaeter auch aus JAR) */

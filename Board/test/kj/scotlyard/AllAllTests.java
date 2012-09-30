@@ -1,5 +1,6 @@
 package kj.scotlyard;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -13,5 +14,9 @@ import org.junit.runners.Suite.SuiteClasses;
 	kj.scotlyard.game.rules.AllTests.class,
 	kj.scotlyard.game.util.AllTests.class })
 public class AllAllTests {
+	
+	static {
+		PropertyConfigurator.configure("log4j-test.properties");
+	}
 
 }
