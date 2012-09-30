@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
-import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.graph.connection.FerryConnection;
-import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.BusTicket;
@@ -52,11 +50,6 @@ public class SimpleMrXAi extends AbstractMrXAi {
 	}
 
 	private Move result;
-
-	public SimpleMrXAi(GameState gameState, GameGraph gameGraph) {
-		super(gameGraph);
-		setGameState(gameState);
-	}
 
 	@Override
 	public Move move() {
@@ -217,7 +210,7 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		// 3. Station mit der günstigsten Bewertung wird ausgewählt
 		Alternative best = new Alternative(null, null); // nur um den anfangswert 0 fuer rating zu haben
 		for (Alternative a : alternatives) {
-			// hast schon recht korbi, mit ner schwelle waers wahrscheinlich besser, aber fuers erste mach ichs mal so
+			// TODO hast schon recht korbi, mit ner schwelle waers wahrscheinlich besser, aber fuers erste mach ichs mal so
 			if (a.rating * (1 - a.costs) > best.rating * (1 - best.costs)) {
 				best = a;
 			}

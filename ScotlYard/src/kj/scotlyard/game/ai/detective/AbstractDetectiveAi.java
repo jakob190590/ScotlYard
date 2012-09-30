@@ -19,15 +19,10 @@
 package kj.scotlyard.game.ai.detective;
 
 import kj.scotlyard.game.ai.AbstractAi;
-import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
 
 public abstract class AbstractDetectiveAi extends AbstractAi implements DetectiveAi {
-
-	protected AbstractDetectiveAi(GameGraph gameGraph) {
-		super(gameGraph);
-	}
 
 	@Override
 	protected void moveUndone(Move move) {

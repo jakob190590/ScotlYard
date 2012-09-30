@@ -73,11 +73,6 @@ public abstract class AbstractAi implements Ai {
 				int oldRoundNumber, int newRoundNumber) { }
 	};
 
-	protected AbstractAi(GameGraph gameGraph) {
-		this.gameGraph = gameGraph;
-		// TODO GameState doch ueber Constructor setzen?
-	}
-	
 	protected GameState getGameState() {
 		return gameState;
 	}

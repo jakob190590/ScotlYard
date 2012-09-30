@@ -19,16 +19,11 @@
 package kj.scotlyard.game.ai.mrx;
 
 import kj.scotlyard.game.ai.AbstractAi;
-import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
 
 public abstract class AbstractMrXAi extends AbstractAi implements MrXAi {
-
-	protected AbstractMrXAi(GameGraph gameGraph) {
-		super(gameGraph);
-	}
 
 	@Override
 	protected void moveUndone(Move move) { }
