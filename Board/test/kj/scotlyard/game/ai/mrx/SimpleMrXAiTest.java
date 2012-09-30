@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SimpleMrXAiTest {
-	static { PropertyConfigurator.configure("log4j-test.properties"); } // TODO voruebergehend
+	static { PropertyConfigurator.configure("log4j-test.properties"); }
 	private static final Logger logger = Logger.getLogger(SimpleMrXAiTest.class);
 	
 	private static final int TEST_DURCHLAEUFE = 20;
