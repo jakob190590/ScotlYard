@@ -22,12 +22,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-public class MrXMovePanel extends JPanel {
+public class MovePanel extends JPanel {
 
 	/**
 	 * Create the panel.
 	 */
-	public MrXMovePanel() {
+	public MovePanel() {
 		
 		JLabel lblMrxMoveNumber = new JLabel("MrX Move Number with Image of Ticket");
 		add(lblMrxMoveNumber);

@@ -49,7 +49,7 @@ public class HistoryPanel extends JPanel {
 	
 	private List<RoundPanel> roundPanels;
 	
-	private List<MrXMovePanel> movePanels;
+	private List<MovePanel> movePanels;
 	
 	private Stack<Move> undoneMoves = new Stack<>();
 	
