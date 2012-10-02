@@ -1386,7 +1386,7 @@ public class Board extends JFrame {
 					"<p>Published under the GNU GPLv3 License.</p>" +
 					 
 					"<p>You should have received a copy of the GNU General Public License<br/>" +
-					"along with this program.  If not, see <http://www.gnu.org/licenses/>.</p>" +
+					"along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</p>" +
 					"</html>",
 					"About", JOptionPane.INFORMATION_MESSAGE);
 		}

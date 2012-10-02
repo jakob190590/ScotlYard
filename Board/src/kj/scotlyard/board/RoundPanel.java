@@ -19,6 +19,7 @@
 package kj.scotlyard.board;
 
 import java.awt.Component;
+import java.awt.Font;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -41,6 +42,7 @@ public class RoundPanel extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		lblRoundNumber = new JLabel("Round #");
+		lblRoundNumber.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblRoundNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblRoundNumber.setText(String.valueOf(roundNumber));
 		add(lblRoundNumber);
