@@ -26,21 +26,42 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class RoundPanel extends JPanel {
-
+	
+	private int roundNumber;
+	
+	private JPanel movePanelContainer;
+	private JLabel lblRoundNumber;
+	
 	/**
 	 * Create the panel.
 	 */
-	public RoundPanel() {
+	public RoundPanel(int roundNumber) {
+		this.roundNumber = roundNumber;
+		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
-		JLabel lblRoundNumber = new JLabel("Round Number");
+		lblRoundNumber = new JLabel("Round #");
 		lblRoundNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lblRoundNumber.setText(String.valueOf(roundNumber));
 		add(lblRoundNumber);
 		
-		JPanel mrXMovesPanel = new JPanel();
-		add(mrXMovesPanel);
-		mrXMovesPanel.setLayout(new BoxLayout(mrXMovesPanel, BoxLayout.X_AXIS));
+		movePanelContainer = new JPanel();
+		movePanelContainer.setLayout(new BoxLayout(movePanelContainer, BoxLayout.X_AXIS));
+		add(movePanelContainer);
 
+	}
+	
+	public void addMovePanel(MovePanel movePanel) {
+		movePanelContainer.add(movePanel);
+	}
+	
+	// remove all move panels
+	public void removeMovePanels() {
+		movePanelContainer.removeAll();
+	}
+
+	public int getRoundNumber() {
+		return roundNumber;
 	}
 
 }
