@@ -222,6 +222,7 @@ public class Board extends JFrame {
 		}
 	};
 	private final Action aboutAction = new AboutAction();
+	private HistoryPanel historyPanel;
 
 
 
@@ -574,13 +575,16 @@ public class Board extends JFrame {
 		lblCurrentPlayerVal = new JLabel("CurrentPlayerVal");
 		lblCurrentPlayer.setLabelFor(lblCurrentPlayerVal);
 		lblCurrentPlayerVal.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panelLeft.add(lblCurrentPlayerVal);
 		lblCurrentPlayerVal.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				selectCurrentPlayerAction.actionPerformed(null);
 			}
 		});
+		panelLeft.add(lblCurrentPlayerVal);
+		
+		historyPanel = new HistoryPanel();
+		contentPane.add(historyPanel, BorderLayout.SOUTH);
 		
 		
 		
@@ -721,6 +725,7 @@ public class Board extends JFrame {
 	protected void setRules(Rules rules) {
 		this.rules = rules;
 		boardPanel.setRules(rules);
+		historyPanel.setRules(rules);
 	}
 
 	protected GameController getGameController() {
@@ -754,6 +759,7 @@ public class Board extends JFrame {
 			movePreparationBar.setGameState(gameState);
 			boardPanel.setGameState(gameState);
 			movePreparer.setGameState(gameState);
+			historyPanel.setGameState(gameState);
 			
 			if (gameState != null) {
 				// register listeners/observers
