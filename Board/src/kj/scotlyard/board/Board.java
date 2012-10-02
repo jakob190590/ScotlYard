@@ -337,74 +337,74 @@ public class Board extends JFrame {
 		mnGameController.add(mntmGameStatusAnd);
 		
 		
-		JMenu mnBoardPanel = new JMenu("BoardPanel");
-		mnBoardPanel.setMnemonic(KeyEvent.VK_B);
-		menuBar.add(mnBoardPanel);
+		JMenu mnSetter = new JMenu("Setter");
+		mnSetter.setMnemonic(KeyEvent.VK_S);
+		menuBar.add(mnSetter);
 		
 		// Um zu ueberpruefen, ob das neu setzen waehrend dem Spiel funktioniert
 		JMenuItem mntmSetGameStateNull = new JMenuItem("Set GameState to null");
 		mntmSetGameStateNull.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boardPanel.setGameState(null);
+				setGameState(null);
 			}
 		});
 		mntmSetGameStateNull.setMnemonic(KeyEvent.VK_N);
-		mnBoardPanel.add(mntmSetGameStateNull);
+		mnSetter.add(mntmSetGameStateNull);
 		
 		JMenuItem mntmSetGameState = new JMenuItem("Set GameState");
 		mntmSetGameState.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boardPanel.setGameState(gameState);
+				setGameState(gameState);
 			}
 		});
 		mntmSetGameState.setMnemonic(KeyEvent.VK_G);
-		mnBoardPanel.add(mntmSetGameState);
+		mnSetter.add(mntmSetGameState);
 		
-		mnBoardPanel.addSeparator();
+		mnSetter.addSeparator();
 		
 		JMenuItem mntmSetRulesNull = new JMenuItem("Set Rules to null");
 		mntmSetRulesNull.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boardPanel.setRules(null);
+				setRules(null);
 			}
 		});
 		mntmSetRulesNull.setMnemonic(KeyEvent.VK_U);
-		mnBoardPanel.add(mntmSetRulesNull);
+		mnSetter.add(mntmSetRulesNull);
 		
 		JMenuItem mntmSetRules = new JMenuItem("Set Rules");
 		mntmSetRules.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boardPanel.setRules(rules);
+				setRules(rules);
 			}
 		});
 		mntmSetRules.setMnemonic(KeyEvent.VK_R);
-		mnBoardPanel.add(mntmSetRules);
+		mnSetter.add(mntmSetRules);
 		
-		mnBoardPanel.addSeparator();
+		mnSetter.addSeparator();
 		
 		JMenuItem mntmSetImageToNull = new JMenuItem("Set Image to null");
 		mntmSetImageToNull.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boardPanel.setImage(null);
+				setImage(null);
 			}
 		});
 		mntmSetImageToNull.setMnemonic(KeyEvent.VK_L);
-		mnBoardPanel.add(mntmSetImageToNull);
+		mnSetter.add(mntmSetImageToNull);
 		
 		JMenuItem mntmSetImage = new JMenuItem("Set Image");
 		mntmSetImage.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boardPanel.setImage(image);
+				setImage(image);
 			}
 		});
 		mntmSetImage.setMnemonic(KeyEvent.VK_I);
-		mnBoardPanel.add(mntmSetImage);
+		mnSetter.add(mntmSetImage);
 		
 		JMenu mnErnsthaft = new JMenu("Ernsthaft");
 		menuBar.add(mnErnsthaft);
