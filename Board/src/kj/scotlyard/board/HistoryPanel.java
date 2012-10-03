@@ -23,7 +23,6 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -50,7 +49,8 @@ public class HistoryPanel extends JPanel {
 	
 	private UndoManager undoManager;
 	
-	private Stack<Move> undoneMoves = new Stack<>();
+//	/** Stack for undone moves to recognize redo */
+//	private Stack<Move> undoneMoves = new Stack<>();
 	
 	// Unabhaengig von der "Composition" in der GUI:
 	
@@ -63,18 +63,23 @@ public class HistoryPanel extends JPanel {
 		@Override
 		public void movesCleard(GameState gameState) {
 //			undoneMoves.clear();
+			// halt gar nicht optimiert, aber einfach
 			updateMovePanels();
+			arrangePanels();
 		}
 		@Override
 		public void moveUndone(GameState gameState, Move move) {
 			if (move.getPlayer() instanceof MrXPlayer) {
 //				undoneMoves.push(move);
-				updateMovePanels(move.getMoveNumber());
+				// halt gar nicht optimiert, aber einfach
+				updateMovePanels();
+				arrangePanels();
 			}
 		}
 		@Override
 		public void moveDone(GameState gameState, Move move) {
 			if (move.getPlayer() instanceof MrXPlayer) {
+//				// Bei redo Daten von folgenden MovePanels unveraendert lassen
 //				if (!undoneMoves.isEmpty() && undoneMoves.pop() != move) {
 //					// "Die Zukunft hat sich geaendert"
 //					undoneMoves.clear();
@@ -96,17 +101,18 @@ public class HistoryPanel extends JPanel {
 //					}
 //				}
 				
-				// Einfacher:
-				List<Move> m = GameStateExtension.flattenMove(move);
-				int firstMoveNumber = m.get(0).getMoveNumber();
-				updateMovePanels(firstMoveNumber);
-				if (!move.getMoves().isEmpty()) {
-					// Bei Multi Move
-					arrangePanels(firstMoveNumber);
-				}
-				// Noch einfacher:
-//				updateMovePanels();
-//				rearrangeMovePanels();
+//				// Einfacher:
+//				List<Move> m = GameStateExtension.flattenMove(move);
+//				int firstMoveNumber = m.get(0).getMoveNumber();
+//				updateMovePanels(firstMoveNumber);
+//				if (!move.getMoves().isEmpty()) {
+//					// Bei Multi Move: Panels neu anordnen
+//					arrangePanels(firstMoveNumber);
+//				}
+				
+				// Noch einfacher (gar nicht optimiert, aber einfach):
+				updateMovePanels();
+				arrangePanels();
 			}
 
 		}
@@ -276,6 +282,34 @@ public class HistoryPanel extends JPanel {
 	public void updateMovePanels() {
 		updateMovePanels(GameState.INITIAL_MOVE_NUMBER);
 	}
+	
+	private void updateCurrentRound() {
+		// Border nur fuer Current Round
+		for (RoundPanel rp : roundPanels) {
+			rp.setCurrentRound(false);
+		}
+		try {
+			roundPanels.get(gameState.getCurrentRoundNumber()).setCurrentRound(true);
+		} catch (Exception e) {
+			// falls gameState == null, roundPanels.isEmpty()
+			// oder sonst was corrupted ist ...
+		}
+	}
+	
+	private void updateMrXUncoverMoves() {
+		// Alle alten Border entfernen
+		for (MovePanel mp : movePanels) {
+			mp.setUncoverMove(false);
+		}
+		try {
+			// Border fuer MovePanels, die MrXUncover Moves sind
+			for (int j : rules.getGameStateAccessPolicy().getMrXUncoverMoveNumbers()) {
+				movePanels.get(j).setUncoverMove(true);
+			}
+		} catch (Exception e) {
+			// Falls rules == null, oder sonst was corrupted ist ...
+		}
+	}
 
 	public Rules getRules() {
 		return rules;
@@ -284,11 +318,6 @@ public class HistoryPanel extends JPanel {
 	public void setRules(Rules rules) {
 		if (this.rules != rules) {
 			this.rules = rules;
-			// Alle alten Border entfernen
-			for (MovePanel mp : movePanels) {
-				mp.setUncoverMove(false);
-			}
-			
 			if (rules != null) {
 				// Mindestens so viele MovePanels, bis MrX zum letzten Mal auftaucht
 				
@@ -309,12 +338,8 @@ public class HistoryPanel extends JPanel {
 					addNewRoundPanel(i);
 					i++;
 				}
-				
-				// Border fuer MovePanels, die MrXUncover Moves sind
-				for (int j : mrXUncoverMoveNumbers) {
-					movePanels.get(j).setUncoverMove(true);
-				}
 			}
+			updateMrXUncoverMoves();
 			arrangePanels();
 		}
 	}
@@ -330,23 +355,15 @@ public class HistoryPanel extends JPanel {
 				this.gameState.removeMoveListener(moveListener);
 				this.gameState.removeTurnListener(turnListener);
 			}
-			for (RoundPanel rp : roundPanels) {
-				rp.setCurrentRound(false);
-			}
 			
 			this.gameState = gameState;
-			undoneMoves.clear();
+//			undoneMoves.clear();
 			if (gameState != null) {
 				// Register listeners
 				gameState.addMoveListener(moveListener);
 				gameState.addTurnListener(turnListener);
-				
-				// Border fuer Current Round
-				int crn = gameState.getCurrentRoundNumber();
-				if (!roundPanels.isEmpty()) {
-					roundPanels.get(crn).setCurrentRound(true);
-				}
 			}
+			updateCurrentRound();
 			updateMovePanels();
 			arrangePanels();
 		}

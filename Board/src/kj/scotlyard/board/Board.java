@@ -874,10 +874,11 @@ public class Board extends JFrame {
 	/** Rules laden (spaeter auch aus JAR) */
 	public void loadRules(/* String jarName, String className */) {
 		Rules rules;
-//		if (jarName != null) {
-//			// link JAR file
-//		}
+		
 //		if (className != null) {
+//			if (jarName != null) {
+//				// link JAR file
+//			}
 //			Class.forName(classname).createInstance();
 //		} else {
 		
@@ -952,7 +953,7 @@ public class Board extends JFrame {
 		undoManager.discardAllEdits(); // am besten erst, wenn erfolgreich geladen
 		GameController gameController = gc = new DefaultGameController(game, gameGraph, rules);
 		gameController.setUndoManager(undoManager);
-		gameController.addObserver(gameControllerObserver );
+		gameController.addObserver(gameControllerObserver);
 		
 		setGameControllerActionsEnabled(gameController.getStatus());
 		
