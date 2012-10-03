@@ -18,7 +18,9 @@
 
 package kj.scotlyard.game.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
@@ -31,13 +33,13 @@ import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
+import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.TaxiTicket;
@@ -60,7 +62,7 @@ public class MrXTrackerTest {
 	
 	MrXPlayer mrX;
 	DetectivePlayer d1, d2, d3, d4;
-	Move[] ms = new Move[100];
+	Move[] ms = new Move[125];
 
 	@Before
 	public void setUp() throws Exception {
@@ -89,7 +91,7 @@ public class MrXTrackerTest {
 		g.getDetectives().add(d4);
 
 		int j = 0;
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 25; i++) {
 			for (Player p : g.getPlayers()) {
 				ms[j] = MoveProducer.createSingleMove(p, i, i,
 						new Station(gg), new TaxiConnection(gg), new TaxiTicket());
@@ -122,14 +124,23 @@ public class MrXTrackerTest {
 		for (Move m : ms) {
 
 			if (m.getPlayer() == mrX) {
-				if (m.getMoveNumber() >= 0)
-					m.setMoveNumber(n++);
-				else
+				if (m.getMoves().isEmpty()) {
+					// Kein Multi Move
+					m.setMoveNumber(n);
+					n++;
+				} else {
 					n += m.getMoves().size();
+				}
 			}
 
 			g.getMoves().add(m);
 		}
+		
+//		Iterator<Move> it = GameStateExtension.moveIterator(g, mrX, true);
+//		while (it.hasNext()) {
+//			Move m = it.next();
+//			System.out.println(m.getMoveNumber());
+//		}
 		
 	}
 	
@@ -150,10 +161,12 @@ public class MrXTrackerTest {
 		while (!g.getMoves().isEmpty()) {
 			
 			int moveNumber = ext.getLastMoveFlat(mrX).getMoveNumber();
-			
 			Move m = null;
 			int uncover = -1;
-			if (moveNumber >= 18) {
+			if (moveNumber >= 22) {
+				m = ms[95];
+				uncover = 22;
+			} else if (moveNumber >= 18) {
 				m = ms[75];
 				uncover = 18;
 			} else if (moveNumber >= 13) {
@@ -166,14 +179,17 @@ public class MrXTrackerTest {
 				m = ms[10].getMoves().get(0);
 				uncover = 3;
 			}
-			
 			if (moveNumber < 3) {
 				assertEquals(null, tr.getLastKnownMove());
 				assertEquals(null, tr2.getLastKnownMove());
 				
 			} else {
+				// Selbstkontrolle fuer test
 				assertEquals(mrX, m.getPlayer());
 				assertEquals(uncover, m.getMoveNumber());
+				
+				assertEquals(mrX, tr.getLastKnownMove().getPlayer());
+				assertEquals(uncover, tr.getLastKnownMove().getMoveNumber()); // liefert den falschen zug!
 				assertEquals(m, tr.getLastKnownMove());
 				
 				// MrXTracker mit Detective's GameState
@@ -195,7 +211,10 @@ public class MrXTrackerTest {
 			
 			Move m = null;
 			int uncover = -1;
-			if (moveNumber >= 18) {
+			if (moveNumber >= 22) {
+				m = ms[95];
+				uncover = 22;
+			} else if (moveNumber >= 18) {
 				m = ms[75];
 				uncover = 18;
 			} else if (moveNumber >= 13) {
@@ -234,7 +253,7 @@ public class MrXTrackerTest {
 				assertEquals(mrX, m.getPlayer());
 				assertEquals(uncover, m.getMoveNumber());
 				assertEquals(m, tr.getLastKnownMove());
-			}			
+			}
 			
 			g.getMoves().remove(GameState.LAST_MOVE);
 		}
@@ -249,7 +268,7 @@ public class MrXTrackerTest {
 		// Dabei darf es keine IllegalAccessExceptions geben!!
 		
 		// Testfaelle:
-		// move list clear, not yet uncovered, just uncovered, normal 
+		// move list clear, not yet uncovered, just uncovered, normal
 		
 		GameController ctrl = new DefaultGameController(g, gg, r);
 		MrXTracker tr2 = new MrXTracker(dgs, gg, r);
@@ -362,7 +381,7 @@ public class MrXTrackerTest {
 	/**
 	 * Dieser Test blockiert bestimmte Stationen in
 	 * bestimmenten Runden mit Detectives. Ansonsnten
-	 * das gleiche Szenario wie in Test 1. 
+	 * das gleiche Szenario wie in Test 1.
 	 */
 	@Test
 	public final void testGetPossiblePositions2() {

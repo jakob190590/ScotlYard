@@ -24,16 +24,16 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.attributes.DefaultSealable;
-
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
-import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.DefaultGameState;
+import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.Item;
+
+import org.apache.commons.attributes.DefaultSealable;
 
 public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
@@ -56,7 +56,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		/**
 		 * Erzeugt einen sealed Move Proxy, der den Zugriff auf den echten Move
 		 * einschraenkt. Auf Connection kann dann nicht mehr zugegriffen werden
-		 * (throws IllegalAccessException), auf Station nur bei uncovered Moves. 
+		 * (throws IllegalAccessException), auf Station nur bei uncovered Moves.
 		 * Die "Sub Moves", d.h. die Moves in der Move List werden vom
 		 * Proxy nicht durchgereicht, sondern muessen dem Konstruktor neu
 		 * uebergeben werden!
@@ -184,7 +184,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		@Override
 		public DetectivesGameState copy() {
 			return new DetectivesGameState(getGameState().copy());
-		}		
+		}
 
 		@Override
 		public List<Move> getMoves() {
@@ -228,11 +228,12 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 
 	private final List<Integer> uncoverMoveNumbers;
 	{
-		List<Integer> list = new ArrayList<>(4);
+		List<Integer> list = new ArrayList<>(5);
 		list.add(3);
 		list.add(8);
 		list.add(13);
 		list.add(18);
+		list.add(22); // wenn's MrX bis hierher schafft hat er gewonnen (siehe TheGameWinPolicy)
 		uncoverMoveNumbers = Collections.unmodifiableList(list);
 	}
 	
@@ -244,7 +245,7 @@ public class TheGameStateAccessPolicy implements GameStateAccessPolicy {
 		
 		// Sonst: MrX' Move
 		if (getMrXUncoverMoveNumbers().contains(move.getMoveNumber())) { // das impliziert, dass es keine sub moves gibt.
-			// MrX is uncovered				
+			// MrX is uncovered
 			return new MrXMove(move, true);
 		}
 

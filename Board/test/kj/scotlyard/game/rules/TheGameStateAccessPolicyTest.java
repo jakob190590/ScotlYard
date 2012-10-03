@@ -18,17 +18,18 @@
 
 package kj.scotlyard.game.rules;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.graph.Station;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
+import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.model.DetectivePlayer;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
 import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.util.MoveProducer;
@@ -588,11 +589,12 @@ public class TheGameStateAccessPolicyTest {
 		} catch (Exception e) {
 		}
 
-		assertEquals(4, policy.getMrXUncoverMoveNumbers().size());
+		assertEquals(5, policy.getMrXUncoverMoveNumbers().size());
 		assertEquals((Integer) 3, policy.getMrXUncoverMoveNumbers().get(0));
 		assertEquals((Integer) 8, policy.getMrXUncoverMoveNumbers().get(1));
 		assertEquals((Integer) 13, policy.getMrXUncoverMoveNumbers().get(2));
 		assertEquals((Integer) 18, policy.getMrXUncoverMoveNumbers().get(3));
+		assertEquals((Integer) 22, policy.getMrXUncoverMoveNumbers().get(4));
 	}
 
 }
