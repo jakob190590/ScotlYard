@@ -1552,6 +1552,61 @@ gig) gegenseitig auf; darauf kann man sich aber nicht verlassen.
 HistoryPanel
 \end_layout
 
+\begin_layout Standard
+Das HistoryPanel stellt den Verlauf des Spiels in einer 
+\begin_inset Quotes gld
+\end_inset
+
+Timeline
+\begin_inset Quotes grd
+\end_inset
+
+ dar.
+ Die History ist essentiell, da sie auch die von MrX verwendeten Tickets
+ darstellt, ohne die das Spiel weniger interessant wäre.
+\end_layout
+
+\begin_layout Standard
+Intern läuft's so: Wir haben zwei Listen, eine für RoundPanels und eine
+ für MovePanels.
+ Der Listenindex ist jeweils die Round Number bzw.
+ die Move Number.
+ Ein RoundPanel enthält die MovePanels zu den Single Moves, die MrX in der
+ entsprechenden Runde gemacht hat.
+ Aufgaben intern sind also:
+\end_layout
+
+\begin_layout Itemize
+Die Daten der MovePanels aktualisieren, d.h.
+ Ticket und Round Number setzen 
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+ updateMovePanels
+\end_layout
+
+\begin_layout Itemize
+Die MovePanels in den RoundPanels und die RoundPanels im ScrollPane anordnen
+ 
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+ arrangePanels
+\begin_inset Newline newline
+\end_inset
+
+Die MovePanels werden anhand ihrer Eigenschaft roundNumber den entsprechenden
+ RoundPanels zugeordnet.
+\end_layout
+
+\begin_layout Itemize
+Die Rahmen für MovePanels setzen, die MrX Uncover Moves darstellen.
+\end_layout
+
+\begin_layout Itemize
+Den Rahmen für RoundPanel setzen, als Markierung der Current Round.
+\end_layout
+
 \begin_layout Chapter
 Konzepte
 \end_layout
