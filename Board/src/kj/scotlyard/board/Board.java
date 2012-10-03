@@ -828,7 +828,7 @@ public class Board extends JFrame {
 	
 
 	/** Rules laden (spaeter auch aus JAR) */
-	protected void loadRules(/* String jarName, String className */) {
+	public void loadRules(/* String jarName, String className */) {
 		Rules rules;
 //		if (jarName != null) {
 //			// link JAR file
@@ -845,7 +845,7 @@ public class Board extends JFrame {
 	}
 
 	/** Boarddef laden, d.h. GameGraph, Board */
-	protected void loadBoard(/* params, wie boarddef filename */) {
+	public void loadBoard(/* params, wie boarddef filename */) {
 		
 		// Momentan wird noch das Standard Board geladen ...
 		
@@ -900,7 +900,7 @@ public class Board extends JFrame {
 	}
 	
 	/** Game, GameState, GameController erzeugen */
-	protected void loadGame(/* params wie gamestate filename*/) {
+	public void loadGame(/* params wie gamestate filename*/) {
 		
 		Game game = new DefaultGame();
 		GameState gameState = new DefaultGameState(game);
@@ -919,11 +919,11 @@ public class Board extends JFrame {
 	}
 	
 	/** MrX AI laden (spaeter auch aus JAR) */
-	protected void loadMrXAi(/* params wie JAR und cassname*/) {
+	public void loadMrXAi(/* params wie JAR und cassname*/) {
 	}
 	
 	/** Detective AI laden (spaeter auch aus JAR) */
-	protected void loadDetectiveAi(/* params wie JAR und classname*/) {
+	public void loadDetectiveAi(/* params wie JAR und classname*/) {
 	}
 	
 	
