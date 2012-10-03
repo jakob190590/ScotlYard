@@ -24,8 +24,24 @@ import kj.scotlyard.game.model.GameState;
 
 public interface GameStateAccessPolicy {
 	
+	/**
+	 * List that contains the MrX uncover move numbers
+	 * in ascending order. The list can be empty but
+	 * must not be <code>null</code>.
+	 * @return a ascending list of MrX uncover move numbers
+	 */
 	List<Integer> getMrXUncoverMoveNumbers();
 	
+	/**
+	 * Creates an GameState proxy for the detective players
+	 * that may restrict the access. E.g.
+	 * <code>TheGameStateAccessPolicy</code> restricts the
+	 * access to MrX moves: Stations and connections are not
+	 * accessible except in MrX uncover moves.
+	 * 
+	 * @param gameState
+	 * @return a GameState proxy for detectives
+	 */
 	GameState createGameStateForDetectives(GameState gameState);
 
 }
