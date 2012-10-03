@@ -309,6 +309,7 @@ public abstract class MovePreparer extends Observable {
 			}
 		}
 		// schon vorgemerkt durch anderen Detective
+		// TODO reihenfolge der detectives kann eigentlich nicht auf diese weise vorhergesehen werden, das bestimmt nur die TurnPolicy!
 		for (DetectivePlayer d : gameState.getDetectives()) {
 			// Nachfolgende Detectives sind nicht relevant
 			if (d == player)
@@ -339,6 +340,11 @@ public abstract class MovePreparer extends Observable {
 		for (Move n : moves) {
 			tickets.remove(n.getItem());
 		}
+		if (tickets.isEmpty()) {
+			logger.warn("nextStation: impossible station - no tickets");
+			errorImpossibleNextStation(station, player);
+			return false;
+		}
 		
 		Ticket ticket = selectTicket(tickets, player);
 		
@@ -353,6 +359,7 @@ public abstract class MovePreparer extends Observable {
 			moves.add(m);
 			
 			// TODO when prepared moves of other subsequent detectives are foiled, reset these preparations
+			// TODO reihenfolge der detectives kann nicht vorhergesehen werden, das bestimmt nur die TurnPolicy!
 			
 			setChanged();
 			notifyObservers(new MovePreparationEvent(MovePreparationEvent.NEXT_STATION, player, getMove(player)));
