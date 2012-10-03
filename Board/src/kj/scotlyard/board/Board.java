@@ -118,6 +118,23 @@ public class Board extends JFrame {
 	private MovePreparationBar movePreparationBar;
 	
 	private final ButtonGroup modeButtonGroup = new ButtonGroup();
+
+	/*
+	 * Das Menue mit den GameController Funktionen soll immer funktionieren
+	 * (ist ja zum Testen da). Zu dem Zweck bleiben folgende Variablen
+	 * ab dem load* immer gesetzt, und werden nicht mit set* geaendert, im
+	 * Gegensatz zu ihren Gegenstuecken:
+	 * r -> rules
+	 * g -> game
+	 * ...
+	 */
+	private Rules r;
+	private Game g;
+	private GameState gs;
+	private GameController gc;
+	private GameGraph gg;
+	private Image img;
+	
 	
 	UndoManager undoManager = new UndoManager();
 	
@@ -356,7 +373,7 @@ public class Board extends JFrame {
 		mntmSetGameState.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setGameState(gameState);
+				setGameState(gs);
 			}
 		});
 		mntmSetGameState.setMnemonic(KeyEvent.VK_G);
@@ -372,13 +389,14 @@ public class Board extends JFrame {
 			}
 		});
 		mntmSetRulesNull.setMnemonic(KeyEvent.VK_U);
+		mntmSetRulesNull.setDisplayedMnemonicIndex(14);
 		mnSetter.add(mntmSetRulesNull);
 		
 		JMenuItem mntmSetRules = new JMenuItem("Set Rules");
 		mntmSetRules.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setRules(rules);
+				setRules(r);
 			}
 		});
 		mntmSetRules.setMnemonic(KeyEvent.VK_R);
@@ -386,25 +404,48 @@ public class Board extends JFrame {
 		
 		mnSetter.addSeparator();
 		
-		JMenuItem mntmSetImageToNull = new JMenuItem("Set Image to null");
-		mntmSetImageToNull.addActionListener(new ActionListener() {
+		JMenuItem mntmSetImageNull = new JMenuItem("Set Image to null");
+		mntmSetImageNull.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setImage(null);
 			}
 		});
-		mntmSetImageToNull.setMnemonic(KeyEvent.VK_L);
-		mnSetter.add(mntmSetImageToNull);
+		mntmSetImageNull.setMnemonic(KeyEvent.VK_L);
+		mnSetter.add(mntmSetImageNull);
 		
 		JMenuItem mntmSetImage = new JMenuItem("Set Image");
 		mntmSetImage.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setImage(image);
+				setImage(img);
 			}
 		});
 		mntmSetImage.setMnemonic(KeyEvent.VK_I);
 		mnSetter.add(mntmSetImage);
+		
+		mnSetter.addSeparator();
+		
+		JMenuItem mntmSetGameGraphNull = new JMenuItem("Set GameGraph to null");
+		mntmSetGameGraphNull.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setGameGraph(null);
+			}
+		});
+		mntmSetGameGraphNull.setMnemonic(KeyEvent.VK_T);
+		mntmSetGameGraphNull.setDisplayedMnemonicIndex(14);
+		mnSetter.add(mntmSetGameGraphNull);
+		
+		JMenuItem mntmSetGameGraph = new JMenuItem("Set GameGraph");
+		mntmSetGameGraph.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setGameGraph(gg);
+			}
+		});
+		mntmSetGameGraph.setMnemonic(KeyEvent.VK_A);
+		mnSetter.add(mntmSetGameGraph);
 		
 		JMenu mnErnsthaft = new JMenu("Ernsthaft");
 		menuBar.add(mnErnsthaft);
@@ -618,10 +659,13 @@ public class Board extends JFrame {
 
 			@Override
 			protected Ticket selectTicket(Set<Ticket> tickets, Player player) {
-				if (player instanceof MrXPlayer)
+				if (player instanceof MrXPlayer) {
+					ticketSelectionDialogMrX.setFurtherMovesSelected(false);
 					return ticketSelectionDialogMrX.show(tickets, player);
-				else // DetectivePlayer
+				} else { // DetectivePlayer
+					ticketSelectionDialogDetectives.setFurtherMovesSelected(false);
 					return ticketSelectionDialogDetectives.show(tickets, player);
+				}
 //				return tickets.iterator().next(); // gleich das erste
 			}
 		};
@@ -752,8 +796,8 @@ public class Board extends JFrame {
 		if (gameState != this.gameState) {
 			if (this.gameState != null) {
 				// unregister listeners/observers
-				gameState.removeMoveListener(moveListener);
-				gameState.removeTurnListener(turnListener);
+				this.gameState.removeMoveListener(moveListener);
+				this.gameState.removeTurnListener(turnListener);
 			}
 			this.gameState = gameState;
 			movePreparationBar.setGameState(gameState);
@@ -837,7 +881,7 @@ public class Board extends JFrame {
 //			Class.forName(classname).createInstance();
 //		} else {
 		
-			rules = new TheRules();
+			rules = r = new TheRules();
 			
 //		}
 			
@@ -866,7 +910,7 @@ public class Board extends JFrame {
 		
 		Map<Integer, StationVertex> numberStationMap = bgl.getNumberStationMap();
 		
-		GameGraph gameGraph = bgl.getGameGraph();
+		GameGraph gameGraph = gg = bgl.getGameGraph();
 		
 		// TODO beide muessen beim laden der Board def gesetzt werden
 		normalZoomFactor = 0.2; // kann sein was will, nur >= 1 macht keinen sinn, weil das bild dann viel zu riessig ist!
@@ -874,15 +918,15 @@ public class Board extends JFrame {
 		
 		// Bild laden
 		
-		Image img = null;
+		Image i = img = null;
 		try {
-			img = ImageIO.read(new File("original-scotland-yard-board.png"));
+			i = this.img = ImageIO.read(new File("original-scotland-yard-board.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		int w = img.getWidth(null);
-		int h = img.getHeight(null);
+		int w = i.getWidth(null);
+		int h = i.getHeight(null);
 		if (w < 0 || h < 0) {
 			throw new IllegalArgumentException("The image seems to be not loaded " +
 					"completely: Cannot determine image's width and/or height.");
@@ -891,7 +935,7 @@ public class Board extends JFrame {
 		
 		
 		
-		setImage(img);
+		setImage(i);
 		setOriginalImageSize(originalImageSize);
 		
 		setGameGraph(gameGraph);
@@ -902,11 +946,11 @@ public class Board extends JFrame {
 	/** Game, GameState, GameController erzeugen */
 	public void loadGame(/* params wie gamestate filename*/) {
 		
-		Game game = new DefaultGame();
-		GameState gameState = new DefaultGameState(game);
+		Game game = g = new DefaultGame();
+		GameState gameState = gs = new DefaultGameState(game);
 		
 		undoManager.discardAllEdits(); // am besten erst, wenn erfolgreich geladen
-		GameController gameController = new DefaultGameController(game, gameGraph, rules);
+		GameController gameController = gc = new DefaultGameController(game, gameGraph, rules);
 		gameController.setUndoManager(undoManager);
 		gameController.addObserver(gameControllerObserver );
 		
@@ -938,7 +982,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			gameController.newGame();
+			gc.newGame();
 		}
 	}
 	private class ClearPlayersAction extends AbstractAction {
@@ -949,7 +993,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			gameController.clearPlayers();
+			gc.clearPlayers();
 		}
 	}
 	private class NewMrXAction extends AbstractAction {
@@ -960,7 +1004,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			gameController.newMrX();
+			gc.newMrX();
 		}
 	}
 	private class NewDetectiveAction extends AbstractAction {
@@ -971,7 +1015,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			gameController.newDetective();
+			gc.newDetective();
 		}
 	}
 	private class StartAction extends AbstractAction {
@@ -983,7 +1027,7 @@ public class Board extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				gameController.start();
+				gc.start();
 			} catch (Exception e2) {
 				showErrorMessage(e2);
 			}
@@ -997,7 +1041,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			gameController.abort();
+			gc.abort();
 		}
 	}
 	private class MoveAction extends AbstractAction {
@@ -1009,7 +1053,7 @@ public class Board extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Move move = null;
-			if (gameController.getStatus() == GameStatus.IN_GAME) {
+			if (gc.getStatus() == GameStatus.IN_GAME) {
 				move = MoveProducer.createRandomSingleMove(gameState, gameGraph);
 			}
 			move(move);
@@ -1023,7 +1067,7 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			showGameStatusAndWin(gameController.getStatus(), gameController.getWin());
+			showGameStatusAndWin(gc.getStatus(), gc.getWin());
 		}
 	}
 	private class RemoveDetectiveAction extends AbstractAction {
@@ -1038,7 +1082,7 @@ public class Board extends JFrame {
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
 				DetectivePlayer d = null;
 				try {
-					d = game.getDetectives().get(Integer.parseInt(s));
+					d = g.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
 					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(),
 							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION,
@@ -1048,7 +1092,7 @@ public class Board extends JFrame {
 					continue;
 				}
 				try {
-					gameController.removeDetective(d);
+					gc.removeDetective(d);
 				} catch (Exception e2) {
 					showErrorMessage(e2);
 				}
@@ -1069,7 +1113,7 @@ public class Board extends JFrame {
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
 				DetectivePlayer d = null;
 				try {
-					d = game.getDetectives().get(Integer.parseInt(s));
+					d = g.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
 					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(),
 							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION,
@@ -1079,7 +1123,7 @@ public class Board extends JFrame {
 					continue;
 				}
 				try {
-					gameController.shiftUpDetective(d);
+					gc.shiftUpDetective(d);
 				} catch (Exception e2) {
 					showErrorMessage(e2);
 				}
@@ -1101,7 +1145,7 @@ public class Board extends JFrame {
 			while ((s = JOptionPane.showInputDialog(Board.this, "Enter the index of a detective", s)) != null) {
 				DetectivePlayer d = null;
 				try {
-					d = game.getDetectives().get(Integer.parseInt(s));
+					d = g.getDetectives().get(Integer.parseInt(s));
 				} catch (Exception e2) {
 					if (JOptionPane.showConfirmDialog(Board.this, "Invalid index: " + e2.getMessage(),
 							e2.getClass().getSimpleName(), JOptionPane.OK_CANCEL_OPTION,
@@ -1111,7 +1155,7 @@ public class Board extends JFrame {
 					continue;
 				}
 				try {
-					gameController.shiftDownDetective(d);
+					gc.shiftDownDetective(d);
 				} catch (Exception e2) {
 					showErrorMessage(e2);
 				}
@@ -1129,12 +1173,12 @@ public class Board extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			logger.info("new game with players");
-			gameController.clearPlayers();
-			gameController.newMrX();
+			gc.clearPlayers();
+			gc.newMrX();
 			for (int i = 0; i < 4; i++)
-				gameController.newDetective();
+				gc.newDetective();
 			
-			gameController.newGame();
+			gc.newGame();
 		}
 	}
 	private class UndoAction extends AbstractAction {
