@@ -26,7 +26,18 @@
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref false
+\use_hyperref true
+\pdf_title "ScotlYard Entwicklerhandbuch"
+\pdf_author "Jakob Schöttl"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
 \papersize default
 \use_geometry false
 \use_amsmath 1
@@ -1429,6 +1440,10 @@ GUI-Komponenten
 \end_layout
 
 \begin_layout Section
+MovePreparationBar
+\end_layout
+
+\begin_layout Section
 BoardPanel
 \end_layout
 
@@ -1518,17 +1533,23 @@ s-Map, die StationVertex auf VisualStation abbildet.
 ns sofort der Map hinzuzufügen.
  Da gab es aber irgendwelche Probleme.
 \begin_inset Foot
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Kann sein, dass es einfach zu viele Methoden waren, die Childs hinzufügen
  oder entfernen, und ich Angst hatte, alle zu überschreiben, weil ich welche
  vergessen könnte.
+ Außerdem rufen sich verschiedene add-Methoden eventuell (implementierungs-abhän
+gig) gegenseitig auf; darauf kann man sich aber nicht verlassen.
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+HistoryPanel
 \end_layout
 
 \begin_layout Chapter
@@ -1663,17 +1684,7 @@ werden alle Observer darüber informiert.
 
 \begin_layout Standard
 Der MovePreparer besitzt des Weiteren die Methoden selectPlayer(Player)
- und nextStation(Station
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-, Player?
-\end_layout
-
-\end_inset
-
-).
+ und nextStation(Station).
  Das ist die Schnittstelle zum Vorbereiten der Züge und gleichzeitig sind
  es Setter für die Daten des Model.
 \end_layout
@@ -1754,6 +1765,31 @@ Wenn also der Spieler in dieser Runde schon dran war, kann er nicht nochmal
 nextStation
 \end_layout
 
+\begin_layout Standard
+Hiermit wird die nächste Station für den ausgewählten Spieler dem Zug, der
+ gerade vorbereitet wird, hinzugefügt.
+ 
+\end_layout
+
+\begin_layout Standard
+Ist die nächste Station aus irgendeinem Grund ungültig, macht die Template-Metho
+de nextStation Callback an die Methode errorImpossibleNextStation.
+ Läuft alles gut, gibt es einen Callback an selectTicket, um den Benutzer
+ ein Ticket auswählen zu lassen.
+ Wird kein Ticket ausgewählt (selectTicket returns null), wird die der Aufruf
+ abgebrochen.
+\end_layout
+
+\begin_layout Subsubsection
+reset
+\end_layout
+
+\begin_layout Standard
+Hiermit wird für den angegebenen Spieler der Zug, der gerade in Vorbereitung
+ ist, zurückgesetzt.
+ Mit resetAll geschieht das für die Züge aller Spieler.
+\end_layout
+
 \begin_layout Subsection
 Das Bedienkonzept
 \end_layout
@@ -1799,33 +1835,27 @@ Klassisches Drag & Drop: Den Spieler einfach auf die gewünschte Station
 \end_layout
 
 \begin_layout Enumerate
-Doppelklick
+\begin_inset CommandInset label
+LatexCommand label
+name "enu:Ein-KlickDurch-einen"
+
+\end_inset
+
+Ein Klick
 \begin_inset Newline newline
 \end_inset
 
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-machma's so?
-\end_layout
-
-\end_inset
-
-Durch einen Doppelklick auf eine Station wird 
+Durch einen Klick auf eine Station wird 
 \emph on
 automatisch
 \emph default
  der nächste Spieler ausgewählt, für den dann der Zug auf diese Station
  vorbereitet wird.
- Haben mehrere Spieler den gleichen Abstand (oder besteht für den Menschen
- Verwechslungsgefahr), wird ...
-\begin_inset Note Note
+\begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-werden sehen
+Der genaue Algorithmus ist weiter unten beschrieben.
 \end_layout
 
 \end_inset
@@ -1834,8 +1864,115 @@ werden sehen
 \end_layout
 
 \begin_layout Standard
-Klingt erst mal gut, doch gerade bei der Eingabe mit Maus im BoardPanel
- ergeben sich einige Problem.
+Klingt erst mal gut, doch bei der Eingabe mit Mausklicks im BoardPanel ergeben
+ sich einige Problem.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset CommandInset label
+LatexCommand label
+name "enu:Ein-Klick-auf"
+
+\end_inset
+
+Ein Klick auf einen Spieler kann bedeuten
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Quotes gld
+\end_inset
+
+diesen Spieler auswählen
+\begin_inset Quotes grd
+\end_inset
+
+ oder
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Quotes gld
+\end_inset
+
+auf die Station ziehen, auf der dieser Spieler steht
+\begin_inset Quotes grd
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Die automatische Auswahl eines Spielers durch nur einen Klick 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "enu:Ein-KlickDurch-einen"
+
+\end_inset
+
+ ist nicht trivial:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Bei Multi Moves reicht es nicht nach direkten Nachbarn zu sehen.
+\end_layout
+
+\begin_layout Enumerate
+Unterscheidung zwischen MrX und Detektiven.
+\end_layout
+
+\begin_layout Enumerate
+Was tun bei Mehrdeutigkeit?
+\end_layout
+
+\begin_layout Enumerate
+Was tun bei Mehrdeutigkeit, wenn aber der ausgewählte Spieler unter den
+ in Frage kommenden Spielern ist?
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Bei dem Bedienkonzept muss man hinsichtlich dieser Probleme Abstriche in
+ Kauf nehmen.
+ Das Bedienkonzept per Mausklicks ist nun implementiert wie in 
+\begin_inset CommandInset ref
+LatexCommand nameref
+reference "par:Klick-auf-Spieler"
+
+\end_inset
+
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "par:Klick-auf-Spieler"
+
+\end_inset
+
+ und 
+\begin_inset CommandInset ref
+LatexCommand nameref
+reference "par:Klick-auf-Station"
+
+\end_inset
+
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "par:Klick-auf-Station"
+
+\end_inset
+
+ beschrieben.
+ Abhilfe zum 1.
+ Problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "enu:Ein-Klick-auf"
+
+\end_inset
+
+ schafft in manchen Fällen nur Nummerneingabe oder Drag & Drop.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1914,6 +2051,12 @@ Um Klarheit zu schaffen werden jetzt folgende Algorithmen verwendet:
 \end_layout
 
 \begin_layout Paragraph
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Klick-auf-Spieler"
+
+\end_inset
+
 Klick auf Spieler
 \end_layout
 
@@ -1927,6 +2070,12 @@ Wenn aber ein Detektiv ausgewählt ist und auf MrX geklickt wird, wird das
 \end_layout
 
 \begin_layout Paragraph
+\begin_inset CommandInset label
+LatexCommand label
+name "par:Klick-auf-Station"
+
+\end_inset
+
 Klick auf Station
 \end_layout
 
@@ -1936,22 +2085,60 @@ Im Normalfall wird für den ausgewählten Spieler diese als nächste Station
 \end_layout
 
 \begin_layout Standard
-Wenn es aber ein Doppelklick war und ein Detektiv ausgewählt ist, wird zuerst
- versucht automatisch den Detektiv auszuwählen, der auf auf die Station
- ziehen kann.
- Wenn das nicht eindeutig ist gibt es eine Meldung mit den Hinweis, den
- Spieler zuerst manuell auszuwählen (z.
-\begin_inset space \thinspace{}
+Wenn aber ein Detektiv ausgewählt ist wird folgendes gemacht:
+\end_layout
+
+\begin_layout Enumerate
+Detektive in der Nachbarschaft
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Der Radius ist im BoardPanel auf 1 hardgecoded, kann aber erhöht werden
+ um bei Multi Moves angebracht zu reagieren, oder um Verwechslungen seitens
+ des Benutzers zu vorzubeugen.
+\end_layout
+
 \end_inset
 
-B.
- durch Klick auf den Spieler).
- In letzterem Fall wird keine nächste Station eingereicht d.
-\begin_inset space \thinspace{}
+ der Zielstation ermitteln
+\end_layout
+
+\begin_layout Enumerate
+Wenn sich der ausgewählte Detektiv in der Nachbarschaft befindet,
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+und er der einzige ist, bleibt er natürlich ausgewählt.
+\end_layout
+
+\begin_layout Enumerate
+aber sich noch weitere Dektive in der Nachbarschaft befinden, könnte gefragt
+ werden, ob man den ausgewählten meint.
+ Wenn nicht, wird man aufgefordert, seinen Detektiv explizit auszuwählen.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Dieses Feature könnte aber nervig sein, deswegen ist es nicht implementiert.
+\end_layout
+
 \end_inset
 
-h.
- kein Aufruf von nextStation.
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Wenn sich genau ein Detektiv in der Nachbarschaft befindet, wird dieser
+ ausgewählt (falls er sowieso schon der Ausgewählte war halt nochmal).
+\end_layout
+
+\begin_layout Enumerate
+Wenn sich der ausgewählte Detektiv nicht in der Nachbarschaft befindet,
+ aber dafür mehrere andere Detektive, kommt eine Meldung, dass zuerst ein
+ Detektiv explizit ausgewählt werden muss.
 \end_layout
 
 \begin_layout Paragraph
