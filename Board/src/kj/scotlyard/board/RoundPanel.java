@@ -18,17 +18,27 @@
 
 package kj.scotlyard.board;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 @SuppressWarnings("serial")
 public class RoundPanel extends JPanel {
 	
 	private int roundNumber;
+	
+	private boolean currentRound;
+	
+	private final Border defaultBorder = BorderFactory.createLineBorder(Color.BLACK);
+	private final Border currentRoundBorder = BorderFactory.createBevelBorder(
+			BevelBorder.RAISED, Color.RED, Color.RED);
 	
 	private JPanel movePanelContainer;
 	private JLabel lblRoundNumber;
@@ -38,10 +48,13 @@ public class RoundPanel extends JPanel {
 	 */
 	public RoundPanel(int roundNumber) {
 		this.roundNumber = roundNumber;
+
+		setCurrentRound(false);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		lblRoundNumber = new JLabel("Round #");
+		lblRoundNumber.setAlignmentY(Component.TOP_ALIGNMENT);
 		lblRoundNumber.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblRoundNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblRoundNumber.setText(String.valueOf(roundNumber));
@@ -64,6 +77,15 @@ public class RoundPanel extends JPanel {
 
 	public int getRoundNumber() {
 		return roundNumber;
+	}
+
+	public boolean isCurrentRound() {
+		return currentRound;
+	}
+
+	public void setCurrentRound(boolean currentRound) {
+		this.currentRound = currentRound;
+		setBorder(currentRound ? currentRoundBorder : defaultBorder);
 	}
 
 }

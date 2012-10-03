@@ -18,11 +18,15 @@
 
 package kj.scotlyard.board;
 
+import java.awt.Color;
 import java.awt.Component;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 import kj.scotlyard.board.metadata.GameMetaData;
 import kj.scotlyard.board.metadata.ItemTypeMetaData;
@@ -60,6 +64,12 @@ public class MovePanel extends JPanel {
 	 */
 	private final Move move = new DefaultMove();
 	
+	private boolean uncoverMove;
+	
+	private final Border defaultBorder = BorderFactory.createLineBorder(Color.BLACK);
+	private final Border uncoverMoveBorder = BorderFactory.createBevelBorder(
+			BevelBorder.RAISED, Color.BLUE, Color.BLUE);
+	
 	private JLabel lblMoveNumber;
 	private JLabel lblTicket;
 
@@ -69,6 +79,8 @@ public class MovePanel extends JPanel {
 	public MovePanel(int moveNumber) {
 		move.setMoveNumber(moveNumber);
 		move.setRoundNumber(NO_ROUND_NUMBER);
+		
+		setUncoverMove(false);
 		
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -127,6 +139,15 @@ public class MovePanel extends JPanel {
 			lblTicket.setIcon(null);
 			// oder visible = false und oben visible = true
 		}
+	}
+
+	public boolean isUncoverMove() {
+		return uncoverMove;
+	}
+
+	public void setUncoverMove(boolean uncoverMove) {
+		this.uncoverMove = uncoverMove;
+		setBorder(uncoverMove ? uncoverMoveBorder : defaultBorder);
 	}
 
 }
