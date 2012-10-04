@@ -122,18 +122,13 @@ public class HistoryPanel extends JPanel {
 		@Override
 		public void currentRoundChanged(GameState gameState, int oldRoundNumber,
 				int newRoundNumber) {
-			// Border fuer current round auf aktuelles RoundPanel setzen
-			roundPanels.get(oldRoundNumber).setCurrentRound(false);
 			
-			RoundPanel rp;
 			if (newRoundNumber > roundPanels.size()) {
 				// Da fehlt ein RoundPanel fuer die neue Runde
-				rp = addNewRoundPanel(newRoundNumber);
-			} else {
-				rp = roundPanels.get(newRoundNumber);
+				addNewRoundPanel(newRoundNumber);
 			}
-			rp.setCurrentRound(true);
 			
+			updateCurrentRound();
 			arrangePanels(newRoundNumber);
 		}
 		@Override

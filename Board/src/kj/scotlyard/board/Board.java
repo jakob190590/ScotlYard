@@ -1223,7 +1223,7 @@ public class Board extends JFrame {
 	}
 	private class SuggestMoveAction extends AbstractAction {
 		public SuggestMoveAction() {
-			putValue(NAME, "Suggest move");
+			putValue(NAME, "Suggest Move");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_S);
 		}
