@@ -19,6 +19,7 @@
 package kj.scotlyard.board;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -143,6 +144,7 @@ public class HistoryPanel extends JPanel {
 	 */
 	public HistoryPanel() {
 		setLayout(new BorderLayout(0, 0));
+		setPreferredSize(new Dimension(0, 150)); // so dass halt dann auch die icons platz haben, und sich die groesse nicht staendig aendert
 		
 		JPanel historyPanel = new JPanel();
 		add(historyPanel, BorderLayout.CENTER);
