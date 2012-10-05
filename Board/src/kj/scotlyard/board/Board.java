@@ -563,6 +563,10 @@ public class Board extends JFrame {
 						zoomInAction.actionPerformed(null);
 					}
 					e.consume();
+				} else {
+					// mouse wheel event nicht abfangen, sondern weitergeben
+					// weiss nicht, ob/wie man das eleganter loesen kann
+					boardPanelScrollPane.dispatchEvent(e);
 				}
 			}
 		});
