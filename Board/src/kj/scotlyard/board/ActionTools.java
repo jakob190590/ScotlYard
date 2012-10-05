@@ -90,11 +90,9 @@ public abstract class ActionTools {
 	 * 
 	 */
 	public static void assignMnemonicsAutmatically(Container container) {
-		logger.debug("automatically mnemonic assigning");
 		Set<Integer> mnemonics = new HashSet<>(); // assigned mnemonics
 		for (Component c : container.getComponents()) {
 			if (c instanceof AbstractButton) {
-				logger.debug("automatically mnemonic assigning for abstract button " + c);
 				Action a = ((AbstractButton) c).getAction();
 				if (a != null) {
 					String name = (String) a.getValue(Action.NAME);
