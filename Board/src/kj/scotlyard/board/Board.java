@@ -32,6 +32,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -42,6 +45,8 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BoundedRangeModel;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -158,6 +163,22 @@ public class Board extends JFrame {
 	
 	private double normalZoomFactor = 0.2; // kann sein was will, nur >= 1 macht keinen sinn, weil das bild dann viel zu riessig ist!
 	private double zoomFactor = normalZoomFactor;
+	/**
+	 * Zoom soll sich wie folgt verhalten:
+	 * <ul>
+	 * <li>Bei einfachem Aufruf der Zoom Actions soll prozentuale
+	 * Position der Scrollbars beibehalten werden (vorrausgesetzt
+	 * natuerlich, dass die Scrollbars ueberhaupt benoetigt werden).
+	 * In diesem Fall ist diese Variable <code>null</code>.</li>
+	 * <li>Bei Zoom mit Mausrad oder Rahmen ziehen (wie auch immer):
+	 * Das Zentrum in das oder aus dem gezoomt wird, soll in die
+	 * Mitte der Bildflaeche gerueckt werden. In diesem Fall ist
+	 * diese Variable gesetzt auf die prozentuale Mitte.</li>
+	 * </ul>
+	 * Die entsprechende Implementierung findet sich in der Methode
+	 * <code>updateBoardPanelZoom</code>.
+	 */
+	private Point2D.Double zoomCenter = null;
 	
 	private final Action newGameAction = new NewGameAction();
 	private final Action clearPlayersAction = new ClearPlayersAction();
@@ -526,6 +547,26 @@ public class Board extends JFrame {
 		setContentPane(contentPane);
 		
 		boardPanelContainer = new JPanel(new AspectRatioGridLayout());
+		boardPanelContainer.addMouseWheelListener(new MouseWheelListener() {
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				assert e.getComponent() == boardPanelContainer;
+				if (e.getModifiers() == KeyEvent.CTRL_MASK
+						|| e.getModifiers() == KeyEvent.CTRL_DOWN_MASK) {
+					zoomCenter = new Point2D.Double(
+							(double) e.getX() / e.getComponent().getWidth(),
+							(double) e.getY() / e.getComponent().getHeight());
+					int rot = e.getWheelRotation();
+					if (rot >= 0) {
+						zoomOutAction.actionPerformed(null);
+					} else {
+						zoomInAction.actionPerformed(null);
+					}
+					e.consume();
+				}
+			}
+		});
+		
 		boardPanel = new BoardPanel();
 		boardPanel.setMovePreparer(movePreparer);
 		
@@ -595,6 +636,7 @@ public class Board extends JFrame {
 		JPanel panelLeft = new JPanel();
 		contentPane.add(panelLeft, BorderLayout.WEST);
 		panelLeft.setLayout(new BoxLayout(panelLeft, BoxLayout.Y_AXIS));
+		panelLeft.setPreferredSize(new Dimension(140, 0));
 		
 		JLabel lblCurrentRoundNumber = new JLabel("Current Round Number");
 		lblCurrentRoundNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -607,9 +649,7 @@ public class Board extends JFrame {
 		lblCurrentRoundNumberVal.setFont(new Font("Tahoma", Font.BOLD, 36));
 		panelLeft.add(lblCurrentRoundNumberVal);
 		
-		JLabel lblSeparator = new JLabel(" ");
-		lblSeparator.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panelLeft.add(lblSeparator);
+		panelLeft.add(Box.createRigidArea(new Dimension(0, 10)));
 		
 		JLabel lblCurrentPlayer = new JLabel("Current Player");
 		lblCurrentPlayer.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -726,10 +766,25 @@ public class Board extends JFrame {
 		newGameWithPlayersAction.setEnabled(!inGame);
 	}
 	private void updateBoardPanelZoom() {
+		
+		// Scroll Center Geschichte ... (siehe Javadoc von scrollCenter)
+		// horicontal/vertical scroll bar model
+		BoundedRangeModel hsbm = boardPanelScrollPane.getHorizontalScrollBar().getModel();
+		BoundedRangeModel vsbm = boardPanelScrollPane.getVerticalScrollBar().getModel();
+		double scrollX = 0;
+		double scrollY = 0;
+		if (zoomCenter == null) {
+			// Values von Scrollbalken merken (prozentual)
+			scrollX = (double) hsbm.getValue() / (hsbm.getMaximum() - hsbm.getExtent());
+			scrollY = (double) vsbm.getValue() / (vsbm.getMaximum() - vsbm.getExtent());
+		}
+		
+		
 		int w = (int) (originalImageSize.width * zoomFactor);
 		int h = (int) (originalImageSize.height * zoomFactor);
 		boardPanelContainer.setPreferredSize(new Dimension(w, h));
-		boardPanelScrollPane.getViewport().revalidate();
+		// revalidate does deferred layouting. But i need it now, for zoomCenter...
+		boardPanelScrollPane.getViewport().doLayout();//revalidate();
 		boardPanelScrollPane.getViewport().repaint();
 		
 		// Zusatz, dass nicht kleiner gezoomt werden kann, als das Fenster ist:
@@ -739,6 +794,17 @@ public class Board extends JFrame {
 			h = boardPanelScrollPane.getViewport().getHeight();
 			boardPanelContainer.setPreferredSize(new Dimension(w, h));
 		}
+		
+		
+		// Scroll Center Geschichte ... (siehe Javadoc von scrollCenter)
+		if (zoomCenter != null) {
+			// Prozentuale Position der Scrollbars aufs zoom center einstellen
+			scrollX = zoomCenter.x;
+			scrollY = zoomCenter.y;
+			zoomCenter = null;
+		}
+		hsbm.setValue((int) (scrollX * (hsbm.getMaximum() - hsbm.getExtent())));
+		vsbm.setValue((int) (scrollY * (vsbm.getMaximum() - vsbm.getExtent())));
 	}
 
 	/**
