@@ -19,17 +19,18 @@
 package kj.scotlyard.board;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
 import javax.swing.undo.UndoManager;
 
 import kj.scotlyard.game.model.GameState;
@@ -44,6 +45,8 @@ import kj.scotlyard.game.util.GameStateExtension;
 @SuppressWarnings("serial")
 public class HistoryPanel extends JPanel {
 	
+	private static final int LEFT_BAR_WIDTH = 140;
+
 	private Rules rules;
 	
 	private GameState gameState;
@@ -153,16 +156,24 @@ public class HistoryPanel extends JPanel {
 		JPanel rowHeadPanel = new JPanel();
 		historyPanel.add(rowHeadPanel);
 		rowHeadPanel.setLayout(new BoxLayout(rowHeadPanel, BoxLayout.Y_AXIS));
+		rowHeadPanel.setPreferredSize(new Dimension(LEFT_BAR_WIDTH, 0));
+		rowHeadPanel.setMinimumSize(new Dimension(LEFT_BAR_WIDTH, 0));
+		
+		rowHeadPanel.add(Box.createRigidArea(new Dimension(0, 2)));
 		
 		JLabel lblRoundNumber = new JLabel("Round Number");
-		lblRoundNumber.setHorizontalAlignment(SwingConstants.CENTER);
+		lblRoundNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblRoundNumber.setFont(new Font("Tahoma", Font.BOLD, 16));
 		rowHeadPanel.add(lblRoundNumber);
 		
+		rowHeadPanel.add(Box.createVerticalGlue());
+		
 		JLabel lblMrXMoves = new JLabel("MrX Moves");
-		lblMrXMoves.setHorizontalAlignment(SwingConstants.CENTER);
+		lblMrXMoves.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblMrXMoves.setFont(new Font("Tahoma", Font.BOLD, 16));
 		rowHeadPanel.add(lblMrXMoves);
+		
+		rowHeadPanel.add(Box.createVerticalGlue());
 		
 		roundPanelContainer = new JPanel();
 		roundPanelContainer.setLayout(new BoxLayout(roundPanelContainer, BoxLayout.X_AXIS));
