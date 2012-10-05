@@ -470,6 +470,32 @@ public class Board extends JFrame {
 		mntmSetGameGraph.setMnemonic(KeyEvent.VK_A);
 		mnSetter.add(mntmSetGameGraph);
 		
+		JMenu mnView = new JMenu("View");
+		mnView.setMnemonic(KeyEvent.VK_V);
+		menuBar.add(mnView);
+		
+		JMenu mnZoom = new JMenu("Zoom");
+		mnView.add(mnZoom);
+		mnZoom.setMnemonic(KeyEvent.VK_Z);
+		
+		JCheckBoxMenuItem chckbxmntmFitBoard = new JCheckBoxMenuItem("Fit Board");
+		chckbxmntmFitBoard.setAction(fitBoardAction);
+		mnZoom.add(chckbxmntmFitBoard);
+		
+		mnZoom.addSeparator();
+		
+		JMenuItem mntmZoomIn = new JMenuItem("Zoom In");
+		mntmZoomIn.setAction(zoomInAction);
+		mnZoom.add(mntmZoomIn);
+		
+		JMenuItem mntmZoomOut = new JMenuItem("Zoom Out");
+		mntmZoomOut.setAction(zoomOutAction);
+		mnZoom.add(mntmZoomOut);
+		
+		JMenuItem mntmZoomNormal = new JMenuItem("Zoom Normal");
+		mntmZoomNormal.setAction(zoomNormalAction);
+		mnZoom.add(mntmZoomNormal);
+		
 		JMenu mnErnsthaft = new JMenu("Ernsthaft");
 		menuBar.add(mnErnsthaft);
 		
@@ -483,26 +509,6 @@ public class Board extends JFrame {
 		
 		JMenuItem mntmShowMrx = new JMenuItem("Show MrX");
 		mnErnsthaft.add(mntmShowMrx);
-		
-		JMenu mnZoom = new JMenu("Zoom");
-		mnZoom.setMnemonic(KeyEvent.VK_Z);
-		mnErnsthaft.add(mnZoom);
-		
-		JCheckBoxMenuItem chckbxmntmFitBoard = new JCheckBoxMenuItem("Fit Board");
-		chckbxmntmFitBoard.setAction(fitBoardAction);
-		mnZoom.add(chckbxmntmFitBoard);
-		
-		JMenuItem mntmZoomIn = new JMenuItem("Zoom In");
-		mntmZoomIn.setAction(zoomInAction);
-		mnZoom.add(mntmZoomIn);
-		
-		JMenuItem mntmZoomOut = new JMenuItem("Zoom Out");
-		mntmZoomOut.setAction(zoomOutAction);
-		mnZoom.add(mntmZoomOut);
-		
-		JMenuItem mntmZoomNormal = new JMenuItem("Zoom Normal");
-		mntmZoomNormal.setAction(zoomNormalAction);
-		mnZoom.add(mntmZoomNormal);
 		
 		JMenu mnMode = new JMenu("Mode");
 		mnMode.setMnemonic(KeyEvent.VK_M);
