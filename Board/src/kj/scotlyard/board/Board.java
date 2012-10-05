@@ -1510,7 +1510,9 @@ public class Board extends JFrame {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			boardPanel.setMrXAlwaysVisible(isSelected(this));
+			boolean b = isSelected(this);
+			boardPanel.setMrXAlwaysVisible(b);
+			movePreparer.setMrXAlwaysVisible(b);
 		}
 	}
 	private class AboutAction extends AbstractAction {

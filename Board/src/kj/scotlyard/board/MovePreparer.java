@@ -80,6 +80,13 @@ public abstract class MovePreparer extends Observable {
 	// Feste Zugreihenfolge
 	private boolean fixedTurnOrder;
 	
+	/**
+	 * Wird gebraucht, um den Callback <code>selectTicket</code>
+	 * richtig zu parametrieren: Wenn der Spieler MrX ist und nicht
+	 * immer sichtbar ist, werden <i>alle</i> Tickets uebergeben!
+	 */
+	private boolean mrXAlwaysVisible;
+	
 	private Player player;
 	
 	private Map<Player, List<Move>> moves = new HashMap<>();
@@ -157,8 +164,17 @@ public abstract class MovePreparer extends Observable {
 	public void setFixedTurnOrder(boolean fixedTurnOrder) {
 		this.fixedTurnOrder = fixedTurnOrder;
 	}
-
 	
+	public boolean isMrXAlwaysVisible() {
+		return mrXAlwaysVisible;
+	}
+
+	public void setMrXAlwaysVisible(boolean mrXAlwaysVisible) {
+		this.mrXAlwaysVisible = mrXAlwaysVisible;
+	}
+	
+	
+
 	public void reset(Player player) {
 		logger.debug("reset for " + player);
 		moves.remove(player);
@@ -330,7 +346,11 @@ public abstract class MovePreparer extends Observable {
 		MovePolicy mp = new TheMovePolicy();
 		for (ConnectionEdge c : connections) {
 			for (Item i : allItems) {
-				if (i instanceof Ticket && mp.isTicketValidForConnection((Ticket) i, c)) {
+				if (i instanceof Ticket
+						// mit folgender zeile ist kein rueckschluss auf die von mrX
+						// gewaehlte verbindung (und somit die naechste station) moeglich
+						&& ((player instanceof MrXPlayer && !mrXAlwaysVisible)
+						|| (mp.isTicketValidForConnection((Ticket) i, c)))) {
 					tickets.add((Ticket) i);
 				}
 			}
