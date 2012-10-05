@@ -1,8 +1,18 @@
 package kj.scotlyard.board;
 
+import java.awt.Component;
+import java.awt.Container;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.AbstractButton;
 import javax.swing.Action;
 
+import org.apache.log4j.Logger;
+
 public abstract class ActionTools {
+	
+	private static final Logger logger = Logger.getLogger(ActionTools.class);
 	
 	public static void setSelected(Action action, boolean value) {
 		action.putValue(Action.SELECTED_KEY, value);
@@ -53,6 +63,15 @@ public abstract class ActionTools {
 		action.putValue(Action.NAME, name);
 	}
 	
+	/**
+	 * Automatically assign mnemonics to all Actions of
+	 * AbstractButton objects in the specified Container.
+	 * If a mnemonic is already defined for an Action,
+	 * this mnemonic is preserved under the condition,
+	 * it is not yet automatically assigned to an
+	 * foregoing Action.
+	 * @param container
+	 */
 	/*
 	 * TODO Was vllt mal nett waere:
 	 * 
@@ -66,6 +85,39 @@ public abstract class ActionTools {
 	 * JMenu -> Items von oben nach unten durchgehen,
 	 * Mnemonic auf black list (bevorzugt von Action nehmen)
 	 * 
+	 * bereits vergebene mnemonics lassen und zum set adden?
+	 * wenn schon im set, neu vergeben?
+	 * 
 	 */
+	public static void assignMnemonicsAutmatically(Container container) {
+		logger.debug("automatically mnemonic assigning");
+		Set<Integer> mnemonics = new HashSet<>(); // assigned mnemonics
+		for (Component c : container.getComponents()) {
+			if (c instanceof AbstractButton) {
+				logger.debug("automatically mnemonic assigning for abstract button " + c);
+				Action a = ((AbstractButton) c).getAction();
+				if (a != null) {
+					String name = (String) a.getValue(Action.NAME);
+					Integer mn = (Integer) a.getValue(Action.MNEMONIC_KEY);
+					logger.debug("automatically mnemonic assigning for action " + a);
+					if (mn != null && !mnemonics.contains(mn)) {
+						// mnemonic schon festgelegt, und noch nicht automatisch
+						// woanders zugewiesen: belassen und dem set hinzufuegen
+						mnemonics.add(mn);
+					} else {
+						// erst mal ganz einfach (anfangsbuchstabe verwenden):
+						char d;
+						if (name != null && name.length() > 0
+								&& Character.isLetterOrDigit(d = name.charAt(0))) {
+							mn = (int) Character.toUpperCase(d); // mnemonic
+							a.putValue(Action.MNEMONIC_KEY, mn);
+							logger.debug("mnemonic automatically assigned: " + d);
+							mnemonics.add(mn);
+						}
+					}
+				}
+			}
+		}
+	}
 
 }
