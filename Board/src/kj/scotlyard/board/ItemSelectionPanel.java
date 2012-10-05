@@ -19,19 +19,21 @@
 package kj.scotlyard.board;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JPanel;
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 
+import kj.scotlyard.board.metadata.GameMetaData;
+import kj.scotlyard.board.metadata.ItemTypeMetaData;
 import kj.scotlyard.game.model.item.Item;
 
 /**
@@ -40,7 +42,7 @@ import kj.scotlyard.game.model.item.Item;
  * aus der angegebenen Menge von Items.
  * 
  * Dieses Panel ist einzig und allein
- * fuer die Item-Buttons bestimmt. 
+ * fuer die Item-Buttons bestimmt.
  * Es duerfen keine anderen Components
  * hinzugefuegt werden!
  */
@@ -60,11 +62,14 @@ public class ItemSelectionPanel extends JPanel {
 	
 	private ItemSelectListener selectListener;
 	
-	// Der Parameter source des ActionEvents steht fuer das ausgewaehlte Item!	
-	private class SelectAction implements ActionListener {
+	// Der Parameter source des ActionEvents steht fuer das ausgewaehlte Item!
+	private class SelectItemAction extends AbstractAction {
 		private Class<? extends Item> itemType;
-		public SelectAction(Class<? extends Item> itemType) {
+		public SelectItemAction(Class<? extends Item> itemType) {
 			this.itemType = itemType;
+			ItemTypeMetaData itmd = GameMetaData.getForItemType(itemType);
+			putValue(NAME, itmd.getName());
+			putValue(SMALL_ICON, itmd.getIcon());
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -130,7 +135,7 @@ public class ItemSelectionPanel extends JPanel {
 	 * Returns an unmodifiable List of the stated item types.
 	 * @return an unmodifiable List
 	 */
-	public List<Class<? extends Item>> getItemTypes() {		
+	public List<Class<? extends Item>> getItemTypes() {
 		return Collections.unmodifiableList(itemTypes);
 	}
 	
@@ -150,13 +155,16 @@ public class ItemSelectionPanel extends JPanel {
 		removeAll();
 		for (int i = 0; i < count; i++) {
 			Class<? extends Item> type = types.get(i);
-			JButton btn = new JButton(type.getSimpleName());
+			JButton btn = new JButton();
 //			btn.setIconTextGap(5);
 			btn.setVerticalTextPosition(JButton.BOTTOM); // Text unterhalb des Icons (reicht das schon?)
-			// TODO lieber ein schoenes Bild anzeigen
-			btn.addActionListener(new SelectAction(type));
+			btn.setAction(new SelectItemAction(type));
 			add(btn);
-		}		
+		}
+		
+		// Mnemonics vergeben
+		ActionTools.assignMnemonicsAutmatically(this);
+		
 	}
 
 	/**
@@ -166,7 +174,7 @@ public class ItemSelectionPanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	public void setItemTypes(Class<? extends Item>... itemTypes) {
 		setItemTypes(Arrays.asList(itemTypes));
-	}	
+	}
 	
 	
 	public ItemSelectListener getSelectListener() {
