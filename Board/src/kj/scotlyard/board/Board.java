@@ -263,6 +263,7 @@ public class Board extends JFrame {
 	};
 	private final Action aboutAction = new AboutAction();
 	private HistoryPanel historyPanel;
+	private PlayerPanel panelPlayers;
 
 
 
@@ -679,6 +680,9 @@ public class Board extends JFrame {
 		historyPanel = new HistoryPanel();
 		contentPane.add(historyPanel, BorderLayout.SOUTH);
 		
+		panelPlayers = new PlayerPanel();
+		contentPane.add(panelPlayers, BorderLayout.EAST);
+		
 		
 		
 		
@@ -885,6 +889,7 @@ public class Board extends JFrame {
 			boardPanel.setGameState(gameState);
 			movePreparer.setGameState(gameState);
 			historyPanel.setGameState(gameState);
+			panelPlayers.setGameState(gameState);
 			
 			if (gameState != null) {
 				// register listeners/observers
