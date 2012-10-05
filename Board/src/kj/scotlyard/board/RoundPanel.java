@@ -21,15 +21,11 @@ package kj.scotlyard.board;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
@@ -54,33 +50,19 @@ public class RoundPanel extends JPanel {
 		this.roundNumber = roundNumber;
 
 		setCurrentRound(false);
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		setLayout(gridBagLayout);
+		
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		lblRoundNumber = new JLabel("Round #");
-		lblRoundNumber.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRoundNumber.setAlignmentY(Component.TOP_ALIGNMENT);
 		lblRoundNumber.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblRoundNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lblRoundNumber.setText(String.valueOf(roundNumber));
-		GridBagConstraints gbc_lblRoundNumber = new GridBagConstraints();
-		gbc_lblRoundNumber.weightx = 1.0;
-		gbc_lblRoundNumber.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblRoundNumber.anchor = GridBagConstraints.NORTH;
-		gbc_lblRoundNumber.insets = new Insets(0, 0, 5, 0);
-		gbc_lblRoundNumber.gridx = 0;
-		gbc_lblRoundNumber.gridy = 0;
-		add(lblRoundNumber, gbc_lblRoundNumber);
+		add(lblRoundNumber);
 		
 		movePanelContainer = new JPanel();
 		movePanelContainer.setLayout(new BoxLayout(movePanelContainer, BoxLayout.X_AXIS));
-		GridBagConstraints gbc_movePanelContainer = new GridBagConstraints();
-		gbc_movePanelContainer.weightx = 1.0;
-		gbc_movePanelContainer.weighty = 1.0;
-		gbc_movePanelContainer.fill = GridBagConstraints.BOTH;
-		gbc_movePanelContainer.gridx = 0;
-		gbc_movePanelContainer.gridy = 1;
-		add(movePanelContainer, gbc_movePanelContainer);
+		add(movePanelContainer);
 
 	}
 	

@@ -20,15 +20,12 @@ package kj.scotlyard.board;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
@@ -85,34 +82,20 @@ public class MovePanel extends JPanel {
 		move.setRoundNumber(NO_ROUND_NUMBER);
 		
 		setUncoverMove(false);
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		setLayout(gridBagLayout);
+		
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		lblTicket = new JLabel(); // erst mal kein Text
-		lblTicket.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTicket.setAlignmentX(Component.CENTER_ALIGNMENT);
-		GridBagConstraints gbc_lblTicket = new GridBagConstraints();
-		gbc_lblTicket.insets = new Insets(0, 0, 0, 5);
-		gbc_lblTicket.weightx = 1.0;
-		gbc_lblTicket.weighty = 1.0;
-		gbc_lblTicket.fill = GridBagConstraints.BOTH;
-		gbc_lblTicket.gridx = 0;
-		gbc_lblTicket.gridy = 0;
-		add(lblTicket, gbc_lblTicket);
+		add(lblTicket);
+		
+		add(Box.createGlue());
 		
 		lblMoveNumber = new JLabel("Move #");
-		lblMoveNumber.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		lblMoveNumber.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMoveNumber.setText(String.valueOf(moveNumber));
 		lblMoveNumber.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		lblMoveNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
-		GridBagConstraints gbc_lblMoveNumber = new GridBagConstraints();
-		gbc_lblMoveNumber.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblMoveNumber.weightx = 1.0;
-		gbc_lblMoveNumber.anchor = GridBagConstraints.SOUTH;
-		gbc_lblMoveNumber.gridx = 0;
-		gbc_lblMoveNumber.gridy = 1;
-		add(lblMoveNumber, gbc_lblMoveNumber);
+		add(lblMoveNumber);
 
 	}
 	

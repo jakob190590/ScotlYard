@@ -45,7 +45,7 @@ import kj.scotlyard.game.util.GameStateExtension;
 @SuppressWarnings("serial")
 public class HistoryPanel extends JPanel {
 	
-	private static final int LEFT_BAR_WIDTH = 140;
+	private static final int ROW_HEAD_WIDTH = 135;
 
 	private Rules rules;
 	
@@ -156,8 +156,10 @@ public class HistoryPanel extends JPanel {
 		JPanel rowHeadPanel = new JPanel();
 		historyPanel.add(rowHeadPanel);
 		rowHeadPanel.setLayout(new BoxLayout(rowHeadPanel, BoxLayout.Y_AXIS));
-		rowHeadPanel.setPreferredSize(new Dimension(LEFT_BAR_WIDTH, 0));
-		rowHeadPanel.setMinimumSize(new Dimension(LEFT_BAR_WIDTH, 0));
+		rowHeadPanel.setPreferredSize(new Dimension(ROW_HEAD_WIDTH, 0));
+		rowHeadPanel.setMinimumSize(new Dimension(ROW_HEAD_WIDTH, 0));
+		
+		historyPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		rowHeadPanel.add(Box.createRigidArea(new Dimension(0, 2)));
 		
