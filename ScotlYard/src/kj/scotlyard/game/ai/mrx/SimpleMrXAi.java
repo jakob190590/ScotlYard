@@ -47,6 +47,11 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		public boolean isDoubleMove() {
 			return v2 != null;
 		}
+		@Override
+		public String toString() {
+			return (isDoubleMove() ? "double move" : "single move")
+					+ ", rating: " + rating + ", costs: " + costs;
+		}
 	}
 
 	private Move result;
@@ -65,6 +70,9 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		
 		Set<Alternative> alternatives = _1_alternatives();
 		_2_rating(alternatives);
+		for (Alternative a : alternatives) {
+			logger.debug("alternative: " + a);
+		}
 		Alternative bestAlternative = _3_select(alternatives);
 		logger.info(String.format("alternative with best rating: doublemove=%b, rating=%f, costs=%f",
 				bestAlternative.isDoubleMove(), bestAlternative.rating, bestAlternative.costs));
