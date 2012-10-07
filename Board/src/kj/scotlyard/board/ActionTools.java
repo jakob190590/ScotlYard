@@ -104,7 +104,7 @@ public abstract class ActionTools {
 					name = (String) a.getValue(Action.NAME);
 					mn = (Integer) a.getValue(Action.MNEMONIC_KEY);
 				}
-				if (mn != null && !mnemonics.contains(mn)) {
+				if (mn != null && mn != 0 && !mnemonics.contains(mn)) {
 					// mnemonic schon festgelegt, und noch nicht automatisch
 					// woanders zugewiesen: belassen und dem set hinzufuegen
 					mnemonics.add(mn);
