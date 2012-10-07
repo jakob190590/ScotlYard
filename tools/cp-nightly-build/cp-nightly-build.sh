@@ -14,9 +14,11 @@ cp "$1/Board/initial-stations" "$2/Board/"
 cp "$1/Board/original-scotland-yard-board.png" "$2/Board/"
 cp "$1/Board/log4j-board.properties" "$2/Board/"
 cp "$1/Board/Run_Board.bat" "$2/Board/"
+cp "$1/Board/Run_Board.sh" "$2/Board/"
 cp -r "$1/Board/bin/" "$2/Board/"
 
 cp "$1/GraphBuilder/Run_BuilderTool.bat" "$2/GraphBuilder/"
+cp "$1/GraphBuilder/Run_BuilderTool.sh" "$2/GraphBuilder/"
 cp -r "$1/GraphBuilder/bin/" "$2/GraphBuilder/"
 
 cp -r "$1/Library/" "$2/"
