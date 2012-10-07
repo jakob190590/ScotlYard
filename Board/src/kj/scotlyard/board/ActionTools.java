@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -63,61 +65,120 @@ public abstract class ActionTools {
 		action.putValue(Action.NAME, name);
 	}
 	
+	static class Mnemonic {
+		public int mnemonic;
+		public int displayedMnemonicIndex;
+		public Mnemonic(int mnemonic, int displayedMnemonicIndex) {
+			this.mnemonic = mnemonic;
+			this.displayedMnemonicIndex = displayedMnemonicIndex;
+		}
+	}
+
 	/**
-	 * Automatically assign mnemonics to all Actions of
-	 * AbstractButton objects in the specified Container.
-	 * If a mnemonic is already defined for an Action,
-	 * this mnemonic is preserved under the condition,
-	 * it is not yet automatically assigned to an
-	 * foregoing Action.
+	 * Automatically assign mnemonics to all AbstractButtons in the specified
+	 * Container. If there is an Action defined for the AbstractButton, the
+	 * mnemonic will be set for the Action! If a mnemonic is already defined for
+	 * an AbstractButton or Action, this mnemonic is preserved under the
+	 * condition, it is not yet automatically assigned to an foregoing
+	 * AbstractButton or Action. Otherwise a new mnemonic will be assigned.
+	 * 
+	 * Note that this method is intended to be invoked with a JMenu as
+	 * parameter. Do not pass both a JMenu and a toolbar as parameter, when
+	 * there are common Actions.
+	 * 
 	 * @param container
 	 */
-	/*
-	 * TODO Was vllt mal nett waere:
-	 * 
-	 * Mnemonics automatisch vergeben
-	 * Kriterien dass man sich's gut merken kann:
-	 *  - Grosse Anfangsbuchstaben
-	 *  - Grosse Buchstaben
-	 *  - Anfangsbuchstaben
-	 * Schwierigkeit: Darf nicht mehrfach vergeben werden
-	 * Moeglichkeit: JMenu uebergeben
-	 * JMenu -> Items von oben nach unten durchgehen,
-	 * Mnemonic auf black list (bevorzugt von Action nehmen)
-	 * 
-	 * bereits vergebene mnemonics lassen und zum set adden?
-	 * wenn schon im set, neu vergeben?
-	 * 
-	 */
 	public static void assignMnemonicsAutmatically(Container container) {
-		logger.debug("automatically mnemonic assigning");
 		Set<Integer> mnemonics = new HashSet<>(); // assigned mnemonics
 		for (Component c : container.getComponents()) {
 			if (c instanceof AbstractButton) {
-				logger.debug("automatically mnemonic assigning for abstract button " + c);
-				Action a = ((AbstractButton) c).getAction();
-				if (a != null) {
-					String name = (String) a.getValue(Action.NAME);
-					Integer mn = (Integer) a.getValue(Action.MNEMONIC_KEY);
-					logger.debug("automatically mnemonic assigning for action " + a);
-					if (mn != null && !mnemonics.contains(mn)) {
-						// mnemonic schon festgelegt, und noch nicht automatisch
-						// woanders zugewiesen: belassen und dem set hinzufuegen
-						mnemonics.add(mn);
-					} else {
-						// erst mal ganz einfach (anfangsbuchstabe verwenden):
-						char d;
-						if (name != null && name.length() > 0
-								&& Character.isLetterOrDigit(d = name.charAt(0))) {
-							mn = (int) Character.toUpperCase(d); // mnemonic
-							a.putValue(Action.MNEMONIC_KEY, mn);
-							logger.debug("mnemonic automatically assigned: " + d);
-							mnemonics.add(mn);
+				AbstractButton btn = (AbstractButton) c;
+				Action a = btn.getAction();
+				String name;
+				Integer mn;
+				if (a == null) {
+					// Keine Action registriert, z.B. bei JMenu
+					name = btn.getText();
+					mn = btn.getMnemonic();
+				} else {
+					name = (String) a.getValue(Action.NAME);
+					mn = (Integer) a.getValue(Action.MNEMONIC_KEY);
+				}
+				if (mn != null && !mnemonics.contains(mn)) {
+					// mnemonic schon festgelegt, und noch nicht automatisch
+					// woanders zugewiesen: belassen und dem set hinzufuegen
+					mnemonics.add(mn);
+				} else if (name != null && !name.isEmpty()) { // (... aber wer macht schon eine Action ohne Name)
+					// Mnemonic automatisch bestimmen
+					Mnemonic mnemonic = getBestMnemonic(name, mnemonics);
+					if (mnemonic != null) {
+						if (a == null) {
+							// Keine Action registriert, z.B. bei JMenu
+							btn.setMnemonic(mnemonic.mnemonic);
+							btn.setDisplayedMnemonicIndex(mnemonic.displayedMnemonicIndex);
+						} else {
+							a.putValue(Action.MNEMONIC_KEY, mnemonic.mnemonic);
+							a.putValue(Action.DISPLAYED_MNEMONIC_INDEX_KEY, mnemonic.displayedMnemonicIndex);
 						}
+						mnemonics.add(mnemonic.mnemonic);
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Returns a convenient mnemonic for an action name, or
+	 * <code>null</code> if there is no mnemonic possible.
+	 * @param name name of an Action or AbstractButton
+	 * (<code>getText()</code>)
+	 * @param mnemonics a set of mnemonics which are
+	 * already assigned and thus not available
+	 * @return a convenient mnemonic or <code>null</code>
+	 */
+	static Mnemonic getBestMnemonic(String name, Set<Integer> mnemonics) {
+		
+		/*
+		 * Mnemonics automatisch vergeben
+		 * Kriterien dass man sich's gut merken kann:
+		 *  - Allererster Buchstabe
+		 *  - Grosse Anfangsbuchstaben
+		 *  - Grosse Buchstaben
+		 *  - Anfangsbuchstaben
+		 *  - alle anderen Buchstaben
+		 */
+		
+		logger.debug("mnemonic searching in: " + name);
+		Mnemonic result = null;
+		// For Regex/Pattern see: http://docs.oracle.com/javase/1.4.2/docs/api/java/util/regex/Pattern.html
+		// final, dass sie nur einmal compiliert werden
+		final Pattern firstChar = Pattern.compile("^\\w"); // Allererster Buchstabe (normalerweise ist der ja eh gross, bei z.B. jQuery soll er's sein!)
+		final Pattern upperCaseWord = Pattern.compile("\\b\\p{Upper}\\w*"); // Grosser Buchstabe, word char(s) (greedy)
+		final Pattern anyUpperCaseChar = Pattern.compile("\\p{Upper}"); // Irgendein grosser Buchstabe
+		final Pattern lowerCaseWord = Pattern.compile("\\b\\p{Lower}\\w*"); // Kleiner Buchstabe, word char(s) (greedy)
+		final Pattern anyChar = Pattern.compile("\\w"); // Irgendein word char
+		final Pattern[] patterns = new Pattern[] { firstChar, upperCaseWord,
+				anyUpperCaseChar, lowerCaseWord, anyChar };
+				
+		for (Pattern p : patterns) {
+			logger.debug("mnemonic searching with: " + p);
+			Matcher matcher = p.matcher(name);
+			while (matcher.find()) {
+				String s = matcher.group();
+				char d = s.charAt(0);
+				logger.debug("checking mnemonic char: " + d);
+				int mn = Character.toUpperCase(d);
+				if (!mnemonics.contains(mn)) {
+					logger.info("mnemonic automatically assigned: " + d + " at " + matcher.start());
+					result = new Mnemonic(mn, matcher.start());
+					break;
+				}
+			}
+			if (result != null) {
+				break;
+			}
+		}
+		return result;
 	}
 
 }
