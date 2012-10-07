@@ -599,7 +599,6 @@ E kj.scotlyard.game.graph.connection.TaxiConnection 50 37
 E kj.scotlyard.game.graph.connection.BusConnection 34 22
 E kj.scotlyard.game.graph.connection.TaxiConnection 93 92
 E kj.scotlyard.game.graph.connection.BusConnection 65 63
-E kj.scotlyard.game.graph.connection.TaxiConnection 29 55
 E kj.scotlyard.game.graph.connection.TaxiConnection 198 186
 E kj.scotlyard.game.graph.connection.TaxiConnection 128 160
 E kj.scotlyard.game.graph.connection.TaxiConnection 176 177
