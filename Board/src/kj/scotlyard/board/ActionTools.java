@@ -26,25 +26,25 @@ public abstract class ActionTools {
 	
 	/**
 	 * Set the values for <code>NAME</code>, <code>MNEMONIC_KEY</code> and
-	 * <code>DISPLAYED_MNEMONIC_INDEX_KEY</code> for an Action.
-	 * If the first ampersand (&) in <code>name</code> is followed by a letter
-	 * or a digit (<code>Character.isLetterOrDigit(char)</code>), this letter
-	 * or digit will be the displayed mnemonic key. In this case, the ampersand
-	 * will be deleted.
-	 * @param action
-	 * @param name
+	 * <code>DISPLAYED_MNEMONIC_INDEX_KEY</code> for an <code>Action</code>.
+	 * Search for the first ampersand (&) in <code>name</code> followed by a
+	 * letter or a digit and than use this letter or digit for the mnemonic. The
+	 * ampersand will be deleted in this case. If there is no such ampersand,
+	 * only the name is set for the <code>Action</code>.
+	 * 
+	 * @param action the <code>Action</code> to set name and mnemonic
+	 * @param name the name, optional with an ampersand to mark the mnemonic
 	 */
 	public static void setNameAndMnemonic(Action action, String name) {
 		// Erstes & finden, Index merken und entfernen
-		int index = name.indexOf('&');
-		if (index >= 0 && index < (name.length() - 1)) {
+		int index = findMnemonicAmpersand(name);
+		if (index >= 0) {
 			StringBuffer s = new StringBuffer(name);
 			s.deleteCharAt(index); // & loeschen
 			char c = s.charAt(index); // mnemonic char
-			if (Character.isLetterOrDigit(c)) {
 				
-				name = s.toString();
-			
+			name = s.toString();
+		
 //				int keyCode = KeyStroke.getKeyStroke("typed " + Character.toLowerCase(c)).getKeyCode(); // geht wohl nicht
 //				int keyCode = KeyStroke.getKeyStroke("typed " + Character.toUpperCase(c)).getKeyCode(); // geht wohl nicht
 //				int keyCode = KeyStroke.getKeyStroke(Character.toLowerCase(c)).getKeyCode(); // geht wohl nicht
@@ -52,17 +52,31 @@ public abstract class ActionTools {
 //				int keyCode = KeyStroke.getKeyStroke(String.valueOf(Character.toLowerCase(c))).getKeyCode(); // null pointer exc
 //				int keyCode = KeyStroke.getKeyStroke(String.valueOf(Character.toUpperCase(c))).getKeyCode(); // null pointer exc
 //				int keyCode = KeyStroke.getKeyStroke("typed " + c).getKeyCode(); // geht wohl nicht
-				
-				c = Character.toUpperCase(c);
-				action.putValue(Action.MNEMONIC_KEY, (int) c);
-				
-				if (name.toUpperCase().indexOf(c) < index)
-					action.putValue(Action.DISPLAYED_MNEMONIC_INDEX_KEY, index);
 			
-			}
+			c = Character.toUpperCase(c);
+			action.putValue(Action.MNEMONIC_KEY, (int) c);
+			action.putValue(Action.DISPLAYED_MNEMONIC_INDEX_KEY, index); // einfach immer setzen
 		}
 		
 		action.putValue(Action.NAME, name);
+	}
+	
+	/**
+	 * Search for an ampersand (&) followed by a letter or a digit
+	 * and return the index of the first occurrence or <code>-1</code>
+	 * if there is no such ampersand. Note that umlauts are not letters
+	 * in this context.
+	 * @param name the action's name
+	 * @return the index of the first mnemonic ampersand or <code>-1</code>
+	 */
+	public static int findMnemonicAmpersand(String name) {
+		final Pattern mnemonicAmpersand = Pattern.compile("&[\\w&&[^_]]"); // /&[a-zA-Z0-9]/
+		Matcher matcher = mnemonicAmpersand.matcher(name);
+		if (matcher.find()) {
+			return matcher.start();
+		} else {
+			return -1;
+		}
 	}
 	
 	static class Mnemonic {

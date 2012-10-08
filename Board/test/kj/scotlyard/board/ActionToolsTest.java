@@ -39,6 +39,21 @@ public class ActionToolsTest {
 	@Before
 	public void setUp() throws Exception {
 	}
+	
+	@Test
+	public final void testFindMnemonicAmpersand() {
+		assertEquals(0, ActionTools.findMnemonicAmpersand("&as asf"));
+		assertEquals(3, ActionTools.findMnemonicAmpersand("jkl&as asf"));
+		assertEquals(-1, ActionTools.findMnemonicAmpersand("as asf&"));
+		assertEquals(-1, ActionTools.findMnemonicAmpersand("& as asf"));
+		assertEquals(-1, ActionTools.findMnemonicAmpersand("&öas asf"));
+		assertEquals(-1, ActionTools.findMnemonicAmpersand("&!as asf"));
+		assertEquals(-1, ActionTools.findMnemonicAmpersand("&_as asf"));
+		assertEquals(0, ActionTools.findMnemonicAmpersand("&Eas asf"));
+		assertEquals(1, ActionTools.findMnemonicAmpersand("s&0 as asf"));
+		assertEquals(1, ActionTools.findMnemonicAmpersand("s&9 as asf"));
+		
+	}
 
 	@Test
 	public final void testSetNameAndMnemonic() {
@@ -57,42 +72,42 @@ public class ActionToolsTest {
 		setNameAndMnemonic(a, name);
 		assertEquals("MrX& Alway&s &Visible", a.getValue(NAME));
 		assertEquals(VK_M, a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
+		assertEquals(0, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 		a = new MyTestAction();
 		name = "M&rX Always Visible";
 		setNameAndMnemonic(a, name);
 		assertEquals("MrX Always Visible", a.getValue(NAME));
 		assertEquals(VK_R, a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
+		assertEquals(1, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 		a = new MyTestAction();
 		name = "&MrX Always Visible";
 		setNameAndMnemonic(a, name);
 		assertEquals("MrX Always Visible", a.getValue(NAME));
 		assertEquals(VK_M, a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
+		assertEquals(0, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 		a = new MyTestAction();
 		name = "Mr&X Always Visible";
 		setNameAndMnemonic(a, name);
 		assertEquals("MrX Always Visible", a.getValue(NAME));
 		assertEquals(VK_X, a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
+		assertEquals(2, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 		a = new MyTestAction();
 		name = "MrX& &Always Visible";
 		setNameAndMnemonic(a, name);
-		assertEquals("MrX& &Always Visible", a.getValue(NAME));
-		assertEquals(null, a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
+		assertEquals("MrX& Always Visible", a.getValue(NAME));
+		assertEquals((int) 'A', a.getValue(MNEMONIC_KEY));
+		assertEquals(5, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 		a = new MyTestAction();
 		name = "MrX &Always Visible";
 		setNameAndMnemonic(a, name);
 		assertEquals("MrX Always Visible", a.getValue(NAME));
 		assertEquals(VK_A, a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
+		assertEquals(4, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 		a = new MyTestAction();
 		name = "MrX Alw&ays Visible";
@@ -106,7 +121,7 @@ public class ActionToolsTest {
 		setNameAndMnemonic(a, name);
 		assertEquals("MrX Always Visible", a.getValue(NAME));
 		assertEquals(VK_E, a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
+		assertEquals(17, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 		a = new MyTestAction();
 		name = "MrX Always Visib&le";
@@ -130,32 +145,25 @@ public class ActionToolsTest {
 		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 		a = new MyTestAction();
-		name = "MrX &Älways&& Visible&";
-		setNameAndMnemonic(a, name);
-		assertEquals("MrX Älways&& Visible&", a.getValue(NAME));
-		assertEquals((int) 'Ä', a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
-		
-		a = new MyTestAction();
 		name = "MrX &0lways&& Visible&";
 		setNameAndMnemonic(a, name);
 		assertEquals("MrX 0lways&& Visible&", a.getValue(NAME));
 		assertEquals((int) '0', a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
+		assertEquals(4, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 		a = new MyTestAction();
 		name = "MrX &1lways&& Visible&";
 		setNameAndMnemonic(a, name);
 		assertEquals("MrX 1lways&& Visible&", a.getValue(NAME));
 		assertEquals((int) '1', a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
+		assertEquals(4, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 		a = new MyTestAction();
 		name = "MrX &9lways&& Visible&";
 		setNameAndMnemonic(a, name);
 		assertEquals("MrX 9lways&& Visible&", a.getValue(NAME));
 		assertEquals((int) '9', a.getValue(MNEMONIC_KEY));
-		assertEquals(null, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
+		assertEquals(4, a.getValue(DISPLAYED_MNEMONIC_INDEX_KEY));
 		
 	}
 	
