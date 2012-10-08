@@ -153,11 +153,10 @@ public abstract class ActionTools {
 		// For Regex/Pattern see: http://docs.oracle.com/javase/1.4.2/docs/api/java/util/regex/Pattern.html
 		// final, dass sie nur einmal compiliert werden
 		final Pattern firstChar = Pattern.compile("^\\w"); // Allererster Buchstabe (normalerweise ist der ja eh gross, bei z.B. jQuery soll er's sein!)
-		final Pattern upperCaseWord = Pattern.compile("\\b\\p{Upper}\\w*"); // Grosser Buchstabe, word char(s) (greedy)
 		final Pattern anyUpperCaseChar = Pattern.compile("\\p{Upper}"); // Irgendein grosser Buchstabe
-		final Pattern lowerCaseWord = Pattern.compile("\\b\\p{Lower}\\w*"); // Kleiner Buchstabe, word char(s) (greedy)
+		final Pattern lowerCaseWord = Pattern.compile("\\b\\p{Lower}\\w*"); // Kleiner Buchstabe am Wortanfang
 		final Pattern anyChar = Pattern.compile("\\w"); // Irgendein word char
-		final Pattern[] patterns = new Pattern[] { firstChar, upperCaseWord,
+		final Pattern[] patterns = new Pattern[] { firstChar,
 				anyUpperCaseChar, lowerCaseWord, anyChar };
 				
 		for (Pattern p : patterns) {

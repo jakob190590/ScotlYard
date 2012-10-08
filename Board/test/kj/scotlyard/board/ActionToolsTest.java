@@ -276,16 +276,11 @@ public class ActionToolsTest {
 		
 		// TEST_NAME_1 "jingles JGraphT Select user Jam"
 		
-		// grosse anfangsbuchstaben
+		// erster buchstabe
 		mn = ActionTools.getBestMnemonic(TEST_NAME_1, mnemonics);
 		mnemonics.add(mn.mnemonic);
 		assertEquals('J', mn.mnemonic);
 		assertEquals(0, mn.displayedMnemonicIndex);
-		
-		mn = ActionTools.getBestMnemonic(TEST_NAME_1, mnemonics);
-		mnemonics.add(mn.mnemonic);
-		assertEquals('S', mn.mnemonic);
-		assertEquals(16, mn.displayedMnemonicIndex);
 		
 		// grosse buchstaben allgemein
 		mn = ActionTools.getBestMnemonic(TEST_NAME_1, mnemonics);
@@ -297,6 +292,11 @@ public class ActionToolsTest {
 		mnemonics.add(mn.mnemonic);
 		assertEquals('T', mn.mnemonic);
 		assertEquals(14, mn.displayedMnemonicIndex);
+		
+		mn = ActionTools.getBestMnemonic(TEST_NAME_1, mnemonics);
+		mnemonics.add(mn.mnemonic);
+		assertEquals('S', mn.mnemonic);
+		assertEquals(16, mn.displayedMnemonicIndex);
 		
 		// kleine anfangsbuchstaben (j schon vergeben)
 		mn = ActionTools.getBestMnemonic(TEST_NAME_1, mnemonics);
