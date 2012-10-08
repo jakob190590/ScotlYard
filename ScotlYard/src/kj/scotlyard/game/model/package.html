@@ -1,0 +1,7 @@
+This package contains the ScotlYard core interfaces and default implementations.
+The <code>GameState</code> defines a read-only interface to access the complete state and history of the game.
+<code>Game</code> extends the <code>GameState</code> to allow modification of the <code>GameState</code>.
+<code>Move</code>s are part of the history. A <code>Move</code> object describes a move of a player.
+
+A <code>GameState</code> is the model when used in MVC architecture. So it implements methods to add and remove listeners.
+There are four listener interfaces for different kinds of changes in the <code>GameState</code>.
