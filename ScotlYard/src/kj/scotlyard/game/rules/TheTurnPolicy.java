@@ -34,8 +34,8 @@ public class TheTurnPolicy implements TurnPolicy {
 		
 		// Zu Spielbeginn
 		if (gameState.getMoves().isEmpty()) {
-			// oder (getCurrentPlayer() == null) -- nein, weil wenn current player 
-			// unter dem spiel null is, muss es die exception unten geben! Also ist 
+			// oder (getCurrentPlayer() == null) -- nein, weil wenn current player
+			// unter dem spiel null is, muss es die exception unten geben! Also ist
 			// moves.isEmpty() die "einzig wahre" Bedingung.
 			
 			return new Turn(gameState.getMrX(), GameState.INITIAL_ROUND_NUMBER);
@@ -56,13 +56,15 @@ public class TheTurnPolicy implements TurnPolicy {
 		}
 		
 		if (found) {
-			// Current Player gefunden, aber alle folgenden Detectives 
+			// Current Player gefunden, aber alle folgenden Detectives
 			// koennen nicht ziehen, oder er war der Letzte der Runde
 			// -> dann ist wieder MrX (der Erste) dran.
 			return new Turn(gameState.getMrX(), gameState.getCurrentRoundNumber() + 1);
+			// (auch wenn der dann gar nicht mehr ziehen kann.
+			// aber dafuer ist die GameWinPolicy zustaendig.)
 		} else {
 			// Das ist so eindeutig, das muss gemeldet werden.
-			throw new CorruptGameStateException("Current player is not part of the game.");			
+			throw new CorruptGameStateException("Current player is not part of the game.");
 		}
 	}
 
