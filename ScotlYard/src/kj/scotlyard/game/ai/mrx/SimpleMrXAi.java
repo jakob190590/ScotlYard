@@ -34,7 +34,9 @@ import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
 import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.UndergroundConnection;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.BusTicket;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
@@ -72,9 +74,9 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		Map<Alternative, Rating> cumulativeRatings = getCumulativeRatings(alternatives);
 		List<Alternative> bestAlternatives = getBestAlternatives(cumulativeRatings);
 		
-		for (Alternative a : alternatives) {
-			logger.debug("alternative: " + a);
-		}
+//		for (Alternative a : alternatives) {
+//			logger.debug("alternative: " + a);
+//		}
 //		logger.info(String.format("alternative with best rating: doublemove=%b, rating=%f, costs=%f",
 //				bestAlternative.isDoubleMove(), bestAlternative.rating, bestAlternative.costs));
 		
@@ -221,27 +223,36 @@ public class SimpleMrXAi extends AbstractMrXAi {
 	
 	
 	private Move makeMove(Alternative bestAlternative) {
+		GameState gs = getGameState();
+		MrXPlayer mrX = gs.getMrX();
+		
+		int roundNumber = gs.getCurrentRoundNumber();
+		int moveNumber = GameStateExtension.getLastMoveFlat(gs, mrX).getMoveNumber() + 1;
+		
+		Ticket t1 = (Ticket) GameStateExtension.getItem(gs, mrX, bestAlternative.getTicketType1());
+		assert t1 != null : "getAlternatives gibt wohl ungueltige alternativen";
+		
 		Move m;
 		if (bestAlternative.isDoubleMove()) {
-			DoubleMoveCard card = (DoubleMoveCard) GameStateExtension.getItem(getGameState(),
-					getGameState().getMrX(), DoubleMoveCard.class);
-			Ticket t1 = null; // TODO muss 2 tickets bekommen, wenn beide vom gleichen typ sind, zwei VERSCHIEDENE geht nicht mit GameStateExt.getItem...
-			Ticket t2 = null;
+			DoubleMoveCard card = (DoubleMoveCard) GameStateExtension.getItem(gs,
+					mrX, DoubleMoveCard.class);
+			assert card != null : "getAlternatives gibt wohl ungueltige alternativen";
+			
+			Set<Item> items = new HashSet<>(gs.getItems(mrX)); // TODO javadoc von getItems: note that ItemsSet in a gameState is read only
+			items.remove(t1);
+			Ticket t2 = (Ticket) GameStateExtension.getItem(gs, mrX, bestAlternative.getTicketType2());
+			assert t2 != null : "getAlternatives gibt wohl ungueltige alternativen";
+			
 			SubMoves sms = new SubMoves()
 					.add(bestAlternative.getVertex1(), bestAlternative.getEdge1(), t1)
 					.add(bestAlternative.getVertex2(), bestAlternative.getEdge2(), t2);
-			m = MoveProducer.createMultiMove(getGameState().getMrX(),
-					getGameState().getCurrentRoundNumber(),
-					getGameState().getLastMove(getGameState().getMrX()).getMoveNumber() + 1,
+			m = MoveProducer.createMultiMove(mrX, roundNumber, moveNumber,
 					card, sms);
 			
 		} else {
-			m = MoveProducer.createSingleMove(getGameState().getMrX(),
-					getGameState().getCurrentRoundNumber(),
-					getGameState().getLastMove(getGameState().getMrX()).getMoveNumber() + 1,
+			m = MoveProducer.createSingleMove(mrX, roundNumber, moveNumber,
 					bestAlternative.getVertex1(), bestAlternative.getEdge1(),
-					(Ticket) GameStateExtension.getItem(getGameState(),
-					getGameState().getCurrentPlayer(), bestAlternative.getTicketType1()));
+					t1);
 		}
 		return m;
 	}
