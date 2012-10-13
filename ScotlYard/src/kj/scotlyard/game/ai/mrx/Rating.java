@@ -18,7 +18,7 @@
 
 package kj.scotlyard.game.ai.mrx;
 
-public class Rating {
+public class Rating implements Comparable<Rating> {
 	
 	public static final double NO_GO = 0;
 	
@@ -28,6 +28,25 @@ public class Rating {
 
 	public Rating(double rating) {
 		this.rating = rating;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Rating) {
+			return rating == ((Rating) obj).rating;
+		}
+		return false;
+	}
+
+	@Override
+	public int compareTo(Rating o) {
+		if (rating > o.rating) {
+			return 1;
+		}
+		if (rating == o.rating) {
+			return 0;
+		}
+		return -1;
 	}
 	
 }
