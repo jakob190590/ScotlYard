@@ -1,5 +1,5 @@
 /*
- * UnixPassword field -- A unix style password input
+ * UnixPasswordField -- A unix style password input
  * Copyright (C) 2012  Jakob Schöttl
  *
  * This program is free software: you can redistribute it and/or modify
