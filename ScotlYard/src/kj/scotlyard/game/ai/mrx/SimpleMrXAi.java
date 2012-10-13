@@ -158,7 +158,7 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		if (itemCounts.get(DoubleMoveCard.class) > 0) {
 			for (Alternative a : alternatives) {
 				for (ConnectionEdge e : a.getVertex1().getEdges()) {
-					StationVertex v = e.getOther(startingPosition);
+					StationVertex v = e.getOther(a.getVertex1());
 					if (!detectivePositions.contains(v)) {
 						for (Class<? extends Ticket> t : getValidTicketTypes(e)) {
 							if (itemCounts.get(t) > ((a.getTicketType1() == t) ? 1 : 0)) {
