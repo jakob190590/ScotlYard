@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.NumberFormat;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -142,7 +143,7 @@ public class MovePreparationBar extends JPanel {
 		stationNumberCardLayout = new CardLayout(0, 0);
 		panelStationNumber.setLayout(stationNumberCardLayout);
 		
-		ftfStationNumber = new JFormattedTextField();
+		ftfStationNumber = new JFormattedTextField(NumberFormat.getInstance());
 		panelStationNumber.add(ftfStationNumber, NORMAL_INPUT);
 		ftfStationNumber.setAction(submitStationNumberAction);
 		
