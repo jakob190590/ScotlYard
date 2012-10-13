@@ -21,8 +21,10 @@ package kj.scotlyard.game.ai.mrx;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import kj.scotlyard.game.ai.mrx.modules.RatingModule;
@@ -67,17 +69,23 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		
 		
 		Set<Alternative> alternatives = getAlternatives();
+		Map<Alternative, Rating> cumulativeRatings = getCumulativeRatings(alternatives);
+		List<Alternative> bestAlternatives = getBestAlternatives(cumulativeRatings);
 		
 		for (Alternative a : alternatives) {
 			logger.debug("alternative: " + a);
 		}
-		Alternative bestAlternative = getBestAlternative(alternatives);//_3_select(alternatives);
 //		logger.info(String.format("alternative with best rating: doublemove=%b, rating=%f, costs=%f",
 //				bestAlternative.isDoubleMove(), bestAlternative.rating, bestAlternative.costs));
 		
-		Move move = makeMove(bestAlternative);
+		if (bestAlternatives.isEmpty()) {
+			assert alternatives.isEmpty() : "Fehler in getBestAlternatives";
+			logger.error("alternativlos. mrX haette gar nicht mehr drankommen duerfen, oder in getAlternatives ist ein fehler");
+		} else {
+			// bei mehreren gleichwertigen moves: zufaellig waehlen
+			result = makeMove(bestAlternatives.get(new Random().nextInt(bestAlternatives.size())));
+		}
 		
-		result = move;
 		finishCalculation();
 		logger.info("finish calculation");
 	}
@@ -167,60 +175,50 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		return alternatives;
 	}
 	
-	private Alternative getBestAlternative(Set<Alternative> alternatives) {
-		// TODO Auto-generated method stub
+	protected Map<Alternative, Rating> getCumulativeRatings(Set<Alternative> alternatives) {
+		
+		// Die Rating-Ergebnisse aller Module in Liste eintragen
+		List<Map<Alternative, Rating>> allRatings = new LinkedList<>();
 		for (RatingModule rm : ratingModules) {
-			
+			allRatings.add(rm.rate(getGameState(), getGameGraph(), getGameState().getCurrentPlayer(), alternatives));
 		}
-		return null;
+		
+		// Gesamt-Ratings berechnen
+		Map<Alternative, Rating> cumulativeRatings = new HashMap<>();
+		for (Alternative a : alternatives) {
+			double r = 1;
+//			double r = 0;
+			for (Map<Alternative, Rating> map : allRatings) {
+				r *= map.get(a).rating; // ohne gewichtung * rechnen
+//				r += map.get(a).rating; // ohne gewichtung summe bilden (fuer durchschnitt)
+				// TODO korbi, deine hier
+			}
+//			r /= ratingModules.size(); // fuer durchschnitt
+			cumulativeRatings.put(a, new Rating(r));
+		}
+		
+		return cumulativeRatings;
 	}
 	
-//	protected void _2_rating(Set<Alternative> alternatives) {
-//		// 2. Für alle diese Stationen:
-//	    //  * Shortest Path zu jedem Detektiv
-//	    //  * Distanzen gesammelt bewerten
-//
-//		for (Alternative a : alternatives) {
-//			StationVertex v = (a.isDoubleMove()) ? a.getVertex2() : a.getVertex1();
-//			int distances[] = new int[getGameState().getDetectives().size()];
-//			int i = 0;
-//			for (StationVertex vd : GameStateExtension.getDetectivePositions(getGameState())) {
-//				// TODO eigentlich brauch ich ALLE shortest paths
-//				// TODO und auch die nicht shortest path, weil ich shortest paths mit ferry conn nich nutzten kann
-//				List<ConnectionEdge> path = BellmanFordShortestPath.findPathBetween(getGameGraph().getGraph(), v, vd);
-//
-//				// zaehlen, wie viele ferry conns der pfad enthaelt
-//				int nFerryConnections = 0;
-//				for (ConnectionEdge e : path) {
-//					if (e instanceof FerryConnection) {
-//						nFerryConnections++;
-//					}
-//				}
-//				// abschaetzung: distanz ist im schnitt 4 mal (2 x 3 mal, 1 x 5 mal) so lang auf normalem wege
-//				distances[i] = path.size() + nFerryConnections * 3;
-//				i++;
-//			}
-//
-//			double rating = 0;
-//			for (int d : distances) {
-//				rating += 1. / (d * d);
-//			}
-//			rating /= distances.length;
-//			a.rating = 1 - rating;
-//		}
-//	}
+	protected List<Alternative> getBestAlternatives(Map<Alternative, Rating> cumulativeRatings) {
+		List<Alternative> bestAlternatives = new ArrayList<>();
+		Rating bestRating = new Rating(0);
+		for (Map.Entry<Alternative, Rating> entry : cumulativeRatings.entrySet()) {
+			Rating r = entry.getValue();
+			if (r.equals(bestRating)) {
+				// Genau gleiches Rating
+				bestAlternatives.add(entry.getKey());
+			} else if (r.compareTo(bestRating) > 0) {
+				// r > bisher bestes Rating
+				bestRating = r;
+				bestAlternatives.clear();
+				bestAlternatives.add(entry.getKey());
+			}
+		}
+		logger.info(bestAlternatives.size() + " alternatives with best rating: " + bestRating);
+		return bestAlternatives;
+	}
 	
-//	protected Alternative _3_select(Set<Alternative> alternatives) {
-//		// 3. Station mit der günstigsten Bewertung wird ausgewählt
-//		Alternative best = new Alternative(null, null, null); // nur um den anfangswert 0 fuer rating zu haben
-//		for (Alternative a : alternatives) {
-//			// TODO hast schon recht korbi, mit ner schwelle waers wahrscheinlich besser, aber fuers erste mach ichs mal so
-//			if (a.rating * (1 - a.costs) > best.rating * (1 - best.costs)) {
-//				best = a;
-//			}
-//		}
-//		return best;
-//	}
 	
 	private Move makeMove(Alternative bestAlternative) {
 		Move m;
