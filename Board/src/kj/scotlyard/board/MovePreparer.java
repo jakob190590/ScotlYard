@@ -290,6 +290,10 @@ public abstract class MovePreparer extends Observable {
 	 */
 	public boolean nextStation(final StationVertex station) {
 		
+		if (station == null) {
+			throw new NullPointerException("Station must not be null.");
+		}
+		
 		logger.debug("next station for " + player);
 		
 		List<Move> moves = getMoves(player);
