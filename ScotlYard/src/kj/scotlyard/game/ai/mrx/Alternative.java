@@ -31,6 +31,7 @@ public class Alternative {
 	private ConnectionEdge edge2;
 	private Class<? extends Ticket> ticketType2;
 	private StationVertex vertex2;
+	
 	public Alternative(ConnectionEdge e1, Class<? extends Ticket> t1, StationVertex v1,
 			ConnectionEdge e2, Class<? extends Ticket> t2, StationVertex v2) {
 		this.edge1 = e1;

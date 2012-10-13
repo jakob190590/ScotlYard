@@ -54,7 +54,7 @@ public class SimpleMrXAi extends AbstractMrXAi {
 	
 	private final static Logger logger = Logger.getLogger(SimpleMrXAi.class);
 	
-	private List<RatingModule> ratingModules = new ArrayList<>();
+	private Map<RatingModule, Double> ratingModules = new HashMap<>();
 	
 	private Move result;
 
@@ -181,7 +181,10 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		
 		// Die Rating-Ergebnisse aller Module in Liste eintragen
 		List<Map<Alternative, Rating>> allRatings = new LinkedList<>();
-		for (RatingModule rm : ratingModules) {
+		for (Map.Entry<RatingModule, Double> entry : ratingModules.entrySet()) {
+			RatingModule rm = entry.getKey();
+			Double d = entry.getValue();
+			double weight = (d == null) ? 1 : d;
 			allRatings.add(rm.rate(getGameState(), getGameGraph(), getGameState().getCurrentPlayer(), alternatives));
 		}
 		
@@ -193,7 +196,7 @@ public class SimpleMrXAi extends AbstractMrXAi {
 			for (Map<Alternative, Rating> map : allRatings) {
 				r *= map.get(a).rating; // ohne gewichtung * rechnen
 //				r += map.get(a).rating; // ohne gewichtung summe bilden (fuer durchschnitt)
-				// TODO korbi, deine hier
+				// TODO korbi, deine hier, weight mit einbeziehen!
 			}
 //			r /= ratingModules.size(); // fuer durchschnitt
 			cumulativeRatings.put(a, new Rating(r));
@@ -257,8 +260,17 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		return m;
 	}
 
-	public List<RatingModule> getRatingModules() {
-		return ratingModules;
+	public void addRatingModule(RatingModule ratingModule, Double weight) {
+		// TODO check weight! -> IllegalArgumentException
+		ratingModules.put(ratingModule, weight);
+	}
+	
+	public void addRatingModule(RatingModule ratingModule) {
+		addRatingModule(ratingModule, null);
+	}
+	
+	public void removeRatingModule(RatingModule ratingModule) {
+		ratingModules.remove(ratingModule);
 	}
 
 }
