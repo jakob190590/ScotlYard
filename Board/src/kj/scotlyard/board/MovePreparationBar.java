@@ -1,5 +1,24 @@
+/*
+ * ScotlYard -- A software implementation of the Scotland Yard board game
+ * Copyright (C) 2012  Jakob Schöttl
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package kj.scotlyard.board;
 
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -30,6 +49,14 @@ public class MovePreparationBar extends JPanel {
 	
 	private static final Logger logger = Logger.getLogger(MovePreparationBar.class);
 
+	/** For stationNumberCardLayout: page with normal input */
+	private static final String NORMAL_INPUT = "normal input";
+	/** For stationNumberCardLayout: page with unix style password input */
+	private static final String UNIX_STYLE_PASSWORD_INPUT = "unix style password input";
+
+	/** Refers to kind of station number input */
+	private boolean hiddenInput;
+	
 	private GameState gameState;
 	private MovePreparer movePreparer;
 	private Map<Integer, StationVertex> numberStationMap; // Number Station Map
@@ -74,7 +101,12 @@ public class MovePreparationBar extends JPanel {
 		}
 	};
 	
+	/** To switch between two kinds of station number input */
+	private CardLayout stationNumberCardLayout;
+	private JPanel panelStationNumber;
 	private JFormattedTextField ftfStationNumber;
+	private UnixPasswordField pwfStationNumber;
+	
 	private JComboBox<Player> cbPlayer;
 	private final PlayerComboBoxRenderer playerComboBoxRenderer = new PlayerComboBoxRenderer();
 	
@@ -82,7 +114,6 @@ public class MovePreparationBar extends JPanel {
 	private final Action submitStationNumberAction = new SubmitStationNumberAction();
 	private final Action resetAction = new ResetAction();
 	private final Action selectPlayerAction = new SelectPlayerAction();
-	
 	
 	/**
 	 * Create the panel.
@@ -105,9 +136,18 @@ public class MovePreparationBar extends JPanel {
 		cbPlayer.setRenderer(playerComboBoxRenderer);
 		add(cbPlayer);
 		
+		panelStationNumber = new JPanel();
+		add(panelStationNumber);
+		stationNumberCardLayout = new CardLayout(0, 0);
+		panelStationNumber.setLayout(stationNumberCardLayout);
+		
 		ftfStationNumber = new JFormattedTextField();
+		panelStationNumber.add(ftfStationNumber, NORMAL_INPUT);
 		ftfStationNumber.setAction(submitStationNumberAction);
-		add(ftfStationNumber);
+		
+		pwfStationNumber = new UnixPasswordField();
+		panelStationNumber.add(pwfStationNumber, UNIX_STYLE_PASSWORD_INPUT);
+		pwfStationNumber.setAction(submitStationNumberAction);
 		
 		JButton btnMovePrepOk = new JButton("OK");
 		btnMovePrepOk.setAction(submitStationNumberAction);
@@ -116,6 +156,8 @@ public class MovePreparationBar extends JPanel {
 		JButton btnReset = new JButton("Reset");
 		btnReset.setAction(resetAction);
 		add(btnReset);
+		
+		setHiddenInput(false);
 	}
 	
 	@Override // TODO probleme, wenn was einzeln enabled werden soll..
@@ -128,6 +170,19 @@ public class MovePreparationBar extends JPanel {
 	
 	
 	// Getters/Setters
+	
+	public boolean isHiddenInput() {
+		return hiddenInput;
+	}
+
+	public void setHiddenInput(boolean hiddenInput) {
+		this.hiddenInput = hiddenInput;
+		if (hiddenInput) {
+			stationNumberCardLayout.show(panelStationNumber, UNIX_STYLE_PASSWORD_INPUT);
+		} else {
+			stationNumberCardLayout.show(panelStationNumber, NORMAL_INPUT);
+		}
+	}
 	
 	public GameState getGameState() {
 		return gameState;
@@ -191,8 +246,25 @@ public class MovePreparationBar extends JPanel {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (movePreparer.nextStation(numberStationMap.get(Integer.parseInt(ftfStationNumber.getText())))) { // TODO vllt spaeter ftfStationNumber.getValue()
-				ftfStationNumber.setText(""); // oder setValue(null) ?
+			String input;
+			if (hiddenInput) {
+				input = new String(pwfStationNumber.getPassword());
+				pwfStationNumber.clear();
+			} else {
+				input = ftfStationNumber.getText();
+				// in diesem Fall wird das text feld spaeter geleert,
+				// oder auch nicht (bei ungueltiger eingabe)
+			}
+			try {
+				int number = Integer.parseInt(input);
+				StationVertex station = numberStationMap.get(number);
+				if (movePreparer.nextStation(station)) { // && !hiddenInput <-- bevor ich das pruefe hab ich den text auch gesetzt oder?
+					ftfStationNumber.setText("");
+				}
+			} catch (NumberFormatException e1) {
+				logger.error("wrong number input for station number: number format exception");
+			} catch (NullPointerException e1) {
+				logger.error("wrong number input for station number: station does not exist");
 			}
 		}
 	}
@@ -218,5 +290,4 @@ public class MovePreparationBar extends JPanel {
 			movePreparer.selectPlayer((Player) cbPlayer.getSelectedItem());
 		}
 	}
-	
 }

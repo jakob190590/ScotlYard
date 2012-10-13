@@ -239,6 +239,8 @@ public class Board extends JFrame {
 		@Override
 		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
 				Player newPlayer) {
+			movePreparationBar.setHiddenInput(newPlayer instanceof MrXPlayer);
+			
 			lblCurrentPlayerVal.setText((newPlayer == null) ? "(None)"
 					: GameMetaData.getForPlayer(newPlayer).getName());
 
