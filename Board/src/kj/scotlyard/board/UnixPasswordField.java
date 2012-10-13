@@ -99,9 +99,6 @@ public class UnixPasswordField extends JPasswordField {
 		if (e.getID() == KeyEvent.KEY_TYPED) {
 			char c = e.getKeyChar();
 			switch (c) {
-			case KeyEvent.VK_ENTER:
-				super.processKeyEvent(e);
-				break;
 			case KeyEvent.VK_BACK_SPACE:
 				int l = password.length();
 				if (l > 0) {
@@ -120,9 +117,7 @@ public class UnixPasswordField extends JPasswordField {
 				break;
 			}
 		} else {
-			if (e.getKeyCode() != KeyEvent.VK_BACK_SPACE) {
-				super.processKeyEvent(e);
-			}
+			super.processKeyEvent(e);
 		}
 	}
 
