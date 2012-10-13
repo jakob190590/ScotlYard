@@ -34,6 +34,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import kj.scotlyard.game.graph.StationVertex;
@@ -255,6 +256,8 @@ public class MovePreparationBar extends JPanel {
 				// in diesem Fall wird das text feld spaeter geleert,
 				// oder auch nicht (bei ungueltiger eingabe)
 			}
+			
+			boolean wrongInput = false;
 			try {
 				int number = Integer.parseInt(input);
 				StationVertex station = numberStationMap.get(number);
@@ -262,9 +265,17 @@ public class MovePreparationBar extends JPanel {
 					ftfStationNumber.setText("");
 				}
 			} catch (NumberFormatException e1) {
-				logger.error("wrong number input for station number: number format exception");
+				logger.error("wrong user input for station number: number format exception");
+				wrongInput = true;
 			} catch (NullPointerException e1) {
-				logger.error("wrong number input for station number: station does not exist");
+				logger.error("wrong user input for station number: station does not exist");
+				wrongInput = true;
+			}
+			
+			if (wrongInput) {
+				JOptionPane.showMessageDialog(MovePreparationBar.this,
+						"The station number is not valid.", "Invalid User Input",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
