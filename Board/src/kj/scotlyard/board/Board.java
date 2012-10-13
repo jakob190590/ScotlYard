@@ -1281,7 +1281,7 @@ public class Board extends JFrame {
 	private class UndoAction extends AbstractAction {
 		public UndoAction() {
 			putValue(NAME, "Undo");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Undo the last action in the game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_U);
 		}
 		@Override
@@ -1294,7 +1294,7 @@ public class Board extends JFrame {
 	private class RedoAction extends AbstractAction {
 		public RedoAction() {
 			putValue(NAME, "Redo");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Redo the last action in the game");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_R);
 		}
 		@Override
@@ -1307,7 +1307,7 @@ public class Board extends JFrame {
 	private class SuggestMoveAction extends AbstractAction {
 		public SuggestMoveAction() {
 			putValue(NAME, "Suggest Move");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(SHORT_DESCRIPTION, "Suggest an AI move");
 			putValue(MNEMONIC_KEY, KeyEvent.VK_S);
 		}
 		@Override
