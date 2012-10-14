@@ -37,6 +37,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -93,6 +94,7 @@ import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.IllegalMoveException;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
+import kj.scotlyard.game.util.GameStateExtension;
 import kj.scotlyard.game.util.MoveProducer;
 
 import org.apache.log4j.Logger;
@@ -821,6 +823,15 @@ public class Board extends JFrame {
 		hsbm.setValue((int) (scrollX * (hsbm.getMaximum() - hsbm.getExtent())));
 		vsbm.setValue((int) (scrollY * (vsbm.getMaximum() - vsbm.getExtent())));
 	}
+	
+	Integer getStationNumber(StationVertex station) {
+		for (Map.Entry<Integer, StationVertex> e : numberStationMap.entrySet()) {
+			if (e.getValue() == station) {
+				return e.getKey();
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Try to carry out the specified move.
@@ -832,15 +843,45 @@ public class Board extends JFrame {
 	private boolean move(Move move) {
 		boolean success = true;
 		try {
-			logger.debug("try to carry out move for: " + move.getPlayer());
+			logger.debug("try to carry out move for: " + move.getPlayer() + ", to: " + getStationNumber(move.getStation()));
 			gameController.move(move);
 		} catch (Exception e2) {
 			success = false;
 			e2.printStackTrace();
-			showErrorMessage(e2);
 			if (e2 instanceof IllegalMoveException) {
-				logger.error("IllegalMove - Details: " + ((IllegalMoveException) e2).getMove());
+				Move m = ((IllegalMoveException) e2).getMove();
+				logger.error("IllegalMove: " + e2.getMessage() + " - Details: " + m);
+				
+				List<Move> ms = GameStateExtension.flattenMove(m);
+				Move lm = gameState.getLastMove(gameState.getCurrentPlayer()); // last move
+				logger.info("letzte station: " + getStationNumber(lm.getStation()));
+				int i = 1;
+				for (Move n : ms) {
+					logger.info(i + "te connection: "
+								+ getStationNumber(gameGraph.getGraph().getEdgeSource(n.getConnection())) + " - "
+								+ getStationNumber(gameGraph.getGraph().getEdgeTarget(n.getConnection())));
+					logger.info(i + "te ziel station: " + getStationNumber(n.getStation()));
+					i++;
+				}
+				
+				Move m1 = ms.get(0);
+				if (!lm.getStation().getEdges().contains(m1.getConnection())) {
+					logger.error("erste connection geht nicht von letzter station aus. letzte station: " + getStationNumber(lm.getStation()));
+				} else if (m1.getConnection().getOther(lm.getStation()) != m1.getStation()) {
+					logger.error("erste ziel station ist nicht durch erste connection erreichbar");
+				}
+				if (ms.size() > 1) {
+					Move m2 = ms.get(1);
+					logger.info("zweite ziel station: " + getStationNumber(m2.getStation()));
+					if (!m1.getStation().getEdges().contains(m2.getConnection())) {
+						logger.error("zweite connection geht nicht von erster station aus");
+					} else if (m2.getConnection().getOther(m1.getStation()) != m2.getStation()) {
+						logger.error("zweite ziel station ist nicht durch zweite connection erreichbar");
+					}
+				}
 			}
+			
+			showErrorMessage(e2);
 		}
 		return success;
 	}
@@ -1321,6 +1362,7 @@ public class Board extends JFrame {
 				}
 				// ... not yet
 				movePreparer.nextMove(move);
+//				move(move); // direkt moven, um moegliche fehlerquelle "movePreparer" zu umgehen
 			}
 		}
 	}
