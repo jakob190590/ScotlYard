@@ -59,6 +59,10 @@ public interface Move extends Sealable {
 	
 	Player getPlayer();
 
+	/**
+	 * Set the player for the move. The player is defined for each kind of move.
+	 * @param player
+	 */
 	void setPlayer(Player player);
 
 	int getRoundNumber();

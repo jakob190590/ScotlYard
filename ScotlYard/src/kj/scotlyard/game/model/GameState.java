@@ -127,9 +127,9 @@ public interface GameState {
 	/**
 	 * Returns the last move of the player or <code>null</code> if the player
 	 * has not moved yet. The resulting <code>Move</code>s are always sealed!
-	 * Note that the result is a Base Move and thus not necessarily the very
-	 * last Single Move! To obtain the very last Single Move, use
-	 * <code>GameStateExtension.getLastMoveFlat</code>.
+	 * Note that the result is the move of a <i>round</i> and thus not
+	 * necessarily the very last Single Move! To obtain the very last Single
+	 * Move, use <code>GameStateExtension.getLastMoveFlat</code>.
 	 * 
 	 * @param player
 	 * @return the last move or <code>null</code>
