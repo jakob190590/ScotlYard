@@ -24,17 +24,20 @@ import java.util.Set;
 import kj.scotlyard.game.model.item.Item;
 
 /**
- * The GameState is an (read-only) access interface to 
- * the complete state and move history of the game.
+ * The GameState is an (read-only) access interface to the complete state and
+ * move history of the game. For a pure <code>GameState</code> implementation
+ * (that is a <i>read-only</i> access interface, not a <code>Game</code>!),
+ * everything is unmodifiable here.
+ * 
  * @author jakob190590
- *
+ * 
  */
 public interface GameState {
 	
-	/** 
+	/**
 	 * Access mode for moves in the list. Round and
 	 * move number are the same unless there are multi
-	 * moves. A multi move has one round number, but 
+	 * moves. A multi move has one round number, but
 	 * it's sub moves have different move numbers.
 	 */
 	enum MoveAccessMode {
@@ -66,21 +69,30 @@ public interface GameState {
 	
 	MrXPlayer getMrX();
 	
+	/**
+	 * Returns a <code>List</code> with all detectives. Note that for pure
+	 * <code>GameState</code> implementations the result is an unmodifiable
+	 * list.
+	 * 
+	 * @return a list with all detectives
+	 */
 	List<DetectivePlayer> getDetectives();
 	
 	/**
-	 * Returns an unmodifiable List with all players.
-	 * If MrX is not <code>null</code>, it is the first
-	 * player in the list, otherwise it is not in the list.
-	 * This is followed by the detectives in the same order 
-	 * as in the detective list, see <code>getDetectives()</code>.
+	 * Returns an unmodifiable List with all players. If MrX is not
+	 * <code>null</code>, it is the first player in the list, otherwise it is
+	 * not in the list. This is followed by the detectives in the same order as
+	 * in the detective list, see <code>getDetectives()</code>.
+	 * 
 	 * @return an unmodifiable list with all players
 	 */
 	List<Player> getPlayers();
 	
 	/**
-	 * Returns the item set for the specified player or
-	 * <code>null</code> if there is no associated set.
+	 * Returns the item set for the specified player or <code>null</code> if
+	 * there is no associated set. Note that for pure <code>GameState</code>
+	 * implementations the result is an unmodifiable set.
+	 * 
 	 * @param player
 	 * @return the item set or <code>null</code>
 	 */
@@ -88,19 +100,23 @@ public interface GameState {
 	
 	
 	/**
-	 * Returns a list of all moves that have been made (move history).
-	 * Note that negative indices mean that the move list is accessed 
-	 * from it's end. That is -1 is the last move, -2 the last but one 
-	 * and so on.
+	 * Returns a list of all moves that have been made (move history). Note that
+	 * negative indices mean that the move list is accessed from it's end. That
+	 * is <tt>-1</tt> is the last move, <tt>-2</tt> the last but one and so on.
+	 * The resulting <code>Move</code>s are always sealed! Note that for pure
+	 * <code>GameState</code> implementations the result is an unmodifiable
+	 * list.
+	 * 
 	 * @return a list of all moves
 	 */
 	List<Move> getMoves();
 	
 	/**
-	 * Returns a specific move from the move history according to
-	 * the parameter values. If number is negative, the move list 
-	 * is accessed from it's end. That is -1 is the last move, -2
-	 * the last but one and so on.
+	 * Returns a specific move from the move history according to the parameter
+	 * values. If number is negative, the move list is accessed from it's end.
+	 * That is <tt>-1</tt> is the last move, <tt>-2</tt> the last but one and so
+	 * on. The resulting <code>Move</code>s are always sealed!
+	 * 
 	 * @param player
 	 * @param number the move or round number (depending on accessMode)
 	 * @param accessMode the access mode for moves
@@ -109,24 +125,29 @@ public interface GameState {
 	Move getMove(Player player, int number, MoveAccessMode accessMode);
 	
 	/**
-	 * Returns the last move of the player or <code>null</code> if
-	 * the player has not moved yet.
+	 * Returns the last move of the player or <code>null</code> if the player
+	 * has not moved yet. The resulting <code>Move</code>s are always sealed!
+	 * Note that the result is a Base Move and thus not necessarily the very
+	 * last Single Move! To obtain the very last Single Move, use
+	 * <code>GameStateExtension.getLastMoveFlat</code>.
+	 * 
 	 * @param player
 	 * @return the last move or <code>null</code>
 	 */
 	Move getLastMove(Player player);
 	
 	/**
-	 * Returns the current round number. The round 
-	 * number must be greater than or equal to
-	 * <code>INITIAL_ROUND_NUMBER</code>.
+	 * Returns the current round number. The round number must be greater than
+	 * or equal to <code>INITIAL_ROUND_NUMBER</code>.
+	 * 
 	 * @return the current round number
 	 */
 	int getCurrentRoundNumber();
 	
 	/**
-	 * Returns the player whose turn it is or <code>null</code>
-	 * if the game has not started or has ended.
+	 * Returns the player whose turn it is or <code>null</code> if the game has
+	 * not started or has ended.
+	 * 
 	 * @return the current player or <code>null</code>
 	 */
 	Player getCurrentPlayer();
