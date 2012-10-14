@@ -83,7 +83,13 @@ public class UnixPasswordFieldTest extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String s = new String(passwordField.getPassword());
-			JOptionPane.showMessageDialog(UnixPasswordFieldTest.this, "Your password is " + (s.isEmpty() ? "empty." : ": \"" + s + "\""));
+			String msg;
+			if (s.equals("your password")) {
+				msg = "Your password is correct.";
+			} else {
+				msg = "Your password is " + (s.isEmpty() ? "empty." : ": \"" + s + "\"");
+			}
+			JOptionPane.showMessageDialog(UnixPasswordFieldTest.this, msg);
 		}
 	}
 }
