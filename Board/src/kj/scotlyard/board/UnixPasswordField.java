@@ -123,10 +123,10 @@ public class UnixPasswordField extends JPasswordField {
 
 	@Override
 	protected void processFocusEvent(FocusEvent e) {
-		super.processFocusEvent(e);
 		if (e.getID() == FocusEvent.FOCUS_GAINED) {
 			clear();
 		}
+		super.processFocusEvent(e);
 	}
 	
 	@Override
