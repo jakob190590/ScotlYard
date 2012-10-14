@@ -80,6 +80,13 @@ public abstract class MovePreparer extends Observable {
 	// Feste Zugreihenfolge
 	private boolean fixedTurnOrder;
 	
+	/**
+	 * Wird gebraucht, um den Callback <code>selectTicket</code>
+	 * richtig zu parametrieren: Wenn der Spieler MrX ist und nicht
+	 * immer sichtbar ist, werden <i>alle</i> Tickets uebergeben!
+	 */
+	private boolean mrXAlwaysVisible;
+	
 	private Player player;
 	
 	private Map<Player, List<Move>> moves = new HashMap<>();
@@ -157,8 +164,17 @@ public abstract class MovePreparer extends Observable {
 	public void setFixedTurnOrder(boolean fixedTurnOrder) {
 		this.fixedTurnOrder = fixedTurnOrder;
 	}
-
 	
+	public boolean isMrXAlwaysVisible() {
+		return mrXAlwaysVisible;
+	}
+
+	public void setMrXAlwaysVisible(boolean mrXAlwaysVisible) {
+		this.mrXAlwaysVisible = mrXAlwaysVisible;
+	}
+	
+	
+
 	public void reset(Player player) {
 		logger.debug("reset for " + player);
 		moves.remove(player);
@@ -274,6 +290,10 @@ public abstract class MovePreparer extends Observable {
 	 */
 	public boolean nextStation(final StationVertex station) {
 		
+		if (station == null) {
+			throw new NullPointerException("Station must not be null.");
+		}
+		
 		logger.debug("next station for " + player);
 		
 		List<Move> moves = getMoves(player);
@@ -309,6 +329,7 @@ public abstract class MovePreparer extends Observable {
 			}
 		}
 		// schon vorgemerkt durch anderen Detective
+		// TODO reihenfolge der detectives kann eigentlich nicht auf diese weise vorhergesehen werden, das bestimmt nur die TurnPolicy!
 		for (DetectivePlayer d : gameState.getDetectives()) {
 			// Nachfolgende Detectives sind nicht relevant
 			if (d == player)
@@ -329,7 +350,11 @@ public abstract class MovePreparer extends Observable {
 		MovePolicy mp = new TheMovePolicy();
 		for (ConnectionEdge c : connections) {
 			for (Item i : allItems) {
-				if (i instanceof Ticket && mp.isTicketValidForConnection((Ticket) i, c)) {
+				if (i instanceof Ticket
+						// mit folgender zeile ist kein rueckschluss auf die von mrX
+						// gewaehlte verbindung (und somit die naechste station) moeglich
+						&& ((player instanceof MrXPlayer && !mrXAlwaysVisible)
+						|| (mp.isTicketValidForConnection((Ticket) i, c)))) {
 					tickets.add((Ticket) i);
 				}
 			}
@@ -338,6 +363,11 @@ public abstract class MovePreparer extends Observable {
 		// aktuell vorbereitet wird, schon benutzt sind!
 		for (Move n : moves) {
 			tickets.remove(n.getItem());
+		}
+		if (tickets.isEmpty()) {
+			logger.warn("nextStation: impossible station - no tickets");
+			errorImpossibleNextStation(station, player);
+			return false;
 		}
 		
 		Ticket ticket = selectTicket(tickets, player);
@@ -353,6 +383,7 @@ public abstract class MovePreparer extends Observable {
 			moves.add(m);
 			
 			// TODO when prepared moves of other subsequent detectives are foiled, reset these preparations
+			// TODO reihenfolge der detectives kann nicht vorhergesehen werden, das bestimmt nur die TurnPolicy!
 			
 			setChanged();
 			notifyObservers(new MovePreparationEvent(MovePreparationEvent.NEXT_STATION, player, getMove(player)));

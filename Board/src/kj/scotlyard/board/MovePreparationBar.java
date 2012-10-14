@@ -1,10 +1,28 @@
+/*
+ * ScotlYard -- A software implementation of the Scotland Yard board game
+ * Copyright (C) 2012  Jakob Schöttl
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package kj.scotlyard.board;
 
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.NumberFormat;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -16,13 +34,13 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.MrXPlayer;
 import kj.scotlyard.game.model.Player;
-import kj.scotlyard.game.model.PlayerListener;
 import kj.scotlyard.game.model.TurnListener;
 
 import org.apache.log4j.Logger;
@@ -31,17 +49,27 @@ import org.apache.log4j.Logger;
 public class MovePreparationBar extends JPanel {
 	
 	private static final Logger logger = Logger.getLogger(MovePreparationBar.class);
-	// TODO movePrepBar fehlen Setter/Getter fuer GameState, MovePreparer und nsm ...
-	private GameState gs;
-	private MovePreparer mPrep;
-	private Map<Integer, StationVertex> nsm; // Number Station Map
+
+	/** For stationNumberCardLayout: page with normal input */
+	private static final String NORMAL_INPUT = "normal input";
+	/** For stationNumberCardLayout: page with unix style password input */
+	private static final String UNIX_STYLE_PASSWORD_INPUT = "unix style password input";
+
+	/** Refers to kind of station number input */
+	private boolean hiddenInput;
 	
-	private Vector<Player> players;
-	private final PlayerListener playerListener = new PlayerListenerAdapter() {
+	private GameState gameState;
+	private MovePreparer movePreparer;
+	private Map<Integer, StationVertex> numberStationMap; // Number Station Map
+	
+	// List for ComboBox Model
+	private Vector<Player> players = new Vector<>();
+	private final PlayerListenerAdapter playerListener = new PlayerListenerAdapter() {
 		@Override
 		public void playerListChanged(GameState gameState) {
+			assert gameState == MovePreparationBar.this.gameState;
 			players.clear();
-			players.addAll(gs.getPlayers());
+			players.addAll(gameState.getPlayers());
 			cbPlayer.updateUI();
 			logger.debug("player list changed; player in move prep updated");
 		}
@@ -53,6 +81,7 @@ public class MovePreparationBar extends JPanel {
 		@Override
 		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
 				Player newPlayer) {
+			assert gameState == MovePreparationBar.this.gameState;
 			if (newPlayer instanceof MrXPlayer) {
 				cbPlayer.setEnabled(false);
 			} else {
@@ -60,74 +89,66 @@ public class MovePreparationBar extends JPanel {
 			}
 		}
 	};
-//	private final MoveListener moveListener = new MoveListener() {
-//		@Override
-//		public void movesCleard(GameState gameState) {
-//		}
-//		@Override
-//		public void moveUndone(GameState gameState, Move move) {
-//		}
-//		@Override
-//		public void moveDone(GameState gameState, Move move) {
-//		}
-//	};
 	
 	private final Observer movePreparerObserver = new Observer() {
 		@Override
 		public void update(Observable o, Object arg) {
+			assert o == movePreparer;
 			MovePreparationEvent mpe;
 			if (arg instanceof MovePreparationEvent && (mpe = (MovePreparationEvent) arg)
 					.getId() == MovePreparationEvent.SELECT_PLAYER) {
-				setSelectedPlayer(mpe.getPlayer());
+				cbPlayer.setSelectedItem(mpe.getPlayer());
 			}
 		}
 	};
 	
+	/** To switch between two kinds of station number input */
+	private CardLayout stationNumberCardLayout;
+	private JPanel panelStationNumber;
 	private JFormattedTextField ftfStationNumber;
+	private UnixPasswordField pwfStationNumber;
+	
 	private JComboBox<Player> cbPlayer;
+	private final PlayerComboBoxRenderer playerComboBoxRenderer = new PlayerComboBoxRenderer();
+	
 	
 	private final Action submitStationNumberAction = new SubmitStationNumberAction();
 	private final Action resetAction = new ResetAction();
 	private final Action selectPlayerAction = new SelectPlayerAction();
 	
-	
 	/**
 	 * Create the panel.
 	 */
-	public MovePreparationBar(GameState gs, MovePreparer mPrep,
-			Map<Integer, StationVertex> nsm) {
-		
-		this.gs = gs;
-		this.mPrep = mPrep;
-		this.nsm = nsm;
-		
-		mPrep.addObserver(movePreparerObserver);
-		
+	public MovePreparationBar() {
 		
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
-		players = new Vector<>(gs.getPlayers());
 		cbPlayer = new JComboBox<>(players);
 		cbPlayer.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					MovePreparationBar.this.mPrep.selectPlayer(
-							MovePreparationBar.this.gs.getCurrentPlayer());
+					MovePreparationBar.this.movePreparer.selectPlayer(
+							MovePreparationBar.this.gameState.getCurrentPlayer());
 				}
 			}
 		});
 		cbPlayer.setAction(selectPlayerAction);
-		// TODO cbMovePrepPlayer.setRenderer(aRenderer); // Implement ListCellRenderer: http://docs.oracle.com/javase/tutorial/uiswing/components/combobox.html#renderer
-		cbPlayer.setRenderer(new PlayerComboBoxRenderer(gs));
-		cbPlayer.setPreferredSize(new Dimension(330, 20));
-		gs.addPlayerListener(playerListener);
-		gs.addTurnListener(turnListener);
+		cbPlayer.setRenderer(playerComboBoxRenderer);
 		add(cbPlayer);
 		
-		ftfStationNumber = new JFormattedTextField();
+		panelStationNumber = new JPanel();
+		add(panelStationNumber);
+		stationNumberCardLayout = new CardLayout(0, 0);
+		panelStationNumber.setLayout(stationNumberCardLayout);
+		
+		ftfStationNumber = new JFormattedTextField(NumberFormat.getInstance());
+		panelStationNumber.add(ftfStationNumber, NORMAL_INPUT);
 		ftfStationNumber.setAction(submitStationNumberAction);
-		add(ftfStationNumber);
+		
+		pwfStationNumber = new UnixPasswordField();
+		panelStationNumber.add(pwfStationNumber, UNIX_STYLE_PASSWORD_INPUT);
+		pwfStationNumber.setAction(submitStationNumberAction);
 		
 		JButton btnMovePrepOk = new JButton("OK");
 		btnMovePrepOk.setAction(submitStationNumberAction);
@@ -136,9 +157,80 @@ public class MovePreparationBar extends JPanel {
 		JButton btnReset = new JButton("Reset");
 		btnReset.setAction(resetAction);
 		add(btnReset);
-
+		
+		setHiddenInput(false);
 	}
 	
+	// Getters/Setters
+	
+	public boolean isHiddenInput() {
+		return hiddenInput;
+	}
+
+	public void setHiddenInput(boolean hiddenInput) {
+		this.hiddenInput = hiddenInput;
+		if (hiddenInput) {
+			stationNumberCardLayout.show(panelStationNumber, UNIX_STYLE_PASSWORD_INPUT);
+		} else {
+			stationNumberCardLayout.show(panelStationNumber, NORMAL_INPUT);
+		}
+	}
+	
+	public GameState getGameState() {
+		return gameState;
+	}
+
+	public void setGameState(GameState gameState) {
+		if (gameState != this.gameState) {
+			if (this.gameState != null) {
+				// Player ComboBox
+				players.clear();
+				playerComboBoxRenderer.setGameState(null);
+				// unregister listeners/observers
+				this.gameState.removePlayerListener(playerListener);
+				this.gameState.removeTurnListener(turnListener);
+			}
+			this.gameState = gameState;
+			if (gameState != null) {
+				// Player ComboBox
+				players.addAll(gameState.getPlayers());
+				playerComboBoxRenderer.setGameState(gameState);
+				// register listeners/observers
+				gameState.addPlayerListener(playerListener);
+				gameState.addTurnListener(turnListener);
+			}
+			cbPlayer.updateUI();
+		}
+	}
+
+	public MovePreparer getMovePreparer() {
+		return movePreparer;
+	}
+
+	public void setMovePreparer(MovePreparer movePreparer) {
+		if (movePreparer != this.movePreparer) {
+			if (this.movePreparer != null) {
+				// unregister listeners/observers
+				this.movePreparer.deleteObserver(movePreparerObserver);
+			}
+			this.movePreparer = movePreparer;
+			if (movePreparer != null) {
+				// register listeners/observers
+				movePreparer.addObserver(movePreparerObserver);
+			}
+		}
+	}
+
+	public Map<Integer, StationVertex> getNumberStationMap() {
+		return numberStationMap;
+	}
+
+	public void setNumberStationMap(Map<Integer, StationVertex> numberStationMap) {
+		this.numberStationMap = numberStationMap;
+	}
+	
+	// Actions
+
 	private class SubmitStationNumberAction extends AbstractAction {
 		public SubmitStationNumberAction() {
 			putValue(NAME, "OK");
@@ -146,8 +238,35 @@ public class MovePreparationBar extends JPanel {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (mPrep.nextStation(nsm.get(Integer.parseInt(ftfStationNumber.getText())))) { // TODO vllt spaeter ftfStationNumber.getValue()
-				ftfStationNumber.setText(""); // oder setValue(null) ?
+			String input;
+			if (hiddenInput) {
+				input = new String(pwfStationNumber.getPassword());
+				pwfStationNumber.clear();
+			} else {
+				input = ftfStationNumber.getText();
+				// in diesem Fall wird das text feld spaeter geleert,
+				// oder auch nicht (bei ungueltiger eingabe)
+			}
+			
+			boolean wrongInput = false;
+			try {
+				int number = Integer.parseInt(input);
+				StationVertex station = numberStationMap.get(number);
+				if (movePreparer.nextStation(station)) { // && !hiddenInput <-- bevor ich das pruefe hab ich den text auch gesetzt oder?
+					ftfStationNumber.setText("");
+				}
+			} catch (NumberFormatException e1) {
+				logger.error("wrong user input for station number: number format exception");
+				wrongInput = true;
+			} catch (NullPointerException e1) {
+				logger.error("wrong user input for station number: station does not exist");
+				wrongInput = true;
+			}
+			
+			if (wrongInput) {
+				JOptionPane.showMessageDialog(MovePreparationBar.this,
+						"The station number is not valid.", "Invalid User Input",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
@@ -158,7 +277,7 @@ public class MovePreparationBar extends JPanel {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			mPrep.reset(getSelectedPlayer());
+			movePreparer.reset(movePreparer.getSelectedPlayer());
 			ftfStationNumber.setText(""); // oder setValue(null) ?
 		}
 	}
@@ -170,23 +289,7 @@ public class MovePreparationBar extends JPanel {
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			mPrep.selectPlayer((Player) cbPlayer.getSelectedItem());
-		}
-	}
-	
-	public Player getSelectedPlayer() {
-		return (Player) cbPlayer.getSelectedItem();
-	}
-	
-	public void setSelectedPlayer(Player player) {
-		cbPlayer.setSelectedItem(player);
-	}
-
-	@Override
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
-		for (Component c : getComponents()) {
-			c.setEnabled(enabled);
+			movePreparer.selectPlayer((Player) cbPlayer.getSelectedItem());
 		}
 	}
 }

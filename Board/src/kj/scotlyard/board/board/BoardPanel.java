@@ -150,6 +150,7 @@ public class BoardPanel extends JPanel {
 			MovePreparationEvent mpe;
 			if (arg instanceof MovePreparationEvent && (mpe = (MovePreparationEvent) arg)
 					.getId() == MovePreparationEvent.SELECT_PLAYER) {
+				logger.debug("MovePreparationEvent.SELECT_PLAYER");
 				for (Piece p : pieces.values()) {
 					p.setSelected(mpe.getPlayer() == p.getPlayer());
 				}
@@ -311,9 +312,12 @@ public class BoardPanel extends JPanel {
 
 	public void setRules(Rules rules) {
 		this.rules = rules;
-		MrXPlayer mrX = gameState.getMrX();
-		if (mrX != null)
-			updatePieceVisibility(pieces.get(mrX));
+		
+		MrXPlayer mrX;
+		Piece p;
+		if (gameState != null && (mrX = gameState.getMrX()) != null
+				&& (p = pieces.get(mrX)) != null)
+			updatePieceVisibility(p);
 	}
 
 	/**
@@ -411,8 +415,17 @@ public class BoardPanel extends JPanel {
 
 
 	public void setMovePreparer(MovePreparer movePreparer) {
-		this.movePreparer = movePreparer;
-		movePreparer.addObserver(movePreparerObserver);
+		if (movePreparer != this.movePreparer) {
+			if (this.movePreparer != null) {
+				// unregister listeners/observers
+				movePreparer.deleteObserver(movePreparerObserver);
+			}
+			this.movePreparer = movePreparer;
+			if (movePreparer != null) {
+				// register listeners/observers
+				movePreparer.addObserver(movePreparerObserver);
+			}
+		}
 	}
 
 	public Image getImage() {
@@ -454,7 +467,7 @@ public class BoardPanel extends JPanel {
 					(mrXAlwaysVisible ||
 					rules == null ||
 					rules.getGameStateAccessPolicy().getMrXUncoverMoveNumbers()
-					.contains(lmf.getMoveNumber())));
+							.contains(lmf.getMoveNumber())));
 		} else {
 			piece.setVisible(lmf != null);
 		}

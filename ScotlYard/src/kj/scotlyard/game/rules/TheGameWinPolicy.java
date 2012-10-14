@@ -27,9 +27,11 @@ import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.Player;
 
-public class TheGameWinPolicy implements GameWinPolicy {	
+public class TheGameWinPolicy implements GameWinPolicy {
 
 	private static final MovePolicy movePolicy = new TheMovePolicy();
+	
+	private static final TurnPolicy turnPolicy = new TheTurnPolicy();
 	
 	@Override
 	public GameWin isGameWon(GameState gameState, GameGraph gameGraph) {
@@ -42,20 +44,20 @@ public class TheGameWinPolicy implements GameWinPolicy {
 		if (mrXLastMove != null) {
 			
 			
-			// Detectives win wenn 
+			// Detectives win wenn
 			// - MrX umzingelt ist (TODO Beleg fehlt mir)
 			// - ein Detective auf MrX' Feld zieht
 			
-			// MrX wins wenn 
+			// MrX wins wenn
 			// - MrX auf letztem Feld (dieser Tafel) angekommen ist
-			// - Detectives nicht mehr ziehen koennen 
+			// - Detectives nicht mehr ziehen koennen
 			
 			// Reihenfolge der Tests/Bedingungspruefungen ist wichtig!
 					
 			
 			// mrX sicher auf letztem feld angekommen
 			if (mrXLastMove.getMoveNumber() >= 22) {
-				// er kann ja nur dorthin gezogen sein, 
+				// er kann ja nur dorthin gezogen sein,
 				// wenn da kein detective stand (MovePolicy)
 				return GameWin.MRX_WINS;
 			}
@@ -66,7 +68,7 @@ public class TheGameWinPolicy implements GameWinPolicy {
 			// 1.) immer nur den letzten detective move testen, oder
 			// 2.) den jeweils letzten move aller detectives, die nach mrX dran waren?
 			// loesungsmoeglichkeit: hinten anfangen: dann laeufts im normalfall
-			// auf 1.) raus, is aber trotzdem sicher wie 2.)		
+			// auf 1.) raus, is aber trotzdem sicher wie 2.)
 			Move move;
 			ListIterator<Move> it = allMoves.listIterator(allMoves.size());
 			while (it.hasPrevious() && (move = it.previous()) != mrXLastMove) {
@@ -76,7 +78,11 @@ public class TheGameWinPolicy implements GameWinPolicy {
 			}
 			
 			// mrX umzingelt
-			if (gameState.getCurrentPlayer() == mrX 
+			// wenn mrX dran kommen wuerde oder dran ist, UND umzingelt ist
+			// Weil der GameController laesst ihn ja gar nicht mehr drankommen, wenn er schon umzingelt ist
+			// und der macht das so, weil ich den unnoetigen Turn wechsel vermeiden wollte.
+			if ((gameState.getCurrentPlayer() == mrX
+					|| turnPolicy.getNextTurn(gameState, gameGraph).getPlayer() == mrX)
 					&& !movePolicy.canMove(gameState, gameGraph, mrX)) {
 				
 				// d.h. wenn jetzt wieder mrX dran ist,

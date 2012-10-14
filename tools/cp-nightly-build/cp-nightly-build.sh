@@ -12,7 +12,7 @@ mkdir -p "$2/ScotlYard"
 cp "$1/Board/graph-description" "$2/Board/"
 cp "$1/Board/initial-stations" "$2/Board/"
 cp "$1/Board/original-scotland-yard-board.png" "$2/Board/"
-cp "$1/Board/log4j.properties" "$2/Board/"
+cp "$1/Board/log4j-board.properties" "$2/Board/"
 cp "$1/Board/Run_Board.bat" "$2/Board/"
 cp -r "$1/Board/bin/" "$2/Board/"
 

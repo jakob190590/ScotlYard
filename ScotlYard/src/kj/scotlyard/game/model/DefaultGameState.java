@@ -33,9 +33,18 @@ public class DefaultGameState extends AbstractGameState {
 	private List<Move> moves;
 	
 
-	public DefaultGameState(GameState gameState) {		
+	/**
+	 * Erzeugt einen neuen GameState als einfachen Proxy
+	 * des angegebenen GameStates. Vorsicht, dies ist kein
+	 * Copy-Constructor! Eine Kopie des GameStates erhält
+	 * man über die Methode <code>copy()</code>.
+	 * @param gameState GameState, fuer den ein neuer
+	 * Proxy-GameState erzeugt wird
+	 */
+	public DefaultGameState(GameState gameState) {
 		this.gameState = gameState;
 		
+		// Read-only access to lists of the "real subject"
 		detectives = Collections.unmodifiableList(gameState.getDetectives());
 		moves = Collections.unmodifiableList(gameState.getMoves());
 		
@@ -47,7 +56,7 @@ public class DefaultGameState extends AbstractGameState {
 		gameState.addMoveListener(getMoveListenerInformer());
 	}
 	
-	/** 
+	/**
 	 * Getter, weil abgeleitete Klassen u.a.
 	 * in copy darauf zugreifen muessen.
 	 */

@@ -52,8 +52,11 @@ public abstract class AbstractGameState implements GameState {
 		public void currentRoundChanged(GameState gameState,
 				int oldRoundNumber, int newRoundNumber) {
 			for (TurnListener l : turnListeners) {
-				l.currentRoundChanged(AbstractGameState.this, oldRoundNumber,
-						newRoundNumber);
+				try {
+					l.currentRoundChanged(AbstractGameState.this, oldRoundNumber, newRoundNumber);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -61,8 +64,11 @@ public abstract class AbstractGameState implements GameState {
 		public void currentPlayerChanged(GameState gameState, Player oldPlayer,
 				Player newPlayer) {
 			for (TurnListener l : turnListeners) {
-				l.currentPlayerChanged(AbstractGameState.this, oldPlayer,
-						newPlayer);
+				try {
+					l.currentPlayerChanged(AbstractGameState.this, oldPlayer, newPlayer);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	};
@@ -73,7 +79,11 @@ public abstract class AbstractGameState implements GameState {
 		public void mrXChanged(GameState gameState, MrXPlayer oldMrX,
 				MrXPlayer newMrX) {
 			for (PlayerListener l : playerListeners) {
-				l.mrXChanged(AbstractGameState.this, oldMrX, newMrX);
+				try {
+					l.mrXChanged(AbstractGameState.this, oldMrX, newMrX);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -81,7 +91,11 @@ public abstract class AbstractGameState implements GameState {
 		public void detectiveRemoved(GameState gameState,
 				DetectivePlayer detective, int atIndex) {
 			for (PlayerListener l : playerListeners) {
-				l.detectiveRemoved(AbstractGameState.this, detective, atIndex);
+				try {
+					l.detectiveRemoved(AbstractGameState.this, detective, atIndex);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -89,7 +103,11 @@ public abstract class AbstractGameState implements GameState {
 		public void detectiveAdded(GameState gameState,
 				DetectivePlayer detective, int atIndex) {
 			for (PlayerListener l : playerListeners) {
-				l.detectiveAdded(AbstractGameState.this, detective, atIndex);
+				try {
+					l.detectiveAdded(AbstractGameState.this, detective, atIndex);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	};
@@ -100,22 +118,33 @@ public abstract class AbstractGameState implements GameState {
 		public void itemSetChanged(GameState gameState, Player player,
 				Set<Item> oldItems, Set<Item> newItems) {
 			for (ItemListener l : itemListeners) {
-				l.itemSetChanged(AbstractGameState.this, player, oldItems,
-						newItems);
+				try {
+					l.itemSetChanged(AbstractGameState.this, player, oldItems, newItems);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
 		@Override
 		public void itemRemoved(GameState gameState, Player player, Item item) {
 			for (ItemListener l : itemListeners) {
-				l.itemRemoved(AbstractGameState.this, player, item);
+				try {
+					l.itemRemoved(AbstractGameState.this, player, item);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
 		@Override
 		public void itemAdded(GameState gameState, Player player, Item item) {
 			for (ItemListener l : itemListeners) {
-				l.itemAdded(AbstractGameState.this, player, item);
+				try {
+					l.itemAdded(AbstractGameState.this, player, item);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	};
@@ -125,21 +154,33 @@ public abstract class AbstractGameState implements GameState {
 		@Override
 		public void movesCleard(GameState gameState) {
 			for (MoveListener l : moveListeners) {
-				l.movesCleard(AbstractGameState.this);
+				try {
+					l.movesCleard(AbstractGameState.this);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
 		@Override
 		public void moveUndone(GameState gameState, Move move) {
 			for (MoveListener l : moveListeners) {
-				l.moveUndone(AbstractGameState.this, move);
+				try {
+					l.moveUndone(AbstractGameState.this, move);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
 		@Override
 		public void moveDone(GameState gameState, Move move) {
 			for (MoveListener l : moveListeners) {
-				l.moveDone(AbstractGameState.this, move);
+				try {
+					l.moveDone(AbstractGameState.this, move);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	};
@@ -227,7 +268,7 @@ public abstract class AbstractGameState implements GameState {
 			return true;
 		}
 		if (obj instanceof GameState) {
-			GameState g = (GameState) obj;	
+			GameState g = (GameState) obj;
 			
 			if (getMrX() != g.getMrX()
 					&& (getMrX() == null
@@ -241,7 +282,7 @@ public abstract class AbstractGameState implements GameState {
 				return false;
 					
 			if (getCurrentPlayer() != g.getCurrentPlayer()
-					&& (getCurrentPlayer() == null 
+					&& (getCurrentPlayer() == null
 					|| !getCurrentPlayer().equals(g.getCurrentPlayer())))
 				return false;
 					
@@ -250,7 +291,7 @@ public abstract class AbstractGameState implements GameState {
 				
 			for (Player p : getPlayers()) {
 				Set<Item> i1 = getItems(p);
-				Set<Item> i2 = g.getItems(p);					
+				Set<Item> i2 = g.getItems(p);
 				if (i1 != i2 && (i1 == null || !i1.equals(i2)))
 					return false;
 			}

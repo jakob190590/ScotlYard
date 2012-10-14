@@ -18,7 +18,7 @@
 
 package kj.scotlyard.game.control.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
@@ -27,12 +27,11 @@ import kj.scotlyard.game.ai.AiListener;
 import kj.scotlyard.game.ai.detective.DetectiveAi;
 import kj.scotlyard.game.ai.mrx.MrXAi;
 import kj.scotlyard.game.control.GameStatus;
-import kj.scotlyard.game.control.impl.DefaultGameController;
 import kj.scotlyard.game.graph.GameGraph;
+import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.model.Game;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
-import kj.scotlyard.game.model.DefaultGame;
 import kj.scotlyard.game.rules.GameWin;
 import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
@@ -47,7 +46,7 @@ public class DefaultGameControllerTest {
 
 	Game g;
 	GameGraph gg;
-	DefaultGameController ctrl;	
+	DefaultGameController ctrl;
 	
 	GameStateExtension ext;
 	
@@ -60,36 +59,41 @@ public class DefaultGameControllerTest {
 
 	@Test
 	public final void testEquipGameStateRequester() {
-		Ai ai = new DetectiveAi() {			
+		Ai ai = new DetectiveAi() {
 			@Override
-			public void setGameState(GameState gameState) { }			
+			public void setGameState(GameState gameState) { }
 			@Override
-			public void setTimeLimit() { }			
+			public void setTimeLimit(int millis) { }
 			@Override
-			public void removeAiListener(AiListener listener) { }			
+			public void removeAiListener(AiListener listener) { }
 			@Override
 			public Move move() {
 				return null;
-			}			
+			}
 			@Override
 			public boolean isReady() {
-				return false; 
-			}			
+				return false;
+			}
 			@Override
 			public int getTimeLimit() {
 				return 0;
-			}			
+			}
 			@Override
 			public int getTimeLeft() {
 				return 0;
-			}			
+			}
 			@Override
-			public void decideNow() { }			
+			public void decideNow() { }
 			@Override
-			public void addAiListener(AiListener listener) { }			
+			public void addAiListener(AiListener listener) { }
 			@Override
 			public List<Move> getMoves() {
 				return null;
+			}
+			@Override
+			public void setGameGraph(GameGraph gameGraph) {
+				// TODO Auto-generated method stub
+				
 			}
 		};
 		ctrl.equipGameStateRequester(ai);
@@ -115,13 +119,18 @@ public class DefaultGameControllerTest {
 				return 0;
 			}
 			@Override
-			public void setTimeLimit() { }
+			public void setTimeLimit(int millis) { }
 			@Override
 			public void addAiListener(AiListener listener) { }
 			@Override
 			public void removeAiListener(AiListener listener) { }
 			@Override
-			public void setGameState(GameState gameState) { }			
+			public void setGameState(GameState gameState) { }
+			@Override
+			public void setGameGraph(GameGraph gameGraph) {
+				// TODO Auto-generated method stub
+				
+			}
 		};
 		ctrl.equipGameStateRequester(ai);
 		// kann leider ned pruefen, ob ai jetzt den richtigen hat, hoechstens durch debuggen

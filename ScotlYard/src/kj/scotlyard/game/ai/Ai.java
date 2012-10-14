@@ -19,18 +19,28 @@
 package kj.scotlyard.game.ai;
 
 import kj.scotlyard.game.control.GameStateRequester;
+import kj.scotlyard.game.graph.GameGraph;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 
 /**
  * Interface for any AI that calculates moves for player(s).
- * The AI calculation is guided by GameState listeners, 
+ * The AI calculation is guided by GameState listeners,
  * especially MoveListener. But the AI does not carry out
- * a move, it only provides the calculated move, see 
+ * a move, it only provides the calculated move, see
  * <code>move()</code>.
  * @author jakob190590
  *
  */
 public interface Ai extends GameStateRequester {
+	
+	/** Value UNKNOWN for <code>getTimeLeft()</code> */
+	int UNKNOWN_TIME = -1;
+	
+	@Override
+	void setGameState(GameState gameState);
+	
+	void setGameGraph(GameGraph gameGraph);
 
 	/**
 	 * Returns the calculated AI move for the current player.
@@ -61,13 +71,17 @@ public interface Ai extends GameStateRequester {
 	 * Set the time limit for the move calculation.
 	 * Note that this do not apply for a running calculation.
 	 * Call <code>decideNow()</code> in this case.
+	 * There is no guarantee the AI comes up with it's
+	 * result in time.
 	 * @param millis the time limit in milliseconds
 	 */
-	void setTimeLimit();
+	void setTimeLimit(int millis);
 	
 	
 	void addAiListener(AiListener listener);
 	
 	void removeAiListener(AiListener listener);
+	
+	// TODO Methode zum unlink/destroy, wo gameStateListener geloescht werden usw.
 	
 }
