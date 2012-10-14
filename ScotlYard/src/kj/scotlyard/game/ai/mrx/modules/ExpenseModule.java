@@ -18,22 +18,38 @@
 
 package kj.scotlyard.game.ai.mrx.modules;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import kj.scotlyard.game.ai.mrx.Alternative;
 import kj.scotlyard.game.ai.mrx.Rating;
+import kj.scotlyard.game.ai.mrx.SimpleMrXAi;
 import kj.scotlyard.game.graph.GameGraph;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Player;
+import kj.scotlyard.game.model.item.Item;
 
 public class ExpenseModule implements RatingModule {
 
 	@Override
 	public Map<Alternative, Rating> rate(GameState gameState,
 			GameGraph gameGraph, Player player, Set<Alternative> alternatives) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<Class<? extends Item>, Integer> itemCounts = SimpleMrXAi.getItemCounts(gameState, player);
+		Map<Alternative, Rating> result = new HashMap<>();
+		for (Alternative a : alternatives) {
+			// TODO rate by costs!!
+			double r = 1;
+			if (a.isDoubleMove()) {
+				// Double Move
+				
+			} else {
+				// Single Move
+				
+			}
+			result.put(a, new Rating(r));
+		}
+		return result;
 	}
 
 }
