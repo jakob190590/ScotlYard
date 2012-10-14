@@ -103,6 +103,11 @@ public abstract class ActionTools {
 	 * @param container
 	 */
 	public static void assignMnemonicsAutmatically(Container container) {
+		// TODO weitere params fuer:
+		// recursive for each Container
+		// preserveMnemonics when already assigned
+		// excludeAssignedMnemonics exclude already assigned mnemonics from the first
+		
 		Set<Integer> mnemonics = new HashSet<>(); // assigned mnemonics
 		for (Component c : container.getComponents()) {
 			if (c instanceof AbstractButton) {
