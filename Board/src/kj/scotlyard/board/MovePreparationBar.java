@@ -19,7 +19,6 @@
 package kj.scotlyard.board;
 
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -161,15 +160,6 @@ public class MovePreparationBar extends JPanel {
 		
 		setHiddenInput(false);
 	}
-	
-	@Override // TODO probleme, wenn was einzeln enabled werden soll..
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
-		for (Component c : getComponents()) {
-			c.setEnabled(enabled);
-		}
-	}
-	
 	
 	// Getters/Setters
 	

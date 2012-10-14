@@ -257,7 +257,6 @@ public class Board extends JFrame {
 			
 			logger.info(String.format("state changed: %s, %s", c.getStatus(), c.getWin()));
 			
-			movePreparationBar.setEnabled(c.getStatus() == GameStatus.IN_GAME);
 			setGameControllerActionsEnabled(c.getStatus());
 			if (c.getStatus() != GameStatus.IN_GAME)
 				showGameStatusAndWin(c.getStatus(), c.getWin());
