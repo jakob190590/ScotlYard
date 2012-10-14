@@ -37,6 +37,7 @@ import kj.scotlyard.game.graph.connection.UndergroundConnection;
 import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
 import kj.scotlyard.game.model.MrXPlayer;
+import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.BusTicket;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
@@ -125,16 +126,7 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		 *   weitere Alternativen hinzufuegen
 		 */
 		
-		// Anzahl der Items
-		Map<Class<? extends Item>, Integer> itemCounts = new HashMap<>();
-		itemCounts.put(DoubleMoveCard.class, 0);
-		itemCounts.put(TaxiTicket.class, 0);
-		itemCounts.put(BusTicket.class, 0);
-		itemCounts.put(UndergroundTicket.class, 0);
-		itemCounts.put(BlackTicket.class, 0);
-		for (Item i : getGameState().getItems(getGameState().getMrX())) {
-			itemCounts.put(i.getClass(), itemCounts.get(i.getClass()) + 1);
-		}
+		Map<Class<? extends Item>, Integer> itemCounts = getItemCounts(getGameState(), getGameState().getMrX());
 		
 		// Detective Positions fallen gleich weg
 		Set<StationVertex> detectivePositions = GameStateExtension
@@ -175,6 +167,24 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		alternatives.addAll(furtherAlternatives);
 		
 		return alternatives;
+	}
+
+	public static Map<Class<? extends Item>, Integer> getItemCounts(GameState gameState, Player player) {
+		Set<Item> items = gameState.getItems(player);
+		if (items == null) {
+			throw new IllegalArgumentException("No item set registered in GameState for the Player.");
+		}
+		// Anzahl der Items
+		Map<Class<? extends Item>, Integer> itemCounts = new HashMap<>();
+		itemCounts.put(DoubleMoveCard.class, 0);
+		itemCounts.put(TaxiTicket.class, 0);
+		itemCounts.put(BusTicket.class, 0);
+		itemCounts.put(UndergroundTicket.class, 0);
+		itemCounts.put(BlackTicket.class, 0);
+		for (Item i : items) {
+			itemCounts.put(i.getClass(), itemCounts.get(i.getClass()) + 1);
+		}
+		return itemCounts;
 	}
 	
 	protected Map<Alternative, Rating> getCumulativeRatings(Set<Alternative> alternatives) {
