@@ -1,4 +1,4 @@
-package kj.scotlyard.board;
+package kj.scotlyard.board.util;
 
 import java.awt.Component;
 import java.awt.Container;
