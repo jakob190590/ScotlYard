@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 
 import kj.scotlyard.board.metadata.GameMetaData;
 import kj.scotlyard.board.metadata.ItemTypeMetaData;
+import kj.scotlyard.board.util.ActionTools;
 import kj.scotlyard.game.model.item.Item;
 
 /**

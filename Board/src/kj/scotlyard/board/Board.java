@@ -18,8 +18,8 @@
 
 package kj.scotlyard.board;
 
-import static kj.scotlyard.board.ActionTools.isSelected;
-import static kj.scotlyard.board.ActionTools.setSelected;
+import static kj.scotlyard.board.util.ActionTools.isSelected;
+import static kj.scotlyard.board.util.ActionTools.setSelected;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
