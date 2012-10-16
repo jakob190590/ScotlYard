@@ -175,6 +175,9 @@ public abstract class ActionTools {
 		final Pattern anyUpperCaseChar = Pattern.compile("\\p{Upper}"); // Irgendein grosser Buchstabe
 		final Pattern lowerCaseWord = Pattern.compile("\\b\\p{Lower}\\w*"); // Kleiner Buchstabe am Wortanfang
 		final Pattern anyChar = Pattern.compile("\\w"); // Irgendein word char
+		final Pattern anyConsonant = Pattern.compile("\\w&&[^aeiou]"); // Konsonant, weil die glaub ich charakteristischer sind fuer ein wort, als vokale
+		final Pattern anyVowel = Pattern.compile("[aeiou]"); // Vokale in letzter Instanz
+		// TODO Consonant and Vowel noch einsetzen
 		final Pattern[] patterns = new Pattern[] { firstChar,
 				anyUpperCaseChar, lowerCaseWord, anyChar };
 				
