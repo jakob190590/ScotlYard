@@ -32,7 +32,7 @@ import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
-public class UnixPasswordFieldTest extends JFrame {
+public class UnixPasswordFieldTestFrame extends JFrame {
 
 	private JPanel contentPane;
 	private JPasswordField passwordField;
@@ -46,7 +46,7 @@ public class UnixPasswordFieldTest extends JFrame {
 			@Override
 			public void run() {
 				try {
-					UnixPasswordFieldTest frame = new UnixPasswordFieldTest();
+					UnixPasswordFieldTestFrame frame = new UnixPasswordFieldTestFrame();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,7 +58,7 @@ public class UnixPasswordFieldTest extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public UnixPasswordFieldTest() {
+	public UnixPasswordFieldTestFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 429, 92);
 		contentPane = new JPanel();
@@ -83,7 +83,8 @@ public class UnixPasswordFieldTest extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String s = new String(passwordField.getPassword());
-			JOptionPane.showMessageDialog(UnixPasswordFieldTest.this, "Your password is " + (s.isEmpty() ? "empty." : ": \"" + s + "\""));
+			JOptionPane.showMessageDialog(UnixPasswordFieldTestFrame.this, "Your password is " + (s.isEmpty() ? "empty." : ": \"" + s + "\""));
 		}
 	}
+	
 }
