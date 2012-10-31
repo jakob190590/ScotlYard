@@ -1,4 +1,4 @@
-package kj.scotlyard.board;
+package kj.scotlyard.board.util;
 
 import static java.awt.event.KeyEvent.VK_A;
 import static java.awt.event.KeyEvent.VK_E;
@@ -9,7 +9,7 @@ import static java.awt.event.KeyEvent.VK_X;
 import static javax.swing.Action.DISPLAYED_MNEMONIC_INDEX_KEY;
 import static javax.swing.Action.MNEMONIC_KEY;
 import static javax.swing.Action.NAME;
-import static kj.scotlyard.board.ActionTools.setNameAndMnemonic;
+import static kj.scotlyard.board.util.ActionTools.setNameAndMnemonic;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Container;
@@ -21,6 +21,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import kj.scotlyard.board.util.ActionTools;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;

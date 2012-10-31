@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ActionToolsTest.class })
+@SuiteClasses({ UnixPasswordFieldTest.class })
 public class AllTests {
 
 }

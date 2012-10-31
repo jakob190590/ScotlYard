@@ -1,14 +1,43 @@
+/*
+ * ScotlYard -- A software implementation of the Scotland Yard board game
+ * Copyright (C) 2012  Jakob Schöttl, Korbinian Eckstein
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package kj.scotlyard.game.ai.mrx;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
+import kj.scotlyard.game.ai.mrx.modules.RatingModule;
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.StationVertex;
+import kj.scotlyard.game.graph.connection.BusConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
+import kj.scotlyard.game.graph.connection.TaxiConnection;
+import kj.scotlyard.game.graph.connection.UndergroundConnection;
+import kj.scotlyard.game.model.GameState;
 import kj.scotlyard.game.model.Move;
+import kj.scotlyard.game.model.MrXPlayer;
+import kj.scotlyard.game.model.Player;
 import kj.scotlyard.game.model.item.BlackTicket;
 import kj.scotlyard.game.model.item.BusTicket;
 import kj.scotlyard.game.model.item.DoubleMoveCard;
@@ -17,38 +46,17 @@ import kj.scotlyard.game.model.item.TaxiTicket;
 import kj.scotlyard.game.model.item.Ticket;
 import kj.scotlyard.game.model.item.UndergroundTicket;
 import kj.scotlyard.game.util.GameStateExtension;
-import kj.scotlyard.game.util.MoveHelper;
 import kj.scotlyard.game.util.MoveProducer;
 import kj.scotlyard.game.util.SubMoves;
 
 import org.apache.log4j.Logger;
-import org.jgrapht.alg.BellmanFordShortestPath;
 
 public class SimpleMrXAi extends AbstractMrXAi {
 	
 	private final static Logger logger = Logger.getLogger(SimpleMrXAi.class);
 	
-	private static class Alternative {
-		public ConnectionEdge e1;
-		public StationVertex v1;
-		public ConnectionEdge e2;
-		public StationVertex v2;
-		public double costs;
-		public double rating;
-		public Alternative(ConnectionEdge e1, StationVertex v1, ConnectionEdge e2, StationVertex v2) {
-			this.e1 = e1;
-			this.v1 = v1;
-			this.e2 = e2;
-			this.v2 = v2;
-		}
-		public Alternative(ConnectionEdge e1, StationVertex v1) {
-			this(e1, v1, null, null);
-		}
-		public boolean isDoubleMove() {
-			return v2 != null;
-		}
-	}
-
+	private Map<RatingModule, Double> ratingModules = new HashMap<>();
+	
 	private Move result;
 
 	@Override
@@ -63,223 +71,216 @@ public class SimpleMrXAi extends AbstractMrXAi {
 		logger.info("begin calculation");
 		
 		
-		Set<Alternative> alternatives = _1_alternatives();
-		_2_rating(alternatives);
-		Alternative bestAlternative = _3_select(alternatives);
-		logger.info(String.format("alternative with best rating: doublemove=%b, rating=%f, costs=%f",
-				bestAlternative.isDoubleMove(), bestAlternative.rating, bestAlternative.costs));
+		Set<Alternative> alternatives = getAlternatives();
+		Map<Alternative, Rating> cumulativeRatings = getCumulativeRatings(alternatives);
+		List<Alternative> bestAlternatives = getBestAlternatives(cumulativeRatings);
 		
-		Move move = makeMove(bestAlternative);
-
+//		for (Alternative a : alternatives) {
+//			logger.debug("alternative: " + a);
+//		}
+//		logger.info(String.format("alternative with best rating: doublemove=%b, rating=%f, costs=%f",
+//				bestAlternative.isDoubleMove(), bestAlternative.rating, bestAlternative.costs));
 		
-		result = move;
+		if (bestAlternatives.isEmpty()) {
+			assert alternatives.isEmpty() : "Fehler in getBestAlternatives";
+			logger.error("alternativlos. mrX haette gar nicht mehr drankommen duerfen, oder in getAlternatives ist ein fehler");
+		} else {
+			// bei mehreren gleichwertigen moves: zufaellig waehlen
+			result = makeMove(bestAlternatives.get(new Random().nextInt(bestAlternatives.size())));
+		}
+		
 		finishCalculation();
 		logger.info("finish calculation");
 	}
 
-	protected Set<Alternative> _1_alternatives() {
-		// 1. Alle Stationen ermitteln, wo er hinfahren könnte (nicht vergessen: Tickets und DoubleMoves)
+	public static Set<Class<? extends Ticket>> getValidTicketTypes(ConnectionEdge connection) {
+		Set<Class<? extends Ticket>> result = new HashSet<>();
+		if (connection instanceof TaxiConnection) {
+			result.add(TaxiTicket.class);
+			result.add(BlackTicket.class);
+			return result;
+		}
+		if (connection instanceof BusConnection) {
+			result.add(BusTicket.class);
+			result.add(BlackTicket.class);
+			return result;
+		}
+		if (connection instanceof UndergroundConnection) {
+			result.add(UndergroundTicket.class);
+			result.add(BlackTicket.class);
+			return result;
+		}
+		if (connection instanceof FerryConnection) {
+			result.add(BlackTicket.class);
+			return result;
+		}
+		return result;
+	}
+
+	protected Set<Alternative> getAlternatives() {
+		// Alle Stationen ermitteln, wo MrX hinfahren könnte
 		/*
 		 * - Alle direkten Nachbarn als Alternativen eintragen
 		 * - Wenn DoubleMoveCard da ist: Alle direkten Nachbarn
 		 *   von allen bisher eingetragenen Alternativen als
 		 *   weitere Alternativen hinzufuegen
-		 * - Fuer jede Alternative:
-		 *    * Moeglichen Ticketeinsatz betrachten:
-		 *    * Alternative loeschen, wenn wegen Tickets nicht moeglich
-		 *    * Alternative bewerten, je nach BILLIGSTEM Ticketeinsatz
-		 * 
 		 */
 		
-		int nDoubleMoveCards = 0;
-		int nTaxiTickets = 0;
-		int nBusTickets = 0;
-		int nUndergroundTickets = 0;
-		int nBlackTickets = 0;
-		for (Item i : getGameState().getItems(getGameState().getMrX())) {
-			if (i instanceof DoubleMoveCard)    nDoubleMoveCards++;    else
-			if (i instanceof TaxiTicket)        nTaxiTickets++;        else
-			if (i instanceof BusTicket)         nBusTickets++;         else
-			if (i instanceof UndergroundTicket) nUndergroundTickets++; else
-			if (i instanceof BlackTicket)       nBlackTickets++;
-		}
+		Map<Class<? extends Item>, Integer> itemCounts = getItemCounts(getGameState(), getGameState().getMrX());
 		
-		Set<StationVertex> detectivePositions = GameStateExtension.getDetectivePositions(getGameState());
+		// Detective Positions fallen gleich weg
+		Set<StationVertex> detectivePositions = GameStateExtension
+				.getDetectivePositions(getGameState());
 		
+		// Erreichbar durch Single Move
 		Set<Alternative> alternatives = new HashSet<>();
 		Move lm = getGameState().getLastMove(getGameState().getMrX());
 		StationVertex startingPosition = lm.getStation();
 		for (ConnectionEdge e : startingPosition.getEdges()) {
 			StationVertex v = e.getOther(startingPosition);
-			if (!detectivePositions.contains(v))
-				alternatives.add(new Alternative(e, v));
+			if (!detectivePositions.contains(v)) {
+				for (Class<? extends Ticket> t : getValidTicketTypes(e)) {
+					if (itemCounts.get(t) > 0) {
+						alternatives.add(new Alternative(e, t, v));
+					}
+				}
+			}
 		}
 		
+		// Erreichbar durch Double Move
 		Set<Alternative> furtherAlternatives = new HashSet<>();
-		if (nDoubleMoveCards > 0) {
+		if (itemCounts.get(DoubleMoveCard.class) > 0) {
 			for (Alternative a : alternatives) {
-				for (ConnectionEdge e : a.v1.getEdges()) {
-					StationVertex v = e.getOther(startingPosition);
-					if (!detectivePositions.contains(v))
-						furtherAlternatives.add(new Alternative(a.e1, a.v1, e, v));
+				for (ConnectionEdge e : a.getVertex1().getEdges()) {
+					StationVertex v = e.getOther(a.getVertex1());
+					if (!detectivePositions.contains(v)) {
+						for (Class<? extends Ticket> t : getValidTicketTypes(e)) {
+							if (itemCounts.get(t) > ((a.getTicketType1() == t) ? 1 : 0)) {
+								furtherAlternatives.add(new Alternative(a.getEdge1(),
+										a.getTicketType1(), a.getVertex1(), e, t, v));
+							}
+						}
+					}
 				}
 			}
 		}
 		alternatives.addAll(furtherAlternatives);
 		
-		// Alternativen aussortieren/bewerten
-		Iterator<Alternative> it = alternatives.iterator();
-		while (it.hasNext()) {
-			Alternative a = it.next();
-			
-			// Annahme: Wir haben genug von allen Tickets (ausser BlackTicket!)
-			int nUsedBlackTicket = 0;
-			if (a.e1 instanceof FerryConnection) {
-				nUsedBlackTicket++;
-			}
-			if (a.e2 instanceof FerryConnection) {
-				nUsedBlackTicket++;
-			}
-			
-			// Move nicht nicht moeglich
-			if (nUsedBlackTicket > nBlackTickets) {
-				it.remove();
-				
-			// Double Move
-			} else if (a.isDoubleMove()) {
-				
-				if (nUsedBlackTicket == 2) {
-					// Zwei BlackTickets eingesetzt
-					a.costs = 1;
-				} else if (nUsedBlackTicket == 1) {
-					// Ein BlackTicket eingesetzt
-					a.costs = .8;
-				} else {
-					// Nur normale Tickets, aber halt Double Move
-					a.costs = .6;
-				}
-			
-			// Single Move
-			} else if (nUsedBlackTicket == 1) {
-				a.costs = .3;
-			} else {
-				// Nur normale Tickets
-				a.costs = 0;
-			}
-		}
-		
 		return alternatives;
 	}
-	
-	protected void _2_rating(Set<Alternative> alternatives) {
-		// 2. Für alle diese Stationen:
-	    //  * Shortest Path zu jedem Detektiv
-	    //  * Distanzen gesammelt bewerten
 
-		for (Alternative a : alternatives) {
-			StationVertex v = (a.isDoubleMove()) ? a.v2 : a.v1;
-			int distances[] = new int[getGameState().getDetectives().size()];
-			int i = 0;
-			for (StationVertex vd : GameStateExtension.getDetectivePositions(getGameState())) {
-				// TODO eigentlich brauch ich ALLE shortest paths
-				// TODO und auch die nicht shortest path, weil ich shortest paths mit ferry conn nich nutzten kann
-				List<ConnectionEdge> path = BellmanFordShortestPath.findPathBetween(getGameGraph().getGraph(), v, vd);
-				
-				// zaehlen, wie viele ferry conns der pfad enthaelt
-				int nFerryConnections = 0;
-				for (ConnectionEdge e : path) {
-					if (e instanceof FerryConnection) {
-						nFerryConnections++;
-					}
-				}
-				// abschaetzung: distanz ist im schnitt 4 mal (2 x 3 mal, 1 x 5 mal) so lang auf normalem wege
-				distances[i] = path.size() + nFerryConnections * 3;
-				i++;
-			}
-			
-			double rating = 0;
-			for (int d : distances) {
-				rating += 1. / (d * d);
-			}
-			rating /= distances.length;
-			a.rating = 1 - rating;
+	public static Map<Class<? extends Item>, Integer> getItemCounts(GameState gameState, Player player) {
+		Set<Item> items = gameState.getItems(player);
+		if (items == null) {
+			throw new IllegalArgumentException("No item set registered in GameState for the Player.");
 		}
+		// Anzahl der Items
+		Map<Class<? extends Item>, Integer> itemCounts = new HashMap<>();
+		itemCounts.put(DoubleMoveCard.class, 0);
+		itemCounts.put(TaxiTicket.class, 0);
+		itemCounts.put(BusTicket.class, 0);
+		itemCounts.put(UndergroundTicket.class, 0);
+		itemCounts.put(BlackTicket.class, 0);
+		for (Item i : items) {
+			itemCounts.put(i.getClass(), itemCounts.get(i.getClass()) + 1);
+		}
+		return itemCounts;
 	}
 	
-	protected Alternative _3_select(Set<Alternative> alternatives) {
-		// 3. Station mit der günstigsten Bewertung wird ausgewählt
-		Alternative best = new Alternative(null, null); // nur um den anfangswert 0 fuer rating zu haben
+	protected Map<Alternative, Rating> getCumulativeRatings(Set<Alternative> alternatives) {
+		
+		// Die Rating-Ergebnisse aller Module in Liste eintragen
+		List<Map<Alternative, Rating>> allRatings = new LinkedList<>();
+		for (Map.Entry<RatingModule, Double> entry : ratingModules.entrySet()) {
+			RatingModule rm = entry.getKey();
+			Double d = entry.getValue();
+			double weight = (d == null) ? 1 : d;
+			allRatings.add(rm.rate(getGameState(), getGameGraph(), getGameState().getCurrentPlayer(), alternatives));
+		}
+		
+		// Gesamt-Ratings berechnen
+		Map<Alternative, Rating> cumulativeRatings = new HashMap<>();
 		for (Alternative a : alternatives) {
-			// TODO hast schon recht korbi, mit ner schwelle waers wahrscheinlich besser, aber fuers erste mach ichs mal so
-			if (a.rating * (1 - a.costs) > best.rating * (1 - best.costs)) {
-				best = a;
+			double r = 1;
+//			double r = 0;
+			for (Map<Alternative, Rating> map : allRatings) {
+				r *= map.get(a).rating; // ohne gewichtung * rechnen
+//				r += map.get(a).rating; // ohne gewichtung summe bilden (fuer durchschnitt)
+				// TODO korbi, deine hier, weight mit einbeziehen!
+			}
+//			r /= ratingModules.size(); // fuer durchschnitt
+			cumulativeRatings.put(a, new Rating(r));
+		}
+		
+		return cumulativeRatings;
+	}
+	
+	protected List<Alternative> getBestAlternatives(Map<Alternative, Rating> cumulativeRatings) {
+		List<Alternative> bestAlternatives = new ArrayList<>();
+		Rating bestRating = new Rating(0);
+		for (Map.Entry<Alternative, Rating> entry : cumulativeRatings.entrySet()) {
+			Rating r = entry.getValue();
+			if (r.equals(bestRating)) {
+				// Genau gleiches Rating
+				bestAlternatives.add(entry.getKey());
+			} else if (r.compareTo(bestRating) > 0) {
+				// r > bisher bestes Rating
+				bestRating = r;
+				bestAlternatives.clear();
+				bestAlternatives.add(entry.getKey());
 			}
 		}
-		return best;
+		logger.info(bestAlternatives.size() + " alternatives with best rating: " + bestRating);
+		return bestAlternatives;
 	}
+	
 	
 	private Move makeMove(Alternative bestAlternative) {
-		Ticket t1 = null;
-		Ticket t2 = null;
-		if (bestAlternative.e1 instanceof FerryConnection) {
-			t1 = (Ticket) GameStateExtension.getItem(getGameState(),
-					getGameState().getMrX(), BlackTicket.class);
-		}
-//		t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
+		GameState gs = getGameState();
+		MrXPlayer mrX = gs.getMrX();
+		
+		int roundNumber = gs.getCurrentRoundNumber();
+		int moveNumber = GameStateExtension.getLastMoveFlat(gs, mrX).getMoveNumber() + 1;
+		
+		Ticket t1 = (Ticket) GameStateExtension.getItem(gs, mrX, bestAlternative.getTicketType1());
+		assert t1 != null : "getAlternatives gibt wohl ungueltige alternativen";
+		
 		Move m;
 		if (bestAlternative.isDoubleMove()) {
-			if (bestAlternative.e2 instanceof FerryConnection) {
-				t2 = (Ticket) GameStateExtension.getItem(getGameState(),
-						getGameState().getMrX(), BlackTicket.class);
-			}
-
-			if (t1 == null) {
-				if (bestAlternative.rating < .9) {
-					t1 = (Ticket) GameStateExtension.getItem(getGameState(),
-							getGameState().getMrX(), BlackTicket.class);
-				}
-				if (t1 == null) {
-					t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
-				}
-			}
-			if (t2 == null) {
-				if (bestAlternative.rating < .85) {
-					t2 = (Ticket) GameStateExtension.getItem(getGameState(),
-							getGameState().getMrX(), BlackTicket.class);
-				}
-				if (t2 == null) {
-					t2 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
-				}
-			}
+			DoubleMoveCard card = (DoubleMoveCard) GameStateExtension.getItem(gs,
+					mrX, DoubleMoveCard.class);
+			assert card != null : "getAlternatives gibt wohl ungueltige alternativen";
 			
-//			t2 = MoveHelper.cheapTicket(bestAlternative.e2, getGameState().getItems(getGameState().getMrX()));
+			Set<Item> items = new HashSet<>(gs.getItems(mrX)); // TODO javadoc von getItems: note that ItemsSet in a gameState is read only
+			items.remove(t1);
+			Ticket t2 = (Ticket) GameStateExtension.getItem(gs, mrX, bestAlternative.getTicketType2());
+			assert t2 != null : "getAlternatives gibt wohl ungueltige alternativen";
 			
-			DoubleMoveCard card = (DoubleMoveCard) GameStateExtension.getItem(getGameState(),
-					getGameState().getMrX(), DoubleMoveCard.class);
 			SubMoves sms = new SubMoves()
-					.add(bestAlternative.v1, bestAlternative.e1, t1)
-					.add(bestAlternative.v2, bestAlternative.e2, t2);
-			m = MoveProducer.createMultiMove(getGameState().getMrX(),
-					getGameState().getCurrentRoundNumber(),
-					getGameState().getLastMove(getGameState().getMrX()).getMoveNumber() + 1,
+					.add(bestAlternative.getVertex1(), bestAlternative.getEdge1(), t1)
+					.add(bestAlternative.getVertex2(), bestAlternative.getEdge2(), t2);
+			m = MoveProducer.createMultiMove(mrX, roundNumber, moveNumber,
 					card, sms);
 			
 		} else {
-			if (t1 == null) {
-				if (bestAlternative.rating < .9) {
-					t1 = (Ticket) GameStateExtension.getItem(getGameState(),
-							getGameState().getMrX(), BlackTicket.class);
-				}
-				if (t1 == null) { // rating gut genug fuer cheap ticket ODER offenbar keine blackticket mehr
-					t1 = MoveHelper.cheapTicket(bestAlternative.e1, getGameState().getItems(getGameState().getMrX()));
-				}
-			}
-			m = MoveProducer.createSingleMove(getGameState().getMrX(),
-					getGameState().getCurrentRoundNumber(),
-					getGameState().getLastMove(getGameState().getMrX()).getMoveNumber() + 1,
-					bestAlternative.v1, bestAlternative.e1, t1);
+			m = MoveProducer.createSingleMove(mrX, roundNumber, moveNumber,
+					bestAlternative.getVertex1(), bestAlternative.getEdge1(),
+					t1);
 		}
 		return m;
+	}
+
+	public void addRatingModule(RatingModule ratingModule, Double weight) {
+		// TODO check weight! -> IllegalArgumentException
+		ratingModules.put(ratingModule, weight);
+	}
+	
+	public void addRatingModule(RatingModule ratingModule) {
+		addRatingModule(ratingModule, null);
+	}
+	
+	public void removeRatingModule(RatingModule ratingModule) {
+		ratingModules.remove(ratingModule);
 	}
 
 }

@@ -18,8 +18,6 @@
 
 package kj.scotlyard.board;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.InputMethodEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JPasswordField;
@@ -32,16 +30,12 @@ import javax.swing.UIManager;
  * </p>
  * <tt>-s</tt> silent, no echo; <tt>-p</tt> prompt text, not implemented here of
  * course; into <tt>VARIABLE</tt>, can be retrieved by
- * <code>getPassword()</code>. Once the password field get the focus, it loses
- * the password! I think this is a reasonable way to give the user the chance to
- * clear the input.
- * 
- * Neither copy, cut nor paste are supported.
+ * <code>getPassword()</code>. Neither copy, cut nor paste are supported.
  * 
  * Note that there is <i>no</i> protection mechanism against spy progs which
  * look into the program memory.
  * 
- * @author jakob190590
+ * @author Jakob Schöttl
  * 
  */
 @SuppressWarnings("serial")
@@ -81,21 +75,7 @@ public class UnixPasswordField extends JPasswordField {
 	}
 
 	@Override
-	protected void processInputMethodEvent(InputMethodEvent e) {
-		// Vllt haette eine perfekte Loesung auch hiermit zu tun?
-		super.processInputMethodEvent(e);
-	}
-
-	@Override
 	protected void processKeyEvent(KeyEvent e) {
-		/*
-		 * Bin mir nicht sicher, wie man so ein Unix password field
-		 * erzeugt, wenn man ein Swing Profi ist, und hab auch keine
-		 * Lust jetzt, da nachzuforschen.
-		 * Momentan sieht es ganz gut aus, so wie es jetzt ist.
-		 * 
-		 */
-//		super.processKeyEvent(e);
 		if (e.getID() == KeyEvent.KEY_TYPED) {
 			char c = e.getKeyChar();
 			switch (c) {
@@ -122,14 +102,6 @@ public class UnixPasswordField extends JPasswordField {
 	}
 
 	@Override
-	protected void processFocusEvent(FocusEvent e) {
-		if (e.getID() == FocusEvent.FOCUS_GAINED) {
-			clear();
-		}
-		super.processFocusEvent(e);
-	}
-	
-	@Override
 	public void cut() {
 		provideErrorFeedback();
 	}
@@ -150,6 +122,14 @@ public class UnixPasswordField extends JPasswordField {
 	 */
 	public void clear() {
 		password.setLength(0);
+	}
+	
+	/**
+	 * Check weather the password is blank.
+	 * @return <code>true</code> if the password is empty
+	 */
+	public boolean isPasswordEmpty() {
+		return password.length() == 0;
 	}
 
 }
