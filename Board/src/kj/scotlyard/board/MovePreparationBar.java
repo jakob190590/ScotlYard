@@ -20,6 +20,8 @@ package kj.scotlyard.board;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
@@ -149,6 +151,13 @@ public class MovePreparationBar extends JPanel {
 		pwfStationNumber = new UnixPasswordField();
 		panelStationNumber.add(pwfStationNumber, UNIX_STYLE_PASSWORD_INPUT);
 		pwfStationNumber.setAction(submitStationNumberAction);
+		pwfStationNumber.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				// Passwort loeschen, wenn man mit dem Curser reingeht
+				pwfStationNumber.clear();
+			}
+		});
 		
 		JButton btnMovePrepOk = new JButton("OK");
 		btnMovePrepOk.setAction(submitStationNumberAction);
