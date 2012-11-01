@@ -32,11 +32,11 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
-import org.apache.log4j.Logger;
-
 import kj.scotlyard.board.layout.PercentalBounds;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.Player;
+
+import org.apache.log4j.Logger;
 
 @SuppressWarnings("serial")
 public class VisualStation extends JComponent implements PercentalBounds {
@@ -51,7 +51,7 @@ public class VisualStation extends JComponent implements PercentalBounds {
 		POSSIBLE_NEXT_STATION,
 		
 		/** Mark type for an impossible next station in an upcoming move */
-		IMPOSSIBLE_NEXT_STATION,		
+		IMPOSSIBLE_NEXT_STATION,
 		
 		/** Mark type for the designated next station in an upcoming move */
 		DESIGNATED_NEXT_STATION,
@@ -80,7 +80,7 @@ public class VisualStation extends JComponent implements PercentalBounds {
 		public boolean equals(Object obj) {
 			if (this == obj)
 				return true;
-			if (obj instanceof Marking) {				
+			if (obj instanceof Marking) {
 				Marking other = (Marking) obj;
 				if (type == other.type && player == other.player)
 					return true;
@@ -228,6 +228,14 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	// Markings sind NICHT kombinierbar (Zweierpotenzen mit bitweisem ODER |)!
 	// Grund: Verbindung mit Player
 	// Dadurch wuerde das Interface nur unverstaendlicher.
+	
+	/**
+	 * Enable specified marking. // TODO
+	 * @param type the mark type
+	 */
+	public void enableMarking(MarkType type) {
+		enableMarking(type, null);
+	}
 	
 	/**
 	 * Enable specified marking.
