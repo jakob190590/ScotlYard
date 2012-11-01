@@ -96,6 +96,7 @@ import kj.scotlyard.game.rules.Rules;
 import kj.scotlyard.game.rules.TheRules;
 import kj.scotlyard.game.util.GameStateExtension;
 import kj.scotlyard.game.util.MoveProducer;
+import kj.scotlyard.game.util.MrXTracker;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -159,6 +160,9 @@ public class Board extends JFrame {
 	private MovePreparer movePreparer;
 	
 	private Dimension originalImageSize;
+	
+	private Map<StationVertex, VisualStation> vsm;
+	private MrXTracker mrXTracker;
 	
 	private TicketSelectionDialog ticketSelectionDialogMrX = new TicketSelectionDialog(this, MrXPlayer.class);
 	private TicketSelectionDialog ticketSelectionDialogDetectives = new TicketSelectionDialog(this, DetectivePlayer.class);
@@ -897,6 +901,8 @@ public class Board extends JFrame {
 		this.rules = rules;
 		boardPanel.setRules(rules);
 		historyPanel.setRules(rules);
+		
+		mrXTracker = new MrXTracker(gameState, gameGraph, rules);
 	}
 
 	protected GameController getGameController() {
@@ -933,6 +939,8 @@ public class Board extends JFrame {
 			historyPanel.setGameState(gameState);
 			panelPlayers.setGameState(gameState);
 			
+			mrXTracker = new MrXTracker(gameState, gameGraph, rules);
+			
 			if (gameState != null) {
 				// register listeners/observers
 				gameState.addMoveListener(moveListener);
@@ -950,6 +958,8 @@ public class Board extends JFrame {
 		this.gameGraph = gameGraph;
 		movePreparer.setGameGraph(gameGraph);
 		boardPanel.setGameGraph(gameGraph);
+		
+		mrXTracker = new MrXTracker(gameState, gameGraph, rules);
 	}
 
 	protected Map<Integer, StationVertex> getNumberStationMap() {
