@@ -69,6 +69,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.undo.UndoManager;
 
 import kj.scotlyard.board.board.BoardPanel;
+import kj.scotlyard.board.board.VisualStation;
+import kj.scotlyard.board.board.VisualStation.MarkType;
 import kj.scotlyard.board.layout.AspectRatioGridLayout;
 import kj.scotlyard.board.metadata.GameMetaData;
 import kj.scotlyard.game.ai.detective.DetectiveAi;
@@ -230,6 +232,23 @@ public class Board extends JFrame {
 			// Stoerend, dadurch das (nicht ganz zuverlaessige) counting nicht funktioniert (MoveDetectivesNowAction)
 		}
 	};
+	
+	private final MoveListener moveListenerForMrXTracker = new MoveListener() {
+		@Override
+		public void movesCleard(GameState gameState) {
+			resetMarkingsForPossiblePositions();
+		}
+		@Override
+		public void moveUndone(GameState gameState, Move move) {
+			if (isSelected(showPossiblePositions))
+				updateMarkingsForPossiblePositions();
+		}
+		@Override
+		public void moveDone(GameState gameState, Move move) {
+			if (isSelected(showPossiblePositions))
+				updateMarkingsForPossiblePositions();
+		}
+	};
 
 	private final TurnListener turnListener = new TurnListener() {
 		@Override
@@ -271,7 +290,7 @@ public class Board extends JFrame {
 	private final Action aboutAction = new AboutAction();
 	private HistoryPanel historyPanel;
 	private PlayerPanel panelPlayers;
-
+	private final Action showPossiblePositions = new ShowPossiblePositions();
 
 
 	/**
@@ -503,6 +522,10 @@ public class Board extends JFrame {
 		JMenuItem mntmZoomNormal = new JMenuItem("Zoom Normal");
 		mntmZoomNormal.setAction(zoomNormalAction);
 		mnZoom.add(mntmZoomNormal);
+		
+		JCheckBoxMenuItem chckbxmntmShowPossiblePositions = new JCheckBoxMenuItem("Show Possible Positions");
+		chckbxmntmShowPossiblePositions.setAction(showPossiblePositions);
+		mnView.add(chckbxmntmShowPossiblePositions);
 		
 		JMenu mnErnsthaft = new JMenu("Ernsthaft");
 		menuBar.add(mnErnsthaft);
@@ -836,6 +859,22 @@ public class Board extends JFrame {
 		}
 		return null;
 	}
+	
+	private void updateMarkingsForPossiblePositions() {
+		resetMarkingsForPossiblePositions();
+		Set<StationVertex> possiblePositions = mrXTracker.getPossiblePositions();
+		logger.debug(possiblePositions.size() + " possible positions of MrX");
+		for (StationVertex s : possiblePositions) {
+			vsm.get(s).enableMarking(MarkType.POSSIBLE_POSITION);
+		}
+		boardPanel.repaint();
+	}
+	public void resetMarkingsForPossiblePositions() {
+		for (VisualStation vs : vsm.values()) {
+			vs.disableAllMarkings(MarkType.POSSIBLE_POSITION);
+		}
+		boardPanel.repaint();
+	}
 
 	/**
 	 * Try to carry out the specified move.
@@ -930,6 +969,7 @@ public class Board extends JFrame {
 			if (this.gameState != null) {
 				// unregister listeners/observers
 				this.gameState.removeMoveListener(moveListener);
+				this.gameState.removeMoveListener(moveListenerForMrXTracker);
 				this.gameState.removeTurnListener(turnListener);
 			}
 			this.gameState = gameState;
@@ -944,6 +984,7 @@ public class Board extends JFrame {
 			if (gameState != null) {
 				// register listeners/observers
 				gameState.addMoveListener(moveListener);
+				gameState.addMoveListener(moveListenerForMrXTracker);
 				gameState.addTurnListener(turnListener);
 			}
 		}
@@ -1045,7 +1086,7 @@ public class Board extends JFrame {
 		for (JComponent c : bgl.getVisualComponents()) {
 			boardPanel.add(c);
 		}
-		boardPanel.buildVisualStationMap();
+		vsm = boardPanel.buildVisualStationMap();
 		
 		Map<Integer, StationVertex> numberStationMap = bgl.getNumberStationMap();
 		
@@ -1588,6 +1629,21 @@ public class Board extends JFrame {
 					"along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</p>" +
 					"</html>",
 					"About", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+	private class ShowPossiblePositions extends AbstractAction {
+		public ShowPossiblePositions() {
+			putValue(NAME, "Show Possible Positions");
+			putValue(SHORT_DESCRIPTION, "Show Possible Positions of MrX");
+			// mnemonic: kommt drauf an, in welchem menue die action sein wird
+			putValue(SELECTED_KEY, true);
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (isSelected(this))
+				updateMarkingsForPossiblePositions();
+			else
+				resetMarkingsForPossiblePositions();
 		}
 	}
 }

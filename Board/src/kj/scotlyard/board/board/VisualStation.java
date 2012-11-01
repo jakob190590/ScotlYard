@@ -133,7 +133,8 @@ public class VisualStation extends JComponent implements PercentalBounds {
 					// TODO draw markings
 					switch (type) {
 					case POSSIBLE_POSITION:
-						
+						g.setColor(Color.YELLOW);
+						g2D.fillOval(4, 4, getWidth() - 8, getHeight() - 8);
 						break;
 
 					default:

@@ -327,7 +327,7 @@ public class BoardPanel extends JPanel {
 	 * are added to or removed from this Container.
 	 */
 	// Must be called, after all VisualComponents of a Graph are added to the component
-	public void buildVisualStationMap() {
+	public Map<StationVertex, VisualStation> buildVisualStationMap() {
 		for (Component c : getComponents()) {
 			if (c instanceof VisualStation) {
 				VisualStation vs = (VisualStation) c;
@@ -343,6 +343,8 @@ public class BoardPanel extends JPanel {
 				visualStations.put(vs.getStation(), vs);
 			}
 		}
+		
+		return visualStations;
 	}
 
 	public GameState getGameState() {
