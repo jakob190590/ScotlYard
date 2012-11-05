@@ -32,11 +32,11 @@ import java.util.Set;
 
 import javax.swing.JComponent;
 
-import org.apache.log4j.Logger;
-
 import kj.scotlyard.board.layout.PercentalBounds;
 import kj.scotlyard.game.graph.StationVertex;
 import kj.scotlyard.game.model.Player;
+
+import org.apache.log4j.Logger;
 
 @SuppressWarnings("serial")
 public class VisualStation extends JComponent implements PercentalBounds {
@@ -51,7 +51,7 @@ public class VisualStation extends JComponent implements PercentalBounds {
 		POSSIBLE_NEXT_STATION,
 		
 		/** Mark type for an impossible next station in an upcoming move */
-		IMPOSSIBLE_NEXT_STATION,		
+		IMPOSSIBLE_NEXT_STATION,
 		
 		/** Mark type for the designated next station in an upcoming move */
 		DESIGNATED_NEXT_STATION,
@@ -80,7 +80,7 @@ public class VisualStation extends JComponent implements PercentalBounds {
 		public boolean equals(Object obj) {
 			if (this == obj)
 				return true;
-			if (obj instanceof Marking) {				
+			if (obj instanceof Marking) {
 				Marking other = (Marking) obj;
 				if (type == other.type && player == other.player)
 					return true;
@@ -254,8 +254,7 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	 * @param type the mark type
 	 */
 	public void disableAllMarkings(MarkType type) { // TODO vllt noch umbenennen: All weg.
-		Iterator<Marking> it = markings.iterator();
-		while (it.hasNext()) {
+		for (Iterator<Marking> it = markings.iterator(); it.hasNext();) {
 			if (it.next().type == type) {
 				it.remove();
 			}
@@ -268,8 +267,7 @@ public class VisualStation extends JComponent implements PercentalBounds {
 	 * @param player the player for which the marking is
 	 */
 	public void disableAllMarkings(Player player) {
-		Iterator<Marking> it = markings.iterator();
-		while (it.hasNext()) {
+		for (Iterator<Marking> it = markings.iterator(); it.hasNext();) {
 			if (it.next().player == player) {
 				it.remove();
 			}

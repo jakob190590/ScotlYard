@@ -57,7 +57,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 		
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == this) {				
+			if (obj == this) {
 				return true;
 			}
 			if (obj instanceof PlayerNumberKey) {
@@ -75,7 +75,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 		
 		List<DetectivePlayer> list;
 
-		public DetectiveList() { 
+		public DetectiveList() {
 			list = new LinkedList<>();
 		}
 		
@@ -155,8 +155,8 @@ public class DefaultGame extends AbstractGameState implements Game {
 		
 		/**
 		 * This method not only adds the Move to the list
-		 * but also seals it (<code>seal()</code>)! Move 
-		 * is Sealable because moves once added to the 
+		 * but also seals it (<code>seal()</code>)! Move
+		 * is Sealable because moves once added to the
 		 * history must not be alterable.
 		 * @param e the move to add
 		 */
@@ -166,16 +166,16 @@ public class DefaultGame extends AbstractGameState implements Game {
 				throw new IllegalArgumentException("This Move is already in the list!");
 			}
 			
-			// Spaetestens hier: Es wuerd uns grad noch fehlen, wenn jmd z.B. 
+			// Spaetestens hier: Es wuerd uns grad noch fehlen, wenn jmd z.B.
 			// Move Number aendert, die wir im folgenden so schoen mappen.
-			e.seal();			
+			e.seal();
 			
 			for (Move m : getMovesWithMoveNumber(e)) {
 				movesByMoveNumber.put(new PlayerNumberKey(m.getPlayer(), m.getMoveNumber()), m);
 			}
 			movesByRoundNumber.put(new PlayerNumberKey(e.getPlayer(), e.getRoundNumber()), e);
 			
-			if (list.add(e)) {				
+			if (list.add(e)) {
 				getMoveListenerInformer().moveDone(DefaultGame.this, e);
 				return true;
 			}
@@ -214,7 +214,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 			movesByMoveNumber.clear();
 			movesByRoundNumber.clear();
 			
-			getMoveListenerInformer().movesCleard(DefaultGame.this);			
+			getMoveListenerInformer().movesCleard(DefaultGame.this);
 		}
 		
 		
@@ -230,7 +230,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 		 * Auch eine Art Copy constructor:
 		 * Es wird fuer intern ein neuer Set
 		 * angelegt, der die Elemente von den
-		 * uebergebenen items enthaelt. 
+		 * uebergebenen items enthaelt.
 		 * @param player
 		 * @param items
 		 */
@@ -249,7 +249,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 		}
 
 		@Override
-		public Iterator<Item> iterator() {			
+		public Iterator<Item> iterator() {
 			return new Iterator<Item>() {
 				
 				private Iterator<Item> it = set.iterator();
@@ -257,7 +257,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 				
 				@Override
 				public void remove() {
-					it.remove();	
+					it.remove();
 					// erst it.remove() -- somit werden listeners bei Exception nicht informiert
 					getItemListenerInformer().itemRemoved(DefaultGame.this, player, item);
 				}
@@ -278,7 +278,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 		@Override
 		public int size() {
 			return set.size();
-		}		
+		}
 		
 	}
 	
@@ -327,7 +327,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 	}
 
 	@Override
-	public List<DetectivePlayer> getDetectives() {		
+	public List<DetectivePlayer> getDetectives() {
 		return detectives;
 	}
 
@@ -337,7 +337,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 		if (mrX != null) {
 			list.add(mrX);
 		}
-		list.addAll(detectives);		
+		list.addAll(detectives);
 		return Collections.unmodifiableList(list);
 	}
 
@@ -393,8 +393,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 
 	@Override
 	public Move getLastMove(Player player) {
-		ListIterator<Move> it = moves.listIterator(moves.size());
-		while (it.hasPrevious()) {
+		for (ListIterator<Move> it = moves.listIterator(moves.size()); it.hasPrevious();) {
 			Move m = it.previous();
 			if (m.getPlayer() == player) {
 				return m;
@@ -403,7 +402,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 		
 		// No exception, if there is no last move.
 		// Schliesslich ist es nicht verboten nach dem Move eines Players zu fragen,
-		// auch wenn dieser seinen initial move halt grade noch nicht gemacht hat. 
+		// auch wenn dieser seinen initial move halt grade noch nicht gemacht hat.
 		return null;
 	}
 	
@@ -427,7 +426,7 @@ public class DefaultGame extends AbstractGameState implements Game {
 	}
 
 	@Override
-	public void setItems(Player player, Set<Item> items) {	
+	public void setItems(Player player, Set<Item> items) {
 		if (items != this.items) {
 			Set<Item> old = this.items.get(player);
 			

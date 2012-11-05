@@ -26,71 +26,69 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.geom.Point2D;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.JToolBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JToggleButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JSpinner;
-import javax.swing.JCheckBox;
-import javax.swing.AbstractAction;
-import javax.swing.Timer;
-
 import java.awt.event.ActionEvent;
-import javax.swing.Action;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.KeyStroke;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.BoxLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
+import java.awt.geom.Point2D;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
-import java.awt.event.ActionListener;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kj.scotlyard.game.graph.ConnectionEdge;
 import kj.scotlyard.game.graph.Station;
-import kj.scotlyard.game.graph.connection.TaxiConnection;
 import kj.scotlyard.game.graph.connection.BusConnection;
-import kj.scotlyard.game.graph.connection.UndergroundConnection;
 import kj.scotlyard.game.graph.connection.FerryConnection;
+import kj.scotlyard.game.graph.connection.TaxiConnection;
+import kj.scotlyard.game.graph.connection.UndergroundConnection;
 import kj.scotlyard.graphbuilder.builder.Director;
 import kj.scotlyard.graphbuilder.builder.GraphDescriptionBuilder;
 import kj.scotlyard.graphbuilder.builder.ToolGraphBuilder;
-import java.awt.event.KeyAdapter;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 
 @SuppressWarnings({ "serial", "rawtypes" })
 public class BuilderTool extends JFrame {
@@ -130,7 +128,7 @@ public class BuilderTool extends JFrame {
 		}
 	}
 	
-	/** Fuer das Zeichnen der Edges */ 
+	/** Fuer das Zeichnen der Edges */
 	private Vertex lastSelectedVertex = null;
 	private int clicksWithoutTool = 0;
 	private Image image = null;
@@ -147,7 +145,7 @@ public class BuilderTool extends JFrame {
 	private JFileChooser descriptionChooser = new JFileChooser();
 	{
 		descriptionChooser.setCurrentDirectory(pwd);
-	}	
+	}
 	private JFileChooser imageChooser = new JFileChooser();
 	{
 		imageChooser.setCurrentDirectory(pwd);
@@ -193,6 +191,7 @@ public class BuilderTool extends JFrame {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					BuilderTool frame = new BuilderTool();
@@ -294,7 +293,7 @@ public class BuilderTool extends JFrame {
 		
 		mnView.addSeparator();
 				
-		mnView.add(chckbxmntmOnlySelectedVertices);		
+		mnView.add(chckbxmntmOnlySelectedVertices);
 		
 		chckbxmntmOnlySelectedEdges = new JCheckBoxMenuItem("Only selected Edges");
 		chckbxmntmOnlySelectedEdges.setToolTipText("Only draw edges of the selected type");
@@ -310,6 +309,7 @@ public class BuilderTool extends JFrame {
 		mntmAbout.setMnemonic('a');
 		mntmAbout.setToolTipText("About this Tool");
 		mntmAbout.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				endEdging();
 				JOptionPane.showMessageDialog(BuilderTool.this,
@@ -414,6 +414,7 @@ public class BuilderTool extends JFrame {
 		cbPolyline = new JCheckBox("Polyline");
 		cbPolyline.setMnemonic('p');
 		cbPolyline.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (!getCbPolyline().isSelected())
 					endEdging();
@@ -468,8 +469,7 @@ public class BuilderTool extends JFrame {
 				if (e.getKeyCode() == KeyEvent.VK_DELETE) {
 					List<Vertex> selected = getVertexList().getSelectedValuesList();
 					for (Vertex v : selected) {
-						Iterator<Edge> it = edges.iterator();
-						while (it.hasNext()) {
+						for (Iterator<Edge> it = edges.iterator(); it.hasNext();) {
 							Edge ee = it.next();
 							if (ee.v1 == v || ee.v2 == v) {
 								it.remove();
@@ -534,7 +534,7 @@ public class BuilderTool extends JFrame {
 						int wp = getWidth();
 						int hp = getHeight();
 						
-						if (hp * ar > wp) { 
+						if (hp * ar > wp) {
 							// -> auf breite anpassen
 							imageWidth = wp;
 							imageHeight = (int) (wp / ar);
@@ -625,14 +625,14 @@ public class BuilderTool extends JFrame {
 				
 				if (isSelected(markVertexAction)) {
 					
-					JSpinner number = getSpinnerNumber();				
+					JSpinner number = getSpinnerNumber();
 					
 					if (getVertex((int) number.getValue()) == null) {
 						// Kein Vertex mit aktueller Nummer vorhanden
 						
 						if (v == null) {
-							v = new Vertex((VertexType) getCmbVertexType().getSelectedItem(), 
-									(int) number.getValue(), pos); 
+							v = new Vertex((VertexType) getCmbVertexType().getSelectedItem(),
+									(int) number.getValue(), pos);
 						
 						} else {
 							// schon vorhanden: nach vorne draengeln
@@ -656,12 +656,12 @@ public class BuilderTool extends JFrame {
 							lastSelectedVertex = v;
 							startEdging();
 							
-						} else if (v != lastSelectedVertex || isSelected(allowLoopsAction)) { 
-							// "Some references require that multigraphs possess no graph loops" 
+						} else if (v != lastSelectedVertex || isSelected(allowLoopsAction)) {
+							// "Some references require that multigraphs possess no graph loops"
 							// -- http://mathworld.wolfram.com/Multigraph.html
 							// This is JGraphT. But only because of this, I cannot disallow loops generally...
 							// Deshalb gibt's eine Option im Graph-Menue, default: not selected.
-							// (Loops kann man relativ leicht aus der Description rausfiltern (sed mit regex).) 
+							// (Loops kann man relativ leicht aus der Description rausfiltern (sed mit regex).)
 							
 							EdgeType edgeType = (EdgeType) getCmbEdgeType().getSelectedItem();
 							
@@ -672,11 +672,11 @@ public class BuilderTool extends JFrame {
 							 */
 							
 							if (getEdge(lastSelectedVertex, v, edgeType, true) == null // noch keine kante dazwischen
-									|| JOptionPane.showConfirmDialog(BuilderTool.this, 
+									|| JOptionPane.showConfirmDialog(BuilderTool.this,
 											"An edge of same type already exists between\nthese vertices (direction ignored).\n" +
-											"Anyway proceed adding edge?", 
-											null, JOptionPane.YES_NO_CANCEL_OPTION, 
-											JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) { 
+											"Anyway proceed adding edge?",
+											null, JOptionPane.YES_NO_CANCEL_OPTION,
+											JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
 							
 								// connection zw. lastselected und v
 								edges.add(0, new Edge(edgeType, lastSelectedVertex, v));
@@ -698,7 +698,7 @@ public class BuilderTool extends JFrame {
 					Timer t = new Timer(5000, new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							clicksWithoutTool = 0;						
+							clicksWithoutTool = 0;
 						}
 					});
 					t.setRepeats(false);
@@ -707,7 +707,7 @@ public class BuilderTool extends JFrame {
 				
 				updateUI();
 				
-			} 
+			}
 					});
 		
 	}
@@ -738,7 +738,7 @@ public class BuilderTool extends JFrame {
 	}
 	protected JLabel getLblEdge() {
 		return lblEdge;
-	}	
+	}
 	protected JScrollPane getImageScrollPane() {
 		return scrollPaneImage;
 	}
@@ -785,7 +785,7 @@ public class BuilderTool extends JFrame {
 		return null;
 	}
 	/**
-	 * Gibt die naechstbeste Kante vom angegebenen Typ 
+	 * Gibt die naechstbeste Kante vom angegebenen Typ
 	 * zwischen den beiden angegebenen Vertices zurueck.
 	 * @param v1
 	 * @param v2
@@ -796,8 +796,8 @@ public class BuilderTool extends JFrame {
 	 */
 	private Edge getEdge(Vertex v1, Vertex v2, EdgeType edgeType, boolean ignoreDirection) {
 		for (Edge e : edges) {
-			if ((edgeType == null || e.type == edgeType) 
-					&& ((e.v1 == v1 && e.v2 == v2) 
+			if ((edgeType == null || e.type == edgeType)
+					&& ((e.v1 == v1 && e.v2 == v2)
 					|| (ignoreDirection && e.v1 == v2 && e.v2 == v1))) {
 				return e;
 			}
@@ -829,7 +829,7 @@ public class BuilderTool extends JFrame {
 	}
 	
 	/** Aktualisiert ImagePanel mit Graph und Vertex/Edge List. */
-	@SuppressWarnings("unchecked")	
+	@SuppressWarnings("unchecked")
 	protected void updateUI() {
 		getImagePanel().repaint();
 		
@@ -847,6 +847,7 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_A);
 			setSelected(this, true);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			getImagePanel().repaint();
 		}
@@ -859,13 +860,14 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_F);
 			setSelected(this, true);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			boolean fitImage = isSelected(this);
 			zoomInAction.setEnabled(!fitImage);
 			zoomOutAction.setEnabled(!fitImage);
 			preserveImageAspectRationAction.setEnabled(fitImage);
 			if (fitImage) {
-				// pref size auf 0 setzen, damit is es immer angepasst an Viewport. 
+				// pref size auf 0 setzen, damit is es immer angepasst an Viewport.
 				getImagePanel().setPreferredSize(new Dimension());	//getImageScrollPane().getViewport().getSize());
 				// Wenn man's aber an Viewport anpassen wuerde, waere es fix,
 				// je nach dem, wie gross der Viewport war zu dem Zeitpunkt.
@@ -873,7 +875,7 @@ public class BuilderTool extends JFrame {
 				getImageScrollPane().revalidate();
 			} else {
 				setSelected(preserveImageAspectRationAction, true);
-			} 
+			}
 			getImagePanel().repaint();
 		}
 	}
@@ -894,8 +896,9 @@ public class BuilderTool extends JFrame {
 			
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
 //			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
-			// dabei will ich doch, dass es einfach funktioniert, wenn ein + getippt wird. dafuer ist doch auch getKeyStroke("ctrl typed ...") da, oder? 
+			// dabei will ich doch, dass es einfach funktioniert, wenn ein + getippt wird. dafuer ist doch auch getKeyStroke("ctrl typed ...") da, oder?
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			getImagePanel().setPreferredSize(new Dimension((int) (getImagePanel().getWidth() * ZOOM_FACTOR), (int) (getImagePanel().getHeight() * ZOOM_FACTOR)));
 			getImagePanel().revalidate();
@@ -914,6 +917,7 @@ public class BuilderTool extends JFrame {
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK)); // (numpad) would work
 //			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK)); // (non-numpad) would work
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			getImagePanel().setPreferredSize(new Dimension((int) (getImagePanel().getWidth() / ZOOM_FACTOR), (int) (getImagePanel().getHeight() / ZOOM_FACTOR)));
 			getImagePanel().revalidate();
@@ -926,6 +930,7 @@ public class BuilderTool extends JFrame {
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("pressed F8"));
 			putValue(MNEMONIC_KEY, KeyEvent.VK_I);
 		}
+		@Override
 		@SuppressWarnings("unchecked")
 		public void actionPerformed(ActionEvent e) {
 			endEdging();
@@ -950,6 +955,7 @@ public class BuilderTool extends JFrame {
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("pressed F9"));
 			putValue(MNEMONIC_KEY, KeyEvent.VK_X);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			endEdging();
 			if (descriptionChooser.showSaveDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
@@ -994,6 +1000,7 @@ public class BuilderTool extends JFrame {
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl typed N"));
 			putValue(MNEMONIC_KEY, KeyEvent.VK_N);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			endEdging();
 			if (JOptionPane.showConfirmDialog(BuilderTool.this, "Really clear the current graph for a new one?") == JOptionPane.YES_OPTION) {
@@ -1011,6 +1018,7 @@ public class BuilderTool extends JFrame {
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("ctrl pressed O"));
 			putValue(MNEMONIC_KEY, KeyEvent.VK_O);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			endEdging();
 		    if (imageChooser.showOpenDialog(BuilderTool.this) == JFileChooser.APPROVE_OPTION) {
@@ -1027,6 +1035,7 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_V);
 			setSelected(this, false);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			endEdging();
 			if (isSelected(this)) {
@@ -1044,6 +1053,7 @@ public class BuilderTool extends JFrame {
 			putValue(MNEMONIC_KEY, KeyEvent.VK_E);
 			setSelected(this, false);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			endEdging();
 			if (isSelected(this)) {
@@ -1060,6 +1070,7 @@ public class BuilderTool extends JFrame {
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke("alt pressed F4"));
 			putValue(MNEMONIC_KEY, KeyEvent.VK_Q);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			endEdging();
 			setVisible(false);
@@ -1069,13 +1080,13 @@ public class BuilderTool extends JFrame {
 	private class RepaintAction extends AbstractAction {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			getImagePanel().repaint();			
+			getImagePanel().repaint();
 		}
 	};
 	private class EndEdgingAction extends AbstractAction {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			endEdging();			
+			endEdging();
 		}
 	};
 	private class AllowLoopsAction extends AbstractAction {
@@ -1086,6 +1097,7 @@ public class BuilderTool extends JFrame {
 			putValue(DISPLAYED_MNEMONIC_INDEX_KEY, 6);
 			setSelected(this, false);
 		}
+		@Override
 		public void actionPerformed(ActionEvent e) { }
 	}
 }

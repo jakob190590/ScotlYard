@@ -58,7 +58,7 @@ public class ItemDealer {
 	public void addItems(Player player, int count, Class<? extends Item> itemType) {
 		
 		Set<Item> set = new HashSet<>();
-		try {			
+		try {
 			for (int i = 0; i < count; i++) {
 				set.add(itemType.newInstance());
 			}
@@ -74,9 +74,8 @@ public class ItemDealer {
 		Set<Item> items1 = game.getItems(fromPlayer);
 		Set<Item> items2 = game.getItems(toPlayer);
 		int n = 0;
-		Iterator<Item> it = items1.iterator();
-		while (it.hasNext()) {
-			Item i = it.next();	
+		for (Iterator<Item> it = items1.iterator(); it.hasNext();) {
+			Item i = it.next();
 			if (n < count) {
 				if (i.getClass() == itemType) {
 					it.remove();
@@ -93,8 +92,7 @@ public class ItemDealer {
 	
 	public int removeItems(Player player, int count, Class<? extends Item> itemType) {
 		int n = 0;
-		Iterator<Item> it = game.getItems(player).iterator();
-		while (it.hasNext()) {
+		for (Iterator<Item> it = game.getItems(player).iterator(); it.hasNext();) {
 			Item i = it.next();
 			if (n < count) {
 				if (i.getClass() == itemType) {
@@ -111,9 +109,8 @@ public class ItemDealer {
 	
 	public int removeAllItems(Player player, Class<? extends Item> itemType) {
 		int n = 0;
-		Iterator<Item> it =  game.getItems(player).iterator();
-		while (it.hasNext()) {
-			Item i = it.next();		
+		for (Iterator<Item> it =  game.getItems(player).iterator(); it.hasNext();) {
+			Item i = it.next();
 			if (i.getClass() == itemType) {
 				it.remove();
 				n++;

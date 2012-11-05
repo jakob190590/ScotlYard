@@ -18,7 +18,9 @@
 
 package kj.scotlyard.game.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,7 +46,7 @@ public class DefaultGameTest {
 	
 	class TestTurnListener implements TurnListener {
 
-		GameState gs;		
+		GameState gs;
 		
 		Player oldP, newP;
 		
@@ -84,7 +86,7 @@ public class DefaultGameTest {
 				DetectivePlayer detective, int atIndex) {
 			gs = gameState;
 			d = detective;
-			i = atIndex;			
+			i = atIndex;
 		}
 
 		@Override
@@ -149,7 +151,7 @@ public class DefaultGameTest {
 		@Override
 		public void moveDone(GameState gameState, Move move) {
 			gs = gameState;
-			m = move;			
+			m = move;
 		}
 
 		@Override
@@ -231,7 +233,7 @@ public class DefaultGameTest {
 //							+ "    move number: " + o.getMoveNumber());
 //				}
 //			}
-//		}		
+//		}
 		
 	}
 
@@ -320,7 +322,7 @@ public class DefaultGameTest {
 		assertEquals(null, g.getItems(d1));
 		
 		Set<Item> s = new HashSet<Item>();
-		g.setItems(mrX, s);		
+		g.setItems(mrX, s);
 		assertEquals(0, g.getItems(mrX).size());
 		
 		s.add(new DoubleMoveCard());
@@ -340,9 +342,8 @@ public class DefaultGameTest {
 		s.add(new BusTicket());
 		assertEquals(5, s.size());
 		
-		Iterator<Item> it = s.iterator();
 		int i = 0;
-		while (it.hasNext()) {
+		for (Iterator<Item> it = s.iterator(); it.hasNext();) {
 			it.next();
 			if (i == 2) {
 				it.remove();
@@ -431,7 +432,7 @@ public class DefaultGameTest {
 	@Test
 	public final void testGetMove() {
 		g.getMoves().clear();
-		for (int i = 0; i < 20; i++) {			
+		for (int i = 0; i < 20; i++) {
 			g.getMoves().add(ms[i]);
 		}
 		
@@ -492,7 +493,7 @@ public class DefaultGameTest {
 		// gueltige Move accesses von detectives
 		int i = 1;
 		for (DetectivePlayer d : g.getDetectives()) {
-			// by move number		
+			// by move number
 			assertEquals(ms[i], g.getMove(d, -4, MoveAccessMode.MOVE_NUMBER));
 			assertEquals(ms[i + 5], g.getMove(d, -3, MoveAccessMode.MOVE_NUMBER));
 			assertEquals(ms[i + 10], g.getMove(d, -2, MoveAccessMode.MOVE_NUMBER));
@@ -517,7 +518,7 @@ public class DefaultGameTest {
 		
 		
 		
-		g.getMoves().clear();		
+		g.getMoves().clear();
 	}
 
 	@Test
@@ -529,9 +530,9 @@ public class DefaultGameTest {
 		
 		for (int i = 0; i < 8; i++) {
 			g.getMoves().add(ms[i]);
-		}		
+		}
 		
-		assertEquals(ms[7], g.getLastMove(d2));		
+		assertEquals(ms[7], g.getLastMove(d2));
 		g.getMoves().remove(GameState.LAST_MOVE);
 		assertEquals(ms[2], g.getLastMove(d2));
 		
@@ -540,7 +541,7 @@ public class DefaultGameTest {
 		assertEquals(ms[4], g.getLastMove(d4));
 		assertEquals(ms[3], g.getLastMove(d3));
 		
-		g.getMoves().clear();		
+		g.getMoves().clear();
 	}
 
 	@Test
@@ -691,14 +692,14 @@ public class DefaultGameTest {
 			l.gs = null;
 			g.getMoves().add(ms[i]);
 			assertEquals(g, l.gs);
-			assertEquals(ms[i], l.m);		
+			assertEquals(ms[i], l.m);
 		}
 		
 		for (int i = 6; i > 3; i--) {
 			l.gs = null;
 			g.getMoves().remove(GameState.LAST_MOVE);
 			assertEquals(g, l.gs);
-			assertEquals(ms[i], l.m);		
+			assertEquals(ms[i], l.m);
 		}
 		
 		l.gs = null;
