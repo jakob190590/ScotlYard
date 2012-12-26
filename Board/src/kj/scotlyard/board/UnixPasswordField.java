@@ -116,6 +116,12 @@ public class UnixPasswordField extends JPasswordField {
 		provideErrorFeedback();
 	}
 	
+	@Override
+	public void setText(String s) {
+		password.setLength(0);
+		password.append(s);
+	}
+	
 	/**
 	 * Clear the password (like <code>setText("")</code>
 	 * for normal text fields).

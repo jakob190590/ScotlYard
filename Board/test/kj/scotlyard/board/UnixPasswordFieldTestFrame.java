@@ -21,6 +21,7 @@ package kj.scotlyard.board;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -37,6 +38,7 @@ public class UnixPasswordFieldTestFrame extends JFrame {
 	private JPanel contentPane;
 	private JPasswordField passwordField;
 	private final Action getPasswordAction = new GetPasswordAction();
+	private JButton btnSetText;
 
 	/**
 	 * Launch the application.
@@ -74,6 +76,17 @@ public class UnixPasswordFieldTestFrame extends JFrame {
 		JButton btnGetPassword = new JButton("Get Password");
 		btnGetPassword.setAction(getPasswordAction);
 		contentPane.add(btnGetPassword);
+		
+		btnSetText = new JButton("Set Text");
+		btnSetText.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String s = "A Password";
+				if (JOptionPane.showInputDialog(UnixPasswordFieldTestFrame.this, "Geben Sie ein Passwort ein!", s) != null)
+					passwordField.setText(s);
+			}
+		});
+		contentPane.add(btnSetText);
 	}
 
 	private class GetPasswordAction extends AbstractAction {
