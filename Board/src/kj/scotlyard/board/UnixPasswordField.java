@@ -93,7 +93,7 @@ public class UnixPasswordField extends JPasswordField {
 				break;
 	
 			default:
-				password.append(e.getKeyChar());
+				password.append(c);
 				break;
 			}
 		} else {
